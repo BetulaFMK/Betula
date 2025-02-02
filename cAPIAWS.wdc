@@ -1,0 +1,159 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cAPIAWS
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x157784bc2325219a
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //La classe cAPIAWS simplifie l'accès aux services AWS en fournissant des méthodes pour l'initialisation, la libération des ressources, et l'exécution de requêtes REST signées. Utilisez cette classe comme base pour créer des classes spécialisées couvrant différentes fonctionnalités AWS, telles que S3 ou Textract.
+      //Cette classe est abstraite car elle doit être utilisée par une classe spécialisée dans un service de AWS (voir p.e. cAPIAWS_S3)
+      
+      EAWSRégion est une énumération
+      	//attention, cette liste pourrait ne pas être à jour, voir : https://aws.amazon.com/fr/about-aws/global-infrastructure/regional-product-services/
+      	VirginieDuNord		= "us-east-1"
+      	Ohio				= "us-east-2"
+      	CalifornieDuNord	= "us-west-1"
+      	Oregon				= "us-west-2"
+      	LeCap				= "af-south-1"
+      	HongKong			= "ap-east-1"
+      	Hyderabad			= "ap-south-2"
+      	Jakarta				= "ap-southeast-3"
+      	Melbourne			= "ap-southeast-4"
+      	Mumbai				= "ap-south-1"
+      	Osaka				= "ap-northeast-3"
+      	Séoul				= "ap-northeast-2"
+      	Singapour			= "ap-southeast-1"
+      	Sydney				= "ap-southeast-2"
+      	Tokyo				= "ap-northeast-1"
+      	CanadaCentre		= "ca-central-1"
+      	Francfort			= "eu-central-1"
+      	Irlande				= "eu-west-1"
+      	Londres				= "eu-west-2"
+      	Milan				= "eu-south-1"
+      	Paris				= "eu-west-3"
+      	Espagne				= "eu-south-2"
+      	Stockholm			= "eu-north-1"
+      	Zurich				= "eu-central-2"
+      	TelAviv				= "il-central-1"
+      	Bahreïn				= "me-south-1"
+      	ÉmiratsArabesUnis	= "me-central-1"
+      	SaoPaulo			= "sa-east-1"
+      	GouvernementUS_est	= "us-gov-east-1"
+      	GouvernementUS_ouest= "us-gov-west-1"
+      fin
+      EAWSService est une énumération											//Ajoutez ici d'autres services au fur et à mesure que sont créées de nouvelles classes pour accéder aux services AWS
+      	s3					= "s3"
+      	textract			= "textract"
+      fin
+      cAPIAWS est une Classe, abstraite										//Abstraite car on doit d'office créer une classe qui hérite de celle-ci. La nouvelle classe couvre une fonctionnalité de AWS (ex S3)
+      	hérite de chttpAPI
+      	m_dhTest			est une dateheure		<serialise = faux>		//Date heure de test pour comparer la requête à, par exemple, celle de postman. N'est prise en compte qu'en mode GO.
+      public constant
+      	m_sRégion 			est une chaine ansi		<serialise = faux>		//Région dans lequel se trouve le service
+      	m_sService 			est une chaine ansi		<serialise = faux>		//Nom du service
+      	m_duTimeOut			est une durée			<serialise = faux>		//Durée du timeout lors d'une requête
+      privé
+      	m_sAccessKey		est une chaîne			<serialise = faux>		//AccessKey du compte Amazon
+      	m_sAccessSecret		est une chaine			<serialise = faux>		//AccessSecret du compte Amazon
+      global public															//pour ne pas le répéter à chaque instance de classe créé
+      	mg_sAccessKey		est une chaine			<serialise = faux>
+      	mg_sAccessSecret	est une chaine			<serialise = faux>
+      	mg_duTimeOut		est une durée			<serialise = faux>
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1546850940603474330
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe cAPIAWS.
+      // Syntaxe : Constructeur (<eService> est cAPIAWS.EAWSService, <eRégion> est cAPIAWS.EAWSRégion [, <sAccessKey> est chaîne [, <sAccessSecret> est chaîne [, <duTimeOut> est durée]]])
+      // Paramètres :
+      //	eService (cAPIAWS.EAWSService) : Le type d'AWS service utilisé.
+      //	eRégion (cAPIAWS.EAWSRégion) : La région AWS où les requêtes seront dirigées.
+      //	sAccessKey (chaîne UNICODE) : La clé d'accès pour authentifier l'accès aux services AWS.
+      //	sAccessSecret (chaîne UNICODE) : Le secret d'accès correspondant à la clé d'accès.
+      //	duTimeOut (durée) : Le délai d'expiration pour les requêtes, spécifié sous forme de durée.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(eService est un EAWSService,eRégion est un EAWSRégion,sAccessKey est une chaine = mg_sAccessKey,sAccessSecret est une chaine = mg_sAccessSecret,duTimeOut est une durée = mg_duTimeOut)
+      cHTTPAPI.constructeur("https://" + eService..Nom + "." + eRégion..Valeur + ".amazonaws.com")
+      m_sService 		= eService..Nom
+      m_sRégion		= eRégion..Valeur
+      m_sAccessKey	= sAccessKey
+      m_sAccessSecret	= sAccessSecret
+      m_duTimeOut 	= duTimeOut
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1546850940603539866
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : AWSRestExécute
+     procedure_id : 1547074098514751154
+     type_code : 12
+     code : |1+
+      // Résumé : Exécute une requête REST vers les services AWS.
+      // Syntaxe : [ <Résultat> = ] AWSRestExécute (<bSigné> est booléen [, <sComplémentURL> est chaîne])
+      // Paramètres :
+      //	bSigné (booléen) : Indique si la requête doit être signée pour l'authentification AWS.
+      //	sComplémentURL (chaîne UNICODE) : Complément d'URL pour la requête.
+      // Valeur de retour : booléen : indique le succès de l'exécution de la requête.
+      // Exemple :
+      //
+      PROCEDURE protégé AWSRestExécute(bSigné est un booleen,sComplémentURL est une chaine = "") : booleen
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	p_sAWSService 						= m_sService
+      	p_sAWSRégion						= m_sRégion
+      	m_stRequêteHTTPAPI.sURL				= m_sURLdeBase + ["/"] + sComplémentURL
+      	m_stRequêteHTTPAPI.nTimeOutConnexion= m_duTimeOut
+      	RENVOYER RestExecute(chttpAPI.AWSSignatureV4,m_sAccessKey,m_sAccessSecret,bSigné,"",m_dhTest)
+      	
+      <fin>
+      
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x157784ac231fe434
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

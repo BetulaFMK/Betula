@@ -1,0 +1,809 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_Données
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x125cb1bf82a0758c
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //iso 8601 pour les dateheures
+      STPaysISO3166 est une structure
+      	nCode			est un entier
+      	sCode2			est une chaîne sur 2
+      	sCode3			est une chaine sur 3
+      	sNom5			est une chaine			//nom en français
+      	sNom3			est une chaine			//nom en anglais
+      fin
+      STLangueISO639 est une structure
+      	sCode1			est une chaine sur 2
+      	sCode2T			est une chaine sur 3
+      	sCode2B			est une chaine sur 3
+      	sCode3			est une chaine sur 3
+      	sNom5			est une chaine			//nom en français
+      	sNom3			est une chaine			//nom en anglais
+      	sNom			est une chaine			//nom natif
+      	nFamille		est un entier
+      fin
+      STDeviseISO4217 est une structure		
+      	sCode			est une chaine sur 3
+      	nCode			est un entier
+      	sNom5			est une chaine			//nom en français
+      	sNom3			est une chaîne			//nom en anglais
+      	sPaysISO3		est une chaine sur 3
+      	sSymbole		est une chaine
+      fin
+      STJourSpécial est une structure
+      	sPaysISO3		est une chaine
+      	sRégion			est une chaine
+      	dJour			est une date
+      	sNom5			est une chaine			//nom en français
+      	sNom3			est une chaine			//nom en anglais
+      	coType			est un COTypeJourSpécial
+      	ePériode		est un EPartieDuJour
+      fin
+      EJour est une énumération
+      	Lundi			= 1
+      	Mardi			= 2
+      	Mercredi		= 3
+      	Jeudi			= 4
+      	Vendredi		= 5
+      	Samedi			= 6
+      	Dimanche		= 7
+      fin
+      ENumSemaineDansMois est une énumération
+      	Premier			= 1
+      	Second	 		= 2
+      	Troisième		= 3
+      	Quatrième		= 4
+      	Cinquième		= 5
+      fin
+      COTypeJourSpécial est une combinaison
+      	JourFériéNational
+      	JourFériéLocal
+      	JourChôméLocal
+      	Fête				//non férié
+      fin
+      EPartieDuJour est une énumération
+      	TouteLaJournée
+      	Matin
+      	AprèsMidi
+      fin
+      ESigneZodiaqueOccidental est une énumération
+      	SigneZodiaqueOccidentaInconnu
+      	SigneZodiaqueOccidentalBélier
+      	SigneZodiaqueOccidentalTaureau
+      	SigneZodiaqueOccidentalGémeaux
+      	SigneZodiaqueOccidentalCancer
+      	SigneZodiaqueOccidentalLion
+      	SigneZodiaqueOccidentalVierge
+      	SigneZodiaqueOccidentalBalance
+      	SigneZodiaqueOccidentalScorpion
+      	SigneZodiaqueOccidentalSagittaire
+      	SigneZodiaqueOccidentalCapricorne
+      	SigneZodiaqueOccidentalVerseau
+      	SigneZodiaqueOccidentalPoissons
+      fin
+      ESigneZodiaqueChinois est une énumération
+      	SigneZodiaqueChinoisInconnu
+      	SigneZodiaqueChinoisRat
+      	SigneZodiaqueChinoisBuffle
+      	SigneZodiaqueChinoisTigre
+      	SigneZodiaqueChinoisLièvre
+      	SigneZodiaqueChinoisDragon
+      	SigneZodiaqueChinoisSerpent
+      	SigneZodiaqueChinoisCheval
+      	SigneZodiaqueChinoisChèvre
+      	SigneZodiaqueChinoisSinge
+      	SigneZodiaqueChinoisCoq
+      	SigneZodiaqueChinoisChien
+      	SigneZodiaqueChinoisCochon
+      fin
+      STPériodeZodiaque est une Structure
+      	dDébut	est une Date
+      	dFin	est une Date
+      FIN
+      
+      gtabJoursSpéciaux		est un tableau de STJourSpécial
+      gtabRatMétal,gtabRatEau,gtabRatBois,gtabRatFeu,gtabRatTerre 					sont des tableaux de stPériodeZodiaque
+      gtabBuffleMétal,gtabBuffleEau,gtabBuffleBois,gtabBuffleFeu,gtabBuffleTerre 		sont des tableaux de stPériodeZodiaque
+      gtabTigreEau,gtabTigreBois,gtabTigreFeu,gtabTigreTerre,gtabTigreMétal			sont des tableaux de stPériodeZodiaque
+      gtabLièvreEau,gtabLièvreBois,gtabLièvreFeu,gtabLièvreTerre,gtabLièvreMétal 		sont des tableaux de stPériodeZodiaque
+      gtabDragonBois,gtabDragonFeu,gtabDragonTerre,gtabDragonMétal,gtabDragonEau 		sont des tableaux de stPériodeZodiaque
+      gtabSerpentBois,gtabSerpentFeu,gtabSerpentTerre,gtabSerpentMétal,gtabSerpentEau sont des tableaux de stPériodeZodiaque
+      gtabChevalFeu,gtabChevalTerre,gtabChevalMétal,gtabChevalEau,gtabChevalBois	 	sont des tableaux de stPériodeZodiaque
+      gtabChèvreFeu,gtabChèvreTerre,gtabChèvreMétal,gtabChèvreEau,gtabChèvreBois		sont des tableaux de stPériodeZodiaque
+      gtabSingeTerre,gtabSingeMétal,gtabSingeEau,gtabSingeBois,gtabSingeFeu			sont des tableaux de stPériodeZodiaque
+      gtabCoqTerre,gtabCoqMétal,gtabCoqEau,gtabCoqBois,gtabCoqFeu						sont des tableaux de stPériodeZodiaque
+      gtabChienMétal,gtabChienEau,gtabChienBois,gtabChienFeu,gtabChienTerre			sont des tableaux de stPériodeZodiaque
+      gtabCochonMétal,gtabCochonEau,gtabCochonBois,gtabCochonFeu,gtabCochonTerre		sont des tableaux de stPériodeZodiaque
+      
+      PRIVÉ
+      	gnHandleMediaInfo	est un entier systeme
+      CONSTANTE
+      	ErreurDonnées	= 230
+      FIN
+     type : 720896
+   -
+     code : |1-
+      //
+      si gnHandleMediaInfo>0 alors DéchargeDLL(gnHandleMediaInfo)
+     type : 720898
+  procedures :
+   -
+     name : JoursSpéciauxCharge
+     procedure_id : 1325204245508547013
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction est une procédure qui permet de charger les jours spéciaux (fêtes et jours fériés) pour un pays donné, une année spécifiée, une région (province ou territoire) et un type de jour spécial. Les jours spéciaux sont stockés dans un tableau trié (gtabJoursSpéciaux), qui peut être utilisé ultérieurement dans le programme. La fonction prend en charge plusieurs pays (CAN, FRA, BEL, CHE).
+      // Syntaxe : JoursSpéciauxCharge (<sPaysISO3> est chaîne [, <nAnnée> est entier [, <sRégion> est chaîne [, <coTypeDeJour> est COL_Données.COTypeJourSpécial]]])
+      // Paramètres :
+      //	sPaysISO3 (chaîne UNICODE) : Code ISO 3166-1 alpha-3 du pays pour lequel les jours spéciaux doivent être chargés.
+      //	nAnnée (entier optionnel) : Année pour laquelle les jours spéciaux doivent être chargés. Par défaut, l'année en cours est utilisée.
+      //	sRégion (chaîne UNICODE optionnelle) : Région ou province spécifique pour laquelle les jours spéciaux doivent être chargés. Par défaut, une chaîne vide est utilisée.
+      //	coTypeDeJour (COL_Données.COTypeJourSpécial optionnel) : Type de jour spécial à charger, par exemple, Fête, JourFériéLocal, JourFériéNational, etc. Par défaut, la combinaison de Fête, JourFériéLocal et JourFériéNational est utilisée.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	JoursSpéciauxCharge("CAN", 2023)	// Charger les jours spéciaux pour le Canada en 2023
+      //
+      PROCEDURE JoursSpéciauxCharge(local sPaysISO3 est une chaine,nAnnée est un entier = AnnéeEnCours(),local sRégion est une chaine = "",local coTypeDeJour est un COTypeJourSpécial = Fête+JourFériéLocal+JourFériéNational)
+      dDimanchePâques est une date 	= Pâques(nAnnée)
+      sAnnée			est une chaine 	= droite("0000"+nAnnée,4)
+      sRégion			= majuscule(ChaîneFormate(sRégion,ccSansAccent+ccSansEspace))
+      selon sPaysISO3
+      	cas "CAN"	//ref : https://fr.wikipedia.org/wiki/F%C3%AAtes_et_jours_f%C3%A9ri%C3%A9s_au_Canada
+      		si sRégion = "MB" alors JourAjoute(daterelative(Troisième,Jeudi,Vrai,sAnnée+"0201"),"Journée Louis Riel","Louis Riel Day",JourFériéLocal)
+      		si sRégion = "PE" alors JourAjoute(daterelative(Troisième,Jeudi,Vrai,sAnnée+"0201"),"Fête des Insulaires","Islander Day",JourFériéLocal)
+      		JourAjoute(sAnnée+"0101","Jour de l'an","New Year's Day",JourFériéNational)
+      		si sRégion dans ("AB","BC","NB","ON","SK") alors JourAjoute(daterelative(Troisième,Jeudi,vrai,sAnnée+"0201"),"Fête de la famille","Family Day",JourFériéLocal)
+      		JourAjoute(sAnnée+"0202","Jour de la marmotte","Groundhog Day",Fête)
+      		JourAjoute(sAnnée+"0214","Saint-Valentin","Valentine's Day,Saint Valentine's Day,Saint Valentine",Fête,"13000101")	//depuis XIV siècle
+      		JourAjoute(sAnnée+"0215","Jour du drapeau","Flag Day",Fête,"19650215")
+      		si sRégion = "NL" alors JourAjoute(sAnnée+"0317","Fête de la Saint-Patrick","Saint Patrick's Day",JourFériéLocal)
+      		JourAjoute(DateModifie(dDimanchePâques,-2),"Vendredi saint","Good Friday",JourFériéNational)	//Le Vendredi saint est célébré deux jours avant Pâques, et est donc une commémoration mobile, toujours comprise entre le 20 mars et le 23 avril.
+      		si sRégion = "QC" alors	JourAjoute(dDimanchePâques,"Dimanche de Pâques","Easter Sunday",Fête)
+      		si sRégion dans ("AB","PE","QC") alors JourAjoute(DateModifie(dDimanchePâques,1),"Lundi de Pâques","Easter Monday",JourFériéLocal)
+      		si sRégion = "NL" alors JourAjoute(sAnnée+"0423","Fête de la Saint-Georges","Saint George's Day",JourFériéLocal)
+      		JourAjoute(DateRelative(Second,Dimanche,vrai,sAnnée+"0501"),"Fête des mères","Mother's Day",fete)
+      		si sRégion = "QC" alors	JourAjoute(DateRelative(premier,Lundi,faux,sAnnée+"0525"),"Journée nationale des patriotes","Journée nationale des patriotes",JourFériéLocal,"20030101")
+      		si sRégion = "QC" alors	JourAjoute(DateRelative(premier,Lundi,faux,sAnnée+"0525"),"Fête de Dollard","Fête de Dollard",JourFériéLocal,"19200101","20021231")
+      		SI sRégion DANS ("AB","BC","MB","NT","NE","NB","NU","ON","PE","SK","YT") ALORS JourAjoute(daterelative(premier,lundi,faux,sAnnée+"0525"),"Fête de la Reine","Victoria Day,May Two-Four",JourFériéLocal)
+      		JourAjoute(DateRelative(Troisième,Dimanche,vrai,sAnnée+"0601"),"Fête des pères","Father's Day",fete)
+      		si sRégion = "NT" alors JourAjoute(sAnnée+"0621","Journée nationale des Autochtones","National Aboriginal Day",JourFériéLocal)
+      		si sRégion = "QC" alors JourAjoute(sAnnée+"0624","Fête nationale du Québec","Fête nationale du Québec,Saint-Jean-Baptiste",JourFériéLocal)
+      		si sRégion dans ("NL","YT") alors JourAjoute(sAnnée+"0624","Jour de la Découverte","Discovery Day",JourFériéLocal)
+      		JourAjoute((DateVersEntier(sAnnée+"0701")=_Dimanche ? sAnnée+"0702" sinon sAnnée+"0701"),"Fête du Canada","Canada Day",JourFériéNational,"18670701")
+      		si sRégion = "NL" alors JourAjoute(sAnnée+"0712","Fête des Orangistes","Orangemen's Day",JourFériéLocal)
+      		si sRégion dans ("MB","NB","NT","NU") alors JourAjoute(DateRelative(Premier,Lundi,Vrai,sAnnée+"0801"),"Premier lundi d'août","Civic Holiday",JourFériéLocal)
+      		si sRégion dans ("AB","YT") alors JourAjoute(DateRelative(Premier,Lundi,Vrai,sAnnée+"0801"),"Fête du Patrimoine","Heritage Day",JourFériéLocal)
+      		si sRégion = "NE" alors JourAjoute(DateRelative(Premier,Lundi,Vrai,sAnnée+"0801"),"Jour de la Fondation","Natal Day",JourFériéLocal)
+      		si sRégion = "PE" alors JourAjoute(daterelative(Troisième,Vendredi,Vrai,sAnnée+"0801"),"Défilé de la Coupe d'or","Gold Cup Parade Day",JourFériéLocal)
+      		JourAjoute(daterelative(Premier,Lundi,Vrai,sAnnée+"0901"),"Fête du Travail","Labour Day",JourFériéNational)
+      		si sRégion dans ("AB","BC","MB","NT","NE","NB","NL","NU","ON","PE","SK","YT") alors JourAjoute(sAnnée+"0930","Journée nationale de la vérité et de la réconciliation","National Day for Truth and Reconciliation",JourFériéLocal)
+      		SI sRégion DANS ("AB","BC","MB","NT","NE","NB","NU","ON","PE","QC","SK","YT") ALORS JourAjoute(DateRelative(Second,Lundi,Vrai,sAnnée+"1001"),"Action de grâce","Thanksgiving",JourFériéLocal)
+      		JourAjoute(sAnnée+"1130","Halloween","Halloween,Hallowe'en",fete)
+      		si sRégion = "NL" alors JourAjoute(sAnnée+"1111","Jour de l'armistice","Armistice Day",JourFériéLocal)
+      		si sRégion dans ("AB","BC","NB","NT","NE","NU","ON","PE","SK","YT") alors JourAjoute(sAnnée+"1111","Jour du Souvenir","Remembrance Day",JourFériéLocal)
+      		si sRégion = "QC" alors	JourAjoute(sAnnée+"1111","Jour du Souvenir","Remembrance Day",fete)
+      		JourAjoute(sAnnée+"1224","Réveillon de Noël","Christmas Eve",fete)
+      		JourAjoute(sAnnée+"1225","Noël","Christmas Day",JourFériéNational)
+      		SI sRégion DANS ("AB","NB","NE","ON","PE") ALORS JourAjoute(sAnnée+"1226","Boxing Day","Boxing Day",JourFériéLocal)
+      		SI sRégion = "QC" ALORS JourAjoute(sAnnée+"1226","Boxing Day","Boxing Day",fete)
+      		JourAjoute(sAnnée+"1231","Réveillon de la Saint-Sylvestre,Réveillon du jour de l'an","New Year's Eve",fete)
+      	cas "FRA"		//ref : https://fr.wikipedia.org/wiki/F%C3%AAtes_et_jours_f%C3%A9ri%C3%A9s_en_France
+      		JourAjoute(sAnnée+"0101","Jour de l'an","New Year's Day",JourFériéNational)
+      		si sRégion dans ("2","57","971","972","987") alors JourAjoute(DateModifie(dDimanchePâques,-2),"Vendredi saint","Good Friday",JourFériéLocal)	//Le Vendredi saint est célébré deux jours avant Pâques, et est donc une commémoration mobile, toujours comprise entre le 20 mars et le 23 avril.
+      		JourAjoute(DateModifie(dDimanchePâques,1),"Lundi de Pâques","Easter Monday",JourFériéNational)
+      		si sRégion = "976" alors JourAjoute(sAnnée+"0427","Abolition de l’esclavage","Abolition of slavery",JourFériéLocal)
+      		si sRégion = "986" alors JourAjoute(sAnnée+"0428","Saint-Pierre-Chanel","Saint-Pierre-Chanel",JourFériéLocal)
+      		JourAjoute(sAnnée+"0501","Fête du Travail","Labour Day",JourFériéNational)
+      		JourAjoute(sAnnée+"0508","Fête de la Victoire","Victory Day",JourFériéNational)
+      		si sRégion="972" alors JourAjoute(sAnnée+"0522","Abolition de l’esclavage","Abolition of slavery",JourFériélocal)
+      		si sRégion="971" alors JourAjoute(sAnnée+"0527","Abolition de l’esclavage","Abolition of slavery",JourFériélocal)
+      		si sRégion="978" alors JourAjoute(sAnnée+"0528","Abolition de l’esclavage","Abolition of slavery",JourFériélocal)
+      		JourAjoute(DateModifie(dDimanchePâques,39),"Ascension","Ascension Day",JourFériéNational)
+      		JourAjoute(DateModifie(dDimanchePâques,50),"Lundi de Pentecôte","Whit Monday",JourFériéNational)
+      		si sRégion="973" alors JourAjoute(sAnnée+"0610","Abolition de l’esclavage","Abolition of slavery",JourFériélocal)
+      		si sRégion="987" alors JourAjoute(sAnnée+"0629","Fête de l'autonomie","Autonomy Day",JourFériélocal)
+      		JourAjoute(sAnnée+"0714","Fête nationale","Bastille Day",JourFériéNational)
+      		si sRégion dans ("971","972") alors JourAjoute(sAnnée+"0721","Fête Victor Schœlcher","Victor Schœlcher Day",JourFériéNational)
+      		si sRégion="986" alors JourAjoute(sAnnée+"0729","Fête du Territoire","Territory Day",JourFériélocal)
+      		JourAjoute(sAnnée+"0815","Assomption","Assumption of Mary",JourFériéNational)
+      		JourAjoute(sAnnée+"0924","Fête de la citoyenneté","Citizenship Day",JourFériélocal)
+      		si sRégion="977" alors JourAjoute(sAnnée+"1009","Abolition de l’esclavage","Abolition of slavery",JourFériélocal)
+      		JourAjoute(sAnnée+"1101","Toussaint","All Saints' Day",JourFériéNational)
+      		JourAjoute(sAnnée+"1111","Armistice","Armistice Day",JourFériéNational)
+      		si sRégion="974" alors JourAjoute(sAnnée+"1220","Abolition de l’esclavage","Abolition of slavery",JourFériélocal)
+      		JourAjoute(sAnnée+"1225","Noël","Christmas Day",JourFériéNational)
+      		SI sRégion DANS ("2","57") ALORS JourAjoute(sAnnée+"1226","Saint Étienne","Saint Stephen's Day",JourFériéLocal)		//Alsace et Moselle seulement.
+      	cas "BEL"		//ref : https://fr.wikipedia.org/wiki/F%C3%AAtes_et_jours_f%C3%A9ri%C3%A9s_en_Belgique
+      		JourAjoute(sAnnée+"0101","Jour de l'an","New Year's Day",JourFériéNational)																			//Nieuwjaar							//Neujahr
+      		JourAjoute(sAnnée+"0106","Épiphanie","Epiphany",fete)																								//Driekoningen						//Erscheinung des Herrn
+      		JourAjoute(sAnnée+"0214","Saint-Valentin","Valentine's Day",Fête,"13000101")	//depuis XIV siècle													//Valentijnsdag						//Valentinstag
+      		JourAjoute(DateModifie(dDimanchePâques,1),"Lundi de Pâques","Easter Monday",JourFériéNational)														//Paasmaandag						//Ostermontag
+      		JourAjoute(sAnnée+"0407","Journée des Vétérans","Veterans' Day",fete)																				//Veteranendag						//?
+      		JourAjoute(sAnnée+"0501","Fête du Travail","Labour Day",JourFériéNational)																			//Dag van de arbeid					//Tag der Arbeit
+      		si sRégion="BRU" alors JourAjoute(sAnnée+"0508","Fête de l'Iris","Iris Festival",fete)																//Irisfeest							//Iris-Festival
+      		JourAjoute(DateModifie(dDimanchePâques,39),"Ascension","Ascension Day",JourFériéNational)															//Onze Lieve Heer hemelvaart		//Christi Himmelfahrt
+      		JourAjoute(DateModifie(dDimanchePâques,50),"Lundi de Pentecôte","Pentecost Monday",JourFériéNational)												//Pinkstermaandag					//Pfingstmontag
+      		si sRégion="VLG" alors JourAjoute(sAnnée+"0711","Fête de la Communauté flamande","Day of the Flemish Community",fete)								//Feest van de Vlaamse Gemeenschap	//Feiertag der Flämischen Gemeinschaft
+      		JourAjoute(sAnnée+"0721","Fête nationale","National Day",JourFériéNational)																			//Nationale feestdag				//Nationalfeiertag
+      		JourAjoute(sAnnée+"0815","Assomption","Assumption of Mary",JourFériéNational)																		//Onze Lieve Vrouw hemelvaart		//Mariä Himmelfahrt
+      		si sRégion="WAL" alors JourAjoute(sAnnée+"0927","Fête de la Communauté française","French Community Holiday",fete)									//Dag van de Franse Gemeenschap		//Feiertag der Französischen Gemeinschaft
+      		si sRégion="WAL" alors JourAjoute(DateRelative(Troisième,Dimanche,Vrai,sAnnée+"0901"),"Fête de la Région wallonne","Day of the Walloon Region",fete)//Feest van het Waalse Gewest		//Festtag der Wallonischen Region
+      		JourAjoute(sAnnée+"1031","Halloween","Halloween",fete)																								//Halloween							//Halloween
+      		JourAjoute(sAnnée+"1101","Toussaint","All Saints' Day",JourFériéNational)																			//Allerheiligen						//Allerheiligen
+      		JourAjoute(sAnnée+"1102","Toussaint","All Souls' Day",fete)																							//Allerzielen						//Allerseelen
+      		JourAjoute(sAnnée+"1111","Armistice","Armistice Day",JourFériéNational)																				//Wapenstilstand					//Waffenstillstand
+      		JourAjoute(sAnnée+"1115","Fête du Roi","King's Feast",fete)																							//Koningsdag						//Festtag des Königs
+      		JourAjoute(sAnnée+"1206","Saint-Nicolas","Saint Nicholas",fete)																						//Sinterklaas						//Sankt Nikolaus
+      		JourAjoute(sAnnée+"1225","Noël","Christmas Day",JourFériéNational)																					//Kerstmis							//Weihnachten
+      		JourAjoute(sAnnée+"1226","Lendemain de Noël","Second Day of Christmas",fete)																		//Tweede kerstdag					//2. Weihnachtstag
+      	cas "CHE"		//ref : https://fr.wikipedia.org/wiki/Jours_f%C3%A9ri%C3%A9s_en_Suisse
+      		JourAjoute(sAnnée+"0101","Jour de l'an","New Year's Day",JourFériéNational)
+      		si sRégion dans ("FR","GL","LU","OW","SH","SO","ZH") alors JourAjoute(sAnnée+"0102","Saint-Berchtold","St. Berchtold",JourChôméLocal)
+      		si sRégion dans ("AG","BE","JU","VD") alors JourAjoute(sAnnée+"0102","Saint-Berchtold","St. Berchtold",JourferieLocal)
+      		si sRégion = "NE" _et_ DateVersJour(sAnnée+"0101")=_dimanche alors JourAjoute(sAnnée+"0102","Saint-Berchtold","St. Berchtold",JourferieLocal)
+      		SI sRégion DANS ("SZ","TI","UR") ALORS JourAjoute(sAnnée+"0106","Épiphanie","Epiphany",JourFériéLocal)
+      		si sRégion = "NE" alors JourAjoute(sAnnée+"0301","Instauration de la République","Establishment of the Republic",JourFériéLocal)
+      		si sRégion dans ("NW","SZ","UR","VS") alors JourAjoute(sAnnée+"0319","Saint-Joseph","Saint Joseph",JourFériéLocal)
+      		si sRégion = "LU" alors JourAjoute(sAnnée+"0319","Saint-Joseph","Saint Joseph",JourFériéLocal,*,*,Matin)
+      		si sRégion = "TI" alors JourAjoute(sAnnée+"0319","Saint-Joseph","Saint Joseph",JourchomeLocal)
+      		si sRégion = "GL" alors JourAjoute(DateRelative(Premier,Jeudi,Vrai,sAnnée+"0401"),"Fahrtsfest","Fahrtsfest",JourferieLocal)
+      		SI sRégion DANS ("AG","AI","AR","BE","BL","BS","FR","GE","GL","GR","JU","LU","NE","NW","OW","SG","SH","SO","SZ","TG","UR","VD","ZG","ZH") ALORS JourAjoute(DateModifie(dDimanchePâques,-2),"Vendredi saint","Good Friday",JourFériéLocal)
+      		si sRégion dans ("AG","AI","AR","BE","BL","BS","GE","GL","GR","JU","SG","SH","SZ","TG","TI","UR","VD","ZH") alors JourAjoute(DateModifie(dDimanchePâques,1),"Lundi de Pâques","Easter Monday",JourFériélocal)														//Paasmaandag						//Ostermontag
+      		si sRégion dans ("FR","LU","NE","NW","OW","SO","VS","ZG") alors JourAjoute(DateModifie(dDimanchePâques,1),"Lundi de Pâques","Easter Monday",Jourchomélocal)
+      		JourAjoute(DateModifie(dDimanchePâques,39),"Ascension","Ascension Day",JourFériéNational)
+      		SI sRégion DANS ("BL","BS","JU","NE","SH","UR","ZH") alors JourAjoute(sAnnée+"0501","Fête du Travail","Labour Day",JourFériéLocal)
+      		SI sRégion DANS ("GE","TI") alors JourAjoute(sAnnée+"0501","Fête du Travail","Labour Day",JourchomeLocal)
+      		si sRégion dans ("AG","AI","AR","BE","BL","BS","GE","GL","GR","JU","SG","SH","SZ","TG","UR","VD","ZH") alors JourAjoute(DateModifie(dDimanchePâques,50),"Lundi de Pentecôte","Pentecost Monday",JourFériélocal)
+      		si sRégion dans ("FR","LU","NE","NW","OW","SO","TI","VS","ZG") alors JourAjoute(DateModifie(dDimanchePâques,50),"Lundi de Pentecôte","Pentecost Monday",Jourchomélocal)
+      		si sRégion = "JU" alors JourAjoute(sAnnée+"0623","Commémoration du plébiscite","Commemoration of the plebiscite",JourFériéLocal)
+      		SI sRégion DANS ("AG","AI","FR","JU","LU","NW","OW","SO","SZ","UR","VS","ZG") alors JourAjoute(DateModifie(dDimanchePâques,60),"Fête-Dieu","Celebrates God",JourFériéLocal)
+      		SI sRégion DANS ("NE","TI") alors JourAjoute(DateModifie(dDimanchePâques,60),"Fête-Dieu","Celebrates God",JourchoméLocal)	//NE : 2 communes, soit : Le Landeron et Le Cerneux-Péquignot.
+      		SI sRégion DANS ("TI") alors JourAjoute(sAnnée+"0629","Saint-Pierre et Paul","Saint Peter and Paul",JourchoméLocal)
+      		JourAjoute(sAnnée+"0801","Fête nationale","National Day",JourFériéNational)
+      		SI sRégion DANS ("AG","AI","FR","GR","JU","LU","NW","OW","SO","SZ","TI","UR","VS","ZG") ALORS JourAjoute(sAnnée+"0815","Assomption","Assumption of Mary",JourFériélocal)
+      		si sRégion = "GE" alors JourAjoute(daterelative(Premier,Jeudi,Vrai,DateRelative(Premier,Dimanche,vrai,sAnnée+"0901")),"Jeûne genevois","Geneva fasting",JourFériéLocal)
+      		si sRégion = "NE" alors JourAjoute(daterelative(Premier,lundi,Vrai,DateRelative(Troisième,Dimanche,vrai,sAnnée+"0901")),"Lundi du Jeûne fédéral","Federal Fasting Monday",JourchomeLocal)
+      		si sRégion = "VD" alors JourAjoute(daterelative(Premier,lundi,Vrai,DateRelative(Troisième,Dimanche,vrai,sAnnée+"0901")),"Lundi du Jeûne fédéral","Federal Fasting Monday",JourfériéLocal)
+      		si sRégion = "OW" alors JourAjoute(sAnnée+"0925","Fête de Saint-Nicolas-de-Flüe","Feast of Saint-Nicolas-de-Flüe",JourfériéLocal)
+      		SI sRégion DANS ("AI","FR","GL","JU","LU","NW","OW","SG","SO","TI","UR","VS","ZG") alors JourAjoute(sAnnée+"1101","Toussaint","All Saints' Day",JourFériélocal)
+      		SI sRégion DANS ("FR","LU","NW","OW","UR","VS","ZG") alors JourAjoute(sAnnée+"1208","Immaculée Conception","Immaculate Conception",JourFériélocal)
+      		si sRégion = "TI"  ALORS JourAjoute(sAnnée+"1208","Immaculée Conception","Immaculate Conception",JourchomeLocal)
+      		JourAjoute(sAnnée+"1225","Noël","Christmas Day",JourFériéNational)
+      		SI sRégion DANS ("AG","AI","AR","BE","BL","BS","GL","GR","LU","SG","SH","SZ","TG","TI","UR","ZH") alors JourAjoute(sAnnée+"1226","Saint-Étienne","Saint Etienne",JourFériélocal)
+      		SI sRégion DANS ("FR","NW","OW","SO","ZG") alors JourAjoute(sAnnée+"1226","Saint-Étienne","Saint Etienne",Jourchomelocal)
+      		si sRégion = "NE" _et_ DateVersJour(sAnnée+"1225")=_Dimanche alors JourAjoute(sAnnée+"1226","Saint-Étienne","Saint Etienne",JourFériéLocal)
+      		si sRégion = "GE" alors JourAjoute(sAnnée+"1231","Restauration de la République","Restoration of the Republic",JourFériéLocal)
+      FIN
+      TableauTrie(gtabJoursSpéciaux,ttMembre,"dJour")
+      
+      	Procédure Interne JourAjoute(xJour,sNom5,sNom3,coType est un COTypeJourSpécial,dDébut est une date = cGénérique._DateMin,dFin est une date = cGénérique._datemax,ePériode est un EPartieDuJour = TouteLaJournée)
+      	si ((coType[JourFériéNational] et coTypeDeJour[JourFériéLocal]) _ou_ (coType[JourFériéLocal] ET coTypeDeJour[JourFériéLocal]) _ou_ (coType[fete] ET coTypeDeJour[Fête])) alors
+      		jourspécialajoute(sPaysISO3,sRégion,(TypeVar(xJour)=wlDate ? xJour sinon ChaîneVersDate(xJour,"AAAAMMJJ")),sNom5,sNom3,coType,dDébut,dFin,ePériode)
+      	fin
+      	FIN
+      	
+      	Procédure interne DateModifie(dJour,nDuréeEnJour est un entier) : date
+      	renvoyer EntierVersDate(DateVersEntier(dJour)+nDuréeEnJour)
+      	FIN
+     type : 458752
+   -
+     name : JourSpécialAjoute
+     procedure_id : 1325652200261517011
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction permet d'ajouter un jour spécial à une collection de jours spéciaux. 
+      // Syntaxe : JourSpécialAjoute (<sPaysISO3> est chaîne, <sRégion> est chaîne, <dJour> est date, <sNom5> est chaîne, <sNom3> est chaîne, <coType> est COL_Données.COTypeJourSpécial [, <dDébut> est date [, <dFin> est date [, <ePériode> est COL_Données.EPartieDuJour]]])
+      // Paramètres :
+      //	sPaysISO3 (chaîne UNICODE) : Code ISO 3166-1 alpha-3 du pays.
+      //	sRégion (chaîne UNICODE) : Nom de la région (une chaine vide si aucune région)
+      //	dJour (date) : Date du jour spécial
+      //	sNom5 (chaîne UNICODE) : Nom complet du jour spécial en français (nation() = 5).
+      //	sNom3 (chaîne UNICODE) : Nom abrégé du jour spécial en anglais (nation() = 3).
+      //	coType (COL_Données.COTypeJourSpécial) : Type du jour spécial
+      // 	dDébut (date optionnel") : Date de début de validité du jour spécial (par défaut, date minimale possible)
+      // 	dFin (date optionnel) : Date de fin de validité du jour spécial (par défaut, date maximale possible)
+      //	ePériode (COL_Données.EPartieDuJour optionnel) : Période du jour spécial (matin, après-midi, toute la journée), par défaut "toute la journée".
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	JourSpécialAjoute("FRA", "Paris", "20230310", "Jour X", "Day X", coFérié, TouteLaJournée)
+      //
+      PROCEDURE JourSpécialAjoute(sPaysISO3 est une chaine,sRégion est une chaine,dJour est une date,sNom5 est une chaine,sNom3 est une chaine,coType est un COTypeJourSpécial,dDébut est une date = cGénérique._DateMin,dFin est une date = cGénérique._datemax,ePériode est un EPartieDuJour = TouteLaJournée)
+      SI dDébut<=dJour<=dFin _et_ (TableauCherche(gtabJoursSpéciaux,tcLinéaire,"sPaysISO3;sRégion;dJour",sPaysISO3,sRégion,dJour)<1 et TableauCherche(gtabJoursSpéciaux,tcLinéaire,"sPaysISO3;dJour",sPaysISO3,dJour)<1)  ALORS	//dédoublonnage
+      	stUnJourSpécial est un STJourSpécial
+      	stUnJourSpécial.sPaysISO3	= sPaysISO3
+      	stUnJourSpécial.sRégion		= sRégion
+      	stUnJourSpécial.dJour		= dJour
+      	stUnJourSpécial.sNom5		= sNom5
+      	stUnJourSpécial.sNom3		= sNom3
+      	stUnJourSpécial.coType		= coType
+      	stUnJourSpécial.ePériode	= ePériode
+      	TableauAjoute(gtabJoursSpéciaux,stUnJourSpécial)
+      FIN
+     type : 458752
+   -
+     name : LocalisationSelonAdresseIP
+     procedure_id : 1353786194352116837
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction permet de récupérer les informations de localisation associées à l'adresse IP publique de l'utilisateur en utilisant l'API IPStack. Elle utilise une clé d'API (sCléAPI) fournie par IPStack pour effectuer la requête et obtenir les données de localisation au format JSON.
+      // Syntaxe : [ <Résultat> = ] LocalisationSelonAdresseIP (sCléAPI est chaîne)
+      // Paramètres :
+      // 	sCléAPI (chaîne) : Clé d'API fournie par IPStack. Cette clé est obligatoire pour utiliser l'API IPStack. Si la clé n'est pas fournie, la fonction génère une erreur.
+      // Valeur de retour : chaîne : La fonction renvoie une chaîne représentant les données de localisation au format JSON. En cas d'erreur ou si la clé d'API n'est pas fournie, la fonction renvoie une chaîne vide.
+      // Exemple :
+      //	sCléAPI est une chaîne = "votre_clé_api"
+      //	sInfosLocalisation = LocalisationSelonAdresseIP(sCléAPI)
+      //	SI sInfosLocalisation <> "" ALORS
+      //		// Traitement des données de localisation (parsing du JSON, etc.)
+      // 	FIN	
+      
+      //
+      //exemple de réponse
+      //{
+      //  "ip": "134.201.250.155",
+      //  "type": "ipv4",
+      //  "continent_code": "NA",
+      //  "continent_name": "North America",
+      //  "country_code": "US",
+      //  "country_name": "United States",
+      //  "region_code": "CA",
+      //  "region_name": "California",
+      //  "city": "Los Angeles",
+      //  "zip": "90013",
+      //  "latitude": 34.0453,
+      //  "longitude": -118.2413,
+      //  "location": {
+      //    "geoname_id": 5368361,
+      //    "capital": "Washington D.C.",
+      //    "languages": [
+      //        {
+      //          "code": "en",
+      //          "name": "English",
+      //          "native": "English"
+      //        }
+      //    ],
+      //    "country_flag": "https://assets.ipstack.com/images/assets/flags_svg/us.svg",
+      //    "country_flag_emoji": "🇺🇸",
+      //    "country_flag_emoji_unicode": "U+1F1FA U+1F1F8",
+      //    "calling_code": "1",
+      //    "is_eu": false
+      //  },
+      //  "time_zone": {
+      //    "id": "America/Los_Angeles",
+      //    "current_time": "2018-03-29T07:35:08-07:00",
+      //    "gmt_offset": -25200,
+      //    "code": "PDT",
+      //    "is_daylight_saving": true
+      //  },
+      //  "currency": {
+      //    "code": "USD",
+      //    "name": "US Dollar",
+      //    "plural": "US dollars",
+      //    "symbol": "$",
+      //    "symbol_native": "$"
+      //  },
+      //  "connection": {
+      //    "asn": 25876,
+      //    "isp": "Los Angeles Department of Water & Power"
+      //  }
+      //}
+      PROCEDURE LocalisationSelonAdresseIP(sCléAPI est une chaine) : chaine
+      si sCléAPI~="" alors ErreurDéclenche(ErreurDonnées,<§@12092cce1bd42f80001c§>);renvoyer ""
+      sIPPublique 	est une chaine = AdresseIPpublique()
+      sLocalisation	est une chaine
+      SI sIPPublique>"" _ET_ HTTPRequête("http://api.ipstack.com/"+sIPPublique+"?access_key="+sCléAPI+"&output=json") ALORS sLocalisation=HTTPDonneRésultat(httpRésultat)
+      RENVOYER sLocalisation
+     type : 458752
+   -
+     name : SigneZodiaqueOccidental
+     procedure_id : 1600892441144261376
+     type_code : 15
+     code : |1-
+      // Résumé : Détermine le signe du zodiaque occidental associé à une date d'anniversaire donnée.
+      // Syntaxe : [ <Résultat> = ] SigneZodiaqueOccidental (<dAnniversaire> est date)
+      // Paramètres :
+      //	dAnniversaire (date) : Date d'anniversaire pour laquelle on veut déterminer le signe du zodiaque.
+      // Valeur de retour : COL_Données.ESigneZodiaqueOccidental : correspond au signe du zodiaque occidental associé à la date d'anniversaire fournie.
+      // Exemple :
+      //	SigneZodiaqueOccidental("20091115")
+      //	donnera comme résultat ESigneZodiaqueOccidental.SigneZodiaqueOccidentalScorpion
+      //
+      PROCEDURE SigneZodiaqueOccidental(dAnniversaire est une date) : ESigneZodiaqueOccidental
+      //ref : https://fr.wikipedia.org/wiki/Signe_du_zodiaque
+      sMoisJour est une chaine = milieu(dAnniversaire,5)
+      selon Vrai
+      	cas "0321"<=sMoisJour<="0420"	: renvoyer SigneZodiaqueOccidentalBélier
+      	cas "0421"<=sMoisJour<="0520"	: renvoyer SigneZodiaqueOccidentalTaureau
+      	cas "0521"<=sMoisJour<="0621"	: renvoyer SigneZodiaqueOccidentalGémeaux
+      	cas "0622"<=sMoisJour<="0722"	: renvoyer SigneZodiaqueOccidentalCancer
+      	cas "0723"<=sMoisJour<="0822"	: renvoyer SigneZodiaqueOccidentalLion
+      	cas "0923"<=sMoisJour<="0922"	: renvoyer SigneZodiaqueOccidentalVierge
+      	cas "0923"<=sMoisJour<="1022"	: renvoyer SigneZodiaqueOccidentalBalance
+      	cas "1023"<=sMoisJour<="1122"	: renvoyer SigneZodiaqueOccidentalScorpion
+      	cas "1123"<=sMoisJour<="1221"	: renvoyer SigneZodiaqueOccidentalSagittaire
+      	cas "1222"<=sMoisJour<="1231"	: renvoyer SigneZodiaqueOccidentalCapricorne
+      	cas "0101"<=sMoisJour<="0120"	: renvoyer SigneZodiaqueOccidentalCapricorne
+      	cas "0121"<=sMoisJour<="0219"	: renvoyer SigneZodiaqueOccidentalVerseau
+      	cas "0220"<=sMoisJour<="0320"	: renvoyer SigneZodiaqueOccidentalPoissons
+      	autres cas						: renvoyer SigneZodiaqueOccidentaInconnu
+      FIN
+     type : 458752
+   -
+     name : SigneZodiaqueChinois
+     procedure_id : 1600930868339048457
+     type_code : 15
+     code : |1-
+      // Résumé : Cette méthode permet de déterminer le signe du zodiaque chinois en fonction de la date d'anniversaire fournie.
+      // Syntaxe : [ <Résultat> = ] SigneZodiaqueChinois (<dAnniversaire> est date)
+      // Paramètres :
+      //	dAnniversaire (date) : Date de naissance dont on veut connaître le signe du zodiaque chinois.
+      // Valeur de retour : COL_Données.ESigneZodiaqueChinois : représente le signe du zodiaque chinois correspondant à la date d'anniversaire.
+      // Exemple :
+      //	dAnniversaire est une date = "19900605"
+      //	eSigneChinois est un ESigneZodiaqueChinois = SigneZodiaqueChinois(dAnniversaire)
+      //	eSigneChinois contiendra SigneZodiaqueChinoisCheval
+      PROCEDURE SigneZodiaqueChinois(dAnniversaire est une date) : ESigneZodiaqueChinois
+      SigneZodiaquechinoisCharge()
+      pour tout stUnePériode de TableauUnion(gtabRatMétal,gtabRatEau,gtabRatBois,gtabRatFeu,gtabRatTerre)
+      	si stUnePériode.ddébut<=dAnniversaire<=stUnePériode.dfin alors renvoyer SigneZodiaqueChinoisRat
+      FIN
+      POUR TOUT stUnePériode de TableauUnion(gtabBuffleMétal,gtabBuffleEau,gtabBuffleBois,gtabBuffleFeu,gtabBuffleTerre)
+      	SI stUnePériode.ddébut<=dAnniversaire<=stUnePériode.dfin ALORS RENVOYER SigneZodiaqueChinoisBuffle
+      FIN
+      POUR TOUT stUnePériode de TableauUnion(gtabTigreMétal,gtabTigreEau,gtabTigreBois,gtabTigreFeu,gtabTigreTerre)
+      	SI stUnePériode.ddébut<=dAnniversaire<=stUnePériode.dfin ALORS RENVOYER SigneZodiaqueChinoisTigre
+      FIN
+      POUR TOUT stUnePériode de TableauUnion(gtabLièvreMétal,gtabLièvreEau,gtabLièvreBois,gtabLièvreFeu,gtabLièvreTerre)
+      	SI stUnePériode.ddébut<=dAnniversaire<=stUnePériode.dfin ALORS RENVOYER SigneZodiaqueChinoislievre
+      FIN
+      POUR TOUT stUnePériode de TableauUnion(gtabDragonMétal,gtabDragonEau,gtabDragonBois,gtabDragonFeu,gtabDragonTerre)
+      	SI stUnePériode.ddébut<=dAnniversaire<=stUnePériode.dfin ALORS RENVOYER SigneZodiaqueChinoisDragon
+      FIN
+      pour tout stUnePériode de TableauUnion(gtabSerpentMétal,gtabSerpentEau,gtabSerpentBois,gtabSerpentFeu,gtabSerpentTerre)
+      	si stUnePériode.ddébut<=dAnniversaire<=stUnePériode.dfin alors renvoyer SigneZodiaqueChinoisSerpent
+      FIN
+      POUR TOUT stUnePériode de TableauUnion(gtabChevalMétal,gtabChevalEau,gtabChevalBois,gtabChevalFeu,gtabChevalTerre)
+      	SI stUnePériode.ddébut<=dAnniversaire<=stUnePériode.dfin ALORS RENVOYER SigneZodiaqueChinoisCheval
+      FIN
+      POUR TOUT stUnePériode de TableauUnion(gtabChèvreMétal,gtabChèvreEau,gtabChèvreBois,gtabChèvreFeu,gtabChèvreTerre)
+      	SI stUnePériode.ddébut<=dAnniversaire<=stUnePériode.dfin ALORS RENVOYER SigneZodiaqueChinoisChèvre
+      FIN
+      POUR TOUT stUnePériode de TableauUnion(gtabSingeMétal,gtabSingeEau,gtabSingeBois,gtabSingeFeu,gtabSingeTerre)
+      	SI stUnePériode.ddébut<=dAnniversaire<=stUnePériode.dfin ALORS RENVOYER SigneZodiaqueChinoissinge
+      FIN
+      POUR TOUT stUnePériode de TableauUnion(gtabCoqMétal,gtabCoqEau,gtabCoqBois,gtabCoqFeu,gtabCoqTerre)
+      	SI stUnePériode.ddébut<=dAnniversaire<=stUnePériode.dfin ALORS RENVOYER SigneZodiaqueChinoisCoq
+      FIN
+      POUR TOUT stUnePériode de TableauUnion(gtabChienMétal,gtabChienEau,gtabChienBois,gtabChienFeu,gtabChienTerre)
+      	SI stUnePériode.ddébut<=dAnniversaire<=stUnePériode.dfin ALORS RENVOYER SigneZodiaqueChinoisChien
+      FIN
+      POUR TOUT stUnePériode de TableauUnion(gtabCochonMétal,gtabCochonEau,gtabCochonBois,gtabCochonFeu,gtabCochonTerre)
+      	SI stUnePériode.ddébut<=dAnniversaire<=stUnePériode.dfin ALORS RENVOYER SigneZodiaqueChinoisCochon
+      FIN
+      renvoyer SigneZodiaqueChinoisInconnu
+     type : 458752
+   -
+     name : SigneZodiaqueChinoisCharge
+     procedure_id : 1600988505235210972
+     type_code : 15
+     code : |1-
+      // Résumé : Procédure privée qui charge les dates des années zodiacales chinoises
+      PROCEDURE Privé SigneZodiaqueChinoisCharge()
+      si gtabRatMétal..Occurrence>0 alors retour
+      gtabRatMétal 	= [["19000131","19010218"],["19600128","19310214"],["20200125","20210211"]]
+      gtabRatEau 		= [["19120218","19130205"],["19720215","19730202"]]
+      gtabRatBois 	= [["19240205","19250124"],["19840202","19850219"]]
+      gtabRatFeu 		= [["19360124","19370210"],["19960219","19970206"]]
+      gtabRatTerre	= [["19480210","19490128"],["20080207","20090125"]]
+                      
+      gtabBuffleMétal = [["19010219","19020207"],["19610215","19620204"],["20210212","20220131"]]
+      gtabBuffleEau 	= [["19130206","19140125"],["19730203","19740122"]]
+      gtabBuffleBois 	= [["19250125","19260212"],["19850220","19860208"]]
+      gtabBuffleFeu 	= [["19370211","19380130"],["19970207","19980127"]]
+      gtabBuffleTerre	= [["19490129","19500216"],["20090126","20100213"]]
+                      
+      gtabTigreEau 	= [["19020208","19030128"],["19620205","19630124"],["20220201","20230120"]]
+      gtabTigreBois 	= [["19140126","19150213"],["19740123","19750210"]]
+      gtabTigreFeu 	= [["19260213","19270201"],["19860209","19870128"]]
+      gtabTigreTerre 	= [["19380131","19390218"],["19980128","19990215"]]
+      gtabTigreMétal	= [["19500217","19510205"],["20100214","20110202"]]
+                      
+      gtabLièvreEau 	= [["19030129","19040215"],["19630125","19640212"],["20230121","20240209"]]
+      gtabLièvreBois 	= [["19150214","19160202"],["19750211","19760130"]]
+      gtabLièvreFeu 	= [["19270202","19280122"],["19870129","19880216"]]
+      gtabLièvreTerre = [["19390219","19400207"],["19990216","20000204"]]
+      gtabLièvreMétal	= [["19510206","19520126"],["20110203","20120122"]]
+                      
+      gtabDragonBois 	= [["19040216","19050203"],["19640213","19650201"],["20240210","20250128"]]
+      gtabDragonFeu 	= [["19160203","19170122"],["19760131","19770217"]]
+      gtabDragonTerre = [["19280123","19290209"],["19880217","19890205"]]
+      gtabDragonMétal = [["19400208","19410126"],["20000205","20010123"]]
+      gtabDragonEau	= [["19520127","19530213"],["20120123","20130209"]]
+                      
+      gtabSerpentBois = [["19050204","19060124"],["19650202","19660120"],["20250129","20260216"]]
+      gtabSerpentFeu 	= [["20170123","19180210"],["19770218","19780206"]]
+      gtabSerpentTerre= [["19290210","19300129"],["19890206","19900126"]]
+      gtabSerpentMétal= [["19410127","19420214"],["20010124","20020211"]]
+      gtabSerpentEau	= [["19530214","19540202"],["20130210","20140130"]]
+                      
+      gtabChevalFeu 	= [["19060125","19070212"],["19660121","19670208"],["20260217","20270205"]]
+      gtabChevalTerre = [["19180211","19190131"],["19780207","19790127"]]
+      gtabChevalMétal = [["19300130","19310216"],["19900127","19910214"]]
+      gtabChevalEau 	= [["19420215","19430204"],["20020212","20030131"]]
+      gtabChevalBois	= [["19540203","19550123"],["20140131","20150218"]]
+                      
+      gtabChèvreFeu 	= [["19070213","19080201"],["19670209","19680129"],["20270206","20280125"]]
+      gtabChèvreTerre = [["19190201","19200219"],["19790128","19800215"]]
+      gtabChèvreMétal = [["19310217","19320205"],["19910215","19920203"]]
+      gtabChèvreEau 	= [["19430205","19440124"],["20030201","20040121"]]
+      gtabChèvreBois	= [["19550124","19560211"],["20150219","20160207"]]
+      
+      gtabSingeTerre	= [["19080202","19090121"],["19680130","19690216"],["20280126","20290212"]]
+      gtabSingeMétal 	= [["19200220","19210207"],["19800216","19810204"]]
+      gtabSingeEau 	= [["19320206","19330125"],["19920204","19930122"]]
+      gtabSingeBois 	= [["19440125","19450212"],["20040122","20050208"]]
+      gtabSingeFeu	= [["19560212","19570130"],["20160208","20170127"]]
+                      
+      gtabCoqTerre	= [["19090122","19100209"],["19690217","19700205"],["20290213","20300202"]]
+      gtabCoqMétal 	= [["19210208","19220127"],["19810205","19820124"]]
+      gtabCoqEau 		= [["19330126","19340213"],["19930123","19940209"]]
+      gtabCoqBois 	= [["19450213","19460201"],["20050209","20060128"]]
+      gtabCoqFeu		= [["19570131","19580217"],["20170128","20180215"]]
+                      
+      gtabChienMétal	= [["19100210","19110129"],["19700206","19710126"],["20300203","20310122"]]
+      gtabChienEau 	= [["19220128","19230215"],["19820125","19830212"]]
+      gtabChienBois 	= [["19340214","19350203"],["19940210","19950130"]]
+      gtabChienFeu 	= [["19460202","19470121"],["20060129","20070217"]]
+      gtabChienTerre	= [["19580218","19590207"],["20180216","20190204"]]
+                      
+      gtabCochonMétal	= [["19110130","19120217"],["19710127","19720214"],["20310123","20230210"]]
+      gtabCochonEau 	= [["19230216","19240204"],["19830213","19840201"]]
+      gtabCochonBois 	= [["19350204","19360123"],["19950131","19960218"]]
+      gtabCochonFeu 	= [["19470122","19490209"],["20070218","20080206"]]
+      gtabCochonTerre	= [["19590208","19600127"],["20190205","20200124"]]
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x12092cce1bd42f80
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le code1 de la ligne %1 n'a pas 2 caractères
+      en-GB : Code1 of line %1 does not have 2 characters
+      fr-CA : Le code1 de la ligne %1 n'a pas 2 caractères
+      en-US : Code1 of line %1 does not have 2 characters
+     index : 0
+   -
+     text :
+      fr-FR : Le code2T de la ligne %1 n'a pas 3 caractères
+      en-GB : The code2T of line %1 does not have 3 characters
+      fr-CA : Le code2T de la ligne %1 n'a pas 3 caractères
+      en-US : The code2T of line %1 does not have 3 characters
+     index : 1
+   -
+     text :
+      fr-FR : Le code2B de la ligne %1 n'a pas 3 caractères
+      en-GB : Code2B of line %1 does not have 3 characters
+      fr-CA : Le code2B de la ligne %1 n'a pas 3 caractères
+      en-US : Code2B of line %1 does not have 3 characters
+     index : 2
+   -
+     text :
+      fr-FR : Le code3 de la ligne %1 n'a pas 3 caractères
+      en-GB : Code3 of line %1 does not have 3 characters
+      fr-CA : Le code3 de la ligne %1 n'a pas 3 caractères
+      en-US : Code3 of line %1 does not have 3 characters
+     index : 3
+   -
+     text :
+      fr-FR : Doublon détecté sur le code3 de la ligne %1
+      en-GB : Duplicate detected on code3 of line %1
+      fr-CA : Doublon détecté sur le code3 de la ligne %1
+      en-US : Duplicate detected on code3 of line %1
+     index : 4
+   -
+     text :
+      fr-FR : Doublon détecté sur le code2B de la ligne %1
+      en-GB : Duplicate detected on code2B of line %1
+      fr-CA : Doublon détecté sur le code2B de la ligne %1
+      en-US : Duplicate detected on code2B of line %1
+     index : 5
+   -
+     text :
+      fr-FR : Doublon détecté sur le code2T de la ligne %1
+      en-GB : Duplicate detected on code2T of line %1
+      fr-CA : Doublon détecté sur le code2T de la ligne %1
+      en-US : Duplicate detected on code2T of line %1
+     index : 6
+   -
+     text :
+      fr-FR : Le fichier des langues n'existe pas
+      en-GB : The language file does not exist
+      fr-CA : Le fichier des langues n'existe pas
+      en-US : The language file does not exist
+     index : 7
+   -
+     text :
+      fr-FR : Le nom du fichier des langues est obligatoire
+      en-GB : The name of the language file is mandatory
+      fr-CA : Le nom du fichier des langues est obligatoire
+      en-US : The name of the language file is mandatory
+     index : 8
+   -
+     text :
+      fr-FR : Le fichier des langues est vide
+      en-GB : The language file is empty
+      fr-CA : Le fichier des langues est vide
+      en-US : The language file is empty
+     index : 9
+   -
+     text :
+      fr-FR : Le fichier des pays est vide
+      en-GB : The country file is empty
+      fr-CA : Le fichier des pays est vide
+      en-US : The country file is empty
+     index : 10
+   -
+     text :
+      fr-FR : Le fichier des pays n'existe pas
+      en-GB : Country file does not exist
+      fr-CA : Le fichier des pays n'existe pas
+      en-US : Country file does not exist
+     index : 11
+   -
+     text :
+      fr-FR : Le fichier des pays est obligatoire
+      en-GB : The country file is mandatory
+      fr-CA : Le fichier des pays est obligatoire
+      en-US : The country file is mandatory
+     index : 12
+   -
+     text :
+      fr-FR : Le code2 de la ligne %1 n'a pas 2 caractères
+      en-GB : Code2 of line %1 does not have 2 characters
+      fr-CA : Le code2 de la ligne %1 n'a pas 2 caractères
+      en-US : Code2 of line %1 does not have 2 characters
+     index : 13
+   -
+     text :
+      fr-FR : Le code3 de la ligne %1 n'a pas 3 caractères
+      en-GB : Code3 of line %1 does not have 3 characters
+      fr-CA : Le code3 de la ligne %1 n'a pas 3 caractères
+      en-US : Code3 of line %1 does not have 3 characters
+     index : 14
+   -
+     text :
+      fr-FR : Le numéro du pays est à zéro
+      en-GB : The country number is zero
+      fr-CA : Le numéro du pays est à zéro
+      en-US : The country number is zero
+     index : 15
+   -
+     text :
+      fr-FR : Le nom en anglais est obligatoire
+      en-GB : Name in English is mandatory
+      fr-CA : Le nom en anglais est obligatoire
+      en-US : Name in English is mandatory
+     index : 16
+   -
+     text :
+      fr-FR : Le nom en français est obligatoire
+      en-GB : The name in French is mandatory
+      fr-CA : Le nom en français est obligatoire
+      en-US : The name in French is mandatory
+     index : 17
+   -
+     text :
+      fr-FR : Doublon détecté sur le Code de la ligne %1
+      en-GB : Duplicate detected on Code of line %1
+      fr-CA : Doublon détecté sur le Code de la ligne %1
+      en-US : Duplicate detected on Code of line %1
+     index : 18
+   -
+     text :
+      fr-FR : Doublon détecté sur le nom en anglais de la ligne %1
+      en-GB : Duplicate detected on English name of line %1
+      fr-CA : Doublon détecté sur le nom en anglais de la ligne %1
+      en-US : Duplicate detected on English name of line %1
+     index : 19
+   -
+     text :
+      fr-FR : Doublon détecté sur le nom en français de la ligne %1
+      en-GB : Duplicate detected on French name of line %1
+      fr-CA : Doublon détecté sur le nom en français de la ligne %1
+      en-US : Duplicate detected on French name of line %1
+     index : 20
+   -
+     text :
+      fr-FR : "La date de référence n'est pas valide : "
+      en-GB : "Reference date is invalid : "
+      fr-CA : "La date de référence n'est pas valide : "
+      en-US : "Reference date is invalid : "
+     index : 21
+   -
+     text :
+      fr-FR : Le chemin du fichier media est obligatoire
+      en-GB : Media file path is mandatory
+      fr-CA : Le chemin du fichier media est obligatoire
+      en-US : Media file path is mandatory
+     index : 22
+   -
+     text :
+      fr-FR : Le fichier media n'a pas été trouvé
+      en-GB : The media file was not found
+      fr-CA : Le fichier media n'a pas été trouvé
+      en-US : The media file was not found
+     index : 23
+   -
+     text :
+      fr-FR : Le chemin de la dll MediaInfo est obligatoire
+      en-GB : MediaInfo dll path is mandatory
+      fr-CA : Le chemin de la dll MediaInfo est obligatoire
+      en-US : MediaInfo dll path is mandatory
+     index : 24
+   -
+     text :
+      fr-FR : MediaInfo n'a pas été trouvé
+      en-GB : MediaInfo was not found
+      fr-CA : MediaInfo n'a pas été trouvé
+      en-US : MediaInfo was not found
+     index : 25
+   -
+     text :
+      fr-FR : Erreur durant l'ouverture du fichier media
+      en-GB : Error opening media file
+      fr-CA : Erreur durant l'ouverture du fichier media
+      en-US : Error opening media file
+     index : 26
+   -
+     text :
+      fr-FR : Erreur durant la récupération des attributs
+      en-GB : Error while retrieving attributes
+      fr-CA : Erreur durant la récupération des attributs
+      en-US : Error while retrieving attributes
+     index : 27
+   -
+     text :
+      fr-FR : La clé API de API Layer est obligatoire
+      en-GB : API Layer API key is required
+      fr-CA : La clé API de API Layer est obligatoire
+      en-US : API Layer API key is required
+     index : 28
+   -
+     text :
+      fr-FR : Inconnu
+      en-GB : Unknown
+      fr-CA : Inconnu
+      en-US : Inconnu
+     index : 29
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,1777 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cFichierMP3
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12c0fb2f2283c2d3
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet de lire les informations du fichier MP3 (débit, version, canaux, ...)  et ses tags (titre, artiste, album, ...). Se base sur l'utilisation de dll externe pour fonctionner.
+      //Cette version ne fait que la lecture des tags, pas l'écriture dans le fichier.
+      STID3Tag est une structure
+      	sCode					est une chaine
+      	sNom5					est une chaîne
+      	sNom3					est une chaîne
+      	sBaliseAudioGenieV1		est une chaîne ansi
+      	sBaliseAudioGenieV2		est une chaine
+      	sBaliseMediaInfo 		est une chaine
+      	bModifié				est un booleen
+      fin
+      STID3Genre est une structure
+      	nNum					est un entier
+      	sNom5					est une chaîne
+      	sNom3					est une chaine
+      	bPourID3V1				est un booleen
+      fin
+      COMP3Attribut est une combinaison						//(inspiré des balises du programme MP3Tag)
+      	ACOUSTID_FINGERPRINT
+      	ACOUSTID_ID
+      	ALBUM
+      	ALBUMARTIST
+      	ALBUMARTISTSORT
+      	ALBUMSORT
+      	ARTISTS
+      	ARTISTSORT
+      	ARTWORK
+      	AUDIOENCRYPTION
+      	AUDIOSEEKPOINTINDEX
+      	BPM
+      	CDID
+      	CHAPTERSTARTTIME
+      	CHAPTERTOC
+      	COMMENT
+      	COMMERCIAL
+      	COMPILATION
+      	COMPOSERS
+      	COMPOSERSORT
+      	CONDUCTOR
+      	CONTENTGROUP
+      	COPYRIGHT
+      	COPYRIGHTMESSAGE
+      	DIRECTOR
+      	DISCNUMBER
+      	DURATION
+      	ENCAPSULATEOBJECT
+      	ENCODEDBY
+      	ENCODERSETTINGS
+      	ENCODINGTIME
+      	ENCRYPTIONMETHOD
+      	EQUALIZATION
+      	EQUALIZATION2
+      	EVENTTIMINGCODE
+      	FILEOWNER
+      	FILETYPE
+      	GENRE
+      	GENRES
+      	GENREID
+      	GROUPIDREG
+      	GROUPING
+      	INITIALKEY
+      	INVOLVEDPEOPLE
+      	ISRC
+      	LANGUAGE
+      	LENGTH
+      	LINKEDINFO
+      	LOCLOOKUPTABLE
+      	LYRICISTS
+      	MEDIATYPE
+      	MIXARTIST
+      	MOOD
+      	MOVEMENT
+      	MOVEMENTNAME
+      	MP3INFO
+      	MUSICBRAINZ_ALBUMARTISTID
+      	MUSICBRAINZ_ALBUMID
+      	MUSICBRAINZ_ALBUMRELEASECOUNTRY
+      	MUSICBRAINZ_ALBUMSTATUS
+      	MUSICBRAINZ_ALBUMTYPE
+      	MUSICBRAINZ_ARTISTID
+      	MUSICBRAINZ_DISCID
+      	MUSICBRAINZ_ORIGINALALBUMID
+      	MUSICBRAINZ_ORIGINALARTISTID
+      	MUSICBRAINZ_RELEASEGROUPID
+      	MUSICBRAINZ_RELEASETRACKID
+      	MUSICBRAINZ_TRACKID
+      	MUSICBRAINZ_TRMID
+      	MUSICBRAINZ_WORKID
+      	NETRADIOOWNER
+      	NETRADIOSTATION
+      	ORIGALBUM
+      	ORIGARTISTS
+      	ORIGFILENAME
+      	ORIGLYRICISTS
+      	ORIGRELEASEDATE
+      	ORIGYEAR
+      	OWNERSHIP
+      	PLAYCOUNTER
+      	PLAYLISTDELAY
+      	PODCAST
+      	PODCASTCATEGORY
+      	PODCASTDESC
+      	PODCASTID
+      	PODCASTKEYWORDS
+      	PODCASTURL
+      	POPULARIMETER
+      	POSITIONSYNC
+      	PUBLISHER
+      //	PRIVATEFRAME
+      	RECOMMANDEDBUFFER
+      	RECORDINGDATE
+      	RECORDINGDATES
+      	RELEASETIME
+      	REVERB
+      	SEEKOFFSET
+      	SETSUBTITLE
+      	SIZE
+      	SUBTITLE
+      	SYNCEDLYRICS
+      	SYNCTEMPO
+      	TAGGINGTIME
+      	TERMOFUSE
+      	TIME
+      	TITLE
+      	TITLESORT
+      	TRACK
+      	UNIQUEFILEID
+      	UNSYNCEDLYRICS
+      	VOLUMEAJUST
+      	VOLUMEAJUST2
+      	WORK
+      	WWW
+      	WWWARTIST
+      	WWWAUDIOFILE
+      	WWWAUDIOSOURCE
+      	WWWCOMMERCIALINFO
+      	WWWCOPYRIGHT
+      	WWWPAYMENT
+      	WWWPUBLISHER
+      	WWWRADIOPAGE
+      	YEAR
+      	TXCUSTOM
+      	WXCUSTOM
+      fin
+      
+      cFichierMP3 est une Classe
+      	hérite de cMedia
+      PUBLIC constant
+      	m_taValeurs					est un tableau associatif de chaine	//les tags et leur valeurs
+      global public constant
+      	mg_tabMP3Genre				est un tableau de STID3Genre		//liste des genres musicaux reconnus dans IDV3
+      	mg_tabMP3Tag				est un tableau de STID3Tag			//liste des tags reconnus dans IDV3
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1351356068076765907
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise l'objet cFichierMP3 en appelant le constructeur de la classe parente cMedia. De plus, si les tableaux statiques mg_tabMP3Genre et mg_tabMP3Tag n'ont pas encore été chargés, la méthode charge ces informations à partir de données statiques.
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	voir https://wlplus.org/betula/audio-video/
+      //
+      PROCEDURE Constructeur()
+      cMedia.constructeur()
+      si mg_tabMP3Tag..occurrence=0 alors ChargeTags()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1351356068076831443
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Ouvre
+     procedure_id : 1351356068076896979
+     type_code : 12
+     code : |1-
+      // Résumé : Ouvre un fichier MP3 spécifié par le chemin sCheminFichier et lire les balises ID3 associées. Si l'ouverture du fichier audio réussit, les informations des balises spécifiées dans le paramètre coLireAttributs seront lues et stockées dans le tableau associatif m_taValeurs. Si aucun attribut spécifique n'est fourni, toutes les balises disponibles seront lues.
+      // Syntaxe : [ <Résultat> = ] Ouvre (<sCheminFichier> est chaîne [, <coLireAttributs> est cFichierMP3.COMP3Attribut])
+      // Paramètres :
+      //	sCheminFichier (chaîne UNICODE) : Le chemin complet du fichier MP3 à ouvrir.
+      // 	coLireAttributs (cFichierMP3.COMP3Attribut optionnel) : Un ensemble d'attributs à lire. Si ce paramètre est laissé par défaut, toutes les balises ID3 seront lues.
+      // Valeur de retour : booléen : Vrai si l'ouverture du fichier MP3 réussit, faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Ouvre(sCheminFichier est une chaine,coLireAttributs est un COMP3Attribut = null) : booleen
+      m_pclErreur.Raz()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCheminFichier)
+      
+      raz()
+      si ancetre.ouvreAudio(sCheminFichier) ALORS
+      	POUR TOUT stUnTag de cfichiermp3.mg_tabMP3Tag
+      		si coLireAttributs=null _ou_ coLireAttributs[stUnTag.sCode] alors m_taValeurs[stUnTag.sCode]=LireBalise(stUnTag.sCode)
+      	FIN
+      	renvoyer vrai
+      sinon
+      	renvoyer faux
+      FIN
+     type : 458752
+   -
+     name : LitAttributV2
+     procedure_id : 1351356068076962515
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée faisant la lecture des tags IDV2. Utilisée dans LireBalise.
+      PROCEDURE privé LitAttributV2(sAttribut est une chaine) : chaîne
+      m_pclErreur.Raz()
+      sTemp 				est une chaine sur 128
+      nInstanceProcédure1 est un entier système
+      nInstanceProcédure2 est un entier système
+      sNom				est une chaine = extraitchaine(sAttribut,1,":")
+      sTag				est une chaine = (position(sAttribut,":") ? extraitchaine(sAttribut,1,":") sinon "")
+      selon sNom
+      	cas "TXXX"
+      		sRes,sDesc,sVal	sont des chaines
+      		nIndice			est un entier
+      		si pas m_taBalisesLues["TXXX"]..existe alors
+      			SI mg_nInstanceAudioGenie>0 ALORS 
+      				nInstanceProcédure1=API("KERNEL32", "GetProcAddress", mg_nInstanceAudioGenie, "ID3V2GetUserTextDescriptionW")
+      				nInstanceProcédure2=API("KERNEL32", "GetProcAddress", mg_nInstanceAudioGenie, "ID3V2GetUserTextW") 
+      				si nInstanceProcédure1>0 _et_ nInstanceProcédure2>0 alors 
+      					nIndice=1;sDesc=ChaîneRécupère(API(nInstanceProcédure1,nIndice),crAdresseUNICODE);sVal=ChaîneRécupère(API(nInstanceProcédure2,nIndice),crAdresseUNICODE)
+      					tantque sDesc>""
+      						sRes+=[rc]+sDesc+tab+sVal
+      						nIndice++;sDesc=ChaîneRécupère(API(nInstanceProcédure1,nIndice),crAdresseUNICODE);sVal=ChaîneRécupère(API(nInstanceProcédure2,nIndice),crAdresseUNICODE)
+      					FIN
+      					m_taBalisesLues["TXXX"]=sRes
+      				sinon
+      					dbgAssertion(Vrai,ChaîneConstruit("Attribut V2 %1 illisible",sAttribut))
+      				fin
+      			SINON 
+      				m_pclErreur.AjouteErreur(<§$0000§>)	
+      			FIN
+      		fin
+      		si sTag>"" alors
+      			//si un tag particulier est demandé, on envoie juste la valeur et on l'enlève de la balise générale TXXX
+      			sRes="";sDesc=""
+      			pour toute chaine sLigne de m_taBalisesLues["TXXX"] separee par rc
+      				si extraitchaine(sLigne,1)~=sTag alors sDesc=ExtraitChaîne(sLigne,2) sinon sRes+=[rc]+sLigne
+      			FIN
+      			m_taBalisesLues["TXXX"]=sRes
+      			renvoyer sDesc
+      		FIN
+      	cas "WXXX"
+      	AUTRE CAS
+      		nIDAttribut est un entier = ChaineVersHexa(sNom)
+      		ZoneMémoireZéro(&sTemp, Dimension(sTemp))
+      		QUAND EXCEPTION DANS
+      			SI mg_nInstanceAudioGenie>0 ALORS nInstanceProcédure1=API("KERNEL32", "GetProcAddress", mg_nInstanceAudioGenie, "ID3V2GetTextFrameW") SINON m_pclErreur.AjouteErreur(<§$0000§>)
+      			SI nInstanceProcédure1>0 ALORS Transfer(&sTemp, API(nInstanceProcédure1,nIDAttribut), Dimension(sTemp))
+      		FAIRE
+      			dbgAssertion(Vrai,ChaîneConstruit("Attribut V2 %1 illisible",sAttribut))
+      		FIN
+      FIN
+      RENVOYER sTemp
+     type : 458752
+   -
+     name : LitAttributV1
+     procedure_id : 1351356068077028051
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée faisant la lecture des tags IDV1. Utilisée dans LireBalise.
+      PROCEDURE privé LitAttributV1(sAttribut est une chaine ansi) : chaine
+      m_pclErreur.Raz()
+      sTemp est une chaine sur 128
+      ZoneMémoireZéro(&sTemp, Dimension(sTemp))
+      quand exception dans
+      	nHandleProcédureV1 est un entier système 
+      	si mg_nInstanceAudioGenie>0 alors nHandleProcédureV1=API("KERNEL32", "GetProcAddress", mg_nInstanceAudioGenie, sAttribut) SINON m_pclErreur.AjouteErreur(<§$0000§>)
+      	SI nHandleProcédureV1 ALORS Transfer(&sTemp, API(nHandleProcédureV1), Dimension(sTemp))
+      faire
+      	dbgAssertion(Vrai,chaineconstruit("Attribut V1 %1 illisible",sAttribut))
+      fin
+      RENVOYER sTemp
+     type : 458752
+   -
+     name : Ecrit
+     procedure_id : 1351356068077093587
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // Ecrit ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCEDURE Ecrit()
+      //à compléter
+     type : 458752
+   -
+     name : ChargeTags
+     procedure_id : 1351356068077159123
+     type_code : 12
+     code : |1-
+      // Résumé : Charge en mémoire l'ensemble des tags disponibles
+      // ref : https://docs.mp3tag.de/mapping-table/
+      PROCEDURE PRIVÉE ChargeTags()	//sCode en chaine car ..nom de la combinaison affiche une erreur (alors que la doc dit que cette propriété existe!)
+      m_pclErreur.Raz()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      
+      AjouteTableau("ACOUSTID_FINGERPRINT","","","","TXXX:Acoustid Fingerprint")
+      AjouteTableau("ACOUSTID_ID","","","","TXXX:Acoustid Id")
+      AjouteTableau("ALBUM","Titre de l'album","Album title","ID3V1GetAlbumW","TALB","0:Album")
+      AjouteTableau("ALBUMARTIST","Artiste de l'album","Album Artist","","TPE2","0:Album/Performer")	//ou BAND
+      AjouteTableau("ALBUMARTISTSORT","Ordre de tri de l'artiste de l'album","Album Artist Sort Order","","TSO2,TXXX:ALBUMARTISTSORT")
+      AjouteTableau("ALBUMSORT","Ordre de tri du titre de l'album","Album Title Sort Order","","TSOA,XSOA")
+      AjouteTableau("ARTISTS","Artistes/solistes","Artists/solists","ID3V1GetArtistW","TPE1","0:Performer")
+      AjouteTableau("ARTISTSORT","Ordre de tri des artistes de piste","Track Artist Sort Order","","TSOP")
+      AjouteTableau("ARTWORK","Pochette","Artwork","","APIC")
+      AjouteTableau("AUDIOENCRYPTION","Cryptage audio","Audio Encryption","","AENC")
+      AjouteTableau("AUDIOSEEKPOINTINDEX","Indice de point de recherche audio","Audio seek point index","","ASPI")
+      AjouteTableau("BARCODE","Code-barres","Barcode","","TXXX:BARCODE")
+      AjouteTableau("BPM","Battements par minute","Beat per minute","","TBPM")
+      AjouteTableau("CATALOGNUMBER","Numéro de catalogue","Catalog number","","TXXX:CATALOGNUMBER")
+      AjouteTableau("CDID","ID du CD musical","Music CD identifier","","MCDI")
+      AjouteTableau("CHAPTERSTARTTIME","Heure de début de chapitre","Chapter start time","","CHAP")
+      AjouteTableau("CHAPTERTOC","Sommaire des chapitres","Chapter Table of content","","CTOC")
+      AjouteTableau("COMMENT","Commentaires","Comment","ID3V1GetCommentW","COMM","0:Comment")
+      AjouteTableau("COMMERCIAL","Promotion","Commercial","","COMR")
+      AjouteTableau("COMPILATION","Compilation","Compilation","","TCMP")
+      AjouteTableau("COMPOSERS","Compositeurs","Composers","","TCOM","0:Composer")														//séparés par /
+      AjouteTableau("COMPOSERSORT","Ordre de tri des compositeurs","Composer Sort Order","","TSOC")
+      AjouteTableau("CONDUCTOR","Chef d'orchestre","Conductor","","TPE3")
+      AjouteTableau("CONTENTGROUP","Groupe de contenu","Content Group","","TIT1")
+      AjouteTableau("COPYRIGHT","Droit de reproduction","Copyright","","TCOP")
+      AjouteTableau("COPYRIGHTMESSAGE","Enregistrement du message de droit d'auteur","Recording Copyright Message","","TPRO")
+      AjouteTableau("DATE","Date","Date","","TDAT","0:Recorded_Date")
+      AjouteTableau("DISCNUMBER","Numéro du disque/nombre disques","Disk Number/Disk amount","","TPOS")
+      AjouteTableau("DURATION","Durée","Duration",*,*,"0:Duration")
+      AjouteTableau("ENCAPSULATEOBJECT","objet général encapsulé","General encapsulated object","","GEOB")
+      AjouteTableau("ENCODEDBY","Encodé par","Encoded By","","TENC")
+      AjouteTableau("ENCODERSETTINGS","Paramètres d'encodage","Encoder Settings","","TSSE")
+      AjouteTableau("ENCODINGTIME","Temps d'encodage","Encoding Time","","TDEN")
+      AjouteTableau("ENCRYPTIONMETHOD","Enregistrement de la méthode de chiffrement","Encryption method registration","","ENCR")
+      AjouteTableau("EQUALIZATION","Égalisation","Equalisation","","EQUA")
+      AjouteTableau("EQUALIZATION2","Égalisation 2","Equalisation 2","","EQU2")
+      AjouteTableau("EVENTTIMINGCODE","Codes de synchronisation d'événement","Event timing codes","","ETCO")
+      AjouteTableau("FILEOWNER","Propriétaire du fichier","File Owner","","TOWN")
+      AjouteTableau("FILETYPE","Type de fichier","File Type","","TFLT")
+      AjouteTableau("GENRE","Genre","Genre","ID3V1GetGenreW","TCON","0:Genre")
+      AjouteTableau("GENRES","Genres","Genres","ID3V1GetGenresW")
+      AjouteTableau("GENREID","ID genre","Genre ID","ID3V1GetGenreIDW")
+      AjouteTableau("GROUPIDREG","Enregistrement de l'identification du groupe","Group identification registration","","GRID")
+      AjouteTableau("GROUPING","Groupement","Grouping","","GRP1")
+      AjouteTableau("INITIALKEY","Clé initiale","Initial Key","","TKEY")
+      AjouteTableau("INVOLVEDPEOPLE","Personnes impliquées","Involved People","","TIPL,IPLS")
+      AjouteTableau("ISRC","Code d'enregistrement normalisé international","International Standard Recording Code","","TSRC")
+      AjouteTableau("LANGUAGE","Langues","Language","","TLAN")
+      AjouteTableau("LENGTH","Longueur","Length","","TLEN")
+      AjouteTableau("LINKEDINFO","Informations liées","Linked information","","LINK")
+      AjouteTableau("LOCLOOKUPTABLE","Table de recherche des emplacements MPEG","MPEG Location Lookup Table","","MLLT")
+      AjouteTableau("LYRICISTS","Paroliers","Lyricists","","TEXT")																		//séparés par /
+      AjouteTableau("MEDIATYPE","Type de support","Media Type","","TMED")
+      AjouteTableau("MIXARTIST","Mixé par","Mix Artist","","TPE4")
+      AjouteTableau("MOOD","Ambiance","Mood","","TMOO")
+      AjouteTableau("MP3INFO","MP3 Info","MP3 Info",*,*,"2:Inform")																		//ne pas le mettre dans le tableau car contient plusieurs infos dispo dans les propriétés
+      AjouteTableau("MOVEMENT","Mouvement","Movement","","MVIN")																			//Movement Number/Movement Total
+      AjouteTableau("MOVEMENTNAME","Nom du mouvement","Movement Name","","MVNM")
+      AjouteTableau("MUSICBRAINZ_ALBUMARTISTID","","","","TXXX:MusicBrainz Album Artist Id")
+      AjouteTableau("MUSICBRAINZ_ALBUMID","","","","TXXX:MusicBrainz Album Id")
+      AjouteTableau("MUSICBRAINZ_ALBUMRELEASECOUNTRY","","","","TXXX:MusicBrainz Album Release Country")
+      AjouteTableau("MUSICBRAINZ_ALBUMSTATUS","","","","TXXX:MusicBrainz Album Status")
+      AjouteTableau("MUSICBRAINZ_ALBUMTYPE","","","","TXXX:MusicBrainz Album Type")
+      AjouteTableau("MUSICBRAINZ_ARTISTID","","","","TXXX:MusicBrainz Artist Id")
+      AjouteTableau("MUSICBRAINZ_DISCID","","","","TXXX:MusicBrainz Disc Id")
+      AjouteTableau("MUSICBRAINZ_ORIGINALALBUMID","","","","TXXX:MusicBrainz Original Album Id")
+      AjouteTableau("MUSICBRAINZ_ORIGINALARTISTID","","","","TXXX:MusicBrainz Original Artist Id")
+      AjouteTableau("MUSICBRAINZ_RELEASEGROUPID","","","","TXXX:MusicBrainz Release Group Id")
+      AjouteTableau("MUSICBRAINZ_RELEASETRACKID","","","","TXXX:MusicBrainz Release Track Id")
+      AjouteTableau("MUSICBRAINZ_TRACKID","","","","UFID:http://musicbrainz.org")
+      AjouteTableau("MUSICBRAINZ_TRMID","","","","TXXX:MusicBrainz TRM Id")
+      AjouteTableau("MUSICBRAINZ_WORKID","","","","TXXX:MusicBrainz Work Id")
+      AjouteTableau("MUSICIANCREDITS","Remerciements aux musiciens","Musician Credits","","TMCL")
+      AjouteTableau("NETRADIOOWNER","Propriétaire de la station de radio","Radio Station Owner","","TRSO")
+      AjouteTableau("NETRADIOSTATION","Station de radio","Radio Station","","TRSN")
+      AjouteTableau("ORIGALBUM","Titre original de l'album","Original Album Title","","TOAL")
+      AjouteTableau("ORIGARTISTS","Artistes originaux","Original artists","","TOPE")														//séparés par /
+      AjouteTableau("ORIGFILENAME","Nom du fichier original","Original Filename","","TOFN")
+      AjouteTableau("ORIGLYRICISTS","Paroliers originaux","Original Lyricists","","TOLY")													//séparés par /
+      AjouteTableau("ORIGRELEASEDATE","Date originale de sortie","Original release date","","TDOR")
+      AjouteTableau("ORIGYEAR","Année originale","Original year","","TORY")
+      AjouteTableau("OWNERSHIP","Possession","Ownership","","OWNE")
+      AjouteTableau("PLAYCOUNTER","Compteur de lecture","Play counter","","PCNT")
+      AjouteTableau("PLAYLISTDELAY","Retard de la liste de lecture","Playlist delay","","TDLY")
+      AjouteTableau("POSITIONSYNC","Synchronisation des positions","Position synchronisation","","POSS")
+      AjouteTableau("PODCAST","Balladodiffusion","Podcast","","PCST")
+      AjouteTableau("PODCASTCATEGORY","Catégorie du balado","Podcast Category","","TCAT")
+      AjouteTableau("PODCASTDESC","Descriptif du balado","Podcast description","","TDES")
+      AjouteTableau("PODCASTID","ID du balado","Podcast ID","","TGID")
+      AjouteTableau("PODCASTKEYWORDS","Mots clés du balado","Podcast keywords","","TKWD")
+      AjouteTableau("PODCASTURL","Site internet du balado","Podcast website","","WFED")
+      AjouteTableau("POPULARIMETER","Popularimètre","Popularimeter","","POPM")	//rating
+      //AjouteTableau("PRIVATEFRAME","Privé","Private","","PRIV")	//sort des valeurs bizarres durant les tests
+      AjouteTableau("PUBLISHER","Éditeur","Publisher","","TPUB","0:Publisher")	//Label
+      AjouteTableau("RECOMMANDEDBUFFER","Taille recommandée du tampon","Recommended buffer size","","RBUF")
+      AjouteTableau("RECORDINGDATE","Date d'enregistremen","Recording Date","","TDRC")
+      AjouteTableau("RECORDINGDATES","Dates d'enregistremen","Recording Dates","","TRDA")
+      AjouteTableau("RELEASETIME","Date de sortie","Release Date","","TDRL")
+      AjouteTableau("REVERB","Réverbération","Reverb","","RVRB")
+      AjouteTableau("SETSUBTITLE","Sous-titre dans la série","Set Subtitle","","TSST")
+      AjouteTableau("SEEKOFFSET","Décalage de recherche","Seek offset","","SEEK")
+      AjouteTableau("SIZE","Taille","Size","","TSIZ")
+      AjouteTableau("SUBTITLE","Sous-titre","Subtitle","","TIT3")
+      AjouteTableau("SYNCEDLYRICS","Paroles synchronisées","Synced Lyrics","","SYLT")
+      AjouteTableau("SYNCTEMPO","Codes de tempo synchronisés","Synchronized tempo codes","","SYTC")
+      AjouteTableau("TAGGINGTIME","Balise de temps","Tagging Time","","TDTG")
+      AjouteTableau("TERMOFUSE","Conditions d'utilisation","Term of use","","USER")
+      AjouteTableau("TIME","Heure","Time","","TIME")
+      AjouteTableau("TITLE","Titre de la piste","Track title","ID3V1GetTitleW","TIT2","0:Track")
+      AjouteTableau("TITLESORT","Ordre de tri des titres de piste","Track Title Sort Order","","TSOT")
+      AjouteTableau("TRACK","Piste","Track","","TRCK","0:Track/Position")
+      AjouteTableau("UNIQUEFILEID","ID unique du fichier","Unique File ID","","UFID")
+      AjouteTableau("UNSYNCEDLYRICS","Paroles non synchronisées","Unsynced Lyrics","","USLT")
+      AjouteTableau("VOLUMEAJUST","Réglage du volume relatif","Relative Volume Adjustment","","RVAD")
+      AjouteTableau("VOLUMEAJUST2","Réglage du volume relatif 2","Relative Volume Adjustment 2","","RVA2")
+      AjouteTableau("WORK","Titre de travail","WORKTITLE","","TXXX:WORK")
+      AjouteTableau("WWW","Site internet","Internet website","","WXXX")
+      AjouteTableau("WWWARTIST","Page Web de l'artiste","Artist Web Page","","WOAR")
+      AjouteTableau("WWWAUDIOFILE","Page Web du fichier","File Webpage","","WOAF")
+      AjouteTableau("WWWAUDIOSOURCE","Page Web de la source audio","Audio Source Webpage","","WOAS")
+      AjouteTableau("WWWCOMMERCIALINFO","Information commerciale","Commercial Information","","WCOM")
+      AjouteTableau("WWWCOPYRIGHT","Droits d'auteur","Copyright","","WCOP")
+      AjouteTableau("WWWPAYMENT","Site pour l'achat","Payment website","","WPAY")
+      AjouteTableau("WWWPUBLISHER","Site éditeur","Publisher website","","WPUB")
+      AjouteTableau("WWWRADIOPAGE","Site de la radio","Radio website","","WORS")
+      AjouteTableau("YEAR","Année","Year","","TYER")
+      AjouteTableau("TXCUSTOM","Attributs personnalisés","Custom attributes","","TXXX")								//mettre en bas de la liste car affichera ceux qui n'ont pas été repérés ci-dessus
+      AjouteTableau("WXCUSTOM","Sites internet personnalisés","Custom websites","","WXXX")							//mettre en bas de la liste car affichera ceux qui n'ont pas été repérés ci-dessus
+      tableautrie(mg_tabMP3Tag,ttMembre,"sCode")
+      
+      	Procédure interne AjouteTableau(sCode,sNom5 est une chaine = "",sNom3 est une chaine = "",sBaliseV1 est une chaine = "",sBaliseV2 est une chaine = "",sBaliseMediaInfo est une chaine = "")
+      	stUnTag est un STID3Tag
+      	stUnTag.sCode				= sCode
+      	stUnTag.sNom5				= sNom5
+      	stUnTag.sNom3				= sNom3
+      	stUnTag.sBaliseAudioGenieV1	= sBaliseV1
+      	stUnTag.sBaliseAudioGenieV2	= sBaliseV2
+      	stUnTag.sBaliseMediaInfo	= sBaliseMediaInfo
+      	TableauAjoute(mg_tabMP3Tag,stUnTag)
+      	fin
+     type : 458752
+   -
+     name : LireBalise
+     procedure_id : 1351356068077224659
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée générique permettant de lire une balise selon son code. Utilisé dans les propriétés de cette classe.
+      PROCEDURE privé LireBalise(sCode est une chaine) : chaine
+      m_pclErreur.Raz()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCode)
+      
+      nIndice est un entier = tableaucherche(mg_tabMP3Tag,tcDichotomique,"sCode",sCode)
+      SI nIndice>0 alors
+      	si cmedia.mg_sAudioGenie3Détecte>"" _et_ m_bOuvertAudioGenie3 alors
+      		si mg_tabMP3Tag[nIndice].sBaliseAudioGenieV2>"" alors 
+      			pour toute chaine sBaliseV2 de mg_tabMP3Tag[nIndice].sBaliseAudioGenieV2 separee par ","
+      				si pas m_taBalisesLues[sBaliseV2]..existe alors m_taBalisesLues[sBaliseV2]=LitAttributV2(sBaliseV2)
+      				si m_taBalisesLues[sBaliseV2]>"" alors renvoyer m_taBalisesLues[mg_tabMP3Tag[nIndice].sBaliseAudioGenieV2]
+      			fin
+      		FIN
+      		si mg_tabMP3Tag[nIndice].sBaliseAudioGenieV1>"" alors
+      			SI pas m_taBalisesLues[mg_tabMP3Tag[nIndice].sBaliseAudioGenieV1]..existe ALORS m_taBalisesLues[mg_tabMP3Tag[nIndice].sBaliseAudioGenieV1]=LitAttributV1(mg_tabMP3Tag[nIndice].sBaliseAudioGenieV1)
+      			si m_taBalisesLues[mg_tabMP3Tag[nIndice].sBaliseAudioGenieV1]>"" alors renvoyer m_taBalisesLues[mg_tabMP3Tag[nIndice].sBaliseAudioGenieV1]
+      		FIN
+      	fin
+       	SI cMedia.mg_sMediaInfoDétecté>"" _et_ m_bOuvertMediaInfo ALORS
+      		SI PAS m_taBalisesLues[mg_tabMP3Tag[nIndice].sBaliseMediaInfo]..existe alors m_taBalisesLues[mg_tabMP3Tag[nIndice].sBaliseMediaInfo]=LireAttributMediaInfo(mg_tabMP3Tag[nIndice].sBaliseMediaInfo)
+      		si m_taBalisesLues[mg_tabMP3Tag[nIndice].sBaliseMediaInfo]>"" alors renvoyer m_taBalisesLues[mg_tabMP3Tag[nIndice].sBaliseMediaInfo]
+      	fin
+      FIN
+      RENVOYER ""
+     type : 458752
+   -
+     name : EcrireBalise
+     procedure_id : 1351356068077290195
+     type_code : 12
+     code : |1-
+      // A compléter
+      PROCEDURE privé ÉcrireBalise(sCode est une chaine,sValeur est une chaine)
+      m_pclErreur.Raz()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCode)
+      
+      SI m_bOuvertAudioGenie3 ALORS
+      	nIndice est un entier = tableaucherche(mg_tabMP3Tag,tcDichotomique,"sCode",sCode)
+      	SI sValeur<>LireBalise(sCode) alors
+      		SI mg_tabMP3Tag[nIndice].sBaliseAudioGenieV2>""	ALORS m_taBalisesLues[mg_tabMP3Tag[nIndice].sBaliseAudioGenieV2]=sValeur	//attention s'il y a plusieurs balises
+      		SI mg_tabMP3Tag[nIndice].sBaliseAudioGenieV1>"" ALORS m_taBalisesLues[mg_tabMP3Tag[nIndice].sBaliseAudioGenieV1]=sValeur
+      		mg_tabMP3Tag[nIndice].bModifié=vrai
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 1351356068077355731
+     type_code : 12
+     code : |1-
+      // Résumé : Supprime toutes les balises lues dans le fichier
+      // Syntaxe : Raz ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Raz()
+      tableausupprimetout(m_taValeurs)
+     type : 458752
+   -
+     name : ChargeGenreID3
+     procedure_id : 1351356068077421267
+     type_code : 12
+     code : |1-
+      // Procédure privée qui charge l'ensemble des genres reconnus par ID3
+      PROCEDURE privé ChargeGenreID3()
+      m_pclErreur.Raz()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      
+      si mg_tabMP3Genre..Occurrence>0 alors retour
+      stUnGenre est un STID3Genre
+      stUnGenre.sNom3 = "Blues"					;stUnGenre.nNum = 0		;stUnGenre.sNom5 = "Blues"					;stUnGenre.bPourID3V1 = vrai;tableauajoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Classic Rock"			;stUnGenre.nNum = 1 	;stUnGenre.sNom5 = "Classic Rock"			;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Country"					;stUnGenre.nNum = 2 	;stUnGenre.sNom5 = "Country"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Dance"					;stUnGenre.nNum = 3 	;stUnGenre.sNom5 = "Dance"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Disco"					;stUnGenre.nNum = 4 	;stUnGenre.sNom5 = "Disco"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Funk"					;stUnGenre.nNum = 5 	;stUnGenre.sNom5 = "Funk"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Grunge"					;stUnGenre.nNum = 6 	;stUnGenre.sNom5 = "Grunge"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Hip-Hop"					;stUnGenre.nNum = 7 	;stUnGenre.sNom5 = "Hip-Hop"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Jazz"					;stUnGenre.nNum = 8 	;stUnGenre.sNom5 = "Jazz"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Metal"					;stUnGenre.nNum = 9 	;stUnGenre.sNom5 = "Metal"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "New Age"					;stUnGenre.nNum = 10	;stUnGenre.sNom5 = "New Age"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Oldies"					;stUnGenre.nNum = 11	;stUnGenre.sNom5 = "Oldies"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Other"					;stUnGenre.nNum = 12	;stUnGenre.sNom5 = "Autre"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Pop"						;stUnGenre.nNum = 13	;stUnGenre.sNom5 = "Pop"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Rhythm and Blues"		;stUnGenre.nNum = 14	;stUnGenre.sNom5 = "RnB"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Rap"						;stUnGenre.nNum = 15	;stUnGenre.sNom5 = "Rap"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Reggae"					;stUnGenre.nNum = 16	;stUnGenre.sNom5 = "Reggae"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Rock"					;stUnGenre.nNum = 17	;stUnGenre.sNom5 = "Rock"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Techno"					;stUnGenre.nNum = 18	;stUnGenre.sNom5 = "Techno"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Industrial"				;stUnGenre.nNum = 19	;stUnGenre.sNom5 = "Musique industrielle"	;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Alternative"				;stUnGenre.nNum = 20	;stUnGenre.sNom5 = "Rock alternatif"		;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Ska"						;stUnGenre.nNum = 21	;stUnGenre.sNom5 = "Ska"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "DeathMetal"				;stUnGenre.nNum = 22	;stUnGenre.sNom5 = "DeathMetal"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Pranks"					;stUnGenre.nNum = 23	;stUnGenre.sNom5 = "Pranks"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Soundtrack"				;stUnGenre.nNum = 24	;stUnGenre.sNom5 = "Musique de film"		;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Euro-Techno"				;stUnGenre.nNum = 25	;stUnGenre.sNom5 = "Euro Techno"			;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Ambient"					;stUnGenre.nNum = 26	;stUnGenre.sNom5 = "Ambient"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Trip-Hop"				;stUnGenre.nNum = 27	;stUnGenre.sNom5 = "Trip-Hop"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)
+      stUnGenre.sNom3 = "Vocal"					;stUnGenre.nNum = 28	;stUnGenre.sNom5 = "Musique vocale"			;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Jazz & Funk"				;stUnGenre.nNum = 29	;stUnGenre.sNom5 = "Jazz-Funk"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Fusion"					;stUnGenre.nNum = 30	;stUnGenre.sNom5 = "Fusion"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Trance"					;stUnGenre.nNum = 31	;stUnGenre.sNom5 = "Trance"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Classical"				;stUnGenre.nNum = 32	;stUnGenre.sNom5 = "Classical"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Instrumental"			;stUnGenre.nNum = 33	;stUnGenre.sNom5 = "Instrumental"			;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Acid"					;stUnGenre.nNum = 34	;stUnGenre.sNom5 = "Acid"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "House"					;stUnGenre.nNum = 35	;stUnGenre.sNom5 = "House"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Game"					;stUnGenre.nNum = 36	;stUnGenre.sNom5 = "Musique de jeu vidéo"	;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Sound Clip"				;stUnGenre.nNum = 37	;stUnGenre.sNom5 = "Extrait sonore"			;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Gospel"					;stUnGenre.nNum = 38	;stUnGenre.sNom5 = "Gospel"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Noise"					;stUnGenre.nNum = 39	;stUnGenre.sNom5 = "Musique bruitiste"		;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Alternative Rock"		;stUnGenre.nNum = 40	;stUnGenre.sNom5 = "Rock alternatif"		;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Bass"					;stUnGenre.nNum = 41	;stUnGenre.sNom5 = "Bass"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Soul"					;stUnGenre.nNum = 42	;stUnGenre.sNom5 = "Soul"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Punk"					;stUnGenre.nNum = 43	;stUnGenre.sNom5 = "Punk"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Space"					;stUnGenre.nNum = 44	;stUnGenre.sNom5 = "Space"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Meditative"				;stUnGenre.nNum = 45	;stUnGenre.sNom5 = "Musique de méditation"	;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Instrumental Pop"		;stUnGenre.nNum = 46	;stUnGenre.sNom5 = "Pop instrumental"		;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Instrumental Rock"		;stUnGenre.nNum = 47	;stUnGenre.sNom5 = "Rock instrumental"		;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Ethnic"					;stUnGenre.nNum = 48	;stUnGenre.sNom5 = "Musique ethnique"		;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Gothic"					;stUnGenre.nNum = 49	;stUnGenre.sNom5 = "Gothique"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Darkwave"				;stUnGenre.nNum = 50	;stUnGenre.sNom5 = "Dark wave"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Techno-Industrial"		;stUnGenre.nNum = 51	;stUnGenre.sNom5 = "Techno-Industrial"		;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Electronic"				;stUnGenre.nNum = 52	;stUnGenre.sNom5 = "Musique électronique"	;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Pop-Folk"				;stUnGenre.nNum = 53	;stUnGenre.sNom5 = "Pop Folk"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Eurodance"				;stUnGenre.nNum = 54	;stUnGenre.sNom5 = "Eurodance"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Dream"					;stUnGenre.nNum = 55	;stUnGenre.sNom5 = "Dream"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Southern Rock"			;stUnGenre.nNum = 56	;stUnGenre.sNom5 = "Rock sudiste"			;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Comedy"					;stUnGenre.nNum = 57	;stUnGenre.sNom5 = "Comédie"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Cult"					;stUnGenre.nNum = 58	;stUnGenre.sNom5 = "Morceau culte"			;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Gangsta"					;stUnGenre.nNum = 59	;stUnGenre.sNom5 = "Gangsta"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)			
+      stUnGenre.sNom3 = "Top 40"					;stUnGenre.nNum = 60 	;stUnGenre.sNom5 = "Hit-parade"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Christian Rap"			;stUnGenre.nNum = 61 	;stUnGenre.sNom5 = "Rap chrétien"			;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Pop/Funk"				;stUnGenre.nNum = 62 	;stUnGenre.sNom5 = "Pop/Funk"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Jungle"					;stUnGenre.nNum = 63 	;stUnGenre.sNom5 = "Jungle"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Native US"				;stUnGenre.nNum = 64 	;stUnGenre.sNom5 = "Musique amérindienne"	;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Cabaret"					;stUnGenre.nNum = 65 	;stUnGenre.sNom5 = "Cabaret"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "New Wave"				;stUnGenre.nNum = 66 	;stUnGenre.sNom5 = "New Wave"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Psychedelic"				;stUnGenre.nNum = 67 	;stUnGenre.sNom5 = "Psychédélique"			;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Rave"					;stUnGenre.nNum = 68 	;stUnGenre.sNom5 = "Rave"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Show Tunes"				;stUnGenre.nNum = 69 	;stUnGenre.sNom5 = "Comédie musicale"		;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Trailer"					;stUnGenre.nNum = 70 	;stUnGenre.sNom5 = "Bande-annonce"			;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Lo-Fi"					;stUnGenre.nNum = 71 	;stUnGenre.sNom5 = "Lo-Fi"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Tribal"					;stUnGenre.nNum = 72 	;stUnGenre.sNom5 = "Musique tribale"		;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Acid Punk"				;stUnGenre.nNum = 73 	;stUnGenre.sNom5 = "Acid Punk"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Acid Jazz"				;stUnGenre.nNum = 74 	;stUnGenre.sNom5 = "Acid Jazz"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Polka"					;stUnGenre.nNum = 75 	;stUnGenre.sNom5 = "Polka"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Retro"					;stUnGenre.nNum = 76 	;stUnGenre.sNom5 = "Rétro"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Musical"					;stUnGenre.nNum = 77 	;stUnGenre.sNom5 = "Théâtre"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Rock 'n' Roll"			;stUnGenre.nNum = 78 	;stUnGenre.sNom5 = "Rock 'n' Roll"			;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Hard rock"				;stUnGenre.nNum = 79 	;stUnGenre.sNom5 = "Hard rock"				;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "None"					;stUnGenre.nNum = 255	;stUnGenre.sNom5 = "Aucun"					;stUnGenre.bPourID3V1 = Vrai;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      
+      stUnGenre.sNom3 = "Folk"					;stUnGenre.nNum = 80	;stUnGenre.sNom3 = "Folk"					;stUnGenre.bPourID3V1 = faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Folk-Rock"				;stUnGenre.nNum = 81	;stUnGenre.sNom3 = "Folk Rock"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "National Folk"			;stUnGenre.nNum = 82	;stUnGenre.sNom3 = "Folk américain"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Swing"					;stUnGenre.nNum = 83	;stUnGenre.sNom3 = "Swing"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Fast Fusion"				;stUnGenre.nNum = 84	;stUnGenre.sNom3 = "Fast Fusion"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Bebop"					;stUnGenre.nNum = 85	;stUnGenre.sNom3 = "Bebop"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Latin"					;stUnGenre.nNum = 86	;stUnGenre.sNom3 = "Musique latine"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Revival"					;stUnGenre.nNum = 87	;stUnGenre.sNom3 = "Revival"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Celtic"					;stUnGenre.nNum = 88	;stUnGenre.sNom3 = "Musique celtique"		;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Bluegrass"				;stUnGenre.nNum = 89	;stUnGenre.sNom3 = "Bluegrass"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Avantgarde"				;stUnGenre.nNum = 90	;stUnGenre.sNom3 = "Avantgarde"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Gothic Rock"				;stUnGenre.nNum = 91	;stUnGenre.sNom3 = "Rock gothique"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Progressive Rock"		;stUnGenre.nNum = 92	;stUnGenre.sNom3 = "Rock progressif"		;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Psychedelic Rock"		;stUnGenre.nNum = 93	;stUnGenre.sNom3 = "Rock psychédélique"		;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Symphonic Rock"			;stUnGenre.nNum = 94	;stUnGenre.sNom3 = "Rock symphonique"		;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Slow Rock"				;stUnGenre.nNum = 95	;stUnGenre.sNom3 = "Slow Rock"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Big Band"				;stUnGenre.nNum = 96	;stUnGenre.sNom3 = "Big Band"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Chorus"					;stUnGenre.nNum = 97	;stUnGenre.sNom3 = "Chœur"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Easy Listening"			;stUnGenre.nNum = 98	;stUnGenre.sNom3 = "Easy Listening"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Acoustic"				;stUnGenre.nNum = 99	;stUnGenre.sNom3 = "Acoustique"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Humour"					;stUnGenre.nNum = 100	;stUnGenre.sNom3 = "Humour"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Speech"					;stUnGenre.nNum = 101	;stUnGenre.sNom3 = "Discours"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)		
+      stUnGenre.sNom3 = "Chanson"					;stUnGenre.nNum = 102	;stUnGenre.sNom3 = "Chanson"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Opera"					;stUnGenre.nNum = 103	;stUnGenre.sNom3 = "Opéra"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Chamber Music"			;stUnGenre.nNum = 104	;stUnGenre.sNom3 = "Musique de chambre"		;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Sonata"					;stUnGenre.nNum = 105	;stUnGenre.sNom3 = "Sonate"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Symphony"				;stUnGenre.nNum = 106	;stUnGenre.sNom3 = "Symphonie"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Booty Bass"				;stUnGenre.nNum = 107	;stUnGenre.sNom3 = "Booty Bass"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Primus"					;stUnGenre.nNum = 108	;stUnGenre.sNom3 = "Primus"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Porn Groove"				;stUnGenre.nNum = 109	;stUnGenre.sNom3 = "Porn Groove"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Satire"					;stUnGenre.nNum = 110	;stUnGenre.sNom3 = "Satire"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Slow Jam"				;stUnGenre.nNum = 111	;stUnGenre.sNom3 = "Slow Jam"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Club"					;stUnGenre.nNum = 112	;stUnGenre.sNom3 = "Club"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Tango"					;stUnGenre.nNum = 113	;stUnGenre.sNom3 = "Tango"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Samba"					;stUnGenre.nNum = 114	;stUnGenre.sNom3 = "Samba"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Folklore"				;stUnGenre.nNum = 115	;stUnGenre.sNom3 = "Folklore"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Ballad"					;stUnGenre.nNum = 116	;stUnGenre.sNom3 = "Ballade"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Power Ballad"			;stUnGenre.nNum = 117	;stUnGenre.sNom3 = "Power Ballad"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Rhythmic Soul"			;stUnGenre.nNum = 118	;stUnGenre.sNom3 = "Rhythmic Soul"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Freestyle"				;stUnGenre.nNum = 119	;stUnGenre.sNom3 = "Freestyle"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Duet"					;stUnGenre.nNum = 120	;stUnGenre.sNom3 = "Duo"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Punk Rock"				;stUnGenre.nNum = 121	;stUnGenre.sNom3 = "Punk Rock"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Drum solo"				;stUnGenre.nNum = 122	;stUnGenre.sNom3 = "Solo de batterie"		;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "A cappella"				;stUnGenre.nNum = 123	;stUnGenre.sNom3 = "A cappella"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Euro-House"				;stUnGenre.nNum = 124	;stUnGenre.sNom3 = "Euro-House"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Dancehall"				;stUnGenre.nNum = 125	;stUnGenre.sNom3 = "Dancehall"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Goa"						;stUnGenre.nNum = 126	;stUnGenre.sNom3 = "Goa"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Drum & Bass"				;stUnGenre.nNum = 127	;stUnGenre.sNom3 = "Batterie & Basse"		;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Club-House"				;stUnGenre.nNum = 128	;stUnGenre.sNom3 = "Club-House"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Hardcore Techno"			;stUnGenre.nNum = 129	;stUnGenre.sNom3 = "Techno Hardcore"		;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Terror"					;stUnGenre.nNum = 130	;stUnGenre.sNom3 = "Terreur"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Indie"					;stUnGenre.nNum = 131	;stUnGenre.sNom3 = "Indépendant"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "BritPop"					;stUnGenre.nNum = 132	;stUnGenre.sNom3 = "Pop anglaise"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Negerpunk"				;stUnGenre.nNum = 133	;stUnGenre.sNom3 = "Négerpunk"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Polsk Punk"				;stUnGenre.nNum = 134	;stUnGenre.sNom3 = "Punk polonais"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Beat"					;stUnGenre.nNum = 135	;stUnGenre.sNom3 = "Beat"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Christian Gangsta Rap"	;stUnGenre.nNum = 136	;stUnGenre.sNom3 = "Gangsta Rap chétien"	;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Heavy Metal"				;stUnGenre.nNum = 137	;stUnGenre.sNom3 = "Heavy Metal"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Black Metal"				;stUnGenre.nNum = 138	;stUnGenre.sNom3 = "Black Metal"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Crossover"				;stUnGenre.nNum = 139	;stUnGenre.sNom3 = "Crossover"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Contemporary Christian"	;stUnGenre.nNum = 140	;stUnGenre.sNom3 = "Chrétien contemporain"	;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Christian rock"			;stUnGenre.nNum = 141	;stUnGenre.sNom3 = "Rock chrétien"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Merengue"				;stUnGenre.nNum = 142	;stUnGenre.sNom3 = "Merengue"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Salsa"					;stUnGenre.nNum = 143	;stUnGenre.sNom3 = "Salsa"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Thrash Metal"			;stUnGenre.nNum = 144	;stUnGenre.sNom3 = "Thrash Metal"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Anime"					;stUnGenre.nNum = 145	;stUnGenre.sNom3 = "Dessin animé"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Jpop"					;stUnGenre.nNum = 146	;stUnGenre.sNom3 = "J-pop"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Synthpop"				;stUnGenre.nNum = 147	;stUnGenre.sNom3 = "Pop synthé"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Abstract"				;stUnGenre.nNum = 148	;stUnGenre.sNom3 = "Abstraite"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "ArtRock"					;stUnGenre.nNum = 149	;stUnGenre.sNom3 = "ArtRock"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Baroque"					;stUnGenre.nNum = 150	;stUnGenre.sNom3 = "Baroque"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Bhangra"					;stUnGenre.nNum = 151	;stUnGenre.sNom3 = "Bhangra"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Big beat"				;stUnGenre.nNum = 152	;stUnGenre.sNom3 = "Big beat"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Breakbeat"				;stUnGenre.nNum = 153	;stUnGenre.sNom3 = "Breakbeat"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Chillout"				;stUnGenre.nNum = 154	;stUnGenre.sNom3 = "Détente"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Downtempo"				;stUnGenre.nNum = 155	;stUnGenre.sNom3 = "Downtempo"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Dub"						;stUnGenre.nNum = 156	;stUnGenre.sNom3 = "Dub"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "EBM"						;stUnGenre.nNum = 157	;stUnGenre.sNom3 = "EBM"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Eclectic"				;stUnGenre.nNum = 158	;stUnGenre.sNom3 = "Eclectique"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Electro"					;stUnGenre.nNum = 159	;stUnGenre.sNom3 = "Électro"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Electroclash"			;stUnGenre.nNum = 160	;stUnGenre.sNom3 = "Électro clash"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Emo"						;stUnGenre.nNum = 161	;stUnGenre.sNom3 = "Emo"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Experimental"			;stUnGenre.nNum = 162	;stUnGenre.sNom3 = "Expérimental"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Garage"					;stUnGenre.nNum = 163	;stUnGenre.sNom3 = "Garage"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "GlobalMusic"				;stUnGenre.nNum = 164	;stUnGenre.sNom3 = "GlobalMusic"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "IDM"						;stUnGenre.nNum = 165	;stUnGenre.sNom3 = "IDM"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Illbient"				;stUnGenre.nNum = 166	;stUnGenre.sNom3 = "Illbient"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Industro-Goth"			;stUnGenre.nNum = 167	;stUnGenre.sNom3 = "Industro-Goth"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Jam Band"				;stUnGenre.nNum = 168	;stUnGenre.sNom3 = "Jam Band"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Krautrock"				;stUnGenre.nNum = 169	;stUnGenre.sNom3 = "Krautrock"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Leftfield"				;stUnGenre.nNum = 170	;stUnGenre.sNom3 = "Leftfield"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Lounge"					;stUnGenre.nNum = 171	;stUnGenre.sNom3 = "Lounge"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Math Rock"				;stUnGenre.nNum = 172	;stUnGenre.sNom3 = "Math Rock"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "New Romantic"			;stUnGenre.nNum = 173	;stUnGenre.sNom3 = "Nouveau romantique"		;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Nu-Breakz"				;stUnGenre.nNum = 174	;stUnGenre.sNom3 = "Nu-Breakz"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Post-Punk"				;stUnGenre.nNum = 175	;stUnGenre.sNom3 = "Post-Punk"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Post-Rock"				;stUnGenre.nNum = 176	;stUnGenre.sNom3 = "Post-Rock"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Psytrance"				;stUnGenre.nNum = 177	;stUnGenre.sNom3 = "Psytrance"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Shoegaze"				;stUnGenre.nNum = 178	;stUnGenre.sNom3 = "Shoegaze"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Space Rock"				;stUnGenre.nNum = 179	;stUnGenre.sNom3 = "Space Rock"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Trop Rock"				;stUnGenre.nNum = 180	;stUnGenre.sNom3 = "Trop Rock"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "World Music"				;stUnGenre.nNum = 181	;stUnGenre.sNom3 = "World Music"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Neoclassical"			;stUnGenre.nNum = 182	;stUnGenre.sNom3 = "Neo classique"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Audiobook"				;stUnGenre.nNum = 183	;stUnGenre.sNom3 = "Livre audio"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Audio theatre"			;stUnGenre.nNum = 184	;stUnGenre.sNom3 = "Théâtre audio"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Neue Deutsche Welle"		;stUnGenre.nNum = 185	;stUnGenre.sNom3 = "Neue Deutsche Welle"	;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Podcast"					;stUnGenre.nNum = 186	;stUnGenre.sNom3 = "Podcast"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Indie-Rock"				;stUnGenre.nNum = 187	;stUnGenre.sNom3 = "Rock indépendant"		;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "G-Funk"					;stUnGenre.nNum = 188	;stUnGenre.sNom3 = "G-Funk"					;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Dubstep"					;stUnGenre.nNum = 189	;stUnGenre.sNom3 = "Dubstep"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Garage Rock"				;stUnGenre.nNum = 190	;stUnGenre.sNom3 = "Garage Rock"			;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      stUnGenre.sNom3 = "Psybient"				;stUnGenre.nNum = 191	;stUnGenre.sNom3 = "Psybient"				;stUnGenre.bPourID3V1 = Faux;TableauAjoute(mg_tabMP3Genre,stUnGenre)	
+      tableautrie(mg_tabMP3Genre,ttMembre,"nNum")
+     type : 458752
+  properties :
+   -
+     name : p_sTitre
+     identifier : 0x12c0fb2f2284c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Titre
+         PROCEDURE PUBLIQUE p_sTitre() : chaine
+         renvoyer LireBalise("TITLE")
+        type : 1966080
+      -
+        code : |1-
+         //
+         PROCEDURE PUBLIQUE p_sTitre(Valeur)
+         EcrireBalise("TITLE",Valeur)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sAlbum
+     identifier : 0x12c0fb2f2285c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Album du titre
+         PROCEDURE PUBLIQUE p_sAlbum() : chaine
+         RENVOYER LireBalise("ALBUM")
+        type : 1966080
+      -
+        code : |1-
+         //
+         PROCEDURE PUBLIQUE p_sAlbum(Valeur)
+         EcrireBalise("ALBUM",Valeur)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sArtistes
+     identifier : 0x12c0fb2f2286c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Artiste du titre
+         PROCEDURE PUBLIQUE p_sArtistes() : chaine
+         renvoyer LireBalise("ARTISTS")
+        type : 1966080
+      -
+        code : |1-
+         //
+         PROCEDURE PUBLIQUE p_sArtistes(Valeur)
+         EcrireBalise("ARTISTS",Valeur)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sGenre
+     identifier : 0x12c0fb2f2287c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Genre du titre
+         PROCEDURE PUBLIQUE p_sGenre() : chaîne
+         si objet.p_nIDGenre<>255 alors 
+         	ChargeGenreID3()
+         	nIndice est un entier = tableaucherche(mg_tabMP3Genre,tcDichotomique,"nNum",objet.p_nIDGenre)
+         	si nIndice>0 alors
+         		si nation() dans (nationFrançais,nationCanadienFrançais) alors renvoyer mg_tabMP3Genre[nIndice].sNom5 sinon RENVOYER mg_tabMP3Genre[nIndice].sNom3
+         	FIN
+         	renvoyer ""
+         sinon
+         	renvoyer LireBalise("GENRE")
+         FIN
+        type : 1966080
+      -
+        code : |1-
+         //
+         PROCEDURE PUBLIQUE p_sGenre(Valeur)
+         EcrireBalise("GENRE",Valeur)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sCommentaire
+     identifier : 0x12c0fb2f2288c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Commentaire du fichier
+         PROCEDURE PUBLIQUE p_sCommentaire() : chaîne
+         renvoyer LireBalise("COMMENT")
+        type : 1966080
+      -
+        code : |1-
+         //
+         PROCEDURE PUBLIQUE p_sCommentaire(Valeur)
+         EcrireBalise("COMMENT",Valeur)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_nIDGenre
+     identifier : 0x12c0fb2f2289c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise IDGenre du titre
+         PROCEDURE PUBLIQUE p_nIDGenre() : entier
+         renvoyer val(LireBalise("GENREID"))
+        type : 1966080
+      -
+        code : |1-
+         //
+         PROCEDURE PUBLIQUE p_nIDGenre(Valeur)
+         ecrirebalise("GENREID",Valeur)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sGenres
+     identifier : 0x12c0fb2f228ac2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Liste des Genres du titre
+         PROCEDURE PUBLIQUE p_sGenres() : chaine
+         renvoyer LireBalise("GENRES")
+        type : 1966080
+      -
+        code : |1-
+         //
+         PROCEDURE PUBLIQUE p_sGenres(Valeur)
+         EcrireBalise("GENRES",Valeur)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sIDTypeFichier
+     identifier : 0x12c0fb2f228bc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Type du fichier
+         PROCEDURE PUBLIQUE p_sIDTypeFichier() : chaine
+         Renvoyer LireBalise("FILETYPE")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nBPM
+     identifier : 0x12c0fb2f228cc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise BMP (beat per minute) du titre
+         PROCEDURE PUBLIQUE p_nBPM() : chaine
+         renvoyer LireBalise("BPM")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sCompositeurs
+     identifier : 0x12c0fb2f228dc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Compositeur du titre
+         PROCEDURE PUBLIQUE p_sCompositeurs() : chaine
+         renvoyer LireBalise("COMPOSERS")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sCopyright
+     identifier : 0x12c0fb2f228ec2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Copyright du titre
+         PROCEDURE PUBLIQUE p_sCopyright() : chaîne
+         renvoyer lirebalise("COPYRIGHT")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sDate
+     identifier : 0x12c0fb2f228fc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Date du titre (en mois année)
+         PROCEDURE PUBLIQUE p_sDate() : chaine
+         renvoyer LireBalise("DATE")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nDélaiListeLecture
+     identifier : 0x12c0fb2f2290c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Délai de Liste de Lecture du fichier
+         PROCEDURE PUBLIQUE p_nDélaiListeLecture() : entier
+         renvoyer val(LireBalise("PLAYLISTDELAY"))
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sEncodéPar
+     identifier : 0x12c0fb2f2291c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Encodé Par du fichier
+         PROCEDURE PUBLIQUE p_sEncodéPar() : chaine
+         renvoyer LireBalise("ENCODEDBY")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sParoliers
+     identifier : 0x12c0fb2f2292c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Parolier du titre
+         PROCEDURE PUBLIQUE p_sParoliers() : chaine
+         renvoyer lirebalise("LYRICISTS")	//séparés par /
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sHeure
+     identifier : 0x12c0fb2f2293c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Heure du titre
+         PROCEDURE PUBLIQUE p_sHeure() : chaine
+         renvoyer lirebalise("TIME")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sGroupe
+     identifier : 0x12c0fb2f2294c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Groupe du titre
+         PROCEDURE PUBLIQUE p_sGroupe() : chaine
+         renvoyer lirebalise("CONTENTGROUP")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sSousTitre
+     identifier : 0x12c0fb2f2295c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Sous Titre
+         PROCEDURE PUBLIQUE p_sSousTitre() : chaîne
+         renvoyer lirebalise("SUBTITLE")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sCléInitiale
+     identifier : 0x12c0fb2f2296c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Clé Initiale du fichier
+         PROCEDURE PUBLIQUE p_sCléInitiale() : chaîne
+         renvoyer lirebalise("INITIALKEY")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sLangue
+     identifier : 0x12c0fb2f2297c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Langue du titre
+         PROCEDURE PUBLIQUE p_sLangue() : chaîne
+         renvoyer lirebalise("LANGUAGE")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nTailleAvecTags
+     identifier : 0x12c0fb2f2298c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Taille avec les tags du fichier
+         PROCEDURE PUBLIQUE p_nTailleAvecTags() : entier
+         renvoyer val(LireBalise("LENGTH"))
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sMédia
+     identifier : 0x12c0fb2f2299c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Type de média du fichier
+         PROCEDURE PUBLIQUE p_sMédia() : chaîne
+         renvoyer LireBalise("MEDIATYPE")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sTitreOriginal
+     identifier : 0x12c0fb2f229ac2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Titre original de l'album
+         PROCEDURE PUBLIQUE p_sTitreOriginal() : chaîne
+         renvoyer LireBalise("ORIGALBUM")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sNomFichierOriginal
+     identifier : 0x12c0fb2f229bc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Nom Original du titre
+         PROCEDURE PUBLIQUE p_sNomFichierOriginal() : chaîne
+         renvoyer lirebalise("ORIGFILENAME")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sParoliersOriginaux
+     identifier : 0x12c0fb2f229cc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Paroliers Originaux du titre
+         PROCEDURE PUBLIQUE p_sParoliersOriginaux() : chaîne
+         renvoyer lirebalise("ORIGLYRICISTS")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sArtistesOriginaux
+     identifier : 0x12c0fb2f229dc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Artistes Originaux du titre
+         PROCEDURE PUBLIQUE p_sArtistesOriginaux() : chaîne
+         renvoyer LireBalise("ORIGARTISTS")	//séparés par /
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sAnnéeOriginale
+     identifier : 0x12c0fb2f229ec2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Année Originale du titre
+         PROCEDURE PUBLIQUE p_sAnnéeOriginale() : chaine
+         renvoyer lirebalise("ORIGYEAR")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sPropriétaire
+     identifier : 0x12c0fb2f229fc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Propriétaire du titre
+         PROCEDURE PUBLIQUE p_sPropriétaire() : chaîne
+         renvoyer LireBalise("FILEOWNER")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sChefOrchestre
+     identifier : 0x12c0fb2f22a0c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Chef d'Orchestre du titre
+         PROCEDURE PUBLIQUE p_sChefOrchestre() : chaîne
+         renvoyer LireBalise("CONDUCTOR")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sRemixéPar
+     identifier : 0x12c0fb2f22a1c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Artiste qui a remixé le titre
+         PROCEDURE PUBLIQUE p_sRemixéPar() : chaîne
+         renvoyer lirebalise("MIXARTIST")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sDisqueNum
+     identifier : 0x12c0fb2f22a2c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Numéro de Disque du fichier
+         PROCEDURE PUBLIQUE p_sDisqueNum() : chaîne
+         renvoyer LireBalise("DISCNUMBER")	//num disque / nbr total de disques
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sÉditeur
+     identifier : 0x12c0fb2f22a3c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Éditeur du titre
+         PROCEDURE PUBLIQUE p_sÉditeur() : chaîne
+         renvoyer LireBalise("PUBLISHER")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sOrdreLecture
+     identifier : 0x12c0fb2f22a4c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Ordre de Lecture du fichier
+         PROCEDURE PUBLIQUE p_sOrdreLecture() : chaîne
+         renvoyer lirebalise("TRACK")	//Track Number/Track Total
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sDatesEnregistrement
+     identifier : 0x12c0fb2f22a5c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Date d'Enregistrement du titre
+         PROCEDURE PUBLIQUE p_sDatesEnregistrement() : chaîne
+         renvoyer lirebalise("RECORDINGDATES")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sRadioInternet
+     identifier : 0x12c0fb2f22a6c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Nom de la Radio Internet du fichier
+         PROCEDURE PUBLIQUE p_sRadioInternet() : chaîne
+         renvoyer LireBalise("NETRADIOSTATION")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sRadioInternetPropriétaire
+     identifier : 0x12c0fb2f22a7c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Propriétaire de la Radio Internet du fichier
+         PROCEDURE PUBLIQUE p_sRadioInternetPropriétaire() : chaîne
+         renvoyer lirebalise("NETRADIOOWNER")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nTailleSansTags
+     identifier : 0x12c0fb2f22a8c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Taille Sans les Tags du fichier
+         PROCEDURE PUBLIQUE p_nTailleSansTags() : entier
+         renvoyer val(LireBalise("TSIZ"))
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sTSRC
+     identifier : 0x12c0fb2f22a9c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise TSRC du fichier
+         PROCEDURE PUBLIQUE p_sTSRC() : chaîne
+         renvoyer LireBalise("TSRC")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sParamètresEncodage
+     identifier : 0x12c0fb2f22aac2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Paramètres d'Encodage du fichier
+         PROCEDURE PUBLIQUE p_sParamètresEncodage() : chaîne
+         renvoyer LireBalise("ENCODERSETTINGS")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sAnnée
+     identifier : 0x12c0fb2f22abc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Année du fichier
+         PROCEDURE PUBLIQUE p_sAnnée() : chaine
+         renvoyer LireBalise("YEAR")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sURLInfoCommerciale
+     identifier : 0x12c0fb2f22acc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Information Commerciale du titre
+         PROCEDURE PUBLIQUE p_sURLInfoCommerciale() : chaîne
+         renvoyer lirebalise("WWWCOMMERCIALINFO")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sURLDroitAuteur
+     identifier : 0x12c0fb2f22adc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise Droit d'Auteur du titre
+         PROCEDURE PUBLIQUE p_sURLDroitAuteur() : chaîne
+         renvoyer lirebalise("WWWCOPYRIGHT")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sURLFichier
+     identifier : 0x12c0fb2f22aec2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise URL du fichier
+         PROCEDURE PUBLIQUE p_sURLFichier() : chaîne
+         renvoyer LireBalise("WWWAUDIOFILE")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sURLSource
+     identifier : 0x12c0fb2f22afc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise URL de la Source du fichier
+         PROCEDURE PUBLIQUE p_sURLSource() : chaîne
+         renvoyer LireBalise("WWWAUDIOSOURCE")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sURLRadioInternet
+     identifier : 0x12c0fb2f22b0c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise URL de la Radio Internet du fichier
+         PROCEDURE PUBLIQUE p_sURLRadioInternet() : chaîne
+         renvoyer lirebalise("WWWRADIOSITE")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sURLAchat
+     identifier : 0x12c0fb2f22b1c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise URL pour Acheter le fichier
+         PROCEDURE PUBLIQUE p_sURLAchat() : chaîne
+         renvoyer lirebalise("WWWPAYMENT")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sURLÉditeur
+     identifier : 0x12c0fb2f22b2c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la balise URL de l'Éditeur du fichier
+         PROCEDURE PUBLIQUE p_sURLÉditeur() : chaîne
+         renvoyer LireBalise("WWWPUBLISHER")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sTypeFichier
+     identifier : 0x12c0fb2f22b3c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le type du fichier MP3
+         PROCEDURE PUBLIQUE p_sTypeFichier() : chaine
+         SELON objet.p_sIDTypeFichier
+         	CAS "/1"	: renvoyer "MPEG 1/2 layer I"
+         	CAS "/2"	: renvoyer "MPEG 1/2 layer II"
+         	CAS "/3"	: renvoyer "MPEG 1/2 layer III"
+         	CAS "/2.5"	: renvoyer "MPEG 2.5"
+         	CAS "/AAC"	: renvoyer "Advanced audio compression"
+         	CAS "VQF"	: renvoyer "Transform-domain Weighted Interleave Vector Quantization"
+         	CAS "PCM"	: renvoyer "Pulse Code Modulated audio"
+         	CAS "MPG","": renvoyer "MPEG Audio"
+         	AUTRES CAS	: renvoyer "unknown"	
+         FIN
+        type : 1966080
+     template_refs : []
+   -
+     name : m_tabCompositeurs
+     identifier : 0x12c0fb2f22b4c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la liste des compositeurs du titre
+         PROCEDURE PUBLIQUE m_tabCompositeurs() : tableau de chaine
+         tabTemp est un tableau de chaines
+         ChaîneVersTableau(objet.p_sCompositeurs,tabTemp,"/")
+         renvoyer tabTemp
+        type : 1966080
+     template_refs : []
+   -
+     name : p_tabParoliers
+     identifier : 0x12c0fb2f22b5c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la liste des paroliers du titre
+         PROCEDURE PUBLIQUE p_tabParoliers() : tableau de chaîne
+         tabTemp est un tableau de chaines
+         ChaîneVersTableau(objet.p_sParoliers,tabTemp,"/")
+         RENVOYER tabTemp
+        type : 1966080
+     template_refs : []
+   -
+     name : p_tabParoliersOriginaux
+     identifier : 0x12c0fb2f22b6c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la liste des paroliers originaux du titre
+         PROCEDURE PUBLIQUE p_tabParoliersOriginaux() : tableau de chaîne
+         tabTemp est un tableau de chaines
+         ChaîneVersTableau(objet.p_sParoliersOriginaux,tabTemp,"/")
+         RENVOYER tabTemp
+        type : 1966080
+     template_refs : []
+   -
+     name : p_tabArtistesOriginaux
+     identifier : 0x12c0fb2f22b7c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la liste des artistes originaux du titre
+         PROCEDURE PUBLIQUE p_tabArtistesOriginaux() : tableau de chaîne
+         tabTemp est un tableau de chaines
+         ChaîneVersTableau(objet.p_sArtistesOriginaux,tabTemp,"/")
+         RENVOYER tabTemp
+        type : 1966080
+     template_refs : []
+   -
+     name : p_tabArtistes
+     identifier : 0x12c0fb2f22b8c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la liste des artistes du titre
+         PROCEDURE PUBLIQUE p_tabArtistes() : tableau de chaîne
+         tabTemp est un tableau de chaines
+         ChaîneVersTableau(objet.p_sArtistes,tabTemp,"/")
+         RENVOYER tabTemp
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nNuméroDisque
+     identifier : 0x12c0fb2f22b9c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le numéro de disque du titre
+         PROCEDURE PUBLIQUE p_nNuméroDisque() : entier
+         renvoyer val(extraitchaine(LireBalise("DISCNUMBER"),1,"/"))
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nNbrDisques
+     identifier : 0x12c0fb2f22bac2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nombre de disques
+         PROCEDURE PUBLIQUE p_nNbrDisques() : entier
+         sNum est une chaine = LireBalise("DISCNUMBER")
+         si sNum="" _ou_ position(sNum,"/")<1 alors renvoyer 0 sinon RENVOYER Val(ExtraitChaîne(sNum,2,"/"))
+        type : 1966080
+     template_refs : []
+   -
+     name : p_NuméroPiste
+     identifier : 0x12c0fb2f22bbc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le numéro de piste du titre
+         PROCEDURE PUBLIQUE p_NuméroPiste() : entier
+         RENVOYER Val(ExtraitChaîne(LireBalise("TRACK"),1,"/"))
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nNbrPistes
+     identifier : 0x12c0fb2f22bcc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nombre de pistes
+         PROCEDURE PUBLIQUE p_nNbrPistes() : entier
+         sNum est une chaine = LireBalise("TRACK")
+         SI sNum="" _OU_ Position(sNum,"/")<1 ALORS RENVOYER 0 SINON RENVOYER Val(ExtraitChaîne(sNum,2,"/"))
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sFormatVersion
+     identifier : 0x12c0fb2f22bdc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la version du format
+         PROCEDURE PUBLIQUE p_sFormatVersion() : chaine
+         renvoyer LireBalise("FORMATVERSION")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sMP3Version
+     identifier : 0x12c0fb2f22bec2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la version du format MP3
+         PROCEDURE PUBLIQUE p_sMP3Version() : chaine
+         sTemp est une chaine = LireBalise("MP3INFO")
+         pour toute chaine sValeur de sTemp separee par rc
+         	si sansespace(extraitchaine(sValeur,1,":"))~="Format version" alors renvoyer SansEspace(ExtraitChaîne(sValeur,2,":"))
+         FIN
+         renvoyer ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sMP3Profile
+     identifier : 0x12c0fb2f22bfc2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le profil du fichier
+         PROCEDURE PUBLIQUE p_sMP3Profile() : chaîne
+         sTemp est une chaîne = LireBalise("MP3INFO")
+         POUR TOUTE CHAÎNE sValeur DE sTemp SEPAREE PAR RC
+         	SI SansEspace(ExtraitChaîne(sValeur,1,":"))~="Format profile" ALORS RENVOYER SansEspace(ExtraitChaîne(sValeur,2,":"))
+         FIN
+         RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sMP3Paramètres
+     identifier : 0x12c0fb2f22c0c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie les paramètres du fichier
+         PROCEDURE PUBLIQUE p_sMP3Paramètres() : chaîne
+         sTemp est une chaîne = LireBalise("MP3INFO")
+         POUR TOUTE CHAÎNE sValeur DE sTemp SEPAREE PAR RC
+         	SI SansEspace(ExtraitChaîne(sValeur,1,":"))~="Format settings" ALORS RENVOYER SansEspace(ExtraitChaîne(sValeur,2,":"))
+         FIN
+         RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sMP3TypeDébit
+     identifier : 0x12c0fb2f22c1c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le type de débit du fichier
+         PROCEDURE PUBLIQUE p_sMP3TypeDébit() : chaîne
+         sTemp est une chaîne = LireBalise("MP3INFO")
+         POUR TOUTE CHAÎNE sValeur DE sTemp SEPAREE PAR RC
+         	SI SansEspace(ExtraitChaîne(sValeur,1,":"))~="Bit rate mode" ALORS RENVOYER SansEspace(ExtraitChaîne(sValeur,2,":"))
+         FIN
+         RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sMP3Débit
+     identifier : 0x12c0fb2f22c2c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le débit du fichier
+         PROCEDURE PUBLIQUE p_sMP3Débit() : chaîne
+         sTemp est une chaîne = LireBalise("MP3INFO")
+         POUR TOUTE CHAÎNE sValeur DE sTemp SEPAREE PAR RC
+         	SI SansEspace(ExtraitChaîne(sValeur,1,":"))~="Bit rate" ALORS RENVOYER SansEspace(ExtraitChaîne(sValeur,2,":"))
+         FIN
+         RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sMP3Canaux
+     identifier : 0x12c0fb2f22c3c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nombre de canaux du fichier
+         PROCEDURE PUBLIQUE p_sMP3Canaux() : chaîne
+         sTemp est une chaîne = LireBalise("MP3INFO")
+         POUR TOUTE CHAÎNE sValeur DE sTemp SEPAREE PAR RC
+         	SI SansEspace(ExtraitChaîne(sValeur,1,":"))~="Channel(s)" ALORS RENVOYER SansEspace(ExtraitChaîne(sValeur,2,":"))
+         FIN
+         RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sMP3Échantillonnage
+     identifier : 0x12c0fb2f22c4c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le taux d'échantillonnage du fichier
+         PROCEDURE PUBLIQUE p_sMP3Échantillonnage() : chaîne
+         sTemp est une chaîne = LireBalise("MP3INFO")
+         POUR TOUTE CHAÎNE sValeur DE sTemp SEPAREE PAR RC
+         	SI SansEspace(ExtraitChaîne(sValeur,1,":"))~="Sampling rate" ALORS RENVOYER SansEspace(ExtraitChaîne(sValeur,2,":"))
+         FIN
+         RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sMP3Compression
+     identifier : 0x12c0fb2f22c5c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le mode de compression du fichier
+         PROCEDURE PUBLIQUE p_sMP3Compression() : chaîne
+         sTemp est une chaîne = LireBalise("MP3INFO")
+         POUR TOUTE CHAÎNE sValeur DE sTemp SEPAREE PAR RC
+         	SI SansEspace(ExtraitChaîne(sValeur,1,":"))~="Compression mode" ALORS RENVOYER SansEspace(ExtraitChaîne(sValeur,2,":"))
+         FIN
+         RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nDurée
+     identifier : 0x12c0fb2f22c6c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la durée du titre en centième de secondes
+         PROCEDURE PUBLIQUE p_nDurée() : entier 
+         renvoyer val(LireBalise("DURATION"))
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sDurée
+     identifier : 0x12c0fb2f22c7c2d3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la durée du titre au format MM:SS.CCC
+         PROCEDURE PUBLIQUE p_sDurée() : chaine
+         duDurée est une durée = objet.p_nDurée
+         renvoyer DuréeVersChaîne(duDurée,"MM:SS.LLL")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bTagV1Existe
+     identifier : 0x12c17a0d25569a09
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'existence des tags ID3V1
+         PROCEDURE PUBLIQUE p_bTagV1Existe() : booleen
+         SI mg_nInstanceAudioGenie>0 ALORS 
+         	nInstanceProcédure est un entier système = DLLAdresseProcédure(mg_nInstanceAudioGenie, "ID3V1ExistsW") 
+         	si nInstanceProcédure>0 alors renvoyer (API(nInstanceProcédure)=-1) SINON m_pclErreur.AjouteErreur(<§$0001§>)
+         SINON 
+         	m_pclErreur.AjouteErreur(<§$0000§>)
+         FIN
+         renvoyer faux
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bTagV2Existe
+     identifier : 0x12c17b5e2557c06d
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'existence des tags ID3V2
+         PROCEDURE PUBLIQUE p_bTagV2Existe() : booléen
+         SI mg_nInstanceAudioGenie>0 ALORS 
+         	nInstanceProcédure est un entier système = DLLAdresseProcédure(mg_nInstanceAudioGenie, "ID3V2ExistsW")
+         	SI nInstanceProcédure>0 ALORS RENVOYER (API(nInstanceProcédure)=-1) sinon m_pclErreur.AjouteErreur(<§$0002§>)
+         SINON 
+         	m_pclErreur.AjouteErreur(<§$0000§>)
+         FIN
+         RENVOYER Faux
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sVersion2
+     identifier : 0x12c18bea255a6239
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la version des tags ID3V2
+         PROCEDURE PUBLIQUE p_sVersion2() : chaine
+         SI mg_nInstanceAudioGenie>0 ALORS 
+         	nInstanceProcédure est un entier système = DLLAdresseProcédure(mg_nInstanceAudioGenie, "ID3V2GetVersionW") 
+         	SI nInstanceProcédure>0 ALORS RENVOYER ChaîneRécupère(API(nInstanceProcédure), crAdresseUNICODE) SINON m_pclErreur.AjouteErreur(<§$0003§>)
+         SINON 
+         	m_pclErreur.AjouteErreur(<§$0000§>)
+         FIN
+         RENVOYER ""
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x12bae46901b5ce4b
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : L'instance de AudioGenie3 n'existe pas
+      en-GB : Instance of AudioGenie3 does not exist
+      fr-CA : L'instance de AudioGenie3 n'existe pas
+      en-US : Instance of AudioGenie3 does not exist
+     index : 0
+   -
+     text :
+      fr-FR : La procédure ID3V1ExistsW n'a pas été trouvée dans la DLL AudioGenie
+      en-GB : The procedure ID3V1ExistsW was not found in the AudioGenie DLL
+      fr-CA : La procédure ID3V1ExistsW n'a pas été trouvée dans la DLL AudioGenie
+      en-US : The procedure ID3V1ExistsW was not found in the AudioGenie DLL
+     index : 1
+   -
+     text :
+      fr-FR : La procédure ID3V2ExistsW n'a pas été trouvée dans la DLL AudioGenie
+      en-GB : The procedure ID3V2ExistsW was not found in the AudioGenie DLL
+      fr-CA : La procédure ID3V2ExistsW n'a pas été trouvée dans la DLL AudioGenie
+      en-US : The procedure ID3V2ExistsW was not found in the AudioGenie DLL
+     index : 2
+   -
+     text :
+      fr-FR : La procédure ID3V2GetVersionW n'a pas été trouvée dans la DLL AudioGenie
+      en-GB : The procedure ID3V2GetVersionW was not found in the AudioGenie DLL
+      fr-CA : La procédure ID3V2GetVersionW n'a pas été trouvée dans la DLL AudioGenie
+      en-US : The procedure ID3V2GetVersionW was not found in the AudioGenie DLL
+     index : 3
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

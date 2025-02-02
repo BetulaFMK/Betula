@@ -1,0 +1,619 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_Vérification
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1b15586803ac330c
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      PRIVÉ
+      	CONSTANTE
+      		ErreurDeVérification	= 200
+      	FIN
+     type : 720896
+   -
+     code : |1+
+      //
+     type : 720898
+  procedures :
+   -
+     name : CAN_NASValide
+     procedure_id : 1951563333260647060
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de valider un numéro d'assurance sociale (NAS) canadien.
+      // Syntaxe : [ <Résultat> = ] CAN_NASValide (<sNAS> est chaîne)
+      // Paramètres :
+      //	sNAS (chaîne UNICODE) : Le numéro d'assurance sociale à valider.
+      // Valeur de retour : booléen : renvoie Vrai si le NAS est valide, Faux sinon.
+      // Exemple :
+      //	SI CAN_NASValide("123456789") ALORS Info("Le NAS est valide.") SINON Erreur("Le NAS n'est pas valide.")
+      //
+      PROCEDURE CAN_NASValide(local sNAS est une chaine) : booleen
+      sNAS 		= SansEspace(sNAS,sscTout)
+      sNASBase 	est une chaine = "121212121"
+      sNASCalcule est une chaîne
+      nNASResult 	est un entier
+      sNASResult 	est une chaîne
+      
+      si taille(sNAS)=9 ou pas EstNombre(sNAS) alors
+      	SI sNAS[[1]] DANS (1,2,4,5,6,7,9) ALORS
+      		POUR nPosition = 1 a 9 
+      			nNASResult = Val(sNAS[[nPosition]]) * Val(sNASBase[[nPosition]])	
+      			SI nNASResult<10 ALORS sNASCalcule[[nPosition]] = nNASResult SINON sNASResult=nNASResult;sNASCalcule[[nPosition]] = Val(sNASResult[[1]]) + Val(sNASResult[[2]])	
+      		FIN
+      		
+      		nNASResult = 0
+      		POUR nPosition = 1 a 9
+      			nNASResult += Val(sNASCalcule[[nPosition]])
+      		FIN
+      		RENVOYER (modulo(nNASResult,10)=0)
+      	SINON
+      		ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c8000a§>)
+      	FIN
+      sinon
+      	ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c8000b§>)
+      fin
+      RENVOYER Faux
+     type : 458752
+   -
+     name : EstNomFichierValide
+     procedure_id : 1976414864431726372
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de vérifier si le nom de fichier contenu dans un chemin de fichier est valide, en excluant certains caractères interdits.
+      // Syntaxe : [ <Résultat> = ] EstNomFichierValide (<sCheminDeFichier> est chaîne)
+      // Paramètres :
+      //	sCheminDeFichier (chaîne UNICODE) : Le chemin complet du fichier à valider.
+      // Valeur de retour : booléen : renvoie Vrai si le nom de fichier est valide, Faux sinon.
+      // Exemple :
+      //	sCheminDuFichier est une chaîne = "C:/Dossier/monFichier.txt"
+      //	SI EstNomFichierValide(sCheminDuFichier) ALORS Info("Le nom de fichier est valide.") SINON Erreur("Le nom de fichier n'est pas valide.")
+      //
+      PROCEDURE EstNomFichierValide(local sCheminDeFichier est une chaine) : booleen
+      sFileDirCaractèresInterdits est une chaine = ":/""|?><*"
+      nTaille est un entier = Taille(sCheminDeFichier)
+      SI nTaille>0 ALORS
+      	SI sCheminDeFichier[[2 a 3]]=":/" _Et_ PAS NomFichierDansTailleMax(nTaille) ALORS
+      		Erreurdeclenche(ErreurDeVérification,<§@1b15586203aa18c80000§>)
+      	sinon
+      		si sCheminDeFichier[[2 À 3]]=":/" alors sCheminDeFichier=milieu(sCheminDeFichier,4);nTaille-=3
+      		POUR i=1 A nTaille
+      			SI Position(sCheminDeFichier,sFileDirCaractèresInterdits[[i]])>0 ALORS Erreurdeclenche(ErreurDeVérification,<§@1b15586203aa18c80004§>+sFileDirCaractèresInterdits[[i]]);RENVOYER Faux
+      		FIN
+      		renvoyer vrai
+      	fin
+      sinon
+      	ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c80005§>)
+      FIN
+      RENVOYER faux
+     type : 458752
+   -
+     name : EstAnnéeBissextile
+     procedure_id : 2014696660788675688
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure EstAnnéeBissextile a pour objectif de déterminer si une année donnée est bissextile selon les règles du calendrier grégorien.
+      // Syntaxe : [ <Résultat> = ] EstAnnéeBissextile (<nAnnée> est entier)
+      // Paramètres :
+      //	nAnnée (entier) : L'année à vérifier.
+      // Valeur de retour : booléen : renvoie Vrai si l'année est bissextile, Faux sinon.
+      // Exemple :
+      //	SI EstAnnéeBissextile(2024) ALORS Info("L'année est bissextile.") SINON Info("L'année n'est pas bissextile.")
+      //
+      PROCEDURE EstAnnéeBissextile(nAnnée est un entier) : booleen
+      RENVOYER ((modulo(nAnnée,4)=0 ET (modulo(nAnnée,100)<>0) OU modulo(nAnnée,400)=0))
+     type : 458752
+   -
+     name : EstNuméroTéléphone
+     procedure_id : 2014696665083709020
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de vérifier si une chaîne donnée correspond à un numéro de téléphone valide. La validation est basée sur la présence de caractères autorisés et la non-vide du numéro.
+      // Syntaxe : [ <Résultat> = ] EstNuméroTéléphone (<sNuméro> est chaîne)
+      // Paramètres :
+      //	sNuméro (chaîne UNICODE) : La chaîne représentant le numéro de téléphone à vérifier.
+      // Valeur de retour : booléen : renvoie Vrai si la chaîne représente un numéro de téléphone valide, Faux sinon.
+      // Exemple :
+      //	SI EstNuméroTéléphone("+1 (555) 123-4567") ALORS Info("Le numéro de téléphone est valide.") SINON Erreur("Le numéro de téléphone n'est pas valide.")
+      //
+      PROCEDURE EstNuméroTéléphone(sNuméro est une chaine) : booleen
+      SI sNuméro~="" ALORS ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c80007§>);RENVOYER faux
+      POUR nPosition = 1 _a_ taille(sansespace(sNuméro))
+      	SI Position("0123456789()+.-/",sNuméro[[nPosition]])<1 ALORS RENVOYER Faux
+      FIN
+      RENVOYER Vrai
+     type : 458752
+   -
+     name : FRA_RIBValide
+     procedure_id : 2014696665083774821
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de valider un numéro de RIB (Relevé d'Identité Bancaire) français.
+      // Syntaxe : [ <Résultat> = ] FRA_RIBValide (<sRibAVérifier> est chaîne)
+      // Paramètres :
+      //	sRibAVérifier (chaîne UNICODE) : Le numéro de RIB à valider.
+      // Valeur de retour : booléen : renvoie Vrai si le RIB est valide, Faux sinon.
+      // Exemple :
+      // SI FRA_RIBValide("FR76 30003 03620 00020216907 50") ALORS Info("Le RIB est valide.") SINON Erreur("Le RIB n'est pas valide.")
+      //
+      PROCEDURE FRA_RIBValide(local sRibAVérifier est une chaine) : booleen
+      moRib1,moRib2 	sont des monétaires
+      nTirets 		est un entier
+      sTemp 			sont des chaînes
+      bOk 			est un booléen = vrai
+      
+      si sRibAVérifier~="" alors ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c80002§>);renvoyer faux sinon sRibAVérifier=majuscule(sRibAVérifier)
+      	
+      POUR i=1 _A_ Taille(sRibAVérifier)
+      	SI Position("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-",sRibAVérifier[[i]])=0 ALORS renvoyer faux
+      	SI sRibAVérifier[[i]]="-" ALORS 
+      		nTirets++ 
+      	SINON 
+      		SELON sRibAVérifier[[i]]
+      			CAS "0" a "9" 	: sTemp+=sRibAVérifier[[i]]
+      			CAS "A","J" 	: sTemp+="1"
+      			CAS "B","K","S" : sTemp+="2"
+      			CAS "C","L","T" : sTemp+="3"
+      			CAS "D","M","U" : sTemp+="4"
+      			CAS "E","N","V" : sTemp+="5"
+      			CAS "F","O","W" : sTemp+="6"
+      			CAS "G","P","X" : sTemp+="7"
+      			CAS "H","Q","Y" : sTemp+="8"
+      			CAS "I","R","Z" : sTemp+="9"
+      			AUTRE CAS		: ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c80001§>+sRibAVérifier[[i]]);RENVOYER Faux
+      		FIN
+      	FIN
+      FIN
+      SI Taille(sTemp)<>23 _ou_ sTemp=Répète("0",23) ALORS ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c80003§>);renvoyer faux
+      moRib1	= Val(Gauche(sTemp,15))
+      moRib1	= moRib1-PartieEntière(moRib1/97)*97
+      moRib2	= Val(Droite(sTemp,8))
+      moRib2	= moRib2-PartieEntière(moRib2/97)*97
+      renvoyer (modulo(moRib1*81+moRib2,97)=0)
+     type : 458752
+   -
+     name : EstNombre
+     procedure_id : 2030698183944547973
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de vérifier si une chaîne donnée représente un nombre dans une base spécifiée.
+      // Syntaxe : [ <Résultat> = ] EstNombre (<sNombre> est chaîne [, <sBase> est chaîne])
+      // Paramètres :
+      //	sNombre (chaîne UNICODE) : La chaîne représentant le nombre à vérifier.
+      // 	sBase (chaîne UNICODE optionnel): La base du nombre, spécifiée par une lettre ou un nombre entier, par défaut = "d".
+      // Valeur de retour : booléen : renvoie Vrai si la chaîne sNombre représente un nombre dans la base spécifiée, Faux sinon.
+      // Exemple :
+      //	SI EstNombre("1A2", "16") ALORS Info("Le nombre est valide dans la base spécifiée.")
+      //
+      PROCEDURE EstNombre(local sNombre est une chaîne,sBase est une chaine = "d") : booleen	//sBase = d,o,x, 2 a 36
+      SI sNombre~="" ALORS ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c80007§>);RENVOYER faux sinon sNombre=majuscule(sansespace(sNombre))
+      sChiffres 	est une chaine = cgenerique._CaractèresNumériques+cgenerique._LettresMajuscules
+      nBase 		est un entier
+      selon minuscule(sBase)
+      	cas "d" 	: nBase=10
+      	cas "o" 	: nBase=9
+      	cas "x" 	: nBase=17
+      	AUTRE CAS : si sBase>"" _et_ EstNumérique(sBase) alors nBase=val(sBase) sinon ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c8000c§>);renvoyer faux
+      FIN
+      si 1<nBase<37 alors
+      	sVérification est une chaine = gauche(sChiffres,nBase)
+      	POUR nPosition = 1 _a_ taille(sNombre)
+      		SI Position(sVérification,sNombre[[nPosition]],0,SansCasse+DepuisDébut)<1 ALORS ErreurDéclenche(ErreurDeVérification,chaineconstruit(<§@1b15586203aa18c80009§>,sNombre[[nPosition]],nBase));RENVOYER Faux
+      	FIN
+      	RENVOYER Vrai
+      sinon
+      	ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c80006§>);renvoyer faux
+      FIN
+     type : 458752
+   -
+     name : EstLoginLDAPValide
+     procedure_id : 2033275478179199332
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de vérifier si un login spécifié est conforme aux exigences du protocole LDAP (Lightweight Directory Access Protocol) en utilisant une expression régulière.
+      // Syntaxe : [ <Résultat> = ] EstLoginLDAPValide (<sLogin> est chaîne)
+      // Paramètres :
+      //	sLogin (chaîne UNICODE) : Le login à vérifier.
+      // Valeur de retour : booléen : renvoie Vrai si le login est conforme aux exigences LDAP, sinon Faux.
+      // Exemple :
+      //	SI EstLoginLDAPValide("utilisateur_123") ALORS Info("Le login est valide.") SINON Erreur("Le login n'est pas valide.")
+      //
+      PROCEDURE EstLoginLDAPValide(sLogin est une chaine)
+      //ref : https://ldapwiki.com/wiki/SamAccountName
+      sRegEx est une chaine = [
+      ^(?:(?:[^. \"\/\\\[\]\:\|\\+\=\;\?\*\<\>\,][^\"\/\\\[\]\:\|\\+\=\;\?\*\<\>\,]{0,62}[^. \"\/\\\[\]\:\|\\+\=\;\?\*\<\>\,])|[^.\"\/\\\[\]\:\|\\+\=\;\?\*\<\>\,])$
+      ]
+      renvoyer VérifieExpressionRégulière(sLogin,sRegEx)
+     type : 458752
+   -
+     name : EstImageReconnue
+     procedure_id : 2035501700471031403
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de déterminer si une extension de fichier spécifiée correspond à une image reconnue en utilisant une liste prédéfinie d'extensions.
+      // Syntaxe : [ <Résultat> = ] EstImageReconnue (<sExtention> est chaîne)
+      // Paramètres :
+      //	sExtention (chaîne UNICODE) : L'extension de fichier à vérifier.
+      // Valeur de retour : booléen : renvoie Vrai si l'extension spécifiée correspond à une image reconnue, sinon Faux.
+      // Exemple :
+      //	SI EstImageReconnue("jpg") ALORS Info("L'extension est reconnue comme une image.") SINON Erreur("L'extension n'est pas reconnue comme une image.")
+      //
+      PROCEDURE EstImageReconnue(sExtention est une chaine) : booleen
+      RENVOYER Position(cgenerique.p_sExtensionImage,["."]+Majuscule(sExtention),0,MotComplet)>0
+     type : 458752
+   -
+     name : ChaineComme
+     procedure_id : 2295606942669436417
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de vérifier si une chaîne spécifiée correspond à l'un des masques fournis, où les masques peuvent contenir les caractères spéciaux "*" et "?", représentant respectivement une séquence de zéro ou plusieurs caractères, et un caractère unique.
+      // Syntaxe : [ <Résultat> = ] ChaineComme (<sChaine> est chaîne [, <sMasques> est chaîne])
+      // Paramètres :
+      //	sNIR (chaîne UNICODE) : La chaîne à vérifier.
+      //	sClé (chaîne UNICODE) : Les masques à utiliser, séparés par des points-virgules.
+      // Valeur de retour : booléen : renvoie Vrai si la chaîne correspond à l'un des masques, sinon Faux
+      // Exemple :
+      //	SI ChaineComme("exemple123", "ex*ple*;exemple???;autre*") ALORS Info("La chaîne correspond à l'un des masques.") SINON Erreur("La chaîne ne correspond à aucun des masques.")
+      //
+      PROCEDURE ChaineComme(local sChaine est une chaîne,Local sMasques est une chaîne) : booléen
+      //identique à la fonction "Match" (de Romuald Besset ?)
+      SI (sChaine <> "") ET (sMasques = "") ALORS RENVOYER Vrai SINON sChaine=Majuscule(sChaine);sMasques=Majuscule(sMasques)
+      i 		est un entier
+      sMasque est une chaîne
+      
+      POUR TOUTE CHAÎNE sMasque DE sMasques SÉPARÉE PAR ";"
+      	TANTQUE sMasque<>"" ET i<>2
+      		SI sChaine = sMasque ALORS
+      			i = 1;sMasque = ""
+      		SINON
+      			SELON sMasque[[1]]
+      				CAS "*"
+      					TANTQUE sMasque[[1]] DANS("*","?")
+      						sMasque = sMasque[[2 À ]]
+      					FIN		
+      					SI (sChaine = "") ALORS
+      						SI ChaineComme("",sMasque) ALORS i = 1;sMasque = "";sChaine = "" SINON i = 2
+      					SINON
+      						SI ChaineComme(sChaine,sMasque) OU ChaineComme(sChaine[[2 À ]], "*" + sMasque) ALORS i = 1;sMasque = "";sChaine = "" SINON i = 2
+      					FIN 
+      				CAS "?"
+      					sMasque = sMasque[[2 À ]]
+      					SI ChaineComme(sChaine,sMasque) OU ChaineComme(sChaine[[2 À ]],sMasque) ALORS i = 1;sMasque = "";sChaine = "" SINON i = 2
+      				AUTRES CAS
+      					SI sChaine>"" _ET_ Gauche(sChaine, 1) ~= Gauche(sMasque, 1) ALORS sMasque = sMasque[[2 À ]];sChaine = sChaine[[2 À ]] SINON i = 2
+      			FIN 
+      			SI (sChaine <> "") ET (sMasque = "") ALORS i = 2
+      		FIN 
+      	FIN
+      	SI i<>2 ALORS RENVOYER Vrai	
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : FRA_NIRValide
+     procedure_id : 2296713931675098966
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de vérifier la validité d'un Numéro d'Inscription au Répertoire (NIR), également connu sous le nom de Numéro d'Inscription au Répertoire des Personnes Physiques (NIRPP), en France.
+      // Syntaxe : [ <Résultat> = ] FRA_NIRValide (<sNIR> est chaîne [, <sClé> est chaîne])
+      // Paramètres :
+      //	sNIR (chaîne UNICODE) : Le Numéro d'Inscription au Répertoire à vérifier.
+      //	sClé (chaîne UNICODE) : La clé à utiliser pour la validation. Elle est calculée automatiquement si non fournie.
+      // Valeur de retour : booléen : renvoie Vrai si le NIR est valide, sinon Faux.
+      // Exemple :
+      //	SI FRA_NIRValide(sNIRTesté, sCléTestée) ALORS Info("Le NIR est valide.") SINON Erreur("Le NIR n'est pas valide.")
+      //
+      PROCEDURE FRA_NIRValide(LOCAL sNIR est une chaîne, local sClé est une chaîne = "") : booléen
+      //ou NIRPP pour numéro d'inscription au répertoire des personnes physiques
+      sNIR 			= SansEspace(sNIR,sscTout)
+      SI Taille(sNIR) <> 15 ALORS ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c80008§>);RENVOYER Faux
+      
+      nCORSE			est un entier
+      
+      // Pour la Corse on remplace le caractère à la 7e position par un 0
+      SI PAS EstNumérique(sNIR) ALORS
+      	SI sNIR[[7]] = "A" ALORS
+      		nCORSE = 1000000				// Pour le département 2A (Ajaccio)
+      	SINON
+      		nCORSE = 2000000				// Pour le département 2B (Bastia)
+      	FIN
+      	sNIR[[7]] = "0"
+      FIN
+      
+      nNIR		est un entier sur 8 octets = Val(Gauche(sNIR, 13)) - nCORSE
+      rNIRCalcule	est un réel = nNIR / 97
+      nNIRCalcule	est un entier sur 8 octets = PartieEntière(rNIRCalcule) * 97
+      
+      nNIRCalcule = 97 - (nNIR - nNIRCalcule)
+      
+      sClé = NumériqueVersChaîne(nNIRCalcule, "02d")
+      RENVOYER (nNIRCalcule < 97 _ET_ sClé = Droite(sNIR, 2))
+     type : 458752
+   -
+     name : NomFichierDansTailleMax
+     procedure_id : 1176354339794552451
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure vérifie si la longueur d'un nom de fichier est conforme à la limite imposée par le système d'exploitation en cours d'exécution.
+      // Syntaxe : [ <Résultat> = ] NomFichierDansTailleMax (<nTaille> est entier)
+      // Paramètres :
+      //	nTaille (entier) : La longueur du nom de fichier à vérifier.
+      // Valeur de retour : booléen : Renvoie Vrai si la longueur du nom de fichier est conforme à la limite du système d'exploitation en cours, sinon renvoie Faux.
+      // Exemple :
+      //	SI NomFichierDansTailleMax(255) ALORS Info("La longueur du nom de fichier est valide.") SINON Erreur("La longueur du nom de fichier dépasse la limite autorisée.")
+      //
+      PROCEDURE NomFichierDansTailleMax(nTaille est un entier) : booleen
+      renvoyer ((NomLong() _ET_ nTaille<=32767) _OU_ (PAS NomLong() _ET_ nTaille<=260))
+     type : 458752
+   -
+     name : EstAdresseIPV4
+     procedure_id : 1227930334396698655
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure érifie si une chaîne donnée représente une adresse IPv4 valide.
+      // Syntaxe : [ <Résultat> = ] EstAdresseIPV4 (<sAdresseIP> est chaîne)
+      // Paramètres :
+      //	sAdresseIP (chaîne UNICODE) : La chaîne représentant l'adresse IP à vérifier.
+      // Valeur de retour : booléen : Renvoie Vrai si la chaîne est une adresse IPv4 valide, sinon renvoie Faux.
+      // Exemple :
+      //	SI EstAdresseIPV4("192.168.1.1") ALORS Info("L'adresse IP est valide.") ALORS Erreur("L'adresse IP n'est pas valide.")
+      //
+      PROCEDURE EstAdresseIPV4(sAdresseIP est une chaine) : booleen
+      renvoyer VérifieExpressionRégulière(sAdresseIP,"[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}")
+     type : 458752
+   -
+     name : CAN_NEQValide
+     procedure_id : 1433307879191054379
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure valide la structure d'un Numéro d'Entreprise du Québec (NEQ) en vérifiant sa taille, les deux premiers chiffres et en effectuant un calcul de vérification.
+      // Syntaxe : [ <Résultat> = ] CAN_NEQValide (<sNEQ> est chaîne)
+      // Paramètres :
+      //	sNEQ (chaîne UNICODE) : Le NEQ à valider.
+      // Valeur de retour : booléen : Renvoie Vrai si le NEQ est valide, sinon renvoie Faux.
+      // Exemple :
+      //	SI CAN_NEQValide("1122334455") ALORS Info("Le NEQ est valide.") SINON Erreur("Le NEQ n'est pas valide.")
+      //
+      PROCEDURE CAN_NEQValide(local sNEQ est une chaine) : booleen	//testé sur 8 NEQ valides de 3 types différents
+      sNEQ 			= SansEspace(sNEQ,sscTout)
+      si taille(sNEQ)=10 _et_ EstNombre(sNEQ) alors
+      	si gauche(sNEQ,2) dans ("11","22","33","88") alors			//car les 2 premiers chiffres sont 11 personnes morales; 22 entreprises individuelles; 33 sociétés; 88 autorités publiques.
+      		sNEQ	= milieu(sNEQ,3) 
+      		nNEQ 	est un entier = Val(sNEQ[2])+Val(sNEQ[4])+Val(sNEQ[6])
+      		sNEQ 	= sNEQ[8]+val(sNEQ[1])*2+Val(sNEQ[3])*2+Val(sNEQ[5])*2+Val(sNEQ[7])*2	//premier sNEQ[8] pour forcer le format chaine, il sera comparé par la suite
+      		pour n = 2 _a_ taille(sNEQ) nNEQ+=val(sNEQ[n])									//on vérifie à partir du 2ème caractère, le premier est expliqué ci-dessus
+      		nNEQ	= (val(Dizaines(nNEQ))+1)*10-nNEQ	
+      		renvoyer (val(sNEQ[1])=unité(nNEQ))
+      	sinon
+      		ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c8000e§>)
+      	fin
+      sinon
+      	ErreurDéclenche(ErreurDeVérification,<§@1b15586203aa18c8000d§>)
+      fin
+      renvoyer faux
+     type : 458752
+   -
+     name : EstNombreHexa
+     procedure_id : 1467285727604866830
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure valide si une chaîne représente un nombre hexadécimal. Elle utilise une expression régulière pour effectuer cette vérification.
+      // Syntaxe : [ <Résultat> = ] EstNombreHexa (<sNombre> est chaîne)
+      // Paramètres :
+      //	sNombre (chaîne) : La chaîne à vérifier si elle représente un nombre hexadécimal.
+      // Valeur de retour : booléen : Renvoie Vrai si la chaîne représente un nombre hexadécimal, sinon renvoie Faux.
+      // Exemple :
+      //	SI EstNombreHexa(sNombreHexaTesté) ALORS Info("La chaîne est un nombre hexadécimal.") SINON Erreur("La chaîne n'est pas un nombre hexadécimal.")
+      //
+      PROCEDURE EstNombreHexa(sNombre est une chaine) : booleen
+      //ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windevmobile/48279-comment-detecter-chaine-est-hexadecimal/read.awp
+      RENVOYER VérifieExpressionRégulière(Majuscule(sNombre), "[0-9A-F]+")
+     type : 458752
+   -
+     name : EstVoyelle
+     procedure_id : 1526371127216371101
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure valide si un caractère donné est une voyelle. La validation est effectuée en considérant les alphabets latin, cyrillique et arménien, en excluant les semi-voyelles.
+      // Syntaxe : [ <Résultat> = ] EstVoyelle (<cCaract> est caractère)
+      // Paramètres :
+      //	cCaract (caractère) : Le caractère à vérifier s'il s'agit d'une voyelle.
+      // Valeur de retour : booléen : Renvoie Vrai si le caractère est une voyelle, sinon renvoie Faux.
+      // Exemple :
+      //	cCaractTesté est un caractère = "A"
+      //	bEstVoyelle est un booléen = EstVoyelle(cCaractTesté)
+      //
+      PROCEDURE EstVoyelle(cCaract est un caractère) : booleen
+      renvoyer ChaîneFormate(cCaract,ccSansAccent+ccMinuscule) dans ("a","e","i","o","u","y","α","ε","ι","ο","υ","а","о","з","у","ы","я","ю","и","е","ա","ե","է","ը","ի","ո","օ")
+     type : 458752
+   -
+     name : EstLettre
+     procedure_id : 1526432525080466930
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure valide si un caractère donné est une lettre. La validation est effectuée en considérant les alphabets latin, grec, russe et arménien.
+      // Syntaxe : [ <Résultat> = ] EstLettre (<cCaract> est caractère)
+      // Paramètres :
+      //	cCaract (caractère) : Le caractère à vérifier s'il s'agit d'une lettre.
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      //	cCaractTesté est un caractère = "A"
+      //	bEstLettre est un booléen = EstLettre(cCaractTesté)
+      //
+      PROCEDURE EstLettre(cCaract est un caractère) : booleen
+      renvoyer position(cgenerique._LettresMinuscules+cGénérique._LettresGrecquesMinuscules+cGénérique._LettresRussesMinuscules+cGénérique._LettresArméniennesMinuscules,ChaîneFormate(cCaract,ccSansAccent+ccMinuscule))>0
+     type : 458752
+   -
+     name : EstPremier
+     procedure_id : 1572814494079824199
+     type_code : 15
+     code : |1-
+      // Résumé : Permet de déterminer si un nombre donné est premier.
+      // Syntaxe : [ <Résultat> = ] EstPremier (<nNombreATester> est entier)
+      // Paramètres :
+      //	nNombreATester (entier) : <indiquez ici le rôle de nNombreATester>
+      // Valeur de retour : booléen : indiquant si le nombre donné est premier (Vrai) ou non (Faux).
+      // Exemple :
+      //	EstPremier(15)  renvoie faux
+      //
+      PROCEDURE EstPremier(local nNombreATester est un entier) : booleen
+      //ref : https://www.dcode.fr/test-primalite#q7
+      nNombreATester=abs(nNombreATester)
+      si nNombreATester=0 alors renvoyer faux 
+      si nNombreATester=1 alors renvoyer vrai 
+      tabPremier est un tableau dynamique d'entiers = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97]
+      pour tout nNbrPremier de tabPremier
+      	si nNombreATester=nNbrPremier alors renvoyer vrai
+      	si modulo(nNombreATester,nNbrPremier)=0 alors renvoyer faux
+      FIN
+      nMax est un entier sur 8 octets = nNombreATester*nNombreATester
+      si nNombreATester>tabPremier[tabPremier..occurrence] alors
+      	j est un entier = 5
+      	tantque j*j<=nNombreATester
+      		si modulo(nNombreATester,j)=0 _ou_ modulo(nNombreATester,j+2)=0 alors renvoyer faux
+      		j+=6			
+      	FIN
+      FIN
+      renvoyer vrai
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1b15586203aa18c8
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le nom de fichier dépasse le nombre de caractères autorisés
+      en-GB : The file name exceeds the number of characters allowed
+      fr-CA : Le nom de fichier dépasse le nombre de caractères autorisés
+      en-US : The file name exceeds the number of characters allowed
+     index : 0
+   -
+     text :
+      fr-FR : "Caractère inconnu dans le RIB : "
+      en-GB : "Unknown character in the RIB : "
+      fr-CA : "Caractère inconnu dans le RIB : "
+      en-US : "Unknown character in the RIB : "
+     index : 1
+   -
+     text :
+      fr-FR : Le RIB est vide
+      en-GB : The RIB is empty
+      fr-CA : Le RIB est vide
+      en-US : The RIB is empty
+     index : 2
+   -
+     text :
+      fr-FR : Le RIB a la mauvaise taille ou est rempli de 0
+      en-GB : The RIB has the wrong size or is filled with 0
+      fr-CA : Le RIB a la mauvaise taille ou est rempli de 0
+      en-US : The RIB has the wrong size or is filled with 0
+     index : 3
+   -
+     text :
+      fr-FR : "Caractère interdit détecté : "
+      en-GB : "Prohibited character detected : "
+      fr-CA : "Caractère interdit détecté : "
+      en-US : "Prohibited character detected : "
+     index : 4
+   -
+     text :
+      fr-FR : Le chemin de fichier est vide
+      en-GB : The file path is empty
+      fr-CA : Le chemin de fichier est vide
+      en-US : The file path is empty
+     index : 5
+   -
+     text :
+      fr-FR : "La base doit être d(écimal), o(ctal), x(hexadécimal) ou comprise entre 2 et 36"
+      en-GB : "The base must be d(ecimal), o(ctal), x (hexadecimal) or between 2 and 36"
+      fr-CA : "La base doit être d(écimal), o(ctal), x(hexadécimal) ou comprise entre 2 et 36"
+      en-US : "The base must be d(ecimal), o(ctal), x (hexadecimal) or between 2 and 36"
+     index : 6
+   -
+     text :
+      fr-FR : Le nombre est vide
+      en-GB : The number is empty
+      fr-CA : Le nombre est vide
+      en-US : The number is empty
+     index : 7
+   -
+     text :
+      fr-FR : Le NIR doit comporter 15 chiffres
+      en-GB : NIR must be 15 digits
+      fr-CA : Le NIR doit comporter 15 chiffres
+      en-US : NIR must be 15 digits
+     index : 8
+   -
+     text :
+      fr-FR : Le caractère %1 n'existe pas en base %2
+      en-GB : The character %1 does not exist in base %2
+      fr-CA : Le caractère %1 n'existe pas en base %2
+      en-US : The character %1 does not exist in base %2
+     index : 9
+   -
+     text :
+      fr-FR : "Le premier chiffre du NAS doit commencer par 1, 2, 4, 5, 6, 7 ou 9"
+      en-GB : "The first digit of the SIN must start with 1, 2, 4, 5, 6, 7 or 9"
+      fr-CA : "Le premier chiffre du NAS doit commencer par 1, 2, 4, 5, 6, 7 ou 9"
+      en-US : "The first digit of the SIN must start with 1, 2, 4, 5, 6, 7 or 9"
+     index : 10
+   -
+     text :
+      fr-FR : Le NAS doit contenir 9 chiffres
+      en-GB : The SIN must contain 9 digits
+      fr-CA : Le NAS doit contenir 9 chiffres
+      en-US : The SIN must contain 9 digits
+     index : 11
+   -
+     text :
+      fr-FR : La base passée en paramètre n'est pas prise en charge
+      en-GB : The base passed as a parameter is not supported
+      fr-CA : La base passée en paramètre n'est pas prise en charge
+      en-US : The base passed as a parameter is not supported
+     index : 12
+   -
+     text :
+      fr-FR : La taille du NEQ doit être de 10 chiffres
+      en-GB : NEQ size must be 10 digits
+      fr-CA : La taille du NEQ doit être de 10 chiffres
+      en-US : NEQ size must be 10 digits
+     index : 13
+   -
+     text :
+      fr-FR : "Les deux premiers chiffres du NEQ doivent être 11, 22, 33 ou 88"
+      en-GB : "The first two digits of the NEQ must be 11, 22, 33 or 88"
+      fr-CA : "Les deux premiers chiffres du NEQ doivent être 11, 22, 33 ou 88"
+      en-US : "The first two digits of the NEQ must be 11, 22, 33 or 88"
+     index : 14
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

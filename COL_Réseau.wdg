@@ -1,0 +1,2161 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_Réseau
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1b362e70260044a1
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/189559-recuperer-informations-adaptateurs-reseaux-avec-fonction-getadaptersaddresses-api/read.awp
+      constante
+      	localhost 										= "127.0.0.1"
+      	
+      	MAX_ADAPTER_ADDRESS_LENGTH 						= 8 				// (IPTypes.h).
+      	MAX_DHCPV6_DUID_LENGTH							= 130 				// RFC 3315 (IPTypes.h).
+      	MAX_DNS_SUFFIX_STRING_LENGTH 					= 256 				// (IPTypes.h).
+      fin
+      ERéseauFamille est une énumération
+      	AF_UNSPEC 										= 0 				// IPv4 and IPv6 addresses family (ws2def.h). 
+      	AF_INET 										= 2 				// IPv4 addresses family (ws2def.h).
+      	AF_INET6 										= 23 				// IPv4 addresses family (ws2def.h).
+      FIN
+      ERéseauTypeIP est une Enumération
+      	IF_TYPE_OTHER 									= 1 				// Use this value if none of the other IF_TYPE_Xxx types applies (ipifcons.h).
+      	IF_TYPE_REGULAR_1822 							= 2 				// (ipifcons.h).
+      	IF_TYPE_HDH_1822 								= 3 				// (ipifcons.h).
+      	IF_TYPE_DDN_X25 								= 4 				// (ipifcons.h).
+      	IF_TYPE_RFC877_X25 								= 5 				// (ipifcons.h).
+      	IF_TYPE_ETHERNET_CSMACD 						= 6 				// (ipifcons.h).
+      	IF_TYPE_IS088023_CSMACD 						= 7 				// (ipifcons.h).
+      	IF_TYPE_ISO88024_TOKENBUS 						= 8 				// (ipifcons.h).
+      	IF_TYPE_ISO88025_TOKENRING 						= 9 				// (ipifcons.h).
+      	IF_TYPE_ISO88026_MAN 							= 10 				// (ipifcons.h).
+      	IF_TYPE_STARLAN 								= 11 				// (ipifcons.h).
+      	IF_TYPE_PROTEON_10MBIT 							= 12 				// (ipifcons.h).
+      	IF_TYPE_PROTEON_80MBIT 							= 13 				// (ipifcons.h).
+      	IF_TYPE_HYPERCHANNEL 							= 14 				// (ipifcons.h).
+      	IF_TYPE_FDDI 									= 15 				// (ipifcons.h).
+      	IF_TYPE_LAP_B 									= 16 				// (ipifcons.h).
+      	IF_TYPE_SDLC 									= 17 				// (ipifcons.h).
+      	IF_TYPE_DS1 									= 18 				// DS1-MIB (ipifcons.h).
+      	IF_TYPE_E1 										= 19 				// Obsolete. See DS1-MIB (ipifcons.h).
+      	IF_TYPE_BASIC_ISDN 								= 20 				// (ipifcons.h).
+      	IF_TYPE_PRIMARY_ISDN 							= 21 				// (ipifcons.h).
+      	IF_TYPE_PROP_POINT2POINT_SERIAL 				= 22 				// Proprietary serial (ipifcons.h).
+      	IF_TYPE_PPP 									= 23 				// (ipifcons.h).
+      	IF_TYPE_SOFTWARE_LOOPBACK 						= 24 				// (ipifcons.h).
+      	IF_TYPE_EON 									= 25 				// CLNP over IP (ipifcons.h).
+      	IF_TYPE_ETHERNET_3MBIT 							= 26 				// (ipifcons.h).
+      	IF_TYPE_NSIP 									= 27 				// XNS over IP (ipifcons.h).
+      	IF_TYPE_SLIP 									= 28 				// Generic Slip (ipifcons.h).
+      	IF_TYPE_ULTRA 									= 29 				// ULTRA Technologies (ipifcons.h).
+      	IF_TYPE_DS3 									= 30 				// DS3-MIB (ipifcons.h).
+      	IF_TYPE_SIP 									= 31 				// SMDS and coffee (ipifcons.h).
+      	IF_TYPE_FRAMERELAY 								= 32 				// DTE only (ipifcons.h).
+      	IF_TYPE_RS232 									= 33 				// (ipifcons.h).
+      	IF_TYPE_PARA 									= 34 				// Parallel port (ipifcons.h).
+      	IF_TYPE_ARCNET									= 35 				// (ipifcons.h).
+      	IF_TYPE_ARCNET_PLUS 							= 36 				// (ipifcons.h).
+      	IF_TYPE_ATM 									= 37 				// ATM cells (ipifcons.h).
+      	IF_TYPE_MIO_X25 								= 38 				// (ipifcons.h).
+      	IF_TYPE_SONET 									= 39 				// SONET or SDH (ipifcons.h).
+      	IF_TYPE_X25_PLE 								= 40 				// (ipifcons.h).
+      	IF_TYPE_ISO88022_LLC 							= 41 				// (ipifcons.h).
+      	IF_TYPE_LOCALTALK 								= 42 				// (ipifcons.h).
+      	IF_TYPE_SMDS_DXI 								= 43 				// (ipifcons.h).
+      	IF_TYPE_FRAMERELAY_SERVICE 						= 44 				// FRNETSERV-MIB (ipifcons.h).
+      	IF_TYPE_V35 									= 45 				// (ipifcons.h).
+      	IF_TYPE_HSSI 									= 46 				// (ipifcons.h).
+      	IF_TYPE_HIPPI 									= 47 				// (ipifcons.h).
+      	IF_TYPE_MODEM 									= 48 				// Generic modem (ipifcons.h).
+      	IF_TYPE_AAL5 									= 49 				// AAL5 over ATM (ipifcons.h).
+      	IF_TYPE_SONET_PATH 								= 50 				// (ipifcons.h).
+      	IF_TYPE_SONET_VT 								= 51 				// (ipifcons.h).
+      	IF_TYPE_SMDS_ICIP 								= 52 				// SMDS InterCarrier interface (ipifcons.h).
+      	IF_TYPE_PROP_VIRTUAL 							= 53 				// Proprietary virtual/internal (ipifcons.h).
+      	IF_TYPE_PROP_MULTIPLEXOR 						= 54 				// Proprietary multiplexing (ipifcons.h).
+      	IF_TYPE_IEEE80212 								= 55	 			// (ipifcons.h).
+      	IF_TYPE_FIBRECHANNEL 							= 56 				// (ipifcons.h).
+      	IF_TYPE_HIPPIINTERFACE 							= 57 				// (ipifcons.h).
+      	IF_TYPE_FRAMERELAY_INTERCONNECT 				= 58 				// Obsolete. Use 32 or 44 instead (ipifcons.h).
+      	IF_TYPE_AFLANE_8023 							= 59 				// ATM-emulated LAN-for 802.3 (ipifcons.h).
+      	IF_TYPE_AFLANE_8025 							= 60 				// ATM-emulated LAN for 802.5 (ipifcons.h).
+      	IF_TYPE_CCTEMUL 								= 61 				// ATM-emulated circuit (ipifcons.h).
+      	IF_TYPE_FASTETHER 								= 62 				// Fast Ethernet (100BaseT) (ipifcons.h).
+      	IF_TYPE_ISDN 									= 63 				// ISDN and X.25 (ipifcons.h).
+      	IF_TYPE_V11  									= 64 				// CCITT V.11/X.21 (ipifcons.h).
+      	IF_TYPE_V36 									= 65 				// CCITT V.36 (ipifcons.h).
+      	IF_TYPE_G703_64K 								= 66 				// CCITT G703 at 64Kbps (ipifcons.h).
+      	IF_TYPE_G703_2MB 								= 67 				// Obsolete. See DS1-MIB (ipifcons.h).
+      	IF_TYPE_QLLC 									= 68 				// SNA QLLC (ipifcons.h).
+      	IF_TYPE_FASTETHER_FX 							= 69 				// Fast Ethernet (100BaseFX) (ipifcons.h).
+      	IF_TYPE_CHANNEL 								= 70 				// (ipifcons.h).
+      	IF_TYPE_IEEE80211 								= 71 				// Radio spread spectrum (ipifcons.h).
+      	IF_TYPE_IBM370PARCHAN 							= 72 				// IBM System 360/370 OEMI channel (ipifcons.h).
+      	IF_TYPE_ESCON 									= 73 				// IBM Enterprise Systems connection (ipifcons.h).
+      	IF_TYPE_DLSW 									= 74 				// Data link switching (ipifcons.h).
+      	IF_TYPE_ISDN_S 									= 75 				// ISDN S/T interface (ipifcons.h).
+      	IF_TYPE_ISDN_U 									= 76 				// ISDN U interface (ipifcons.h).
+      	IF_TYPE_LAP_D 									= 77 				// Link access protocol D (ipifcons.h).
+      	IF_TYPE_IPSWITCH 								= 78 				// IP switching objects (ipifcons.h).
+      	IF_TYPE_RSRB 									= 79 				// Remote source route bridging (ipifcons.h).
+      	IF_TYPE_ATM_LOGICAL 							= 80 				// ATM logical port (ipifcons.h).
+      	IF_TYPE_DS0 									= 81 				// Digital signal level 0 (ipifcons.h).
+      	IF_TYPE_DS0_BUNDLE 								= 82 				// Group of ds0s on the same ds1 (ipifcons.h).
+      	IF_TYPE_BSC 									= 83 				// Bisynchronous protocol (ipifcons.h).
+      	IF_TYPE_ASYNC 									= 84 				// Asynchronous protocol (ipifcons.h).
+      	IF_TYPE_CNR 									= 85 				// Combat net radio (ipifcons.h).
+      	IF_TYPE_ISO88025R_DTR 							= 86 				// ISO 802.5r DTR (ipifcons.h).
+      	IF_TYPE_EPLRS 									= 87 				// Ext Pos Loc Report Sys (ipifcons.h).
+      	IF_TYPE_ARAP 									= 88 				// Appletalk remote access protocol (ipifcons.h).
+      	IF_TYPE_PROP_CNLS 								= 89 				// Proprietary connectionless protocol (ipifcons.h).
+      	IF_TYPE_HOSTPAD 								= 90 				// CCITT-ITU X.29 PAD protocol (ipifcons.h).
+      	IF_TYPE_TERMPAD 								= 91 				// CCITT-ITU X.3 PAD facility (ipifcons.h).
+      	IF_TYPE_FRAMERELAY_MPI 							= 92 				// Multiproto interconnect over FR (ipifcons.h).
+      	IF_TYPE_X213 									= 93 				// CCITT-ITU X213 (ipifcons.h).
+      	IF_TYPE_ADSL 									= 94 				// Asymmetric digital subscriber loop (ipifcons.h).
+      	IF_TYPE_RADSL 									= 95 				// Rate-adapt digital subscriber loop (ipifcons.h).
+      	IF_TYPE_SDSL									= 96 				// Symmetric digital subscriber loop (ipifcons.h).
+      	IF_TYPE_VDSL 									= 97 				// Very H-Speed digital subscriber loop (ipifcons.h).
+      	IF_TYPE_ISO88025_CRFPRINT 						= 98 				// ISO 802.5 CRFP (ipifcons.h).
+      	IF_TYPE_MYRINET 								= 99 				// Myricom Myrinet (ipifcons.h).
+      	IF_TYPE_VOICE_EM 								= 100 				// Voice receive and transmit (ipifcons.h).
+      	IF_TYPE_VOICE_FXO 								= 101 				// Voice foreign exchange office (ipifcons.h).
+      	IF_TYPE_VOICE_FXS 								= 102 				// Voice foreign exchange station (ipifcons.h).
+      	IF_TYPE_VOICE_ENCAP 							= 103 				// Voice encapsulation (ipifcons.h).
+      	IF_TYPE_VOICE_OVERIP 							= 104 				// Voice over IP encapsulation (ipifcons.h).
+      	IF_TYPE_ATM_DXI 								= 105 				// ATM DXI (ipifcons.h).
+      	IF_TYPE_ATM_FUNI 								= 106 				// ATM FUNI (ipifcons.h).
+      	IF_TYPE_ATM_IMA 								= 107 				// ATM IMA (ipifcons.h).
+      	IF_TYPE_PPPMULTILINKBUNDLE 						= 108 				// PPP multilink bundle (ipifcons.h).
+      	IF_TYPE_IPOVER_CDLC 							= 109 				// IBM ipOverCdlc (ipifcons.h).
+      	IF_TYPE_IPOVER_CLAW 							= 110 				// IBM common link access to workstation (ipifcons.h).
+      	IF_TYPE_STACKTOSTACK 							= 111 				// IBM stackToStack (ipifcons.h).
+      	IF_TYPE_VIRTUALIPADDRESS 						= 112 				// IBM VIPA (ipifcons.h).
+      	IF_TYPE_MPC 									= 113 				// IBM multi-proto channel support (ipifcons.h).
+      	IF_TYPE_IPOVER_ATM 								= 114 				// IBM ipOverAtm (ipifcons.h).
+      	IF_TYPE_ISO88025_FIBER 							= 115 				// ISO 802.5j Fiber Token Ring (ipifcons.h).
+      	IF_TYPE_TDLC 									= 116 				// IBM twinaxial data link control (ipifcons.h).
+      	IF_TYPE_GIGABITETHERNET 						= 117 				// (ipifcons.h).
+      	IF_TYPE_HDLC 									= 118 				// (ipifcons.h).
+      	IF_TYPE_LAP_F 									= 119 				// (ipifcons.h).
+      	IF_TYPE_V37 									= 120 				// (ipifcons.h).
+      	IF_TYPE_X25_MLP 								= 121 				// Multi-link protocol (ipifcons.h).
+      	IF_TYPE_X25_HUNTGROUP 							= 122 				// X.25 hunt group (ipifcons.h).
+      	IF_TYPE_TRANSPHDLC 								= 123 				// (ipifcons.h).
+      	IF_TYPE_INTERLEAVE 								= 124 				// Interleave channel (ipifcons.h).
+      	IF_TYPE_FAST 									= 125 				// Fast channel (ipifcons.h).
+      	IF_TYPE_IP 										= 126 				// IP (for APPN HPR in IP networks) (ipifcons.h).
+      	IF_TYPE_DOCSCABLE_MACLAYER 						= 127 				// CATV MAC layer (ipifcons.h).
+      	IF_TYPE_DOCSCABLE_DOWNSTREAM 					= 128 				// CATV downstream interface (ipifcons.h).
+      	IF_TYPE_DOCSCABLE_UPSTREAM 						= 129 				// CATV upstream interface (ipifcons.h).
+      	IF_TYPE_A12MPPSWITCH 							= 130 				// Avalon parallel processor (ipifcons.h).
+      	IF_TYPE_TUNNEL 									= 131 				// Encapsulation interface (ipifcons.h).
+      	IF_TYPE_COFFEE 									= 132 				// Coffee pot (ipifcons.h).
+      	IF_TYPE_CES 									= 133 				// Circuit emulation service (ipifcons.h).
+      	IF_TYPE_ATM_SUBINTERFACE						= 134 				// ATM sub-interface (ipifcons.h).
+      	IF_TYPE_L2_VLAN 								= 135 				// Layer 2 virtual LAN using 802.1Q (ipifcons.h).
+      	IF_TYPE_L3_IPVLAN 								= 136 				// Layer 3 virtual LAN using IP (ipifcons.h).
+      	IF_TYPE_L3_IPXVLAN 								= 137 				// Layer 3 virtual LAN using IPX (ipifcons.h).
+      	IF_TYPE_DIGITALPOWERLINE 						= 138 				// IP over power lines (ipifcons.h).
+      	IF_TYPE_MEDIAMAILOVERIP 						= 139 				// Multimedia mail over IP (ipifcons.h).
+      	IF_TYPE_DTM 									= 140 				// Dynamic synchronous transfer mode (ipifcons.h).
+      	IF_TYPE_DCN 									= 141 				// Data communications network (ipifcons.h).
+      	IF_TYPE_IPFORWARD 								= 142 				// IP forwarding interface (ipifcons.h).
+      	IF_TYPE_MSDSL 									= 143 				// Multi-rate symmetric DSL (ipifcons.h).
+      	IF_TYPE_IEEE1394 								= 144 				// IEEE 1394 high performance serial bus (ipifcons.h).
+      	IF_TYPE_IF_GSN 									= 145 				// (ipifcons.h).
+      	IF_TYPE_DVBRCC_MACLAYER 						= 146 				// (ipifcons.h).
+      	IF_TYPE_DVBRCC_DOWNSTREAM 						= 147 				// (ipifcons.h).
+      	IF_TYPE_DVBRCC_UPSTREAM 						= 148 				// (ipifcons.h).
+      	IF_TYPE_ATM_VIRTUAL 							= 149 				// (ipifcons.h).
+      	IF_TYPE_MPLS_TUNNEL 							= 150 				// (ipifcons.h).
+      	IF_TYPE_SRP 									= 151 				// (ipifcons.h).
+      	IF_TYPE_VOICEOVERATM 							= 152 				// (ipifcons.h).
+      	IF_TYPE_VOICEOVERFRAMERELAY 					= 153 				// (ipifcons.h).
+      	IF_TYPE_IDSL 									= 154 				// (ipifcons.h).
+      	IF_TYPE_COMPOSITELINK 							= 155 				// (ipifcons.h).
+      	IF_TYPE_SS7_SIGLINK 							= 156 				// (ipifcons.h).
+      	IF_TYPE_PROP_WIRELESS_P2P 						= 157 				// (ipifcons.h).
+      	IF_TYPE_FR_FORWARD 								= 158 				// (ipifcons.h).
+      	IF_TYPE_RFC1483 								= 159 				// (ipifcons.h).
+      	IF_TYPE_USB 									= 160 				// (ipifcons.h).
+      	IF_TYPE_IEEE8023AD_LAG 							= 161 				// (ipifcons.h).
+      	IF_TYPE_BGP_POLICY_ACCOUNTING 					= 162 				// (ipifcons.h).
+      	IF_TYPE_FRF16_MFR_BUNDLE 						= 163 				// (ipifcons.h).
+      	IF_TYPE_H323_GATEKEEPER 						= 164 				// (ipifcons.h).
+      	IF_TYPE_H323_PROXY 								= 165 				// (ipifcons.h).
+      	IF_TYPE_MPLS 									= 166 				// (ipifcons.h).
+      	IF_TYPE_MF_SIGLINK 								= 167 				// (ipifcons.h).
+      	IF_TYPE_HDSL2 									= 168 				// (ipifcons.h).
+      	IF_TYPE_SHDSL 									= 169 				// (ipifcons.h).
+      	IF_TYPE_DS1_FDL 								= 170 				// (ipifcons.h).
+      	IF_TYPE_POS 									= 171 				// (ipifcons.h).
+      	IF_TYPE_DVB_ASI_IN 								= 172 				// (ipifcons.h).
+      	IF_TYPE_DVB_ASI_OUT 							= 173 				// (ipifcons.h).
+      	IF_TYPE_PLC 									= 174 				// (ipifcons.h).
+      	IF_TYPE_NFAS 									= 175 				// (ipifcons.h).
+      	IF_TYPE_TR008 									= 176 				// (ipifcons.h).
+      	IF_TYPE_GR303_RDT 								= 177 				// (ipifcons.h).
+      	IF_TYPE_GR303_IDT 								= 178 				// (ipifcons.h).
+      	IF_TYPE_ISUP 									= 179 				// (ipifcons.h).
+      	IF_TYPE_PROP_DOCS_WIRELESS_MACLAYER 			= 180 				// (ipifcons.h).
+      	IF_TYPE_PROP_DOCS_WIRELESS_DOWNSTREAM 			= 181 				// (ipifcons.h).
+      	IF_TYPE_PROP_DOCS_WIRELESS_UPSTREAM 			= 182 				// (ipifcons.h).
+      	IF_TYPE_HIPERLAN2 								= 183 				// (ipifcons.h).
+      	IF_TYPE_PROP_BWA_P2MP 							= 184 				// (ipifcons.h).
+      	IF_TYPE_SONET_OVERHEAD_CHANNEL 					= 185 				// (ipifcons.h).
+      	IF_TYPE_DIGITAL_WRAPPER_OVERHEAD_CHANNEL 		= 186 				// (ipifcons.h).
+      	IF_TYPE_AAL2 									= 187 				// (ipifcons.h).
+      	IF_TYPE_RADIO_MAC 								= 188 				// (ipifcons.h).
+      	IF_TYPE_ATM_RADIO 								= 189 				// (ipifcons.h).
+      	IF_TYPE_IMT 									= 190 				// (ipifcons.h).
+      	IF_TYPE_MVL 									= 191 				// (ipifcons.h).
+      	IF_TYPE_REACH_DSL 								= 192 				// (ipifcons.h).
+      	IF_TYPE_FR_DLCI_ENDPT 							= 193 				// (ipifcons.h).
+      	IF_TYPE_ATM_VCI_ENDPT 							= 194 				// (ipifcons.h).
+      	IF_TYPE_OPTICAL_CHANNEL 						= 195 				// (ipifcons.h).
+      	IF_TYPE_OPTICAL_TRANSPORT 						= 196 				// (ipifcons.h).
+      	IF_TYPE_IEEE80216_WMAN 							= 237				// (ipifcons.h).
+      	IF_TYPE_WWANPP 									= 243 				// Mobile Broadband devices based on GSM technology (ipifcons.h).
+      	IF_TYPE_WWANPP2 								= 244 				// Mobile Broadband devices based on CDMA technology (ipifcons.h).
+      FIN
+      
+      CORéseauOption est une combinaison
+      	GAA_FLAG_SKIP_UNICAST 							= 0x0001 			// Do not return unicast addresses (Iptypes.h).
+      	GAA_FLAG_SKIP_ANYCAST 							= 0x0002 			// Do not return IPv6 anycast addresses (Iptypes.h).
+      	GAA_FLAG_SKIP_MULTICAST 						= 0x0004 			// Do not return multicast addresses (Iptypes.h).
+      	GAA_FLAG_SKIP_DNS_SERVER 						= 0x0008 			// Do not return addresses of DNS servers (Iptypes.h). 
+      	GAA_FLAG_INCLUDE_PREFIX 						= 0x0010 			// Return a list of IP address prefixes on this adapter. When this flag is set, IP address prefixes are returned for both IPv6 and IPv4 addresses (IPTypes.h).
+      	GAA_FLAG_SKIP_FRIENDLY_NAME 					= 0x0020 			// Do not return the adapter friendly name (Iptypes.h).
+      	GAA_FLAG_INCLUDE_WINS_INFO 						= 0x0040 			// Return addresses of Windows Internet Name Service (WINS) servers (Iptypes.h).
+      	GAA_FLAG_INCLUDE_GATEWAYS 						= 0x0080 			// Return the addresses of default gateways (Iptypes.h).
+      	GAA_FLAG_INCLUDE_ALL_INTERFACES 				= 0x0100 			// Return addresses for all NDIS interfaces (Iptypes.h).
+      	GAA_FLAG_INCLUDE_ALL_COMPARTMENTS 				= 0x0200 			// Return addresses in all routing compartments (Iptypes.h).
+      	GAA_FLAG_INCLUDE_TUNNEL_BINDINGORDER 			= 0x0400 			// Return the adapter addresses sorted in tunnel binding order (Iptypes.h).
+      FIN
+      
+      STAdaptateurInfoUnicast est une structure
+      	sAdresseIPV4				est une chaine
+      	sMasqueIPV4					est une chaîne
+      	sAdresseIPV6				est une chaine
+      	nPréfixeOrigine				est un entier
+      	sPréfixeOrigine				est une chaine
+      	nSuffixeOrigine				est un entier
+      	sSuffixeOrigine				est une chaîne
+      	nDétectionDoublonAdresse	est un entier
+      	sDétectionDoublonAdresse	est une chaine
+      	nDuréeDeVieValide			est un entier
+      	nDuréeDeViePréférée			est un entier
+      	nDuréeDeVieAllouée			est un entier
+      FIN
+      STAdaptateurInfoIP est une structure
+      	sAdresseIPV4				est une chaine
+      	sAdresseIPV6				est une chaine
+      FIN
+      STAdaptateurInfo est une structure
+      	nStatut						est un entier
+      	sStatut						est une chaine
+      	nIndexIPV4					est un entier systeme
+      	bIPV4						est un booléen	
+      	nMétriqueIPV4				est un entier			
+      	nIndexIPV6					est un entier
+      	bContientAutresInfosIPV6	est un booléen
+      	bIPV6						est un booléen			
+      	nMétriqueIPV6				est un entier	
+      	sGUID						est une chaine
+      	sGUIDRéseau					est une chaine
+      	sDescription				est une chaîne
+      	sNomFamilier				est une chaine
+      	sSuffixeDNS					est une chaine
+      	sAdresseMAC					est une chaine
+      	bDynamiqueDNS				est un booleen		
+      	bDynDNS						est un booléen	
+      	bEnregistreLeSuffixeDNS		est un booléen
+      	bDHCPDynamique				est un booléen	
+      	sServeurDHCPIPV4			est une chaine
+      	sServeurDHCPIPV6			est une chaine
+      	sDUID						est une chaine
+      	sDHCPIPV6IAID				est une chaine
+      	bSeulementRéception			est un booléen
+      	bDestinataireMulticast		est un booléen
+      	bNetBIOS					est un booléen			
+      	nMTU						est un entier
+      	nTypeIF						est un entier
+      	sTypeIF						est une chaine	
+      	sIndiceZone					est une chaine
+      	nTypeConnexion				est un entier
+      	nTypeTunnel					est un entier
+      	nInterfaceNDIS				est un entier
+      	nTypeInterfaceNDIS			est un entier sans signe sur 4 octets
+      	sTypeInterfaceNDIS			est une chaine
+      	nVitesseEnvoi				est un entier sur 8 octets
+      	nVitesseRéception			est un entier sur 8 octets
+      	tabUnicast					est un tableau de stAdaptateurInfoUnicast
+      	tabAnycast					est un tableau de STAdaptateurInfoIP
+      	tabMulticast				est un tableau de STAdaptateurInfoIP
+      	tabDNS						est un tableau de STAdaptateurInfoIP
+      	tabGateway					est un tableau de chaines
+      	tabPréfixe					est un tableau de chaines
+      	tabWINS						est un tableau de chaines
+      	sErreur						est une chaine
+      FIN
+      
+      STInternetInfo est une structure
+      	bUtiliseModem				est un booleen
+      	bUtiliseRéseau				est un booleen
+      	bUtiliseProxy				est un booleen
+      	bRASInstallé				est un booleen
+      	bModeHorsConnexion			est un booleen
+      	bInternetConnecté			est un booleen
+      	sNomConnexion				est une chaine
+      FIN
+      
+      _NET_LUID_LH est une structure					// The NET_LUID union is the locally unique identifier (LUID) for a network interface (Ifdef.h).
+      	tabReserved 				est un tableau fixe de 3 entiers sans signe sur 1 octet
+      	tabNetLuidIndex 			est un tableau fixe de 3 entiers sans signe sur 1 octet
+      	nIfType 					est un entier
+      FIN
+      _IF_LUID est une structure
+      	nValue 						est un entier sans signe sur 8 octets 						// ULONG64 Value;
+      FIN                                                                                     	
+      _NET_LUID est une structure 					// typedef union                                            	
+      	stInfo						est un _NET_LUID_LH 										// struct { ULONG64 Reserved:24; ULONG64 NetLuidIndex:24; ULONG64 IfType:16; } Info;
+      FIN                                                                                     	
+                                                                                              	
+      _SOCKET_ADDRESS est une structure    			// The SOCKET_ADDRESS structure stores protocol-specific address information (Ws2def.h).	
+      	nSockaddr 					est un entier systeme										// LPSOCKADDR lpSockaddr;
+      	nSockaddrLength 			est un entier 												// INT iSockaddrLength;
+      FIN
+      
+      // A GUID is a 128-bit value consisting of one group of 8 hexadecimal digits, followed by three groups of 4 hexadecimal digits each, followed by one group of 12 hexadecimal digits.
+      _GUID est une structure							// GUIDs identify objects such as interfaces, manager entry-point vectors (EPVs), and class objects (Rpcdce.h). 
+      	nData1 						est un entier sans signe sur 4 octets 						// DWORD Data1; 
+      	nData2 						est un entier sans signe sur 2 octets 						// WORD Data2;
+      	nData3 						est un entier sans signe sur 2 octets 						// WORD Data3;
+      	tabData4 					est un tableau fixe de 8 entiers sans signe sur 1 octet 	// BYTE Data4[8];
+      FIN
+      
+      _IP_ADAPTER_ADDRESSES est une structure			// The IP_ADAPTER_ADDRESSES structure is the header node for a linked list of addresses for a particular adapter (Iptypes.h).
+      	nLength 					est un entier sans signe sur 4 octets 						//ULONG Length;
+      	nIfIndex 					est un entier sans signe sur 4 octets						//DWORD IfIndex;
+      	nNext 						est un entier systeme										// struct _IP_ADAPTER_ADDRESSES *Next;
+      	nAdapterName 				est un entier systeme										// PCHAR AdapterName;
+      	nFirstUnicastAddress 		est un entier systeme										// PIP_ADAPTER_UNICAST_ADDRESS FirstUnicastAddress;
+      	nFirstAnycastAddress 		est un entier systeme										// PIP_ADAPTER_ANYCAST_ADDRESS FirstAnycastAddress;
+      	nFirstMulticastAddress 		est un entier systeme										// PIP_ADAPTER_MULTICAST_ADDRESS FirstMulticastAddress;
+      	nFirstDnsServerAddress 		est un entier systeme										// PIP_ADAPTER_DNS_SERVER_ADDRESS FirstDnsServerAddress;
+      	nDnsSuffix 					est un entier systeme										// PWCHAR DnsSuffix;
+      	nDescription 				est un entier systeme										// PWCHAR Description;
+      	nFriendlyName 				est un entier systeme										// PWCHAR FriendlyName;
+      	tabPhysicalAddress 			est un tableau fixe de MAX_ADAPTER_ADDRESS_LENGTH entiers sans signe sur 1 octet // BYTE PhysicalAddress[MAX_ADAPTER_ADDRESS_LENGTH];
+      	nPhysicalAddressLength 		est un entier sans signe sur 4 octets 						//DWORD PhysicalAddressLength;
+      	nFlags 						est un entier sans signe sur 4 octets 						// DWORD Flags;
+      	nMtu 						est un entier sans signe sur 4 octets 						// DWORD Mtu;
+      	nIfType 					est un entier sans signe sur 4 octets						// DWORD IfType;
+      	nOperStatus 				est un entier //IF_OPER_STATUS OperStatus;
+      	
+      	// These members are only available on Windows XP with SP1 and later.
+      	nIpv6IfIndex 				est un entier sans signe sur 4 octets 						//DWORD Ipv6IfIndex;
+      	tabZoneIndices 				est un tableau fixe de 16 entiers sans signe sur 4 octets 	//DWORD ZoneIndices[16];
+      	nFirstPrefix 				est un entier systeme 										//PIP_ADAPTER_PREFIX FirstPrefix;
+      	
+      	// These members are only available on Windows Vista and later.
+      	nTransmitLinkSpeed 			est un entier sans signe sur 8 octets 						// ULONG64 TransmitLinkSpeed;
+      	nReceiveLinkSpeed 			est un entier sans signe sur 8 octets 						// ULONG64 ReceiveLinkSpeed;
+      	nFirstWinsServerAddress 	est un entier système										//PIP_ADAPTER_WINS_SERVER_ADDRESS_LH FirstWinsServerAddress;
+      	nFirstGatewayAddress 		est un entier systeme 										//PIP_ADAPTER_GATEWAY_ADDRESS_LH FirstGatewayAddress;
+      	nIpv4Metric 				est un entier sans signe sur 4 octets 						// ULONG Ipv4Metric;
+      	nIpv6Metric 				est un entier sans signe sur 4 octets 						// ULONG Ipv6Metric;
+      	stLuid 						est un _NET_LUID 											// IF_LUID Luid;
+      	stDhcpv4Server 				est un _SOCKET_ADDRESS 										// SOCKET_ADDRESS Dhcpv4Server;
+      	nCompartmentId 				est un entier sans signe sur 4 octets 						// NET_IF_COMPARTMENT_ID CompartmentId;
+      	stNetworkGuid 				est un _GUID 												// NET_IF_NETWORK_GUID NetworkGuid;
+      	nConnectionType 			est un entier 												// NET_IF_CONNECTION_TYPE ConnectionType;
+      	nTunnelType 				est un entier 												// TUNNEL_TYPE TunnelType;
+      	stDhcpv6Server 				est un _SOCKET_ADDRESS 										// SOCKET_ADDRESS Dhcpv6Server;
+      	tabDhcpv6ClientDuid 		est un tableau fixe de MAX_DHCPV6_DUID_LENGTH entiers sans signe sur 1 octet // BYTE Dhcpv6ClientDuid[MAX_DHCPV6_DUID_LENGTH];
+      	nStruct_Alignment 			est un entier sur 2 octets 									// Reserved (used to align the windev structure).
+      	nDhcpv6ClientDuidLength 	est un entier sans signe sur 4 octets 						// ULONG Dhcpv6ClientDuidLength;
+      	nDhcpv6Iaid 				est un entier sans signe sur 4 octets 						// ULONG Dhcpv6Iaid;
+      	
+      	// This member is only available on Windows Vista with SP1 and later and on Windows Server 2008 and later.
+      	nFirstDnsSuffix 			est un entier systeme 										//PIP_ADAPTER_DNS_SUFFIX FirstDnsSuffix;
+      	nStruct_Alignment2 			est un entier sur 4 octets 									// Reserved (used to align the windev structure).
+      FIN
+      
+      
+      _IP_ADAPTER_UNICAST_ADDRESS est une structure	// The IP_ADAPTER_UNICAST_ADDRESS structure stores a single unicast IP address in a linked list of IP addresses for a particular adapter (Iptypes.h). 
+      	nLength 					est un entier sans signe sur 4 octets 						// ULONG Length;
+      	nFlags 						est un entier sans signe sur 4 octets 						// DWORD Flags;
+      	nNext 						est un entier systeme										// struct _IP_ADAPTER_UNICAST_ADDRESS *Next;
+      	stAddress 					est un _SOCKET_ADDRESS 										// SOCKET_ADDRESS Address;
+      	nPrefixOrigin 				est un entier 												// IP_PREFIX_ORIGIN PrefixOrigin;
+      	nSuffixOrigin 				est un entier 												// IP_SUFFIX_ORIGIN SuffixOrigin;
+      	nDadState 					est un entier 												// IP_DAD_STATE DadState;
+      	nValidLifetime 				est un entier sans signe sur 4 octets 						// ULONG ValidLifetime;
+      	nPreferredLifetime 			est un entier sans signe sur 4 octets 						// ULONG PreferredLifetime;
+      	nLeaseLifetime 				est un entier sans signe sur 4 octets 						// ULONG LeaseLifetime;
+      	nOnLinkPrefixLength 		est un entier sans signe sur 1 octet 						// UINT8 OnLinkPrefixLength;
+      	nStruct_Alignment 			est un entier sur 1 octets 									// Reserved (used to align the windev structure).
+      	nStruct_Alignment2 			est un entier sur 2 octets 									// Reserved (used to align the windev structure).
+      FIN
+      
+      _IP_ADAPTER_ANYCAST_ADDRESS est une structure	// The IP_ADAPTER_ANYCAST_ADDRESS structure stores a single anycast IP address in a linked list of addresses for a particular adapter (Iptypes.h).
+      	nLength 					est un entier sans signe sur 4 octets 						// ULONG Length;
+      	nFlags 						est un entier sans signe sur 4 octets 						// DWORD Flags;
+      	nNext 						est un entier systeme  										// struct _IP_ADAPTER_ANYCAST_ADDRESS *Next;
+      	stAddress 					est un _SOCKET_ADDRESS 										// SOCKET_ADDRESS Address;
+      	nStruct_Alignment 			est un entier sur 4 octets 									// Reserved (used to align the windev structure).
+      FIN
+      
+      _IP_ADAPTER_MULTICAST_ADDRESS est une structure	// The IP_ADAPTER_MULTICAST_ADDRESS structure stores a single multicast address in a linked-list of addresses for a particular adapter (Iptypes.h). 
+      	nLength 					est un entier sans signe sur 4 octets 						// ULONG Length;
+      	nFlags 						est un entier sans signe sur 4 octets 						// DWORD Flags;
+      	nNext 						est un entier systeme 										// struct _IP_ADAPTER_MULTICAST_ADDRESS *Next;
+      	stAddress 					est un _SOCKET_ADDRESS 										// SOCKET_ADDRESS Address;
+      	nStruct_Alignment 			est un entier sur 4 octets 									// Reserved (used to align the windev structure).
+      FIN
+      
+      _IP_ADAPTER_DNS_SERVER_ADDRESS est une structure	// The IP_ADAPTER_DNS_SERVER_ADDRESS structure stores a single DNS server address in a linked list of DNS server addresses for a particular adapter (Iptypes.h). 
+      	nLength 					est un entier sans signe sur 4 octets 						// ULONG Length;
+      	nReserved 					est un entier sans signe sur 4 octets 						// DWORD Reserved;
+      	nNext 						est un entier systeme 										// struct _IP_ADAPTER_DNS_SERVER_ADDRESS *Next;
+      	stAddress 					est un _SOCKET_ADDRESS 										// SOCKET_ADDRESS Address;
+      	nStruct_Alignment 			est un entier sur 4 octets 									// Reserved (used to align the windev structure).
+      FIN
+      
+      _IP_ADAPTER_PREFIX est une structure				// The IP_ADAPTER_PREFIX structure stores an IP address prefix (Iptypes.h).
+      	nLength 					est un entier sans signe sur 4 octets 						// ULONG Length;
+      	nFlags 						est un entier sans signe sur 4 octets 						// DWORD Flags;
+      	nNext 						est un entier systeme 										// struct _IP_ADAPTER_PREFIX *Next;
+      	stAddress 					est un _SOCKET_ADDRESS 										// SOCKET_ADDRESS Address;
+      	nPrefixLength 				est un entier sans signe sur 4 octets 						// ULONG PrefixLength;
+      FIN
+      
+      _IP_ADAPTER_WINS_SERVER_ADDRESS est une structure	// The IP_ADAPTER_WINS_SERVER_ADDRESS structure stores a single Windows Internet Name Service (WINS) server address in a linked list of WINS server addresses for a particular adapter (Iptypes.h). 
+      	nLength 					est un entier sans signe sur 4 octets 						// ULONG Length;
+      	nReserved 					est un entier sans signe sur 4 octets 						// DWORD Reserved;
+      	nNext 						est un entier systeme 										// struct _IP_ADAPTER_WINS_SERVER_ADDRESS *Next;
+      	stAddress 					est un _SOCKET_ADDRESS 										// SOCKET_ADDRESS Address;
+      	nStruct_Alignment 			est un entier sur 4 octets 									// Reserved (used to align the windev structure).
+      FIN
+      
+      _IP_ADAPTER_GATEWAY_ADDRESS est une structure		// The IP_ADAPTER_GATEWAY_ADDRESS structure stores a single gateway address in a linked list of gateway addresses for a particular adapter (Iptypes.h). 
+      	nLength 					est un entier sans signe sur 4 octets 						// ULONG Length;
+      	nReserved 					est un entier sans signe sur 4 octets 						// DWORD Reserved;
+      	nNext 						est un entier systeme 										// struct _IP_ADAPTER_GATEWAY_ADDRESS *Next;
+      	stAddress 					est un _SOCKET_ADDRESS 										// SOCKET_ADDRESS Address;
+      	nStruct_Alignment 			est un entier sur 4 octets 									// Reserved (used to align the windev structure).
+      FIN
+      
+      _IP_ADAPTER_DNS_SUFFIX est une structure			// The IP_ADAPTER_DNS_SUFFIX structure stores a DNS suffix in a linked list of DNS suffixes for a particular adapter (Iptypes.h).
+      	nNext 						est un entier systeme										// struct _IP_ADAPTER_DNS_SUFFIX *Next;
+      	tabString 					est un tableau fixe de MAX_DNS_SUFFIX_STRING_LENGTH entier sur 2 octets // WCHAR String[MAX_DNS_SUFFIX_STRING_LENGTH];
+      FIN
+      
+      _in_addr est une structure							// The in_addr structure represents an IPv4 Internet address (inaddr.h).
+      	tabS_un 					est un tableau fixe de 4 entiers sans signe sur 1 octet 	// u_char s_b1,s_b2,s_b3,s_b4;
+      FIN
+      
+      _in6_addr est une structure							// The in6_addr structure represents an IPv6 Internet address (In6addr.h)
+      	tabU 						est un tableau fixe de 16 entiers sans signe sur 1 octet 	// u_char Byte[16];
+      FIN
+      
+      _SOCKADDR_IN est une structure						// The sockaddr_in structure is used with IPv4 Internet address (Ws2def.h).
+      	nSin_family 				est un entier sans signe sur 2 octets 						// #if (_WIN32_WINNT < 0x0600) short sin_family; #else ADDRESS_FAMILY sin_family; #endif
+      	nSin_port 					est un entier sans signe sur 2 octets 						// u_short sin_port;
+      	stSin_addr 					est un _in_addr 											//struct in_addr sin_addr;
+      	tabSin_zero est un tableau fixe de 8 entiers sur 1 octet 								//char sin_zero[8];
+      FIN
+      
+      _SOCKADDR_IN6 est une structure						// The sockaddr_in6 structure is used with IPv6 Internet address (Ws2ipdef.h).
+      	nSin6_family 				est un entier sans signe sur 2 octets 						// ADDRESS_FAMILY sin6_family;
+      	nSin6_port 					est un entier sans signe sur 2 octets 						// u_short sin6_port;
+      	nSin6_flowinfo 				est un entier sans signe sur 4 octets 						//u_long sin6_flowinfo;
+      	stSin6_addr 				est un _in6_addr 											// struct in6_addr sin6_addr;
+      	nSin6_scope_id 				est un entier sans signe sur 4 octets 						//u_long sin6_scope_id;
+      FIN
+      
+      gtabIP_ADAPTER_ADDRESSES est un tableau dynamique de 0 _IP_ADAPTER_ADDRESSES
+      PRIVÉ
+      CONSTANTE
+      	ErreurRéseau		= 180
+      FIN
+     type : 720896
+   -
+     code : |1+
+      //
+     type : 720898
+  procedures :
+   -
+     name : AdaptateurInfo
+     procedure_id : 1962327587818237495
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure, nommée AdaptateurInfo, récupère des informations sur un adaptateur réseau en fonction des paramètres fournis.
+      // Syntaxe : [ <Résultat> = ] AdaptateurInfo (<eFamily> est COL_Réseau.ERéseauFamille, <coFlags> est COL_Réseau.CORéseauOption, <nNumAdaptateur> est entier [, <bIPV6Compacte> est booléen])
+      // Paramètres :
+      //	eFamily (COL_Réseau.ERéseauFamille) : Enumération représentant la famille du réseau.
+      //	coFlags (COL_Réseau.CORéseauOption) : Enumération représentant les options du réseau.
+      //	nNumAdaptateur (entier) : Numéro de l'adaptateur réseau.
+      // 	bIPV6Compacte (booléen optionnel): Indique si l'adresse IPv6 doit être compacte, valeur par défaut: Faux.
+      // Valeur de retour : STAdaptateurInfo : Structure contenant les informations de l'adaptateur réseau.
+      // Exemple :
+      //	InfoAdaptateurReseau est un STAdaptateurInfo = AdaptateurInfo(erfEthernet, corDefault, 1, Vrai)
+      //
+      PROCEDURE AdaptateurInfo(eFamily est un ERéseauFamille,coFlags est un CORéseauOption,nNumAdaptateur est un entier,local bIPV6Compacte est un booleen = faux) : STAdaptateurInfo
+      stUneInfo est un STAdaptateurInfo
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	nIF_TYPE_OTHER 										est un entier = 1 			// Use this value if none of the other IF_TYPE_Xxx types applies (ipifcons.h).
+      	nIF_TYPE_REGULAR_1822 								est un entier = 2 			// (ipifcons.h).
+      	nIF_TYPE_HDH_1822 									est un entier = 3 			// (ipifcons.h).
+      	nIF_TYPE_DDN_X25 									est un entier = 4 			// (ipifcons.h).
+      	nIF_TYPE_RFC877_X25 								est un entier = 5 			// (ipifcons.h).
+      	nIF_TYPE_ETHERNET_CSMACD 							est un entier = 6 			// (ipifcons.h).
+      	nIF_TYPE_IS088023_CSMACD 							est un entier = 7 			// (ipifcons.h).
+      	nIF_TYPE_ISO88024_TOKENBUS 							est un entier = 8 			// (ipifcons.h).
+      	nIF_TYPE_ISO88025_TOKENRING 						est un entier = 9 			// (ipifcons.h).
+      	nIF_TYPE_ISO88026_MAN 								est un entier = 10 			// (ipifcons.h).
+      	nIF_TYPE_STARLAN 									est un entier = 11 			// (ipifcons.h).
+      	nIF_TYPE_PROTEON_10MBIT 							est un entier = 12 			// (ipifcons.h).
+      	nIF_TYPE_PROTEON_80MBIT 							est un entier = 13 			// (ipifcons.h).
+      	nIF_TYPE_HYPERCHANNEL 								est un entier = 14 			// (ipifcons.h).
+      	nIF_TYPE_FDDI 										est un entier = 15 			// (ipifcons.h).
+      	nIF_TYPE_LAP_B 										est un entier = 16 			// (ipifcons.h).
+      	nIF_TYPE_SDLC 										est un entier = 17 			// (ipifcons.h).
+      	nIF_TYPE_DS1 										est un entier = 18 			// DS1-MIB (ipifcons.h).
+      	nIF_TYPE_E1 										est un entier = 19 			// Obsolete. See DS1-MIB (ipifcons.h).
+      	nIF_TYPE_BASIC_ISDN 								est un entier = 20 			// (ipifcons.h).
+      	nIF_TYPE_PRIMARY_ISDN 								est un entier = 21 			// (ipifcons.h).
+      	nIF_TYPE_PROP_POINT2POINT_SERIAL 					est un entier = 22 			// Proprietary serial (ipifcons.h).
+      	nIF_TYPE_PPP 										est un entier = 23 			// (ipifcons.h).
+      	nIF_TYPE_SOFTWARE_LOOPBACK 							est un entier = 24 			// (ipifcons.h).
+      	nIF_TYPE_EON 										est un entier = 25 			// CLNP over IP (ipifcons.h).
+      	nIF_TYPE_ETHERNET_3MBIT 							est un entier = 26 			// (ipifcons.h).
+      	nIF_TYPE_NSIP 										est un entier = 27 			// XNS over IP (ipifcons.h).
+      	nIF_TYPE_SLIP 										est un entier = 28 			// Generic Slip (ipifcons.h).
+      	nIF_TYPE_ULTRA 										est un entier = 29 			// ULTRA Technologies (ipifcons.h).
+      	nIF_TYPE_DS3 										est un entier = 30 			// DS3-MIB (ipifcons.h).
+      	nIF_TYPE_SIP 										est un entier = 31 			// SMDS and coffee (ipifcons.h).
+      	nIF_TYPE_FRAMERELAY 								est un entier = 32 			// DTE only (ipifcons.h).
+      	nIF_TYPE_RS232 										est un entier = 33 			// (ipifcons.h).
+      	nIF_TYPE_PARA 										est un entier = 34 			// Parallel port (ipifcons.h).
+      	nIF_TYPE_ARCNET 									est un entier = 35 			// (ipifcons.h).
+      	nIF_TYPE_ARCNET_PLUS 								est un entier = 36 			// (ipifcons.h).
+      	nIF_TYPE_ATM 										est un entier = 37 			// ATM cells (ipifcons.h).
+      	nIF_TYPE_MIO_X25 									est un entier = 38 			// (ipifcons.h).
+      	nIF_TYPE_SONET 										est un entier = 39 			// SONET or SDH (ipifcons.h).
+      	nIF_TYPE_X25_PLE 									est un entier = 40 			// (ipifcons.h).
+      	nIF_TYPE_ISO88022_LLC 								est un entier = 41 			// (ipifcons.h).
+      	nIF_TYPE_LOCALTALK 									est un entier = 42 			// (ipifcons.h).
+      	nIF_TYPE_SMDS_DXI 									est un entier = 43 			// (ipifcons.h).
+      	nIF_TYPE_FRAMERELAY_SERVICE 						est un entier = 44 			// FRNETSERV-MIB (ipifcons.h).
+      	nIF_TYPE_V35 										est un entier = 45 			// (ipifcons.h).
+      	nIF_TYPE_HSSI 										est un entier = 46 			// (ipifcons.h).
+      	nIF_TYPE_HIPPI 										est un entier = 47 			// (ipifcons.h).
+      	nIF_TYPE_MODEM 										est un entier = 48 			// Generic modem (ipifcons.h).
+      	nIF_TYPE_AAL5 										est un entier = 49 			// AAL5 over ATM (ipifcons.h).
+      	nIF_TYPE_SONET_PATH 								est un entier = 50 			// (ipifcons.h).
+      	nIF_TYPE_SONET_VT 									est un entier = 51 			// (ipifcons.h).
+      	nIF_TYPE_SMDS_ICIP 									est un entier = 52 			// SMDS InterCarrier interface (ipifcons.h).
+      	nIF_TYPE_PROP_VIRTUAL 								est un entier = 53 			// Proprietary virtual/internal (ipifcons.h).
+      	nIF_TYPE_PROP_MULTIPLEXOR 							est un entier = 54 			// Proprietary multiplexing (ipifcons.h).
+      	nIF_TYPE_IEEE80212 									est un entier = 55	 		// (ipifcons.h).
+      	nIF_TYPE_FIBRECHANNEL 								est un entier = 56 			// (ipifcons.h).
+      	nIF_TYPE_HIPPIINTERFACE 							est un entier = 57 			// (ipifcons.h).
+      	nIF_TYPE_FRAMERELAY_INTERCONNECT 					est un entier = 58 			// Obsolete. Use 32 or 44 instead (ipifcons.h).
+      	nIF_TYPE_AFLANE_8023 								est un entier = 59 			// ATM-emulated LAN-for 802.3 (ipifcons.h).
+      	nIF_TYPE_AFLANE_8025 								est un entier = 60 			// ATM-emulated LAN for 802.5 (ipifcons.h).
+      	nIF_TYPE_CCTEMUL 									est un entier = 61 			// ATM-emulated circuit (ipifcons.h).
+      	nIF_TYPE_FASTETHER 									est un entier = 62 			// Fast Ethernet (100BaseT) (ipifcons.h).
+      	nIF_TYPE_ISDN 										est un entier = 63 			// ISDN and X.25 (ipifcons.h).
+      	nIF_TYPE_V11 										est un entier = 64 			// CCITT V.11/X.21 (ipifcons.h).
+      	nIF_TYPE_V36 										est un entier = 65 			// CCITT V.36 (ipifcons.h).
+      	nIF_TYPE_G703_64K 									est un entier = 66 			// CCITT G703 at 64Kbps (ipifcons.h).
+      	nIF_TYPE_G703_2MB 									est un entier = 67 			// Obsolete. See DS1-MIB (ipifcons.h).
+      	nIF_TYPE_QLLC 										est un entier = 68 			// SNA QLLC (ipifcons.h).
+      	nIF_TYPE_FASTETHER_FX 								est un entier = 69 			// Fast Ethernet (100BaseFX) (ipifcons.h).
+      	nIF_TYPE_CHANNEL 									est un entier = 70 			// (ipifcons.h).
+      	nIF_TYPE_IEEE80211 									est un entier = 71 			// Radio spread spectrum (ipifcons.h).
+      	nIF_TYPE_IBM370PARCHAN 								est un entier = 72 			// IBM System 360/370 OEMI channel (ipifcons.h).
+      	nIF_TYPE_ESCON 										est un entier = 73 			// IBM Enterprise Systems connection (ipifcons.h).
+      	nIF_TYPE_DLSW 										est un entier = 74 			// Data link switching (ipifcons.h).
+      	nIF_TYPE_ISDN_S 									est un entier = 75 			// ISDN S/T interface (ipifcons.h).
+      	nIF_TYPE_ISDN_U 									est un entier = 76 			// ISDN U interface (ipifcons.h).
+      	nIF_TYPE_LAP_D 										est un entier = 77 			// Link access protocol D (ipifcons.h).
+      	nIF_TYPE_IPSWITCH 									est un entier = 78 			// IP switching objects (ipifcons.h).
+      	nIF_TYPE_RSRB 										est un entier = 79 			// Remote source route bridging (ipifcons.h).
+      	nIF_TYPE_ATM_LOGICAL 								est un entier = 80 			// ATM logical port (ipifcons.h).
+      	nIF_TYPE_DS0 										est un entier = 81 			// Digital signal level 0 (ipifcons.h).
+      	nIF_TYPE_DS0_BUNDLE 								est un entier = 82 			// Group of ds0s on the same ds1 (ipifcons.h).
+      	nIF_TYPE_BSC										est un entier = 83 			// Bisynchronous protocol (ipifcons.h).
+      	nIF_TYPE_ASYNC 										est un entier = 84 			// Asynchronous protocol (ipifcons.h).
+      	nIF_TYPE_CNR 										est un entier = 85 			// Combat net radio (ipifcons.h).
+      	nIF_TYPE_ISO88025R_DTR 								est un entier = 86 			// ISO 802.5r DTR (ipifcons.h).
+      	nIF_TYPE_EPLRS 										est un entier = 87 			// Ext Pos Loc Report Sys (ipifcons.h).
+      	nIF_TYPE_ARAP 										est un entier = 88 			// Appletalk remote access protocol (ipifcons.h).
+      	nIF_TYPE_PROP_CNLS 									est un entier = 89 			// Proprietary connectionless protocol (ipifcons.h).
+      	nIF_TYPE_HOSTPAD 									est un entier = 90 			// CCITT-ITU X.29 PAD protocol (ipifcons.h).
+      	nIF_TYPE_TERMPAD 									est un entier = 91 			// CCITT-ITU X.3 PAD facility (ipifcons.h).
+      	nIF_TYPE_FRAMERELAY_MPI 							est un entier = 92 			// Multiproto interconnect over FR (ipifcons.h).
+      	nIF_TYPE_X213 										est un entier = 93 			// CCITT-ITU X213 (ipifcons.h).
+      	nIF_TYPE_ADSL										est un entier = 94 			// Asymmetric digital subscriber loop (ipifcons.h).
+      	nIF_TYPE_RADSL 										est un entier = 95 			// Rate-adapt digital subscriber loop (ipifcons.h).
+      	nIF_TYPE_SDSL 										est un entier = 96 			// Symmetric digital subscriber loop (ipifcons.h).
+      	nIF_TYPE_VDSL 										est un entier = 97 			// Very H-Speed digital subscriber loop (ipifcons.h).
+      	nIF_TYPE_ISO88025_CRFPRINT 							est un entier = 98 			// ISO 802.5 CRFP (ipifcons.h).
+      	nIF_TYPE_MYRINET									est un entier = 99 			// Myricom Myrinet (ipifcons.h).
+      	nIF_TYPE_VOICE_EM 									est un entier = 100 		// Voice receive and transmit (ipifcons.h).
+      	nIF_TYPE_VOICE_FXO 									est un entier = 101 		// Voice foreign exchange office (ipifcons.h).
+      	nIF_TYPE_VOICE_FXS 									est un entier = 102 		// Voice foreign exchange station (ipifcons.h).
+      	nIF_TYPE_VOICE_ENCAP 								est un entier = 103 		// Voice encapsulation (ipifcons.h).
+      	nIF_TYPE_VOICE_OVERIP 								est un entier = 104 		// Voice over IP encapsulation (ipifcons.h).
+      	nIF_TYPE_ATM_DXI 									est un entier = 105 		// ATM DXI (ipifcons.h).
+      	nIF_TYPE_ATM_FUNI 									est un entier = 106 		// ATM FUNI (ipifcons.h).
+      	nIF_TYPE_ATM_IMA 									est un entier = 107 		// ATM IMA (ipifcons.h).
+      	nIF_TYPE_PPPMULTILINKBUNDLE 						est un entier = 108 		// PPP multilink bundle (ipifcons.h).
+      	nIF_TYPE_IPOVER_CDLC								est un entier = 109 		// IBM multi-proto channel support (ipifcons.h).
+      	nIF_TYPE_IPOVER_ATM 								est un entier = 114 		// IBM ipOverAtm (ipifcons.h).
+      	nIF_TYPE_ISO88025_FIBER 							est un entier = 115 		// ISO 802.5j Fiber Token Ring (ipifcons.h).
+      	nIF_TYPE_TDLC 										est un entier = 116 		// IBM twinaxial data link control (ipifcons.h).
+      	nIF_TYPE_GIGABITETHERNET 							est un entier = 117 		// (ipifcons.h).
+      	nIF_TYPE_HDLC 										est un entier = 118 		// (ipifcons.h).
+      	nIF_TYPE_LAP_F 										est un entier = 119 		// (ipifcons.h).
+      	nIF_TYPE_V37 										est un entier = 120 		// (ipifcons.h).
+      	nIF_TYPE_X25_MLP 									est un entier = 121 		// Multi-link protocol (ipifcons.h).
+      	nIF_TYPE_X25_HUNTGROUP 								est un entier = 122 		// X.25 hunt group (ipifcons.h).
+      	nIF_TYPE_TRANSPHDLC 								est un entier = 123 		// (ipifcons.h).
+      	nIF_TYPE_INTERLEAVE 								est un entier = 124 		// Interleave channel (ipifcons.h).
+      	nIF_TYPE_FAST 										est un entier = 125 		// Fast channel (ipifcons.h).
+      	nIF_TYPE_IP 										est un entier = 126 		// IP (for APPN HPR in IP networks) (ipifcons.h).
+      	nIF_TYPE_DOCSCABLE_MACLAYER 						est un entier = 127 		// CATV MAC layer (ipifcons.h).
+      	nIF_TYPE_DOCSCABLE_DOWNSTREAM 						est un entier = 128 		// CATV downstream interface (ipifcons.h).
+      	nIF_TYPE_DOCSCABLE_UPSTREAM							est un entier = 129 		// CATV upstream interface (ipifcons.h).
+      	nIF_TYPE_A12MPPSWITCH 								est un entier = 130 		// Avalon parallel processor (ipifcons.h).
+      	nIF_TYPE_TUNNEL 									est un entier = 131 		// Encapsulation interface (ipifcons.h).
+      	nIF_TYPE_COFFEE 									est un entier = 132 		// Coffee pot (ipifcons.h).
+      	nIF_TYPE_CES 										est un entier = 133 		// Circuit emulation service (ipifcons.h).
+      	nIF_TYPE_ATM_SUBINTERFACE 							est un entier = 134 		// ATM sub-interface (ipifcons.h).
+      	nIF_TYPE_L2_VLAN 									est un entier = 135 		// Layer 2 virtual LAN using 802.1Q (ipifcons.h).
+      	nIF_TYPE_L3_IPVLAN 									est un entier = 136 		// Layer 3 virtual LAN using IP (ipifcons.h).
+      	nIF_TYPE_L3_IPXVLAN 								est un entier = 137 		// Layer 3 virtual LAN using IPX (ipifcons.h).
+      	nIF_TYPE_DIGITALPOWERLINE 							est un entier = 138 		// IP over power lines (ipifcons.h).
+      	nIF_TYPE_MEDIAMAILOVERIP 							est un entier = 139 		// Multimedia mail over IP (ipifcons.h).
+      	nIF_TYPE_DTM 										est un entier = 140 		// Dynamic synchronous transfer mode (ipifcons.h).
+      	nIF_TYPE_DCN 										est un entier = 141 		// Data communications network (ipifcons.h).
+      	nIF_TYPE_IPFORWARD 									est un entier = 142 		// IP forwarding interface (ipifcons.h).
+      	nIF_TYPE_MSDSL 										est un entier = 143 		// Multi-rate symmetric DSL (ipifcons.h).
+      	nIF_TYPE_IEEE1394 									est un entier = 144 		// IEEE 1394 high performance serial bus (ipifcons.h).
+      	nIF_TYPE_IF_GSN 									est un entier = 145 		// (ipifcons.h).
+      	nIF_TYPE_DVBRCC_MACLAYER 							est un entier = 146 		// (ipifcons.h).
+      	nIF_TYPE_DVBRCC_DOWNSTREAM 							est un entier = 147 		// (ipifcons.h).
+      	nIF_TYPE_DVBRCC_UPSTREAM 							est un entier = 148 		// (ipifcons.h).
+      	nIF_TYPE_ATM_VIRTUAL 								est un entier = 149 		// (ipifcons.h).
+      	nIF_TYPE_MPLS_TUNNEL 								est un entier = 150 		// (ipifcons.h).
+      	nIF_TYPE_SRP 										est un entier = 151 		// (ipifcons.h).
+      	nIF_TYPE_VOICEOVERATM 								est un entier = 152 		// (ipifcons.h).
+      	nIF_TYPE_VOICEOVERFRAMERELAY 						est un entier = 153 		// (ipifcons.h).
+      	nIF_TYPE_IDSL 										est un entier = 154 		// (ipifcons.h).
+      	nIF_TYPE_COMPOSITELINK 								est un entier = 155 		// (ipifcons.h).
+      	nIF_TYPE_SS7_SIGLINK 								est un entier = 156 		// (ipifcons.h).
+      	nIF_TYPE_PROP_WIRELESS_P2P 							est un entier = 157 		// (ipifcons.h).
+      	nIF_TYPE_FR_FORWARD 								est un entier = 158 		// (ipifcons.h).
+      	nIF_TYPE_RFC1483 									est un entier = 159 		// (ipifcons.h).
+      	nIF_TYPE_USB 										est un entier = 160 		// (ipifcons.h).
+      	nIF_TYPE_IEEE8023AD_LAG 							est un entier = 161 		// (ipifcons.h).
+      	nIF_TYPE_BGP_POLICY_ACCOUNTING 						est un entier = 162 		// (ipifcons.h).
+      	nIF_TYPE_FRF16_MFR_BUNDLE 							est un entier = 163 		// (ipifcons.h).
+      	nIF_TYPE_H323_GATEKEEPER 							est un entier = 164 		// (ipifcons.h).
+      	nIF_TYPE_H323_PROXY 								est un entier = 165 		// (ipifcons.h).
+      	nIF_TYPE_MPLS 										est un entier = 166 		// (ipifcons.h).
+      	nIF_TYPE_MF_SIGLINK 								est un entier = 167 		// (ipifcons.h).
+      	nIF_TYPE_HDSL2 										est un entier = 168 		// (ipifcons.h).
+      	nIF_TYPE_SHDSL 										est un entier = 169 		// (ipifcons.h).
+      	nIF_TYPE_DS1_FDL 									est un entier = 170 		// (ipifcons.h).
+      	nIF_TYPE_POS 										est un entier = 171 		// (ipifcons.h).
+      	nIF_TYPE_DVB_ASI_IN 								est un entier = 172 		// (ipifcons.h).
+      	nIF_TYPE_DVB_ASI_OUT 								est un entier = 173 		// (ipifcons.h).
+      	nIF_TYPE_PLC 										est un entier = 174 		// (ipifcons.h).
+      	nIF_TYPE_NFAS 										est un entier = 175 		// (ipifcons.h).
+      	nIF_TYPE_TR008 										est un entier = 176 		// (ipifcons.h).
+      	nIF_TYPE_GR303_RDT 									est un entier = 177 		// (ipifcons.h).
+      	nIF_TYPE_GR303_IDT 									est un entier = 178 		// (ipifcons.h).
+      	nIF_TYPE_ISUP 										est un entier = 179 		// (ipifcons.h).
+      	nIF_TYPE_PROP_DOCS_WIRELESS_MACLAYER 				est un entier = 180 		// (ipifcons.h).
+      	nIF_TYPE_PROP_DOCS_WIRELESS_DOWNSTREAM 				est un entier = 181 		// (ipifcons.h).
+      	nIF_TYPE_PROP_DOCS_WIRELESS_UPSTREAM 				est un entier = 182 		// (ipifcons.h).
+      	nIF_TYPE_HIPERLAN2 									est un entier = 183 		// (ipifcons.h).
+      	nIF_TYPE_PROP_BWA_P2MP 								est un entier = 184 		// (ipifcons.h).
+      	nIF_TYPE_SONET_OVERHEAD_CHANNEL 					est un entier = 185 		// (ipifcons.h).
+      	nIF_TYPE_DIGITAL_WRAPPER_OVERHEAD_CHANNEL 			est un entier = 186 		// (ipifcons.h).
+      	nIF_TYPE_AAL2 										est un entier = 187 		// (ipifcons.h).
+      	nIF_TYPE_RADIO_MAC 									est un entier = 188 		// (ipifcons.h).
+      	nIF_TYPE_ATM_RADIO 									est un entier = 189 		// (ipifcons.h).
+      	nIF_TYPE_IMT 										est un entier = 190 		// (ipifcons.h).
+      	nIF_TYPE_MVL 										est un entier = 191 		// (ipifcons.h).
+      	nIF_TYPE_REACH_DSL 									est un entier = 192 		// (ipifcons.h).
+      	nIF_TYPE_FR_DLCI_ENDPT 								est un entier = 193 		// (ipifcons.h).
+      	nIF_TYPE_ATM_VCI_ENDPT 								est un entier = 194 		// (ipifcons.h).
+      	nIF_TYPE_OPTICAL_CHANNEL 							est un entier = 195 		// (ipifcons.h).
+      	nIF_TYPE_OPTICAL_TRANSPORT 							est un entier = 196 		// (ipifcons.h).
+      	nIF_TYPE_IEEE80216_WMAN 							est un entier = 237
+      	nIF_TYPE_WWANPP 									est un entier = 243 		// Mobile Broadband devices based on GSM technology (ipifcons.h).
+      	nIF_TYPE_WWANPP2 									est un entier = 244 		// Mobile Broadband devices based on CDMA technology (ipifcons.h).
+      	
+      	nIpPrefixOriginOther 								est un entier = 0 			// The IP address prefix was configured using a source other than those defined in this enumeration. This value is applicable to an IPv6 or IPv4 address (Nldef.h).
+      	nIpPrefixOriginManual 								est un entier = 1 			// The IP address prefix was configured manually. This value is applicable to an IPv6 or IPv4 address (Nldef.h).
+      	nIpPrefixOriginWellKnown 							est un entier = 2 			// The IP address prefix was configured using a well-known address. This value is applicable to an IPv6 link-local address or an IPv6 loopback address (Nldef.h).
+      	nIpPrefixOriginDhcp 								est un entier = 3 			// The IP address prefix was configured using DHCP. This value is applicable to an IPv4 address configured using DHCP or an IPv6 address configured using DHCPv6 (Nldef.h).
+      	nIpPrefixOriginRouterAdvertisement 					est un entier = 4 			// The IP address prefix was configured using router advertisement. This value is applicable to an anonymous IPv6 address that was generated after receiving a router advertisement (Nldef.h).
+      	nIpPrefixOriginUnchanged 							est un entier = 16 			// The IP address prefix should be unchanged. This value is used when setting the properties for a unicast IP interface when the value for the IP prefix origin should be unchanged (Nldef.h).
+      	
+      	nIpSuffixOriginOther 								est un entier = 0 			// The IP address suffix was configured using a source other than those defined in this enumeration. This value is applicable to an IPv6 or IPv4 address (Nldef.h).
+      	nIpSuffixOriginManual 								est un entier = 1 			// The IP address suffix was configured manually. This value is applicable to an IPv6 or IPv4 address (Nldef.h).
+      	nIpSuffixOriginWellKnown 							est un entier = 2 			// The IP address suffix was configured using a well-known address. This value is applicable to an IPv6 link-local address or an IPv6 loopback address (Nldef.h).
+      	nIpSuffixOriginDhcp 								est un entier = 3 			// The IP address suffix was configured using DHCP. This value is applicable to an IPv4 address configured using DHCP or an IPv6 address configured using DHCPv6 (Nldef.h).
+      	nIpSuffixOriginLinkLayerAddress 					est un entier = 4 			// The IP address suffix was the link local address. This value is applicable to an IPv6 link-local address or an IPv6 address where the network part was generated based on a router advertisement and the host part was based on the MAC hardware address (Nldef.h).
+      	nIpSuffixOriginRandom 								est un entier = 5 			// The IP address suffix was generated randomly. This value is applicable to an anonymous IPv6 address where the host part of the address was generated randomly from the MAC hardware address after receiving a router advertisement (Nldef.h).
+      	nIpSuffixOriginUnchanged 							est un entier = 16 			// The IP address suffix should be unchanged. This value is used when setting the properties for a unicast IP interface when the value for the IP suffix origin should be unchanged (Nldef.h).
+      	
+      	nIpDadStateInvalid 									est un entier = 0 			// The DAD state is invalid (Nldef.h). 
+      	nIpDadStateTentative 								est un entier = 1 			// The DAD state is tentative (Nldef.h). 
+      	nIpDadStateDuplicate 								est un entier = 2 			// A duplicate IP address has been detected (Nldef.h). 
+      	nIpDadStateDeprecated 								est un entier = 3 			// The IP address has been deprecated (Nldef.h).
+      	nIpDadStatePreferred 								est un entier = 4 			// The IP address is the preferred address (Nldef.h).
+      	
+      	nIP_ADAPTER_DDNS_ENABLED 							est un entier = 0x0001 		// Dynamic DNS is enabled on this adapter (IPTypes.h).
+      	nIP_ADAPTER_REGISTER_ADAPTER_SUFFIX 				est un entier = 0x0002 		// Register the DNS suffix for this adapter (IPTypes.h).
+      	nIP_ADAPTER_DHCP_ENABLED 							est un entier = 0x0004 		// The Dynamic Host Configuration Protocol (DHCP) is enabled on this adapter (IPTypes.h).
+      	nIP_ADAPTER_RECEIVE_ONLY 							est un entier = 0x0008 		// The adapter is a receive-only adapter (IPTypes.h).
+      	nIP_ADAPTER_NO_MULTICAST 							est un entier = 0x0010 		// The adapter is not a multicast recipient (IPTypes.h).
+      	nIP_ADAPTER_IPV6_OTHER_STATEFUL_CONFIG 				est un entier = 0x0020		// The adapter contains other IPv6-specific stateful configuration information (IPTypes.h).
+      	nIP_ADAPTER_NETBIOS_OVER_TCPIP_ENABLED 				est un entier = 0x0040		// The adapter is enabled for NetBIOS over TCP/IP (IPTypes.h).
+      	nIP_ADAPTER_IPV4_ENABLED 							est un entier = 0x0080 		// The adapter is enabled for IPv4 (IPTypes.h).
+      	nIP_ADAPTER_IPV6_ENABLED 							est un entier = 0x0100 		// The adapter is enabled for IPv6 (IPTypes.h).
+      	nIP_ADAPTER_IPV6_MANAGE_ADDRESS_CONFIG 				est un entier = 0x0200		// The adapter is enabled for IPv6 managed address configuration (IPTypes.h).
+      	
+      	nIfOperStatusUp 									est un entier = 1 			// The interface is up and able to pass packets (Iftypes.h ou Ifdef.h). 
+      	nIfOperStatusDown 									est un entier = 2 			// The interface is down and not in a condition to pass packets (Iftypes.h ou Ifdef.h).
+      	nIfOperStatusTesting 								est un entier = 3 			// The interface is in testing mode (Iftypes.h ou Ifdef.h).
+      	nIfOperStatusUnknown 								est un entier = 4 			// The operational status of the interface is unknown (Iftypes.h ou Ifdef.h). 
+      	nIfOperStatusDormant 								est un entier = 5 			// The interface is not actually in a condition to pass packets (it is not up), but is in a pending state, waiting for some external event (Iftypes.h ou Ifdef.h).
+      	nIfOperStatusNotPresent 							est un entier = 6 			// A refinement on the IfOperStatusDown state which indicates that the relevant interface is down specifically because some component (typically, a hardware component) is not present in the managed system (Iftypes.h ou Ifdef.h).
+      	nIfOperStatusLowerLayerDown 						est un entier = 7 			// A refinement on the IfOperStatusDown state. This new state indicates that this interface runs on top of one or more other interfaces and that this interface is down specifically because one or more of these lower-layer interfaces are down (Iftypes.h ou Ifdef.h). 
+      	
+      	bufBuf 												est un Buffer
+      	nStruct_Length,nIPv4Mask 							sont des entiers sans signe sur 4 octets
+      	sGUIDString,sIP,sIPv4Mask 							sont des chaines
+      	nNbEntrées 											est un entier
+      	
+      	stIP_ADAPTER_UNICAST_ADDRESS 						est un _IP_ADAPTER_UNICAST_ADDRESS
+      	tabIP_ADAPTER_UNICAST_ADDRESS 						est un tableau dynamique de 0 _IP_ADAPTER_UNICAST_ADDRESS
+      	stIP_ADAPTER_ANYCAST_ADDRESS 						est un _IP_ADAPTER_ANYCAST_ADDRESS
+      	tabIP_ADAPTER_ANYCAST_ADDRESS 						est un tableau dynamique de 0 _IP_ADAPTER_ANYCAST_ADDRESS
+      	stIP_ADAPTER_MULTICAST_ADDRESS 						est un _IP_ADAPTER_MULTICAST_ADDRESS
+      	tabIP_ADAPTER_MULTICAST_ADDRESS 					est un tableau dynamique de 0 _IP_ADAPTER_MULTICAST_ADDRESS
+      	stIP_ADAPTER_DNS_SERVER_ADDRESS 					est un _IP_ADAPTER_DNS_SERVER_ADDRESS
+      	tabIP_ADAPTER_DNS_SERVER_ADDRESS 					est un tableau dynamique de 0 _IP_ADAPTER_DNS_SERVER_ADDRESS
+      	stIP_ADAPTER_PREFIX 								est un  _IP_ADAPTER_PREFIX
+      	tabIP_ADAPTER_PREFIX 								est un tableau dynamique de 0 _IP_ADAPTER_PREFIX
+      	stIP_ADAPTER_WINS_SERVER_ADDRESS 					est un _IP_ADAPTER_WINS_SERVER_ADDRESS
+      	tabIP_ADAPTER_WINS_SERVER_ADDRESS 					est un tableau dynamique de 0 _IP_ADAPTER_WINS_SERVER_ADDRESS
+      	stIP_ADAPTER_GATEWAY_ADDRESS 						est un _IP_ADAPTER_GATEWAY_ADDRESS
+      	tabIP_ADAPTER_GATEWAY_ADDRESS 						est un tableau dynamique de 0 _IP_ADAPTER_GATEWAY_ADDRESS
+      	stIP_ADAPTER_DNS_SUFFIX 							est un _IP_ADAPTER_DNS_SUFFIX
+      	tabIP_ADAPTER_DNS_SUFFIX 							est un tableau dynamique de 0 _IP_ADAPTER_DNS_SUFFIX
+      	stSOCKET_ADDRESS 									est un _SOCKET_ADDRESS
+      	stSockaddr_in 										est un _SOCKADDR_IN
+      	stSockaddr_in6 										est un _SOCKADDR_IN6
+      	stIn_addr 											est un _in_addr
+      	stIn6_addr 											est un _in6_addr
+      	stNetworkGUID										est un _GUID
+      	
+      	stUneInfoUnicast 									est un STAdaptateurInfoUnicast
+      	stUneInfoAnycast,stUneInfoMulticast,stUneInfoDNS 	sont des STAdaptateurInfoip
+      	
+      	bufBuf = GetAdaptersAddresses(eFamily..Valeur,coFlags..Valeur)
+      	SI (bufBuf <> "") ALORS
+      		Transfert(&nStruct_Length,&bufBuf,Dimension(nStruct_Length)) // Récupération de la taille de la structure IP_ADAPTER_ADDRESSES
+      		SI (Taille(bufBuf) >= nStruct_Length) ALORS
+      			nNbEntrées = 1
+      			Dimension(gtabIP_ADAPTER_ADDRESSES,nNbEntrées)
+      			Transfert(&gtabIP_ADAPTER_ADDRESSES[nNbEntrées],&bufBuf,nStruct_Length)
+      			
+      			TANTQUE (gtabIP_ADAPTER_ADDRESSES[nNbEntrées].nNext)
+      				nNbEntrées++
+      				Dimension(gtabIP_ADAPTER_ADDRESSES,nNbEntrées)
+      				Transfert(&nStruct_Length,gtabIP_ADAPTER_ADDRESSES[nNbEntrées-1].nNext,Dimension(nStruct_Length)) // Récupération de la taille de la structure suivante IP_ADAPTER_ADDRESSES
+      				Transfert(&gtabIP_ADAPTER_ADDRESSES[nNbEntrées],gtabIP_ADAPTER_ADDRESSES[nNbEntrées-1].nNext,nStruct_Length)
+      			FIN
+      		FIN
+      	SINON
+      		stUneInfo.sErreur=ChaîneConstruit(<§@1b362e6a25fe2d1b001d§>,LitDernièreErreur(),erreurinfo())
+      	FIN
+      	
+      	SI TableauOccurrence(gtabIP_ADAPTER_ADDRESSES)>0 ALORS
+      		SI 0<nNumAdaptateur<=TableauOccurrence(gtabIP_ADAPTER_ADDRESSES) ALORS
+      			stUneInfo.nIndexIPV4			= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nIfIndex
+      			stUneInfo.sGUID					= ChaîneRécupère(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nAdapterName,crAdresseASCIIZ)
+      			
+      			SI (gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstUnicastAddress <> 0) ALORS
+      				TableauSupprimeTout(tabIP_ADAPTER_UNICAST_ADDRESS) //RAZ des informations précédentes.
+      				Transfert(&nStruct_Length,gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstUnicastAddress,Dimension(nStruct_Length)) // Récupération de la taille de la structure IP_ADAPTER_UNICAST_ADDRESS
+      				nNbEntrées = 1
+      				Dimension(tabIP_ADAPTER_UNICAST_ADDRESS,nNbEntrées)
+      				Transfert(&tabIP_ADAPTER_UNICAST_ADDRESS[nNbEntrées],gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstUnicastAddress,nStruct_Length)
+      				TANTQUE tabIP_ADAPTER_UNICAST_ADDRESS[nNbEntrées].nNext
+      					nNbEntrées++
+      					Dimension(tabIP_ADAPTER_UNICAST_ADDRESS,nNbEntrées)
+      					Transfert(&nStruct_Length,tabIP_ADAPTER_UNICAST_ADDRESS[nNbEntrées-1].nNext,Dimension(nStruct_Length))
+      					Transfert(&tabIP_ADAPTER_UNICAST_ADDRESS[nNbEntrées],tabIP_ADAPTER_UNICAST_ADDRESS[nNbEntrées-1].nNext,nStruct_Length)
+      				FIN 
+      			FIN
+      			
+      			SI TableauOccurrence(tabIP_ADAPTER_UNICAST_ADDRESS)>0 ALORS
+      				POUR y = 1 _À_ TableauOccurrence(tabIP_ADAPTER_UNICAST_ADDRESS)
+      					VariableRAZ(stUneInfoUnicast)
+      					Transfert(&stSOCKET_ADDRESS,&tabIP_ADAPTER_UNICAST_ADDRESS[y].stAddress,Dimension(stSOCKET_ADDRESS))
+      					SI (stSOCKET_ADDRESS.nSockaddrLength > 16) ALORS		// IPv6 Internet address
+      						Transfert(&stSockaddr_in6,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in6))
+      						stUneInfoUnicast.sAdresseIPV6 = AdresseIPV6VersChaine()
+      					SINON
+      						Transfert(&stSockaddr_in,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in))
+      						sIP = inet_ntoa(stSockaddr_in.stSin_addr)
+      						stUneInfoUnicast.sAdresseIPV4 = sIP
+      					FIN
+      					
+      					stUneInfoUnicast.nPréfixeOrigine=NumériqueVersChaîne(tabIP_ADAPTER_UNICAST_ADDRESS[y]:nPrefixOrigin)
+      					SELON tabIP_ADAPTER_UNICAST_ADDRESS[y].nPrefixOrigin
+      						CAS nIpPrefixOriginOther				: stUneInfoUnicast.sPréfixeOrigine=<§@1b362e6a25fe2d1b001a§>
+      						CAS nIpPrefixOriginManual				: stUneInfoUnicast.sPréfixeOrigine=<§@1b362e6a25fe2d1b001b§>
+      						CAS nIpPrefixOriginWellKnown 			: stUneInfoUnicast.sPréfixeOrigine=<§@1b362e6a25fe2d1b001c§>
+      						CAS nIpPrefixOriginDhcp 				: stUneInfoUnicast.sPréfixeOrigine=<§@1b362e6a25fe2d1b0017§>
+      						CAS nIpPrefixOriginRouterAdvertisement	: stUneInfoUnicast.sPréfixeOrigine=<§@1b362e6a25fe2d1b0018§>
+      						CAS nIpPrefixOriginUnchanged 			: stUneInfoUnicast.sPréfixeOrigine=<§@1b362e6a25fe2d1b0019§>
+      						AUTRE CAS								: stUneInfoUnicast.sPréfixeOrigine=<§@1b362e6a25fe2d1b0008§>
+      					FIN
+      					
+      					stUneInfoUnicast.nSuffixeOrigine=NumériqueVersChaîne(tabIP_ADAPTER_UNICAST_ADDRESS[y]:nSuffixOrigin)
+      					SELON tabIP_ADAPTER_UNICAST_ADDRESS[y]:nSuffixOrigin
+      						CAS nIpSuffixOriginOther 				: stUneInfoUnicast.sSuffixeOrigine=<§@1b362e6a25fe2d1b0009§>
+      						CAS nIpSuffixOriginManual 				: stUneInfoUnicast.sSuffixeOrigine=<§@1b362e6a25fe2d1b000a§>
+      						CAS nIpSuffixOriginWellKnown 			: stUneInfoUnicast.sSuffixeOrigine=<§@1b362e6a25fe2d1b000b§>
+      						CAS nIpSuffixOriginDhcp 				: stUneInfoUnicast.sSuffixeOrigine=<§@1b362e6a25fe2d1b000c§>
+      						CAS nIpSuffixOriginLinkLayerAddress		: stUneInfoUnicast.sSuffixeOrigine=<§@1b362e6a25fe2d1b000d§>
+      						CAS nIpSuffixOriginRandom 				: stUneInfoUnicast.sSuffixeOrigine=<§@1b362e6a25fe2d1b000e§>
+      						CAS nIpSuffixOriginUnchanged 			: stUneInfoUnicast.sSuffixeOrigine=<§@1b362e6a25fe2d1b000f§>
+      						AUTRE CAS								: stUneInfoUnicast.sSuffixeOrigine=<§@1b362e6a25fe2d1b0010§>
+      					FIN
+      					
+      					stUneInfoUnicast.nDétectionDoublonAdresse=NumériqueVersChaîne(tabIP_ADAPTER_UNICAST_ADDRESS[y].nDadState)
+      					SELON tabIP_ADAPTER_UNICAST_ADDRESS[y].nDadState
+      						CAS nIpDadStateInvalid 					: stUneInfoUnicast.sDétectionDoublonAdresse=<§@1b362e6a25fe2d1b0011§>
+      						CAS nIpDadStateTentative 				: stUneInfoUnicast.sDétectionDoublonAdresse=<§@1b362e6a25fe2d1b0012§>
+      						CAS nIpDadStateDuplicate 				: stUneInfoUnicast.sDétectionDoublonAdresse=<§@1b362e6a25fe2d1b0013§>
+      						CAS nIpDadStateDeprecated 				: stUneInfoUnicast.sDétectionDoublonAdresse=<§@1b362e6a25fe2d1b0014§>
+      						CAS nIpDadStatePreferred 				: stUneInfoUnicast.sDétectionDoublonAdresse=<§@1b362e6a25fe2d1b0015§>
+      						AUTRE CAS								: stUneInfoUnicast.sDétectionDoublonAdresse=<§@1b362e6a25fe2d1b0016§>
+      					FIN
+      					
+      					stUneInfoUnicast.nDuréeDeVieValide			= tabIP_ADAPTER_UNICAST_ADDRESS[y].nValidLifetime
+      					stUneInfoUnicast.nDuréeDeViePréférée		= tabIP_ADAPTER_UNICAST_ADDRESS[y].nPreferredLifetime
+      					stUneInfoUnicast.nDuréeDeVieAllouée			= tabIP_ADAPTER_UNICAST_ADDRESS[y].nLeaseLifetime
+      					//			Trace("- OnLink PrefixLength : " + NumériqueVersChaîne(tabIP_ADAPTER_UNICAST_ADDRESS[y]:nOnLinkPrefixLength))
+      					
+      					SI (stSOCKET_ADDRESS.nSockaddrLength<=16) ALORS
+      						nIPv4Mask = ConvertLengthToIpv4Mask(tabIP_ADAPTER_UNICAST_ADDRESS[y].nOnLinkPrefixLength)
+      						Transfert(&stIn_addr,&nIPv4Mask,Dimension(stIn_addr))
+      						sIPv4Mask="";sIPv4Mask=inet_ntoa(stIn_addr)
+      						stUneInfoUnicast.sMasqueIPV4=sIPv4Mask
+      					FIN
+      					TableauAjoute(stUneInfo.tabUnicast,stUneInfoUnicast)
+      				FIN
+      			FIN
+      			
+      			SI (gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstAnycastAddress <> 0) ALORS
+      				TableauSupprimeTout(tabIP_ADAPTER_ANYCAST_ADDRESS) //RAZ des informations précédentes.
+      				nNbEntrées = 1
+      				Dimension(tabIP_ADAPTER_ANYCAST_ADDRESS,nNbEntrées)
+      				Transfert(&tabIP_ADAPTER_ANYCAST_ADDRESS[nNbEntrées],gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstAnycastAddress,Dimension(stIP_ADAPTER_ANYCAST_ADDRESS))
+      				TANTQUE tabIP_ADAPTER_ANYCAST_ADDRESS[nNbEntrées].nNext
+      					nNbEntrées++
+      					Dimension(tabIP_ADAPTER_ANYCAST_ADDRESS,nNbEntrées)
+      					Transfert(&tabIP_ADAPTER_ANYCAST_ADDRESS[nNbEntrées],tabIP_ADAPTER_ANYCAST_ADDRESS[nNbEntrées-1].nNext,Dimension(stIP_ADAPTER_ANYCAST_ADDRESS))
+      				FIN 
+      			FIN
+      			SI (TableauOccurrence(tabIP_ADAPTER_ANYCAST_ADDRESS)) ALORS
+      				POUR y = 1 _À_ TableauOccurrence(tabIP_ADAPTER_ANYCAST_ADDRESS)
+      					VariableRAZ(stUneInfoAnycast)
+      					Transfert(&stSOCKET_ADDRESS,&tabIP_ADAPTER_ANYCAST_ADDRESS[y].stAddress,Dimension(stSOCKET_ADDRESS))
+      					SI (stSOCKET_ADDRESS:nSockaddrLength > 16) ALORS
+      						Transfert(&stSockaddr_in6,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in6))
+      						stUneInfoAnycast.sAdresseIPV6 = AdresseIPV6VersChaine()
+      					SINON
+      						Transfert(&stSockaddr_in,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in))
+      						stUneInfoAnycast.sAdresseIPV4 = inet_ntoa(stSockaddr_in.stSin_addr)
+      					FIN
+      					TableauAjoute(stUneInfo.tabAnycast,stUneInfoAnycast)
+      				FIN
+      			FIN
+      			
+      			SI (gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstMulticastAddress <> 0) ALORS
+      				TableauSupprimeTout(tabIP_ADAPTER_MULTICAST_ADDRESS) //RAZ des informations précédentes.
+      				nNbEntrées = 1
+      				Dimension(tabIP_ADAPTER_MULTICAST_ADDRESS,nNbEntrées)
+      				Transfert(&tabIP_ADAPTER_MULTICAST_ADDRESS[nNbEntrées],gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstMulticastAddress,Dimension(stIP_ADAPTER_MULTICAST_ADDRESS))
+      				TANTQUE tabIP_ADAPTER_MULTICAST_ADDRESS[nNbEntrées].nNext
+      					nNbEntrées++
+      					Dimension(tabIP_ADAPTER_MULTICAST_ADDRESS,nNbEntrées)
+      					Transfert(&tabIP_ADAPTER_MULTICAST_ADDRESS[nNbEntrées],tabIP_ADAPTER_MULTICAST_ADDRESS[nNbEntrées-1].nNext,Dimension(stIP_ADAPTER_MULTICAST_ADDRESS))
+      				FIN 
+      			FIN
+      			SI (TableauOccurrence(tabIP_ADAPTER_MULTICAST_ADDRESS)) ALORS
+      				POUR y = 1 _À_ TableauOccurrence(tabIP_ADAPTER_MULTICAST_ADDRESS)
+      					VariableRAZ(stUneInfoMulticast)
+      					Transfert(&stSOCKET_ADDRESS,&tabIP_ADAPTER_MULTICAST_ADDRESS[y].stAddress,Dimension(stSOCKET_ADDRESS))
+      					SI (stSOCKET_ADDRESS.nSockaddrLength > 16) ALORS
+      						Transfert(&stSockaddr_in6,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in6))
+      						stUneInfoMulticast.sAdresseIPV6 = AdresseIPV6VersChaine()
+      					SINON
+      						Transfert(&stSockaddr_in,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in))
+      						stUneInfoMulticast.sAdresseIPV4 = inet_ntoa(stSockaddr_in.stSin_addr)
+      					FIN
+      					TableauAjoute(stUneInfo.tabmulticast,stUneInfoMulticast)
+      				FIN
+      			FIN
+      			
+      			SI (gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstDnsServerAddress <> 0) ALORS
+      				TableauSupprimeTout(tabIP_ADAPTER_DNS_SERVER_ADDRESS) //RAZ des informations précédentes.
+      				nNbEntrées = 1
+      				Dimension(tabIP_ADAPTER_DNS_SERVER_ADDRESS,nNbEntrées)
+      				Transfert(&tabIP_ADAPTER_DNS_SERVER_ADDRESS[nNbEntrées],gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstDnsServerAddress,Dimension(stIP_ADAPTER_DNS_SERVER_ADDRESS))
+      				TANTQUE tabIP_ADAPTER_DNS_SERVER_ADDRESS[nNbEntrées].nNext
+      					nNbEntrées++
+      					Dimension(tabIP_ADAPTER_DNS_SERVER_ADDRESS,nNbEntrées)
+      					Transfert(&tabIP_ADAPTER_DNS_SERVER_ADDRESS[nNbEntrées],tabIP_ADAPTER_DNS_SERVER_ADDRESS[nNbEntrées-1].nNext,Dimension(stIP_ADAPTER_DNS_SERVER_ADDRESS))
+      				FIN 
+      			FIN
+      			SI (TableauOccurrence(tabIP_ADAPTER_DNS_SERVER_ADDRESS)) ALORS
+      				POUR y = 1 _À_ TableauOccurrence(tabIP_ADAPTER_DNS_SERVER_ADDRESS)
+      					VariableRAZ(stUneInfoDNS)
+      					Transfert(&stSOCKET_ADDRESS,&tabIP_ADAPTER_DNS_SERVER_ADDRESS[y].stAddress,Dimension(stSOCKET_ADDRESS))
+      					SI (stSOCKET_ADDRESS.nSockaddrLength > 16) ALORS
+      						Transfert(&stSockaddr_in6,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in6))
+      						stUneInfoDNS.sAdresseIPV6 = AdresseIPV6VersChaine()
+      					SINON
+      						Transfert(&stSockaddr_in,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in))
+      						stUneInfoDNS.sAdresseIPV4 = inet_ntoa(stSockaddr_in.stSin_addr)
+      					FIN
+      					TableauAjoute(stUneInfo.tabdns,stUneInfoDNS)
+      				FIN
+      			FIN
+      			
+      			stUneInfo.sSuffixeDNS			= ChaîneRécupère(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nDnsSuffix,crAdresseUNICODE)
+      			stUneInfo.sDescription			= ChaîneRécupère(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nDescription,crAdresseUNICODE)
+      			stUneInfo.sNomFamilier			= ChaîneRécupère(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFriendlyName,crAdresseUNICODE)
+      			
+      			POUR nIndiceBuffer= 1 _À_ gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nPhysicalAddressLength
+      				stUneInfo.sAdresseMAC		+= Majuscule(NumériqueVersChaîne(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].tabPhysicalAddress[nIndiceBuffer],"02x"))+" "
+      			FIN
+      			
+      			SI (ETBinaire(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFlags,nIP_ADAPTER_DDNS_ENABLED) 				= nIP_ADAPTER_DDNS_ENABLED) 				ALORS stUneInfo.bDynamiqueDNS=Vrai				//Trace("- Dynamic DNS is enabled")
+      			SI (ETBinaire(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFlags,nIP_ADAPTER_REGISTER_ADAPTER_SUFFIX) 		= nIP_ADAPTER_REGISTER_ADAPTER_SUFFIX) 		ALORS stUneInfo.bEnregistreLeSuffixeDNS=Vrai	//Trace("- Register the DNS suffix")
+      			SI (ETBinaire(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFlags,nIP_ADAPTER_DHCP_ENABLED) 				= nIP_ADAPTER_DHCP_ENABLED) 				ALORS stUneInfo.bDHCPDynamique=Vrai				//Trace("- Dynamic DHCP is enabled")
+      			SI (ETBinaire(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFlags,nIP_ADAPTER_RECEIVE_ONLY) 				= nIP_ADAPTER_RECEIVE_ONLY) 				ALORS stUneInfo.bSeulementRéception=Vrai		//Trace("- Receive-only adapter")
+      			SI (ETBinaire(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFlags,nIP_ADAPTER_NO_MULTICAST) 				= nIP_ADAPTER_NO_MULTICAST) 				ALORS stUneInfo.bDestinataireMulticast=Faux		//Trace("- Not a multicast recipient")
+      			SI (ETBinaire(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFlags,nIP_ADAPTER_IPV6_OTHER_STATEFUL_CONFIG)	= nIP_ADAPTER_IPV6_OTHER_STATEFUL_CONFIG)	ALORS stUneInfo.bContientAutresInfosIPV6=Vrai	//Trace("- Contains other IPv6-specific stateful configuration information")
+      			SI (ETBinaire(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFlags,nIP_ADAPTER_NETBIOS_OVER_TCPIP_ENABLED)	= nIP_ADAPTER_NETBIOS_OVER_TCPIP_ENABLED)	ALORS stUneInfo.bNetBIOS=Vrai					//Trace("- Enabled for NetBIOS over TCP/IP")
+      			SI (ETBinaire(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFlags,nIP_ADAPTER_IPV4_ENABLED) 				= nIP_ADAPTER_IPV4_ENABLED) 				ALORS stUneInfo.bIPV4=Vrai						//Trace("- Enabled for IPv4")
+      			SI (ETBinaire(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFlags,nIP_ADAPTER_IPV6_ENABLED) 				= nIP_ADAPTER_IPV6_ENABLED) 				ALORS stUneInfo.bIPV6=Vrai						//Trace("- Enabled for IPv6")
+      			SI (ETBinaire(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFlags,nIP_ADAPTER_IPV6_MANAGE_ADDRESS_CONFIG)	= nIP_ADAPTER_DDNS_ENABLED) 				ALORS stUneInfo.bDynDNS=Vrai					//Trace("- Enabled for IPv6 managed address configuration")
+      			
+      			stUneInfo.nMTU						= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nMtu
+      			stUneInfo.nTypeIF					= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nIfType
+      			stUneInfo.sTypeIF					= TypeIFVersChaine(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nIfType)
+      			stUneInfo.nStatut					= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nOperStatus
+      			
+      			SELON gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nOperStatus
+      				CAS nIfOperStatusUp				: stUneInfo.sStatut=<§@1b362e6a25fe2d1b0000§>
+      				CAS nIfOperStatusDown			: stUneInfo.sStatut=<§@1b362e6a25fe2d1b0001§>
+      				CAS nIfOperStatusTesting		: stUneInfo.sStatut=<§@1b362e6a25fe2d1b0002§>
+      				CAS nIfOperStatusUnknown		: stUneInfo.sStatut=<§@1b362e6a25fe2d1b0003§>
+      				CAS nIfOperStatusDormant		: stUneInfo.sStatut=<§@1b362e6a25fe2d1b0004§>
+      				CAS nIfOperStatusNotPresent		: stUneInfo.sStatut=<§@1b362e6a25fe2d1b0005§>
+      				CAS nIfOperStatusLowerLayerDown	: stUneInfo.sStatut=<§@1b362e6a25fe2d1b0006§>
+      			FIN
+      			stUneInfo.nIndexIPV6				= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nIpv6IfIndex
+      			stUneInfo.sIndiceZone 				= ""
+      			POUR IndiceBuffer = 1 _À_ 16
+      				stUneInfo.sIndiceZone += Majuscule(NumériqueVersChaîne(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].tabZoneIndices[IndiceBuffer],"02x"))+" "
+      			FIN
+      			
+      			SI (gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstPrefix <> 0) ALORS
+      				TableauSupprimeTout(tabIP_ADAPTER_PREFIX) //RAZ des informations précédentes.
+      				nNbEntrées = 1
+      				Dimension(tabIP_ADAPTER_PREFIX,nNbEntrées)
+      				Transfert(&tabIP_ADAPTER_PREFIX[nNbEntrées],gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstPrefix,Dimension(stIP_ADAPTER_PREFIX))
+      				TANTQUE tabIP_ADAPTER_PREFIX[nNbEntrées].nNext
+      					nNbEntrées++
+      					Dimension(tabIP_ADAPTER_PREFIX,nNbEntrées)
+      					Transfert(&tabIP_ADAPTER_PREFIX[nNbEntrées],tabIP_ADAPTER_PREFIX[nNbEntrées-1].nNext,Dimension(stIP_ADAPTER_PREFIX))
+      				FIN 
+      			FIN
+      			SI (TableauOccurrence(tabIP_ADAPTER_PREFIX)) ALORS
+      				POUR y = 1 _À_ TableauOccurrence(tabIP_ADAPTER_PREFIX)
+      					Transfert(&stSOCKET_ADDRESS,&tabIP_ADAPTER_PREFIX[y].stAddress,Dimension(stSOCKET_ADDRESS))
+      					SI (stSOCKET_ADDRESS.nSockaddrLength > 16) ALORS
+      						Transfert(&stSockaddr_in6,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in6))
+      						sIP = AdresseIPV6VersChaine()
+      					SINON
+      						Transfert(&stSockaddr_in,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in))
+      						sIP = inet_ntoa(stSockaddr_in.stSin_addr)
+      					FIN
+      					TableauAjoute(stUneInfo.tabprefixe,sIP)
+      				FIN
+      			FIN
+      			
+      			stUneInfo.nVitesseEnvoi			= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nTransmitLinkSpeed
+      			stUneInfo.nVitesseRéception		= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nReceiveLinkSpeed
+      			
+      			
+      			SI (gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstWinsServerAddress <> 0) ALORS
+      				TableauSupprimeTout(tabIP_ADAPTER_WINS_SERVER_ADDRESS) //RAZ des informations précédentes.
+      				nNbEntrées = 1
+      				Dimension(tabIP_ADAPTER_WINS_SERVER_ADDRESS,nNbEntrées)
+      				Transfert(&tabIP_ADAPTER_WINS_SERVER_ADDRESS[nNbEntrées],gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstWinsServerAddress,Dimension(stIP_ADAPTER_WINS_SERVER_ADDRESS))
+      				TANTQUE tabIP_ADAPTER_WINS_SERVER_ADDRESS[nNbEntrées].nNext
+      					nNbEntrées++
+      					Dimension(tabIP_ADAPTER_WINS_SERVER_ADDRESS,nNbEntrées)
+      					Transfert(&tabIP_ADAPTER_WINS_SERVER_ADDRESS[nNbEntrées],tabIP_ADAPTER_WINS_SERVER_ADDRESS[nNbEntrées-1].nNext,Dimension(stIP_ADAPTER_WINS_SERVER_ADDRESS))
+      				FIN 
+      			FIN
+      			SI (TableauOccurrence(tabIP_ADAPTER_WINS_SERVER_ADDRESS)) ALORS
+      				POUR y = 1 _À_ TableauOccurrence(tabIP_ADAPTER_WINS_SERVER_ADDRESS)
+      					Transfert(&stSOCKET_ADDRESS,&tabIP_ADAPTER_WINS_SERVER_ADDRESS[y].stAddress,Dimension(stSOCKET_ADDRESS))
+      					SI (stSOCKET_ADDRESS.nSockaddrLength > 16) ALORS
+      						Transfert(&stSockaddr_in6,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in6))
+      						sIP = AdresseIPV6VersChaine()
+      					SINON
+      						Transfert(&stSockaddr_in,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in))
+      						sIP = inet_ntoa(stSockaddr_in.stSin_addr)
+      					FIN
+      					TableauAjoute(stUneInfo.tabWINS,sIP)
+      				FIN
+      			FIN
+      			
+      			SI (gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstGatewayAddress <> 0) ALORS
+      				TableauSupprimeTout(tabIP_ADAPTER_GATEWAY_ADDRESS) //RAZ des informations précédentes.
+      				nNbEntrées = 1
+      				Dimension(tabIP_ADAPTER_GATEWAY_ADDRESS,nNbEntrées)
+      				Transfert(&tabIP_ADAPTER_GATEWAY_ADDRESS[nNbEntrées],gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstGatewayAddress,Dimension(stIP_ADAPTER_GATEWAY_ADDRESS))
+      				TANTQUE tabIP_ADAPTER_GATEWAY_ADDRESS[nNbEntrées].nNext
+      					nNbEntrées++
+      					Dimension(tabIP_ADAPTER_GATEWAY_ADDRESS,nNbEntrées)
+      					Transfert(&tabIP_ADAPTER_GATEWAY_ADDRESS[nNbEntrées],tabIP_ADAPTER_GATEWAY_ADDRESS[nNbEntrées-1].nNext,Dimension(stIP_ADAPTER_GATEWAY_ADDRESS))
+      				FIN 
+      			FIN
+      			SI (TableauOccurrence(tabIP_ADAPTER_GATEWAY_ADDRESS)) ALORS
+      				POUR y = 1 _À_ TableauOccurrence(tabIP_ADAPTER_GATEWAY_ADDRESS)
+      					Transfert(&stSOCKET_ADDRESS,&tabIP_ADAPTER_GATEWAY_ADDRESS[y].stAddress,Dimension(stSOCKET_ADDRESS))
+      					SI (stSOCKET_ADDRESS.nSockaddrLength > 16) ALORS
+      						Transfert(&stSockaddr_in6,stSOCKET_ADDRESS:nSockaddr,Dimension(stSockaddr_in6))
+      						sIP = AdresseIPV6VersChaine()
+      					SINON
+      						Transfert(&stSockaddr_in,stSOCKET_ADDRESS:nSockaddr,Dimension(stSockaddr_in))
+      						sIP = inet_ntoa(stSockaddr_in.stSin_addr)
+      					FIN
+      					TableauAjoute(stUneInfo.tabGateway,sIP)
+      				FIN
+      			FIN
+      			
+      			stUneInfo.nMétriqueIPV4			= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nIpv4Metric
+      			stUneInfo.nMétriqueIPV6			= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nIpv6Metric
+      			
+      			stUneInfo.nInterfaceNDIS		= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].stLuid.stInfo.tabNetLuidIndex[1]
+      			stUneInfo.nTypeInterfaceNDIS	= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].stLuid.stInfo.nIfType
+      			stUneInfo.sTypeInterfaceNDIS	= TypeIFVersChaine(stUneInfo.nTypeInterfaceNDIS)        
+      			
+      			Transfert(&stSOCKET_ADDRESS,&gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].stDhcpv4Server,Dimension(stSOCKET_ADDRESS))
+      			SI (stSOCKET_ADDRESS.nSockaddr) ALORS
+      				Transfert(&stSockaddr_in,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in))
+      				sIP = inet_ntoa(stSockaddr_in.stSin_addr)
+      				stUneInfo.sServeurDHCPIPV4=sIP
+      			FIN
+      			
+      			Transfert(&stNetworkGUID,&gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].stNetworkGuid,Dimension(stNetworkGUID))
+      			sGUIDString = NumériqueVersChaîne(stNetworkGUID.nData1,"08x") + "-" + NumériqueVersChaîne(stNetworkGUID.nData2,"04x") + "-" + NumériqueVersChaîne(stNetworkGUID.nData3,"04x") + "-"
+      			POUR y = 1 À 8
+      				sGUIDString += NumériqueVersChaîne(stNetworkGUID.tabData4[y],"02x") 
+      			FIN
+      			stUneInfo.sGUIDRéseau			= Majuscule(sGUIDString)
+      			
+      			stUneInfo.nTypeConnexion		= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur]:nConnectionType
+      			stUneInfo.nTypeTunnel			= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur]:nTunnelType
+      			
+      			Transfert(&stSOCKET_ADDRESS,&gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].stDhcpv6Server,Dimension(stSOCKET_ADDRESS))
+      			SI (stSOCKET_ADDRESS.nSockaddr) ALORS
+      				Transfert(&stSockaddr_in6,stSOCKET_ADDRESS.nSockaddr,Dimension(stSockaddr_in6))
+      				stUneInfo.sServeurDHCPIPV6 = AdresseIPV6VersChaine()
+      			FIN
+      			
+      			// On récupère le DUID en clair
+      			trace(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nDhcpv6ClientDuidLength)
+      			POUR IndiceBuffer= 1 _À_ gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nDhcpv6ClientDuidLength
+      				stUneInfo.sDUID += Majuscule(NumériqueVersChaîne(gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].tabDhcpv6ClientDuid[IndiceBuffer],"02x"))+" "
+      			FIN
+      			
+      			stUneInfo.sDHCPIPV6IAID			= gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nDhcpv6Iaid
+      			
+      			SI (gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstDnsSuffix <> 0) ALORS
+      				TableauSupprimeTout(tabIP_ADAPTER_DNS_SUFFIX) //RAZ des informations précédentes.
+      				nNbEntrées = 1
+      				Dimension(tabIP_ADAPTER_DNS_SUFFIX,nNbEntrées)
+      				Transfert(&tabIP_ADAPTER_DNS_SUFFIX[nNbEntrées],gtabIP_ADAPTER_ADDRESSES[nNumAdaptateur].nFirstDnsSuffix,Dimension(stIP_ADAPTER_DNS_SUFFIX))
+      				TANTQUE tabIP_ADAPTER_DNS_SUFFIX[nNbEntrées].nNext
+      					nNbEntrées++
+      					Dimension(tabIP_ADAPTER_DNS_SUFFIX,nNbEntrées)
+      					Transfert(&tabIP_ADAPTER_DNS_SUFFIX[nNbEntrées],tabIP_ADAPTER_DNS_SUFFIX[nNbEntrées-1].nNext,Dimension(stIP_ADAPTER_DNS_SUFFIX))
+      				FIN 
+      			FIN
+      			
+      			//	SI TableauOccurrence(tabIP_ADAPTER_DNS_SUFFIX) ALORS
+      			//		Trace("- Not yet implemented")
+      			//	SINON
+      			//		Trace("No DNS suffix for the adapter.")
+      			//	FIN
+      		FIN
+      	SINON
+      		stUneInfo.serreur=ChaîneConstruit(<§@1b362e6a25fe2d1b0007§>,gtabIP_ADAPTER_ADDRESSES..occurrence)
+      	FIN
+      	
+      		PROCÉDURE INTERNE AdresseIPV6VersChaine() : chaine
+      		sIPV6 est une chaine
+      		SI bIPV6Compacte ALORS 
+      			sIPV6=inet_ntop(stSockaddr_in6.nSin6_family,&stSockaddr_in6.stSin6_addr)
+      		SINON
+      			Transfert(&stIn6_addr,&stSockaddr_in6.stSin6_addr,Dimension(stIn6_addr))
+      			POUR z = 1 _À_ 16
+      				sIPV6+=Majuscule(NumériqueVersChaîne(stIn6_addr.tabU[z],"02x"))
+      				SI (EstPair(z) ET (z <> 16)) ALORS sIPV6+=":"
+      			FIN
+      		FIN
+      		RENVOYER sIPV6
+      		FIN
+      	
+      <fin>
+      
+      
+      RENVOYER stUneInfo
+     type : 458752
+   -
+     name : ConvertLengthToIpv4Mask
+     procedure_id : 1962327587818303296
+     type_code : 15
+     code : |1-
+      // Résume : Cette procédure privée, nommée ConvertLengthToIpv4Mask, convertit la longueur du préfixe IPv4 (en bits) en masque IPv4 correspondant. Elle est utilisée par AdaptateurInfo.
+      PROCEDURE privé ConvertLengthToIpv4Mask(LOCAL nTailleMasque est un entier sans signe sur 4 octets) : entier	//nMaskLength : The IPv4 prefix Length, IN bits.
+      nMasque est un entier sans signe sur 4 octets = 0
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	nErreur est un entier systeme = 0
+      	ÉcritDernièreErreur()	//RAZ des informations précédentes.
+      	nErreur = API("Iphlpapi.dll","ConvertLengthToIpv4Mask",nTailleMasque, &nMasque)
+      	SI (nErreur <> 0) ALORS ÉcritDernièreErreur(nErreur)
+      	
+      <fin>
+      
+      
+      RENVOYER (nMasque)
+     type : 458752
+   -
+     name : GetAdaptersAddresses
+     procedure_id : 1962327587818369004
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure privée, nommée GetAdaptersAddresses, permet d'obtenir les adresses des adaptateurs réseau avec des informations détaillées. Elle est utilisée par AdaptateurInfo.
+      PROCEDURE privé GetAdaptersAddresses(LOCAL nFamille est un entier sans signe sur 4 octets, LOCAL nOptions est un entier sans signe sur 4 octets) : buffer
+      bufBuffer est un Buffer = ""
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	nERROR_BUFFER_OVERFLOW est un entier= 111 					// The file name is too long (winerror.h).
+      	nErreur est un entier systeme 		= 0 
+      	nTaille est un entier 				= 15
+      	
+      	ÉcritDernièreErreur()	//RAZ des informations précédentes.
+      	bufBuffer = Répète(Caract(0),nTaille) // Initialisation du buffer.
+      	
+      	// 1er appel pour avoir la taille nécessaire du buffer.
+      	nErreur = API("Iphlpapi.dll","GetAdaptersAddresses",nFamille,nOptions,0,&bufBuffer,&nTaille)
+      	
+      	// On devrait avoir une erreur de taille insuffisante.
+      	SI (nErreur <> nERROR_BUFFER_OVERFLOW) ALORS
+      		ÉcritDernièreErreur(nErreur);bufBuffer = "" 	// Autre erreur ??
+      	SINON
+      		// 2ème appel pour avoir les informations.
+      		bufBuffer = Répète(Caract(0),nTaille) //on met à la bonne taille le buffer.
+      		nErreur = API("Iphlpapi.dll","GetAdaptersAddresses",nFamille,nOptions,0,&bufBuffer,&nTaille)
+      		SI (nErreur <> 0) ALORS ÉcritDernièreErreur(nErreur);bufBuffer = "" 
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER (bufBuffer)
+     type : 458752
+   -
+     name : inet_ntoa
+     procedure_id : 1962327587818500341
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure privée, nommée inet_ntoa, convertit une structure _in_addr représentant une adresse IP Internet en format ASCII. Elle est utilisée par AdaptateurInfo.
+      PROCEDURE privé inet_ntoa(LOCAL stIPv4 est un _in_addr)	: chaine //stIPv4 (_in_addr) : An in_addr structure that represents an Internet host address.
+      sIPv4 est une chaîne = ""
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	nIPv4 est un entier système = 0
+      	Transfert(&nIPv4,&stIPv4,Dimension(stIPv4))
+      	nIPv4 = API("Ws2_32.dll","inet_ntoa",nIPv4)
+      	SI (nIPv4 <> 0) ALORS sIPv4 = ChaîneRécupère(nIPv4,crAdresseASCIIZ)
+      	
+      <fin>
+      
+      
+      RENVOYER (sIPv4)
+     type : 458752
+   -
+     name : inet_ntop
+     procedure_id : 1962327592113533329
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure privée, nommée inet_ntop, convertit une adresse IP binaire en format spécifié par la famille d'adresses (IPv4 ou IPv6) en une chaîne de caractères lisible. Elle est utilisée par AdaptateurInfo.
+      PROCEDURE privé inet_ntop(LOCAL nFamily est entier systeme, LOCAL nAddr est un entier) : chaine
+      sIPvX est une chaîne
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	bufIPvX 	est un Buffer
+      	nIPvX 		est un entier système
+      	nBufSize 	est un entier système
+      	
+      	SELON nFamily
+      		CAS AF_INET..Valeur 	: nBufSize=16
+      		CAS AF_INET6..Valeur 	: nBufSize=46
+      	FIN
+      	bufIPvX=Répète(Caract(0),nBufSize)
+      	// Appel pour avoir les informations.
+      	nIPvX = API("Ws2_32.dll","inet_ntop",nFamily, nAddr, &bufIPvX, nBufSize)
+      	SI (nIPvX <> 0) ALORS sIPvX = ChaîneRécupère(nIPvX,crAdresseASCIIZ)
+      	
+      <fin>
+      
+      
+      RENVOYER (sIPvX)
+     type : 458752
+   -
+     name : TypeIFVersChaine
+     procedure_id : 1962327592113664760
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure privée, nommée TypeIFVersChaine, convertit un type d'interface réseau (NDIS Interface Type) en une chaîne de caractères descriptive en utilisant les valeurs définies dans l'énumération ERéseauTypeIP. Elle est utilisée par AdaptateurInfo.
+      PROCEDURE privé TypeIFVersChaine(nTypeIF est un entier sans signe sur 4 octets) : chaine
+      // NDIS Interface Types (https://msdn.microsoft.com/en-us/library/windows/hardware/ff565767(v=vs.85).aspx)
+      quand exception dans
+      	SELON EnumérationDepuisValeur(ERéseauTypeIP,nTypeIF)
+      		CAS IF_TYPE_OTHER				: RENVOYER <§@1b362e6a25fe2d1b002b§>
+      		CAS IF_TYPE_ETHERNET_CSMACD		: RENVOYER <§@1b362e6a25fe2d1b0026§>
+      		CAS IF_TYPE_ISO88025_TOKENRING	: RENVOYER <§@1b362e6a25fe2d1b0027§>
+      		CAS IF_TYPE_FDDI				: RENVOYER <§@1b362e6a25fe2d1b0021§>
+      		CAS IF_TYPE_PPP					: RENVOYER <§@1b362e6a25fe2d1b0028§>
+      		CAS IF_TYPE_SOFTWARE_LOOPBACK	: RENVOYER <§@1b362e6a25fe2d1b0029§>
+      		CAS IF_TYPE_ATM					: RENVOYER <§@1b362e6a25fe2d1b002a§>
+      		CAS IF_TYPE_IEEE80211			: RENVOYER <§@1b362e6a25fe2d1b001e§> // On Windows Vista and later, wireless network cards are reported as IF_TYPE_IEEE80211. On earlier versions of Windows, wireless network cards are reported as IF_TYPE_ETHERNET_CSMACD. 
+      		CAS IF_TYPE_TUNNEL				: RENVOYER <§@1b362e6a25fe2d1b001f§>
+      		CAS IF_TYPE_IEEE1394			: RENVOYER <§@1b362e6a25fe2d1b0020§>
+      		CAS IF_TYPE_IEEE80216_WMAN		: RENVOYER <§@1b362e6a25fe2d1b0022§>
+      		CAS IF_TYPE_WWANPP				: RENVOYER <§@1b362e6a25fe2d1b0023§>
+      		CAS IF_TYPE_WWANPP2				: RENVOYER <§@1b362e6a25fe2d1b0024§>
+      		AUTRE CAS						: RENVOYER <§@1b362e6a25fe2d1b0025§>+":"+nTypeIF
+      	FIN
+      faire
+      	renvoyer <§@1b362e6a25fe2d1b0025§>+":"+nTypeIF
+      fin
+     type : 458752
+   -
+     name : AdaptateurNombre
+     procedure_id : 1962755743564172977
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure, nommée AdaptateurNombre, récupère le nombre d'adaptateurs réseau disponibles en utilisant la fonction GetAdaptersAddresses du framework Betula. Elle renvoie le nombre d'adaptateurs détectés et remplit une table (gtabIP_ADAPTER_ADDRESSES) avec les informations sur chaque adaptateur.
+      // Syntaxe : [ <Résultat> = ] AdaptateurNombre (<eFamily> est COL_Réseau.ERéseauFamille, <coFlags> est COL_Réseau.CORéseauOption)
+      // Paramètres :
+      //	eFamily (COL_Réseau.ERéseauFamille) : La famille de protocole à considérer.
+      //	coFlags (COL_Réseau.CORéseauOption) : Les options de configuration pour la récupération des informations.
+      // Valeur de retour : entier : renvoie un entier représentant le nombre d'adaptateurs réseau détectés.
+      // Exemple :
+      //	nNombreAdaptateurs est un entier = AdaptateurNombre(ERéseauFamille.IPv4, CORéseauOption.Aucune)
+      //
+      PROCEDURE AdaptateurNombre(eFamily est un ERéseauFamille,coFlags est un CORéseauOption) : entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	bufBuf est un Buffer = ""
+      	nStruct_Length est un entier sans signe sur 4 octets = 0
+      	nNbEntrées est un entier = 0
+      	
+      	bufBuf = GetAdaptersAddresses(eFamily..Valeur,coFlags..Valeur)
+      	
+      	SI (bufBuf <> "") ALORS
+      		Transfert(&nStruct_Length,&bufBuf,Dimension(nStruct_Length)) // Récupération de la taille de la structure IP_ADAPTER_ADDRESSES
+      		SI (Taille(bufBuf) >= nStruct_Length) ALORS
+      			nNbEntrées = 1
+      			Dimension(gtabIP_ADAPTER_ADDRESSES,nNbEntrées)
+      			Transfert(&gtabIP_ADAPTER_ADDRESSES[nNbEntrées],&bufBuf,nStruct_Length)
+      			
+      			TANTQUE (gtabIP_ADAPTER_ADDRESSES[nNbEntrées]:nNext)
+      				nNbEntrées++
+      				Dimension(gtabIP_ADAPTER_ADDRESSES,nNbEntrées)
+      				Transfert(&nStruct_Length,gtabIP_ADAPTER_ADDRESSES[nNbEntrées-1]:nNext,Dimension(nStruct_Length)) // Récupération de la taille de la structure suivante IP_ADAPTER_ADDRESSES
+      				Transfert(&gtabIP_ADAPTER_ADDRESSES[nNbEntrées],gtabIP_ADAPTER_ADDRESSES[nNbEntrées-1]:nNext,nStruct_Length)
+      			FIN
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer TableauOccurrence(gtabIP_ADAPTER_ADDRESSES)
+     type : 458752
+   -
+     name : GroupeRéseau
+     procedure_id : 1976773511506343305
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure récupère la liste des groupes d'appartenance du token du processus courant. Elle utilise les API Windows du module advapi32 pour ouvrir le token du processus et extraire les informations sur les groupes auxquels il appartient.
+      // Syntaxe : [ <Résultat> = ] GroupeRéseau ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne représentant la liste des groupes d'appartenance du token du processus courant.
+      // Exemple :
+      //	sListeGroupes est une chaîne = GroupeRéseau()
+      //
+      PROCEDURE GroupeRéseau() : chaine
+      sListeGroupes est une chaîne = ""
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	// Liste les groupe d'appartenance du token du process courant
+      	SI cApplication.mg_sWindowsVersion<>"NT" ALORS RENVOYER ""
+      	
+      	SID_AND_ATTRIBUTES est une Structure
+      		nSID 		est un entier sur 4 octets	//pointeur
+      		nAttribut 	est un entier sur 4 octets
+      	FIN
+      	
+      	HEAP_ZERO_MEMORY 			est un entier 				= 0x00000008
+      	ghProcessHeap 				est un entier système 		= API("kernel32","GetProcessHeap")
+      	PROCESS_QUERY_INFORMATION 	est un entier 				= 0x400
+      	nProcessId 					est un entier systeme	 	= API("kernel32","GetCurrentProcessId")											// Récupération du process ID du ProcessCourant
+      	nProcess 					est un entier systeme		= API("kernel32","OpenProcess",PROCESS_QUERY_INFORMATION,0,nProcessId)			// Ouverture du Process en demande d'informations
+      	nToken 						est un entier sur 4 octets
+      	TOKEN_QUERY 				est un entier sur 4 octets 	= 0x0008
+      	bRes 						est un booléen 				= API("advapi32","OpenProcessToken",nProcess,TOKEN_QUERY,&nToken)				// Ouverture du token du process
+      	nTailleGroups 				est un entier sur 4 octets 	= 0
+      	API("advapi32","GetTokenInformation",nToken,2,Null,0,&nTailleGroups)																	// Demande de la taille des infos de groupe
+      	nBuffer 					est un entier système 		= API("kernel32","HeapAlloc",ghProcessHeap,HEAP_ZERO_MEMORY,nTailleGroups+16)	// Allocation de la structure
+      	API("advapi32","GetTokenInformation",nToken,2,nBuffer,nTailleGroups,&nTailleGroups)														// Récup de la liste des groupes
+      	nNbGroupes 					est un entier sur 4 octets
+      	Transfert(&nNbGroupes,nBuffer,4)																										// Conversion du buffer "raw" en une structure
+      	nTailleAlloc 				est un entier 				= nNbGroupes+1
+      	tabInfoGroupe 				est un tableau dynamique 	= allouer un tableau de nTailleAlloc SID_AND_ATTRIBUTES
+      	Transfert(&tabInfoGroupe,nBuffer+4,nNbGroupes*8)
+      	POUR nGroupe=1 À nNbGroupes	// Parcours de la liste des groupes
+      		szNom 			est une chaîne ASCIIZ sur 4096 	= ""
+      		szDomaine 		est une chaîne ASCIIZ sur 4096 	= ""
+      		nTailleNom 		est un entier sur 4 octets 		= 4000
+      		nTailleDomaine 	est un entier sur 4 octets 		= 4000
+      		nUse 			est un entier sur 4 octets 		= 0
+      		SI API("advapi32","LookupAccountSidA",Null,tabInfoGroupe[nGroupe].nSID,&szNom,&nTailleNom,&szDomaine,&nTailleDomaine,&nUse) ALORS
+      			SI szDomaine<>"" ALORS sListeGroupes += [rc]+szDomaine+"\"+szNom SINON sListeGroupes += [rc]+szNom
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER sListeGroupes
+     type : 458752
+   -
+     name : AdresseMacDistante
+     procedure_id : 2014695823268088261
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure permet d'obtenir l'adresse MAC d'une machine distante sur le réseau local à partir de son adresse IP. 
+      // Syntaxe : [ <Résultat> = ] AdresseMacDistante ( [<sAdresseIP>])
+      // Paramètres :
+      // 	sAdresseIP (chaîne optionnelle) : Chaîne, adresse IP de la machine distante (format xx.xx.xx.xx). Si non spécifiée, la fonction utilise l'adresse IP locale obtenue par la fonction NetAdresseIP().
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne représentant l'adresse MAC de la machine distante. En cas d'erreur, elle retourne une chaîne vide et fournit une description de l'erreur.
+      // Exemple :
+      //	sAdresseMAC = AdresseMacDistante("192.168.1.1")
+      //
+      PROCEDURE AdresseMacDistante(sAdresseIP est une chaine = NetAdresseIP()) : chaine
+      // Version 1.00 pour WD7
+      // (c) Octobre 2002 Romain PETIT (mailto:rompetit@ifrance.com)
+      // sous licence WD-LIBRE (http://www.windevasso.org)
+      // But : obtenir l'adresse MAC à partir d'une adresse IP (réseau local)
+      // ATTENTION, ne fonctionne que sous 2K/XP (nécessite le SP6 sous NT ?)
+      // Paramètres : adresse IP au format xx.xx.xx.xx
+      // Retour : chaine, adresse MAC (6 nombres en hexa séparés par un '-')
+      // en cas d'erreur, la fonction retourne une chaine vide et la chaine sErr passée par adresse peut être récupérée.
+      // Notes : il ne s'agit pas ici de récupérer l'adresse MAC de machines sur Internet 
+      // mais de machines sur un réseau local (non testé avec routeurs).
+      // Dans le cas d'une connexion ADSL Ethernet, NetAdresseIP() renvoie l'adresse
+      // attribuée par le provider, la fonction renvoie donc l'adresse MAC de la
+      // machine établissant la connexion (modem Ethernet par exemple)
+      // Références API: 
+      // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/iphlp/iphlp/sendarp.asp
+      SI sAdresseIP ~="" ALORS sAdresseIP = NetAdresseIP()
+      szAdresseIP 		est une chaîne ASCIIZ sur 255 = sAdresseIP
+      nAdresseIP 			est un entier systeme
+      nAdresseMAC 		est un entier sans signe
+      tabAdresseMAC 		est un tableau fixe de 6 entiers sans signe sur 1 octet
+      nNbAdressePhysique	est un entier sans signe
+      nRetour 			est un entier systeme
+      sRetour				est une chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	SI capplication.mg_sWindowsVersion<>"NT" ALORS RENVOYER <§@1b362e6a25fe2d1b002c§>
+      	
+      	// Conversion de l'adresse IP en entier long
+      	nAdresseIP = api("wsock32.dll", "inet_addr", &szAdresseIP)
+      	SI nAdresseIP <> 0 ALORS
+      		nNbAdressePhysique = 6
+      		//récupération de l'adresse MAC
+      		nRetour = API("iphlpapi.dll", "SendARP", nAdresseIP, 0, &nAdresseMAC, &nNbAdressePhysique)
+      		SI nRetour=0 ALORS
+      			SI nAdresseMAC<>0 ET nNbAdressePhysique<>0 ALORS
+      				//La valeur retournée est un pointeur sur un tableau
+      				//que l'on copie dans le tableau de 6 octets prévu
+      				Transfert(&tabAdresseMAC, &nAdresseMAC, 6)//6*1 octet
+      				//On peut utiliser : AppelDLL32("kernel32","RtlMoveMemory", &teAdresseMAC,&eAdresseMAC,6)
+      				//Pour chaque élément du tableau, on reconstruit la chaine en hexa
+      				POUR nAdresse = 1 _A_ nNbAdressePhysique
+      					sRetour += NumériqueVersChaîne(tabAdresseMAC[nAdresse],"02X")+"-"
+      				FIN
+      				RENVOYER Gauche(sRetour, Taille(sRetour)-1)
+      			SINON
+      				RENVOYER ChaîneConstruit(<§@1b362e6a25fe2d1b002d§>,sAdresseIP)
+      			FIN
+      		SINON
+      			RENVOYER ChaîneConstruit(<§@1b362e6a25fe2d1b002d§>,sAdresseIP)
+      		FIN
+      	SINON
+      		RENVOYER ChaîneConstruit(<§@1b362e6a25fe2d1b002e§>,sAdresseIP)
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer ""
+     type : 458752
+   -
+     name : ConnexionInternet
+     procedure_id : 2014695999361919731
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure utilise l'API InternetGetConnectedStateEx de la DLL Wininet.dll pour déterminer l'état de la connexion Internet de la machine. Elle renvoie une structure (STInternetInfo) contenant différentes informations sur la connexion.
+      // Syntaxe : [ <Résultat> = ] NomConnexionInternet ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : STInternetInfo : renvoie une structure (STInternetInfo
+      // Exemple :
+      //	stInfoConnexion est un STInternetInfo = ConnexionInternet()
+      //	SI stInfoConnexion.bInternetConnecté ALORS Info("La machine est connectée à Internet.")
+      //
+      PROCEDURE ConnexionInternet() : STInternetInfo 
+      // Utilisation de l'api InternetGetConnectedStateEx avec Windev
+      // Jean Cougnaud 11/02/2005
+      nRes 			est un entier systeme
+      nDwFlags 		est un entier
+      szNomConnexion 	est une chaîne ASCIIZ sur 256
+      nTailleBuffer	est un entier = 256
+      nReserve 		est un entier
+      stRéponse		est un STInternetInfo
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	nRes = api("WININET.DLL","InternetGetConnectedStateEx",&nDwFlags,&szNomConnexion,nTailleBuffer,nReserve)
+      	
+      	stRéponse.bUtiliseModem		= (ETBinaire(nDwFlags,1)=1)
+      	stRéponse.bUtiliseRéseau	= (ETBinaire(nDwFlags,2)=2)
+      	stRéponse.bUtiliseProxy		= (ETBinaire(nDwFlags,4)=4)
+      	//SI ETBinaire(nDwFlags,8)=8  ALORS Info("Valeur retournée plus utilisée.")
+      	stRéponse.bRASInstallé		= (ETBinaire(nDwFlags,16)=16)
+      	stRéponse.bModeHorsConnexion= (ETBinaire(nDwFlags,32)=32)
+      	stRéponse.bInternetConnecté	= (ETBinaire(nDwFlags,64)=64)
+      	stRéponse.sNomConnexion		= szNomConnexion
+      	
+      <fin>
+      
+      
+      renvoyer stRéponse
+     type : 458752
+   -
+     name : WorkGroup
+     procedure_id : 2213642548966529233
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure, nommée WorkGroup, utilise l'API NetGetJoinInformation de la DLL Netapi32.dll pour récupérer des informations sur le groupe de travail de l'ordinateur local.
+      // Syntaxe : [ <Résultat> = ] WorkGroup ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne contenant le nom du groupe de travail auquel l'ordinateur local est associé.
+      // Exemple :
+      //	sNomGroupeTravail est une chaîne = WorkGroup()
+      //	SI sNomGroupeTravail <> "" ALORS Info("L'ordinateur est associé au groupe de travail : " + sNomGroupeTravail)
+      //
+      PROCEDURE WorkGroup() : chaine
+      //ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/130723-wd15-groupe-travail-130746/read.awp
+      sRésultat 	est une chaîne = ""
+      nInfos 		est un entier système// Pointeur sur les infos retournées par l'API
+      join_status est un entier // Pointeur sur le statut
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	QUAND EXCEPTION DANS
+      		// 1er paramètre à 0x00 --> ordinateur local
+      		API("Netapi32.dll", "NetGetJoinInformation", 0x00,&nInfos,&join_status)
+      		// join_status = 0 --> statut inconnu
+      		// join_status = 1 --> pas de réseau accessible
+      		// join_status = 2 --> groupe de travail
+      		// join_status = 3 --> domaine
+      		SI join_status=2 ALORS sRésultat = SansEspace(ChaîneRécupère(nInfos,crAdresseUNICODE))
+      	FAIRE
+      		RENVOYER ""
+      	FIN
+      	
+      	API("Netapi32.dll", "NetApiBufferFree", &nInfos)	// Libération de la mémoire réservée par NetGetJoinInformation
+      	
+      <fin>
+      
+      
+      RENVOYER sRésultat
+     type : 458752
+   -
+     name : RéseauConnecteCodeErreurVersChaine
+     procedure_id : 1222416197366244760
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure convertit un code d'erreur associé à la connexion réseau en une description lisible. Est utile en association avec la fonction RéseauConnecte()
+      // Syntaxe : [ <Résultat> = ] RéseauConnecteMsgErreur (<nNumErreur> est entier)
+      // Paramètres :
+      //	nNumErreur (entier) : Un entier représentant le code d'erreur associé à la connexion réseau.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne de caractères décrivant le code d'erreur de la connexion réseau.
+      // Exemple :
+      //	nCodeErreur est un entier = 8
+      //	sDescriptionErreur = RéseauConnecteCodeErreurVersChaine(nCodeErreur)
+      //
+      PROCEDURE RéseauConnecteCodeErreurVersChaine(nNumErreur est un entier) : chaîne
+      SELON nNumErreur
+      	CAS 1		: RENVOYER <§@1b362e6a25fe2d1b002f§>	
+      	CAS 2		: RENVOYER <§@1b362e6a25fe2d1b0030§>	
+      	CAS 3		: RENVOYER <§@1b362e6a25fe2d1b0031§>
+      	CAS 4		: RENVOYER <§@1b362e6a25fe2d1b0032§>
+      	CAS 5		: RENVOYER <§@1b362e6a25fe2d1b0033§>
+      	CAS 7		: RENVOYER <§@1b362e6a25fe2d1b0034§>
+      	CAS 8		: RENVOYER <§@1b362e6a25fe2d1b0035§>
+      	CAS 9		: RENVOYER <§@1b362e6a25fe2d1b0036§>
+      	CAS 10		: RENVOYER <§@1b362e6a25fe2d1b0037§>
+      	CAS 11		: RENVOYER <§@1b362e6a25fe2d1b0038§>
+      	CAS 12		: RENVOYER <§@1b362e6a25fe2d1b0039§>
+      	CAS 13		: RENVOYER <§@1b362e6a25fe2d1b003a§>
+      	CAS 14		: RENVOYER <§@1b362e6a25fe2d1b003b§>
+      	AUTRE CAS 	: RENVOYER ChaîneConstruit(<§@1b362e6a25fe2d1b003c§>,nNumErreur)
+      FIN
+     type : 458752
+   -
+     name : AdresseIPpublique
+     procedure_id : 1353785691840695257
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure permet de récupérer l'adresse IP publique à partir d'un service en ligne.
+      // Syntaxe : [ <Résultat> = ] DateHeureSysUTC ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : chaîne Unicode : renvoie une chaîne de caractères représentant l'adresse IP publique. Si la récupération de l'adresse IP publique échoue, la procédure renvoie une chaîne vide.
+      // Exemple :
+      //	sIPPublique = AdresseIPpublique()
+      //	SI sIPPublique <> "" ALORS Info("Adresse IP publique : " + sIPPublique)
+      //
+      PROCEDURE AdresseIPpublique() : chaine
+      //adresse IP vue d'internet (ne pas confondre avec l'adresse IP sur votre réseau personnel ou d'entreprise)
+      sExpIPV4		est une chaine = "[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}"
+      sIPPublique 	est une chaine
+      
+      SI HTTPRequête("http://checkip.dyndns.org/") ALORS
+      	sIPPublique=ExtraitChaîne(HTTPDonneRésultat(httpRésultat),2,": ")
+      	SI PAS VérifieExpressionRégulière(sIPPublique,sExpIPV4) ALORS sIPPublique=""
+      FIN
+      renvoyer sIPPublique
+     type : 458752
+   -
+     name : DateHeureSysUTC
+     procedure_id : 1547293725648499015
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure renvoie la date et l'heure système en temps universel coordonné (UTC).
+      // Syntaxe : [ <Résultat> = ] DateHeureSysUTC ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : dateheure : renvoie un objet de type DateHeure représentant la date et l'heure système en UTC.
+      // Exemple :
+      //	dtUTC est une dateheure = DateHeureSysUTC()
+      //
+      PROCEDURE DateHeureSysUTC() : dateheure
+      renvoyer DateHeureLocaleVersUTC(dateheuresys())
+     type : 458752
+   -
+     name : URLEncodeUnicode
+     procedure_id : 1592861505031780279
+     type_code : 15
+     code : |1-
+      // Résumé : N'est utile que pour les versions WinDev < 22. Prend en entrée une chaîne de caractères sTexte et effectue un encodage URL en préservant les caractères Unicode qui ne sont pas des caractères ASCII. La chaîne ne doit pas contenir de caractère ASCII 1
+      // Syntaxe : [ <Résultat> = ] URLEncodeUnicode (<sTexte> est chaîne)
+      // Paramètres :
+      //	sTexte (chaîne UNICODE) : Une chaîne de caractères à encoder en URL.
+      // Valeur de retour : chaîne UNICODE : La chaîne encodée en URL, tout en préservant les caractères Unicode.
+      // Exemple :
+      //	sTexteExemple = "Café au lait - €10"
+      //	sTexteEncodé = URLEncodeUnicode(sTexteExemple)
+      //	//sTexteEncodé contiendra "Caf%C3%A9+au+lait+-+%E2%82%AC10"
+      //
+      PROCEDURE URLEncodeUnicode(sTexte est une chaîne) : chaîne
+      //ref: https://wlplus.org/urlencode/
+      //ref: https://www.w3schools.com/tags/ref_urlencode.ASP
+      //encodage uniquement les codes qui sont différents de l'ASCII
+      sRes est une chaîne = Remplace(sTexte,"%","%25")
+      sRes=Remplace(sRes,"%",Caract(1))	//sera traité à la fin
+      sRes=Remplace(sRes,"`","%E2%82%AC");sRes=Remplace(sRes,"´","%C2%B4")
+      sRes=Remplace(sRes,"ƒ","%C6%92")
+      sRes=Remplace(sRes,"…","%E2%80%A6")
+      sRes=Remplace(sRes,"†","%E2%80%A0");sRes=Remplace(sRes,"‡","%E2%80%A1")
+      sRes=Remplace(sRes,"š","%C5%A1");sRes=Remplace(sRes,"Š","%C5%A0")
+      sRes=Remplace(sRes,"‹","%E2%80%B9");sRes=Remplace(sRes,"›","%E2%80")
+      sRes=Remplace(sRes,"œ","%C5%93");sRes=Remplace(sRes,"Œ","%C5%92")
+      sRes=Remplace(sRes,"ž","%C5%BE");sRes=Remplace(sRes,"Ž","%C5%BD")
+      sRes=Remplace(sRes,"‘","%E2%80%98");sRes=Remplace(sRes,"’","%E2%80%99");sRes=Remplace(sRes,"“","%E2%80%9C");sRes=Remplace(sRes,"”","%E2%80%9D");sRes=Remplace(sRes,"„","%E2%80%9E")
+      sRes=Remplace(sRes,"•","%E2%80%A2");sRes=Remplace(sRes,"·","%C2%B7");sRes=Remplace(sRes,"°","%C2%B0")
+      sRes=Remplace(sRes,"–","%E2%80%93");sRes=Remplace(sRes,"—","%E2%80%94")
+      sRes=Remplace(sRes,"˜ ","%CB%9C");sRes=Remplace(sRes,"ˆ","%CB%86")
+      sRes=Remplace(sRes,"™","%E2%84")
+      sRes=Remplace(sRes,"Ÿ","%C5%B8")
+      sRes=Remplace(sRes,"¡","%C2%A1");sRes=Remplace(sRes,"¿","%C2%BF")
+      sRes=Remplace(sRes,"¢","%C2%A2")
+      sRes=Remplace(sRes,"£","%C2%A3")
+      sRes=Remplace(sRes,"¤","%C2%A4")
+      sRes=Remplace(sRes,"¥","%C2%A5")
+      sRes=Remplace(sRes,"¦","%C2%A6")
+      sRes=Remplace(sRes,"§","%C2%A7");sRes=Remplace(sRes,"¶","%C2%B6")
+      sRes=Remplace(sRes,"©","%C2%A9");sRes=Remplace(sRes,"®","%C2%AE")
+      sRes=Remplace(sRes,"ª","%C2%AA")
+      sRes=Remplace(sRes,"«","%C2%AB");sRes=Remplace(sRes,"»","%C2%BB")
+      sRes=Remplace(sRes,"¬","%C2%AC")
+      sRes=Remplace(sRes,"¯","%C2%AF")
+      sRes=Remplace(sRes,"±","%C2%B1")
+      sRes=Remplace(sRes,"µ","%C2%B5")
+      sRes=Remplace(sRes,"¸","%C2%B8")
+      sRes=Remplace(sRes,"º","%C2%BA");sRes=Remplace(sRes,"¹","%C2%B9");sRes=Remplace(sRes,"²","%C2%B2");sRes=Remplace(sRes,"³","%C2%B3")
+      sRes=Remplace(sRes,"¼","%C2%BC");sRes=Remplace(sRes,"½","%C2%BD");sRes=Remplace(sRes,"¾","%C2%BE")
+      sRes=Remplace(sRes,"À","%C3%80");sRes=Remplace(sRes,"Á","%C3%81");sRes=Remplace(sRes,"Â","%C3%82");sRes=Remplace(sRes,"Ã","%C3%83");sRes=Remplace(sRes,"Ä","%C3%84");sRes=Remplace(sRes,"Å","%C3%85")
+      sRes=Remplace(sRes,"ç","%C3%A7");sRes=Remplace(sRes,"Ç","%C3%87")
+      sRes=Remplace(sRes,"È","%C3%88");sRes=Remplace(sRes,"È","%C3%89");sRes=Remplace(sRes,"Ê","%C3%8A");sRes=Remplace(sRes,"Ë","%C3%8B")
+      sRes=Remplace(sRes,"è","%C3%A8");sRes=Remplace(sRes,"é","%C3%A9");sRes=Remplace(sRes,"ê","%C3%AA");sRes=Remplace(sRes,"ë","%C3%AB")
+      sRes=Remplace(sRes,"Ì","%C3%8C");sRes=Remplace(sRes,"Í","%C3%8D");sRes=Remplace(sRes,"Î","%C3%8E");sRes=Remplace(sRes,"Ï","%C3%8F")
+      sRes=Remplace(sRes,"ì","%C3%AC");sRes=Remplace(sRes,"í","%C3%AD");sRes=Remplace(sRes,"î","%C3%AE");sRes=Remplace(sRes,"ï","%C3%AF")
+      sRes=Remplace(sRes,"Ð","%C3%90");sRes=Remplace(sRes,"ð","%C3%B0")
+      sRes=Remplace(sRes,"Ñ","%C3%91");sRes=Remplace(sRes,"ñ","%C3%B1")
+      sRes=Remplace(sRes,"Ò","%C3%92");sRes=Remplace(sRes,"Ó","%C3%93");sRes=Remplace(sRes,"Ô","%C3%94");sRes=Remplace(sRes,"Õ","%C3%95");sRes=Remplace(sRes,"Ö","%C3%96")
+      sRes=Remplace(sRes,"ò","%C3%B2");sRes=Remplace(sRes,"ó","%C3%B3");sRes=Remplace(sRes,"ô","%C3%B4");sRes=Remplace(sRes,"õ","%C3%B5");sRes=Remplace(sRes,"ö","%C3%B6")
+      sRes=Remplace(sRes,"×","%C3%97")
+      sRes=Remplace(sRes,"Ø","%C3%98");sRes=Remplace(sRes,"ø","%C3%B8")
+      sRes=Remplace(sRes,"Ù","%C3%99");sRes=Remplace(sRes,"Ú","%C3%9A");sRes=Remplace(sRes,"Û","%C3%9B");sRes=Remplace(sRes,"Ü","%C3%9C")
+      sRes=Remplace(sRes,"ù","%C3%B9");sRes=Remplace(sRes,"ú","%C3%BA");sRes=Remplace(sRes,"û","%C3%BB");sRes=Remplace(sRes,"ü","%C3%BC")
+      sRes=Remplace(sRes,"Ý","%C3%9D");sRes=Remplace(sRes,"ý","%C3%BD");sRes=Remplace(sRes,"ÿ","%C3%BF")
+      sRes=Remplace(sRes,"Þ","%C3%9E");sRes=Remplace(sRes,"þ","%C3%BE")
+      sRes=Remplace(sRes,"ß","%C3%9F")
+      sRes=Remplace(sRes,"æ","%C3%A6");sRes=Remplace(sRes,"Æ","%C3%86")
+      sRes=Remplace(sRes,"à","%C3%A0");sRes=Remplace(sRes,"á","%C3%A1");sRes=Remplace(sRes,"â","%C3%A2");sRes=Remplace(sRes,"ã","%C3%A3");sRes=Remplace(sRes,"ä","%C3%A4");sRes=Remplace(sRes,"å","%C3%A5")
+      sRes=Remplace(sRes,"÷","%C3%B7")
+      sRes=Remplace(sRes,"‰","%E2%80%B0");sRes=Remplace(sRes,"%",Caract(1))
+      sRes=URLEncode(UnicodeVersAnsi(sRes))
+      sRes=Remplace(sRes,"%01","%")
+      RENVOYER sRes
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1b362e6a25fe2d1b
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : L'interface est en place et capable de transmettre des paquets
+      en-GB : The interface is up and able to pass packets
+      fr-CA : L'interface est en place et capable de transmettre des paquets
+      en-US : The interface is up and able to pass packets
+     index : 0
+   -
+     text :
+      fr-FR : L'interface est en panne et n'est pas en état de transmettre des paquets
+      en-GB : The interface is down and not in a condition to pass packets
+      fr-CA : L'interface est en panne et n'est pas en état de transmettre des paquets
+      en-US : The interface is down and not in a condition to pass packets
+     index : 1
+   -
+     text :
+      fr-FR : L'interface est en mode test
+      en-GB : The interface is in testing mode
+      fr-CA : L'interface est en mode test
+      en-US : The interface is in testing mode
+     index : 2
+   -
+     text :
+      fr-FR : L'état opérationnel de l'interface est inconnu
+      en-GB : The operational status of the interface is unknown
+      fr-CA : L'état opérationnel de l'interface est inconnu
+      en-US : The operational status of the interface is unknown
+     index : 3
+   -
+     text :
+      fr-FR : "L'interface n'est pas réellement en état de transmettre des paquets (elle n'est pas en activée), mais est dans un état en attente, attendant un événement externe."
+      en-GB : "The interface is not actually in a condition to pass packets (it is not up), but is in a pending state, waiting for some external event."
+      fr-CA : "L'interface n'est pas réellement en état de transmettre des paquets (elle n'est pas en activée), mais est dans un état en attente, attendant un événement externe."
+      en-US : "The interface is not actually in a condition to pass packets (it is not up), but is in a pending state, waiting for some external event."
+     index : 4
+   -
+     text :
+      fr-FR : L'interface est en panne car un composant (généralement un composant matériel) n'est pas présent dans le système géré.
+      en-GB : "The interface is down specifically because some component (typically, a hardware component) is not present in the managed system."
+      fr-CA : L'interface est en panne car un composant (généralement un composant matériel) n'est pas présent dans le système géré.
+      en-US : "The interface is down specifically because some component (typically, a hardware component) is not present in the managed system."
+     index : 5
+   -
+     text :
+      fr-FR : L'interface s'exécute au-dessus d'une ou de plusieurs autres interfaces et cette interface est en panne précisément parce qu'une ou plusieurs de ces interfaces de couche inférieure sont en panne.
+      en-GB : The interface runs on top of one or more other interfaces and that this interface is down specifically because one or more of these lower-layer interfaces are down.
+      fr-CA : L'interface s'exécute au-dessus d'une ou de plusieurs autres interfaces et cette interface est en panne précisément parce qu'une ou plusieurs de ces interfaces de couche inférieure sont en panne.
+      en-US : The interface runs on top of one or more other interfaces and that this interface is down specifically because one or more of these lower-layer interfaces are down.
+     index : 6
+   -
+     text :
+      fr-FR : Le numéro d'adaptateur doit être compris entre 1 et %1
+      en-GB : The adapter number must be between 1 and %1
+      fr-CA : Le numéro d'adaptateur doit être compris entre 1 et %1
+      en-US : The adapter number must be between 1 and %1
+     index : 7
+   -
+     text :
+      fr-FR : Préfixe d'adresse IP inconnu
+      en-GB : Unknown IP address prefix
+      fr-CA : Préfixe d'adresse IP inconnu
+      en-US : Unknown IP address prefix
+     index : 8
+   -
+     text :
+      fr-FR : Le suffixe d'adresse IP a été configuré en utilisant une source autre que celles définies dans cette énumération
+      en-GB : The IP address suffix was configured using a source other than those defined in this enumeration
+      fr-CA : Le suffixe d'adresse IP a été configuré en utilisant une source autre que celles définies dans cette énumération
+      en-US : The IP address suffix was configured using a source other than those defined in this enumeration
+     index : 9
+   -
+     text :
+      fr-FR : Le suffixe d'adresse IP a été configuré manuellement
+      en-GB : The IP address suffix was configured manually
+      fr-CA : Le suffixe d'adresse IP a été configuré manuellement
+      en-US : The IP address suffix was configured manually
+     index : 10
+   -
+     text :
+      fr-FR : Le suffixe d'adresse IP a été configuré en utilisant une adresse connue
+      en-GB : The IP address suffix was configured using a well-known address
+      fr-CA : Le suffixe d'adresse IP a été configuré en utilisant une adresse connue
+      en-US : The IP address suffix was configured using a well-known address
+     index : 11
+   -
+     text :
+      fr-FR : Le suffixe d'adresse IP a été configuré en utilisant DHCP
+      en-GB : The IP address suffix was configured using DHCP
+      fr-CA : Le suffixe d'adresse IP a été configuré en utilisant DHCP
+      en-US : The IP address suffix was configured using DHCP
+     index : 12
+   -
+     text :
+      fr-FR : Le suffixe d'adresse IP était l'adresse locale du lien
+      en-GB : The IP address suffix was the link local address
+      fr-CA : Le suffixe d'adresse IP était l'adresse locale du lien
+      en-US : The IP address suffix was the link local address
+     index : 13
+   -
+     text :
+      fr-FR : Le suffixe d'adresse IP a été généré de manière aléatoire
+      en-GB : The IP address suffix was generated randomly
+      fr-CA : Le suffixe d'adresse IP a été généré de manière aléatoire
+      en-US : The IP address suffix was generated randomly
+     index : 14
+   -
+     text :
+      fr-FR : Le suffixe d'adresse IP devrait être inchangé
+      en-GB : The IP address suffix should be unchanged
+      fr-CA : Le suffixe d'adresse IP devrait être inchangé
+      en-US : The IP address suffix should be unchanged
+     index : 15
+   -
+     text :
+      fr-FR : Suffixe d'adresse IP inconnu
+      en-GB : Unknown IP address suffix
+      fr-CA : Suffixe d'adresse IP inconnu
+      en-US : Unknown IP address suffix
+     index : 16
+   -
+     text :
+      fr-FR : L'état DAD est invalide
+      en-GB : The DAD state is invalid
+      fr-CA : L'état DAD est invalide
+      en-US : The DAD state is invalid
+     index : 17
+   -
+     text :
+      fr-FR : L'état DAD est provisoire
+      en-GB : The DAD state is tentative
+      fr-CA : L'état DAD est provisoire
+      en-US : The DAD state is tentative
+     index : 18
+   -
+     text :
+      fr-FR : Une adresse IP en double a été détectée
+      en-GB : A duplicate IP address has been detected
+      fr-CA : Une adresse IP en double a été détectée
+      en-US : A duplicate IP address has been detected
+     index : 19
+   -
+     text :
+      fr-FR : L'adresse IP a été dépréciée
+      en-GB : The IP address has been deprecated
+      fr-CA : L'adresse IP a été dépréciée
+      en-US : The IP address has been deprecated
+     index : 20
+   -
+     text :
+      fr-FR : L'adresse IP est l'adresse préférée
+      en-GB : The IP address is the preferred address
+      fr-CA : L'adresse IP est l'adresse préférée
+      en-US : The IP address is the preferred address
+     index : 21
+   -
+     text :
+      fr-FR : Etat DAD inconnu
+      en-GB : Unknown DAD state
+      fr-CA : Etat DAD inconnu
+      en-US : Unknown DAD state
+     index : 22
+   -
+     text :
+      fr-FR : Le préfixe d'adresse IP a été configuré en utilisant DHCP
+      en-GB : The IP address prefix was configured using DHCP
+      fr-CA : Le préfixe d'adresse IP a été configuré en utilisant DHCP
+      en-US : The IP address prefix was configured using DHCP
+     index : 23
+   -
+     text :
+      fr-FR : Le préfixe d'adresse IP a été configuré à l'aide de la publicité du routeur
+      en-GB : The IP address prefix was configured using router advertisement
+      fr-CA : Le préfixe d'adresse IP a été configuré à l'aide de la publicité du routeur
+      en-US : The IP address prefix was configured using router advertisement
+     index : 24
+   -
+     text :
+      fr-FR : Le préfixe d'adresse IP devrait être inchangé
+      en-GB : The IP address prefix should be unchanged
+      fr-CA : Le préfixe d'adresse IP devrait être inchangé
+      en-US : The IP address prefix should be unchanged
+     index : 25
+   -
+     text :
+      fr-FR : Le préfixe d'adresse IP a été configuré en utilisant une source autre que celles définies dans cette énumération
+      en-GB : The IP address prefix was configured using a source other than those defined in this enumeration
+      fr-CA : The IP address prefix should be unchanged
+      en-US : The IP address prefix was configured using a source other than those defined in this enumeration
+     index : 26
+   -
+     text :
+      fr-FR : Le préfixe d'adresse IP a été configuré manuellement
+      en-GB : The IP address prefix was configured manually
+      fr-CA : Le préfixe d'adresse IP a été configuré manuellement
+      en-US : The IP address prefix was configured manually
+     index : 27
+   -
+     text :
+      fr-FR : Le préfixe d'adresse IP a été configuré en utilisant une adresse connue
+      en-GB : The IP address prefix was configured using a well-known address
+      fr-CA : Le préfixe d'adresse IP a été configuré en utilisant une adresse connue
+      en-US : The IP address prefix was configured using a well-known address
+     index : 28
+   -
+     text :
+      fr-FR : "L'appel à GetAdaptersAddresses a échoué %1 : %2"
+      en-GB : "Call to GetAdaptersAddresses failed %1 : %2"
+      fr-CA : "L'appel à GetAdaptersAddresses a échoué %1 : %2"
+      en-US : "Call to GetAdaptersAddresses failed %1 : %2"
+     index : 29
+   -
+     text :
+      fr-FR : Une interface réseau sans fil IEEE 802.11
+      en-GB : An IEEE 802.11 wireless network interface
+      fr-CA : Une interface réseau sans fil IEEE 802.11
+      en-US : An IEEE 802.11 wireless network interface
+     index : 30
+   -
+     text :
+      fr-FR : Une interface de réseau d'encapsulation de type tunnel
+      en-GB : A tunnel type encapsulation network interface
+      fr-CA : Une interface de réseau d'encapsulation de type tunnel
+      en-US : A tunnel type encapsulation network interface
+     index : 31
+   -
+     text :
+      fr-FR : Une interface réseau de bus série haute performance IEEE 1394 (Firewire)
+      en-GB : An IEEE 1394 (Firewire) high performance serial bus network interface
+      fr-CA : Une interface réseau de bus série haute performance IEEE 1394 (Firewire)
+      en-US : An IEEE 1394 (Firewire) high performance serial bus network interface
+     index : 32
+   -
+     text :
+      fr-FR : Interface réseau FDDI (Fiber Distributed Data Interface)
+      en-GB : A Fiber Distributed Data Interface (FDDI) network interface
+      fr-CA : Interface réseau FDDI (Fiber Distributed Data Interface)
+      en-US : A Fiber Distributed Data Interface (FDDI) network interface
+     index : 33
+   -
+     text :
+      fr-FR : Une interface haut débit mobile pour les appareils WiMax
+      en-GB : A mobile broadband interface for WiMax devices
+      fr-CA : Une interface haut débit mobile pour les appareils WiMax
+      en-US : A mobile broadband interface for WiMax devices
+     index : 34
+   -
+     text :
+      fr-FR : Une interface haut débit mobile pour les appareils GSM
+      en-GB : A mobile broadband interface for GSM-based devices
+      fr-CA : Une interface haut débit mobile pour les appareils GSM
+      en-US : A mobile broadband interface for GSM-based devices
+     index : 35
+   -
+     text :
+      fr-FR : Une interface haut débit mobile pour les dispositifs basés sur CDMA
+      en-GB : A mobile broadband interface for CDMA-based devices
+      fr-CA : Une interface haut débit mobile pour les dispositifs basés sur CDMA
+      en-US : A mobile broadband interface for CDMA-based devices
+     index : 36
+   -
+     text :
+      fr-FR : Autre type
+      en-GB : Other type
+      fr-CA : Autre type
+      en-US : Other type
+     index : 37
+   -
+     text :
+      fr-FR : Une interface réseau Ethernet
+      en-GB : An Ethernet network interface
+      fr-CA : Une interface réseau Ethernet
+      en-US : An Ethernet network interface
+     index : 38
+   -
+     text :
+      fr-FR : Une interface réseau Token Ring
+      en-GB : A token ring network interface
+      fr-CA : Une interface réseau Token Ring
+      en-US : A token ring network interface
+     index : 39
+   -
+     text :
+      fr-FR : Une interface réseau PPP
+      en-GB : A PPP network interface
+      fr-CA : Une interface réseau PPP
+      en-US : A PPP network interface
+     index : 40
+   -
+     text :
+      fr-FR : Une interface réseau de bouclage logiciel
+      en-GB : A software loop-back network interface
+      fr-CA : Une interface réseau de bouclage logiciel
+      en-US : A software loop-back network interface
+     index : 41
+   -
+     text :
+      fr-FR : Une interface réseau ATM
+      en-GB : An ATM network interface
+      fr-CA : Une interface réseau ATM
+      en-US : An ATM network interface
+     index : 42
+   -
+     text :
+      fr-FR : Un autre type d'interface réseau
+      en-GB : Some other type of network interface
+      fr-CA : Un autre type d'interface réseau
+      en-US : Some other type of network interface
+     index : 43
+   -
+     text :
+      fr-FR : Cette fonction n'est pas disponible avec la version de Windows installée
+      en-GB : This feature is not available with the version of Windows installed
+      fr-CA : Cette fonction n'est pas disponible avec la version de Windows installée
+      en-US : This feature is not available with the version of Windows installed
+     index : 44
+   -
+     text :
+      fr-FR : La récupération de l'adresse MAC à partir de l'IP %1 a échoué
+      en-GB : Getting MAC Address from IP %1 Failed
+      fr-CA : La récupération de l'adresse MAC à partir de l'IP %1 a échoué
+      en-US : Getting MAC Address from IP %1 Failed
+     index : 45
+   -
+     text :
+      fr-FR : L'adresse IP %1 n'a pas pu être convertie
+      en-GB : IP address %1 could not be converted
+      fr-CA : L'adresse IP %1 n'a pas pu être convertie
+      en-US : IP address %1 could not be converted
+     index : 46
+   -
+     text :
+      fr-FR : La connexion n'est pas supportée.
+      en-GB : Connection is not supported.
+      fr-CA : La connexion n'est pas supportée.
+      en-US : Connection is not supported.
+     index : 47
+   -
+     text :
+      fr-FR : Il n'y a pas assez de mémoire disponible.
+      en-GB : There is not enough memory available.
+      fr-CA : Il n'y a pas assez de mémoire disponible.
+      en-US : There is not enough memory available.
+     index : 48
+   -
+     text :
+      fr-FR : Mauvais pointeur.
+      en-GB : Wrong pointer.
+      fr-CA : Mauvais pointeur.
+      en-US : Wrong pointer.
+     index : 49
+   -
+     text :
+      fr-FR : Mauvais type de matériel.
+      en-GB : Wrong type of device.
+      fr-CA : Mauvais type de matériel.
+      en-US : Wrong type of device.
+     index : 50
+   -
+     text :
+      fr-FR : Mauvais profil utilisateur.
+      en-GB : Wrong user profile.
+      fr-CA : Mauvais profil utilisateur.
+      en-US : Wrong user profile.
+     index : 51
+   -
+     text :
+      fr-FR : Il y a déjà une entrée pour ce matériel dans le profil utilisateur (déjà connecté)
+      en-GB : There is already an entry for this device in the user profile (already logged in)
+      fr-CA : Il y a déjà une entrée pour ce matériel dans le profil utilisateur (déjà connecté)
+      en-US : There is already an entry for this device in the user profile (already logged in)
+     index : 52
+   -
+     text :
+      fr-FR : Mauvais réseau ou mauvais chemin.
+      en-GB : Bad network or bad path.
+      fr-CA : Mauvais réseau ou mauvais chemin.
+      en-US : Bad network or bad path.
+     index : 53
+   -
+     text :
+      fr-FR : Pas de réseau.
+      en-GB : No network.
+      fr-CA : Pas de réseau.
+      en-US : No network.
+     index : 54
+   -
+     text :
+      fr-FR : Erreur réseau.
+      en-GB : Network error.
+      fr-CA : Erreur réseau.
+      en-US : Network error.
+     index : 55
+   -
+     text :
+      fr-FR : Mauvais nom de réseau.
+      en-GB : Wrong network name.
+      fr-CA : Mauvais nom de réseau.
+      en-US : Wrong network name.
+     index : 56
+   -
+     text :
+      fr-FR : La lettre du lecteur est invalide.
+      en-GB : The drive letter is invalid.
+      fr-CA : La lettre du lecteur est invalide.
+      en-US : The drive letter is invalid.
+     index : 57
+   -
+     text :
+      fr-FR : Mauvais mot de passe.
+      en-GB : Wrong password.
+      fr-CA : Mauvais mot de passe.
+      en-US : Wrong password.
+     index : 58
+   -
+     text :
+      fr-FR : Accès refusé.
+      en-GB : Access denied.
+      fr-CA : Accès refusé.
+      en-US : Access denied.
+     index : 59
+   -
+     text :
+      fr-FR : "Erreur inconnue [%1]"
+      en-GB : "Unknown error [%1]"
+      fr-CA : "Erreur inconnue [%1]"
+      en-US : "Unknown error [%1]"
+     index : 60
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

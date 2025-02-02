@@ -1,0 +1,224 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cRéseau
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1bdc54270a0adfa6
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe rassemble des constantes sur les ports de communication ansi qu'une procédure de détection de protocole et une procédure permettant de transformer une URL en structure.
+      //Cette classe est utilisée par cHTTP, cFTP, cCourriel mais aussi cEnregistrement et cSourceDeDonnée si les mémos sont sur un serveur FTP
+      STURL est une structure
+      	//ref : https://fr.wikipedia.org/wiki/Uniform_Resource_Locator
+      	//exemple : http://Jojo:lApIn@www.example.com:8888/chemin/d/acc%C3%A8s.php?q=req&q2=req2#signet
+      	sProtocole				est une chaine	//http
+      	sUtilisateur			est une chaine	//Jojo
+      	sMotDePasse 			est une chaine	//lApIn
+      	sDomaine				est une chaine 	//www.example.com
+      	sSousDomaine			est une chaine	//www
+      	sDomaine2ndNiveau		est une chaine	//example
+      	sDomaine1erNiveau		est une chaine 	//.com
+      	nPort					est un entier 	//8888
+      	sCheminAbsolu			est une chaine 	//chemin/d
+      	sNomFichier				est une chaine	//acc%C3%A8s.php
+      	sParamètres				est une chaine	//q=req&q2=req2
+      	taParamètres			est un tableau associatif de chaines	//taParamètres["q"]="req" et taParamètres["q2"]="req2"
+      	sSignet					est une chaine	//signet
+                              	
+      	sIPV4					est une chaine
+      	sIPV6					est une chaine
+      fin
+      
+      EProtocoleRéseau est une énumération
+      	Inconnu
+      	FTP
+      	HTTP	
+      	EMAIL
+      fin
+      
+      constante
+      	//ref : https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml
+      	_PortFTP	= 21
+      	_PortFTPES	= 21
+      	_PortSFTP	= 22
+      	_PortSSH	= 22
+      	_PortTelnet	= 23
+      	_PortSMTP	= 25
+      	_PortDNS	= 53
+      	_PortHTTP	= 80
+      	_PortPOP3	= 110
+      	_PortNNTP	= 119
+      	_PortNTP	= 123
+      	_PortIMAP	= 143
+      	_PortSNMP	= 161
+      	_PortIRC	= 194
+      	_PortHTTPS	= 443
+      	_PortSMTPi	= 465	//chiffrement implicite
+      	_PortSMTPe	= 587	//chiffrement explicite
+      	_PortFTPS	= 990
+      	_PortIMAPS	= 993
+      	_PortProxy	= 8080
+      fin
+      
+      cRéseau est une Classe
+      	hérite de cGénérique
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2007572060549406630
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise les membres de l'objet cRéseau lors de sa création. Cette méthode est appelée automatiquement lorsqu'une instance de la classe cRéseau est créée.
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2007572060549472166
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Protocole
+     procedure_id : 2007573069876982995
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de déterminer le protocole réseau associé à un chemin spécifié. Elle analyse le chemin et renvoie une valeur de l'énumération EProtocoleRéseau correspondant au protocole détecté.
+      // Syntaxe : [ <Résultat> = ] Protocole (<sChemin> est chaîne)
+      // Paramètres :
+      //	sChemin (chaîne UNICODE) : Le chemin à analyser pour déterminer le protocole.
+      // Valeur de retour :
+      // 	cRéseau.EProtocoleRéseau : renvoie une valeur de l'énumération EProtocoleRéseau, qui peut prendre l'une des valeurs suivantes : EProtocoleRéseau.FTP, EProtocoleRéseau.HTTP, EProtocoleRéseau.EMAIL ou EProtocoleRéseau.Inconnu
+      // Exemple :
+      //
+      PROCEDURE global Protocole(sURL est une chaine) : EProtocoleRéseau
+      stDétail est un STURL = cRéseau.URLVersStructure(sURL)
+      SI (stDétail.sProtocole~="ftp" _OU_ stDétail.sProtocole~="sftp" _OU_ stDétail.sProtocole~="ftps" _OU_ stDétail.sProtocole~="ftpes") ALORS renvoyer EProtocoleRéseau.FTP 
+      SI (stDétail.sProtocole~="http" _OU_ stDétail.sProtocole~="https") ALORS renvoyer EProtocoleRéseau.HTTP 
+      SI (stDétail.nPort=_PortIMAP _OU_ stDétail.nPort=_PortPOP3 _ou_ stDétail.nPort=_PortSMTP) ALORS renvoyer EProtocoleRéseau.email
+      renvoyer EProtocoleRéseau.Inconnu
+     type : 458752
+   -
+     name : URLVersStructure
+     procedure_id : 1557216132342516264
+     type_code : 12
+     code : |1-
+      // Résumé : Cette fonction convertit un chemin local en une structure d'URL (cRéseau.STURL). Elle extrait des informations telles que le protocole, l'utilisateur, le mot de passe, le domaine, le port, le chemin absolu, le nom de fichier, les paramètres, et le signet d'une URL. 
+      // 	La différence avec URLExtraitChemin est qu'ici c'est une structure qui est récupérée et que tous les paramètres sont dans un tableau.
+      // Syntaxe : [ <Résultat> = ] URLVersStructure (<sURL> est chaîne)
+      // Paramètres :
+      //	sURL (chaîne UNICODE) : Le chemin à convertir en structure URL.
+      // Valeur de retour : STURL : La fonction renvoie une structure d'URL (cRéseau.STURL) qui contient les éléments extraits de l'URL
+      // Exemple :
+      //	stMaStructure est un cRéseau.STURL
+      // 	stMaStructure = URLVersStructure("C:\Documents\exemple\index.html?q=requête#section")
+      //
+      PROCEDURE PUBLIQUE GLOBALE URLVersStructure(LOCAL sURL est une chaîne) : STURL	
+      //exemple : http://Jojo:lApIn@www.example.com:8888/chemin/d/acc%C3%A8s.php?q=req&q2=req2#signet
+      stDétail est un cRéseau.STURL
+      sTemp est une chaîne
+      
+      SI sURL~="" ALORS RENVOYER stDétail SINON sURL=Remplace(sURL,"\","/")
+      SI Position(sURL,"//")>0 ALORS	
+      	stDétail.sProtocole		= Minuscule(ExtraitChaîne(sURL,1,":"))
+      	sTemp					= ExtraitChaîne(sURL,3,"/")	//Jojo:lApIn@www.example.com:8888
+      SINON						//si http:// n'est pas dans le chemin car le protocole pourrait être géré autrement (voir FTP)
+      	sTemp					= sURL
+      FIN
+      SI Position(sTemp,"@")>0 ALORS 
+      	stDétail.sUtilisateur	= Remplace(ExtraitChaîne(sTemp,1,"@"),"%40","@")
+      	stDétail.sMotDePasse	= ExtraitChaîne(stDétail.sUtilisateur,2,":");stDétail.sUtilisateur=ExtraitChaîne(stDétail.sUtilisateur,1,":")
+      	sTemp					= ExtraitChaîne(sTemp,2,"@")
+      FIN
+      SI Position(sTemp,":")>0 ALORS
+      	SI Position(sTemp,"[")>0 ALORS 
+      		stDétail.nPort		= Val(ExtraitChaîne(sTemp,2,"]:"))
+      		sTemp				= Milieu(ExtraitChaîne(sTemp,1,"]:"),2)	//ex : [1234:abcd::1234]:8888
+      	SINON
+      		stDétail.nPort		= Val(ExtraitChaîne(sTemp,2,":"))
+      		sTemp				= ExtraitChaîne(sTemp,1,":")
+      	FIN
+      SINON
+      	SELON stDétail.sProtocole
+      		CAS "http"	: stDétail.nPort=cRéseau._PortHTTP
+      		CAS "https"	: stDétail.nPort=cRéseau._PortHTTPS
+      		CAS "ftp"	: stDétail.nPort=cRéseau._PortFTP
+      		CAS "sftp"	: stDétail.nPort=cRéseau._PortSFTP
+      		CAS "ftps"	: stDétail.nPort=cRéseau._PortFTPS
+      		CAS "ftpes" : stDétail.nPort=cRéseau._PortFTPES
+      		CAS "telnet": stDétail.nPort=cRéseau._PortTelnet
+      		CAS "dns"	: stDétail.nPort=cRéseau._PortDNS
+      		CAS "nntp"	: stDétail.nPort=cRéseau._PortNNTP
+      		CAS "ntp"	: stDétail.nPort=cRéseau._PortNTP
+      		CAS "irc"	: stDétail.nPort=cRéseau._PortIRC
+      	FIN
+      FIN
+      stDétail.sDomaine			= sTemp
+      stDétail.sSousDomaine		= ExtraitChaîne(sTemp,1,".")
+      stDétail.sDomaine2ndNiveau	= (ExtraitChaîne(sTemp,2,".")=EOT ? "" SINON ExtraitChaîne(sTemp,2,"."))
+      stDétail.sDomaine1erNiveau	= Milieu(sTemp,Taille(stDétail.sSousDomaine)+Taille(stDétail.sDomaine2ndNiveau)+3)//pas ExtraitChaîne(sTemp,3,".") car doit gérer .qc.ca
+      
+      stDétail.sCheminAbsolu		= Milieu(sURL,PositionOccurrence(sURL,"/",3),Position(sURL,"/",0,DepuisFin)-PositionOccurrence(sURL,"/",3))
+      
+      sTemp					= ExtraitChaîne(sURL,1,"/",DepuisFin)
+      SI Position(sTemp,"#")>0 ALORS
+      	stDétail.sSignet=ExtraitChaîne(sTemp,2,"#");sTemp=ExtraitChaîne(sTemp,1,"#")
+      FIN
+      SI Position(sTemp,"?")>0 ALORS
+      	stDétail.sNomFichier=ExtraitChaîne(sTemp,1,"?");stDétail.sParamètres=ExtraitChaîne(sTemp,2,"?")
+      	POUR TOUTE CHAÎNE sParamètre DE stDétail.sParamètres SÉPARÉE PAR "&"
+      		stDétail.taParamètres[ExtraitChaîne(sParamètre,1,"=")]=ExtraitChaîne(sParamètre,2,"=")
+      	FIN
+      SINON
+      	stDétail.sNomFichier=sTemp
+      FIN
+      
+      RENVOYER stDétail
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1bdc54220a04cba9
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text : {}
+     index : 0
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,343 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_ODBC
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1eba893900dafa26
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1+
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      PRIVÉ
+      CONSTANTE
+      	ODBCRegistreChemin	= "HKEY_CURRENT_USER\Software\ODBC\ODBC.INI"
+      	ErreurODBC			= 170
+      FIN
+     type : 720896
+   -
+     code : |1+
+      //
+     type : 720898
+  procedures :
+   -
+     name : ODBCListe
+     procedure_id : 2214233044726708774
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction récupère la liste des sources de données ODBC (ODBC Data Sources) présentes sur le système.
+      // Syntaxe : [ <Résultat> = ] ODBCListe ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : tableau associatif : Un tableau associatif de Variant contenant les noms des sources de données ODBC et leurs paramètres associés.
+      // Exemple :
+      //	taResultat est un tableau associatif de Variant = ODBCListe()
+      //	POUR TOUTE sSource,sNom DE taResultat
+      //		Trace("Source ODBC : " + sNom)
+      //		Trace("Paramètres : " + VariantVersTexte(sSource))
+      //	FIN
+      //
+      PROCEDURE ODBCListe() : tableau associatif de variant
+      taRésultat 		est un tableau associatif de Variant
+      vParamètres 	est un variant
+      sErreur			est une chaine
+      sSousClé 		est une chaine = RegistrePremièreSousClé(ODBCRegistreChemin)
+      tantque sSousClé>"" 
+      	si pas extraitchaine(sSousClé,1,"\",DepuisFin)~="ODBC Data Sources" alors
+      		vParamètres=ODBCRecherche(ExtraitChaîne(sSousClé,1,"\",DepuisFin))
+      		taRésultat[ExtraitChaîne(sSousClé,1,"\",DepuisFin)]=vParamètres
+      	FIN
+      	sSousClé = RegistreCléSuivante(sSousClé)
+      FIN
+      si sErreur>"" alors ErreurDéclenche(ErreurODBC,sErreur)
+      renvoyer taRésultat
+     type : 458752
+   -
+     name : ODBCRecherche
+     procedure_id : 2214233044726774310
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction recherche les paramètres associés à une source de données ODBC spécifiée par son nom.
+      // Syntaxe : [ <Résultat> = ] ODBCRecherche (<sNomODBC> est chaîne)
+      // Paramètres :
+      //	sNomODBC (chaîne UNICODE) : Le nom de la source de données ODBC à rechercher (voir ODBCListeNom).
+      // Valeur de retour : variant : contient les paramètres associés à la source de données ODBC spécifiée.
+      // Exemple :
+      //	vParametres est un Variant = ODBCRecherche("NomMaSourceODBC")
+      //	Trace(JSONVersTexte(vParametres))
+      //
+      PROCEDURE ODBCRecherche(local sNomODBC est une chaine) // : variant		//WD23 refuse de renvoyer un variant !
+      si sNomODBC~="" alors ErreurDéclenche(ErreurODBC,<§@1bdafbc821abb0ce0006§>);renvoyer null
+      //RegistreCherche(_ODBCRegistreChemin,sNomODBC,registrechercheclé)	//registrechercheclé pas dispo en WebDev
+      
+      sValeur			est une chaine
+      bBienExécuté	est un booleen
+      vParamètres		est un variant
+      sCléNom 		est une chaine = RegistrePremièreSousClé(ODBCRegistreChemin)
+      TANTQUE sCléNom>"" 
+      	si sNomODBC~=ExtraitChaîne(sCléNom,1,"\",DepuisFin) alors Valeurs(sCléNom)
+      	sCléNom = RegistreCléSuivante(sCléNom)
+      FIN
+      renvoyer vParamètres
+      
+      	Procédure interne Valeurs(sCléDeDépart est une chaine)
+      	sNomValeurs est une chaine = RegistreListeValeur(sCléDeDépart,regLstAvecDétail)
+      	sSousValeur est une chaine = remplace(milieu(sCléDeDépart,taille(ODBCRegistreChemin+"\"+sNomODBC)+1),"\",".")
+      	vLocal est un variant
+      	nEntier4 est un entier sur 4 octets
+      	nEntier8 est un entier sur 8 octets
+      	bufBinaire est un buffer
+      	POUR TOUTE CHAÎNE sNomValeur de sNomValeurs separee par rc
+      		sValeur=RegistreLit(sCléDeDépart,ExtraitChaîne(sNomValeur,1),bBienExécuté)
+      		SI bBienExécuté ALORS
+      			SELON ExtraitChaîne(sNomValeur,3)
+      				CAS RegistreTypeEntier							: nEntier4=Val(sValeur);{"vLocal."+ExtraitChaîne(sNomValeur,1),indVariable}=nEntier4
+      				cas RegistreTypeEntier_8						: nEntier8=Val(sValeur);{"vLocal."+ExtraitChaîne(sNomValeur,1),indVariable}=nEntier8
+      				CAS RegistreTypeChaîne,RegistreTypeChaîneEnv 	: {"vLocal."+ExtraitChaîne(sNomValeur,1),indVariable}=sValeur
+      				CAS RegistreTypeBinaire 						: bufBinaire=sValeur;{"vLocal."+ExtraitChaîne(sNomValeur,1),indVariable}=bufBinaire
+      				CAS RegistreTypeEntierBigEndian					: nEntier4=Val(BufferVersHexa(sValeur,0,BigEndian),"x");{"vLocal."+ExtraitChaîne(sNomValeur,1),indVariable}=nEntier4
+      			FIN
+      		FIN
+      	FIN
+      	{"vParamètres"+["."]+sSousValeur,indVariable}=vLocal
+      	sSousClés est une chaine = RegistreListeClé(sCléDeDépart)
+      	pour toute chaine sNomClé de sSousClés separee par rc
+      		Valeurs(sCléDeDépart+"\"+sNomClé)
+      	fin
+      	fin
+     type : 458752
+   -
+     name : ODBCListeNom
+     procedure_id : 2214233044726839846
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction renvoie la liste des noms des sources de données ODBC configurées sur le système.
+      // Syntaxe : [ <Résultat> = ] ODBCListeNom ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : tableau associatif : Un tableau associatif de chaînes où les clés représentent les noms des sources de données ODBC et les valeurs associées sont les descriptions correspondantes.
+      // Exemple :
+      //	taResultat est un tableau associatif de chaînes = ODBCListeNom()
+      //	POUR TOUT sValeur,sNom de taResultat
+      //		Trace(sNom,sValeur)
+      //	FIN
+      //	va renvoyer par exemple : MS Access Database<RC>Microsoft Access Driver (*.mdb, *.accdb)
+      //	
+      PROCEDURE ODBCListeNom() : tableau associatif de chaines
+      taRésultat 		est un tableau associatif de chaînes
+      sValeur 		est une chaine
+      bBienExécuté 	est un booleen
+      sNomValeurs 	est une chaine = RegistreListeValeur(ODBCRegistreChemin+"\"+"ODBC Data Sources",Vrai)
+      POUR TOUTE CHAÎNE sNomValeur de sNomValeurs separee par rc
+      	sValeur=RegistreLit(ODBCRegistreChemin+"\"+"ODBC Data Sources",ExtraitChaîne(sNomValeur,1),bBienExécuté)
+      	SI bBienExécuté ALORS taRésultat[ExtraitChaîne(sNomValeur,1)]=sValeur
+      fin
+      renvoyer taRésultat
+     type : 458752
+   -
+     name : ODBCSupprime
+     procedure_id : 2214233044726905382
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction supprime une connexion ODBC spécifiée du registre système.
+      // Syntaxe : [ <Résultat> = ] ODBCSupprime (<sNomConnexion> est chaîne)
+      // Paramètres :
+      //	sNomConnexion (chaîne UNICODE) : Une chaîne représentant le nom de la connexion ODBC à supprimer (voir ODBCListeNom).
+      // Valeur de retour : booléen : indique si la suppression de la connexion ODBC s'est déroulée avec succès (Vrai) ou non (Faux).
+      // Exemple :
+      //	SI ODBCSupprime("MaConnexionODBC") ALORS Trace("La connexion ODBC a été supprimée avec succès.") SINON Trace("Échec de la suppression de la connexion ODBC.")
+      //
+      PROCEDURE ODBCSupprime(sNomConnexion est une chaine) : booleen
+      bBienExécuté	est un booleen
+      
+      RegistreLit(ODBCRegistreChemin+"\"+sNomConnexion,"",bBienExécuté)
+      si pas bBienExécuté alors renvoyer vrai 	//la clé n'existe pas
+      si RegistreSupprimeClé(ODBCRegistreChemin+"\"+sNomConnexion) _et_ RegistreSupprimeValeur(ODBCRegistreChemin+"\ODBC Data Sources",sNomConnexion) alors renvoyer vrai
+      ErreurDéclenche(ErreurODBC,chaineconstruit(<§@1bdafbc821abb0ce0002§>,sNomConnexion));renvoyer faux
+     type : 458752
+   -
+     name : ODBCModifie
+     procedure_id : 2214233044726970918
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction permet de modifier les paramètres d'une connexion ODBC spécifiée dans le registre système.
+      // Syntaxe : [ <Résultat> = ] ODBCModifie (<sNomODBC> est chaîne, <vParamètres> est variant)
+      // Paramètres :
+      //	sNomODBC (chaîne UNICODE) : Une chaîne représentant le nom de la connexion ODBC à modifier.
+      //	vParamètres (variant) : Un Variant contenant les nouveaux paramètres de la connexion ODBC (voir ODBCListe).
+      // Valeur de retour : booléen : indique si la modification des paramètres de la connexion ODBC s'est déroulée avec succès (Vrai) ou non (Faux).
+      // Exemple :
+      //	SI ODBCModifie("MaConnexionODBC", vNouveauxParametres) ALORS Trace("Les paramètres de la connexion ODBC ont été modifiés avec succès.") SINON Trace("Échec de la modification des paramètres de la connexion ODBC.")
+      //
+      PROCEDURE ODBCModifie(sNomODBC est une chaîne,vParamètres est un variant) : booleen
+      SI sNomODBC~="" ALORS ErreurDéclenche(ErreurODBC,<§@1bdafbc821abb0ce0006§>);renvoyer faux
+      
+      sClé est une chaîne = ODBCRegistreChemin+"\"+sNomODBC
+      SI pas RegistreExiste(sClé) ALORS ErreurDéclenche(ErreurODBC,ChaîneConstruit(<§@1bdafbc821abb0ce0007§>,sNomODBC));renvoyer faux
+      
+      VariantVersRegistre(vParamètres)
+      
+      	Procédure interne VariantVersRegistre(vRéférence est un variant,sRef est une chaine = "")
+      	POUR TOUT mMembre DE vRéférence..Membre
+      		SELON mMembre..Type
+      			CAS wlVariant 	: VariantVersRegistre(mMembre,sRef+["\"]+mMembre..nom)
+      			cas wlChaîne	: registreecrit(sClé+["\"]+sRef,mMembre..nom,mMembre..valeur,RegistreTypeChaîne)
+      			cas wlEntier_4	: registreecrit(sClé+["\"]+sRef,mMembre..nom,mMembre..valeur,RegistreTypeEntier)
+      			cas wlEntier_8	: registreecrit(sClé+["\"]+sRef,mMembre..nom,mMembre..valeur,RegistreTypeEntier_8)
+      			cas wlBuffer	: registreecrit(sClé+["\"]+sRef,mMembre..nom,mMembre..valeur,RegistreTypeBinaire)
+      				//on ne peut pas traiter ici l'entier BigEndian car pas de type de variable associé !
+      		fin
+      	fin
+      	fin
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : ODBCRechercheParMembre
+     procedure_id : 2214233044727036454
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction recherche une connexion ODBC parmi celles disponibles en se basant sur la correspondance des valeurs spécifiées pour plusieurs membres.
+      // Syntaxe : [ <Résultat> = ] ODBCRechercheParMembre (<sMembres> est chaîne, <xValMembre1> [, <xValMembre2> [, <xValMembre3> [, <xValMembre4> [, <xValMembre5>]]]])
+      //
+      // Paramètres :
+      //	sMembres (chaîne UNICODE) : Une chaîne contenant les noms des membres (attributs) à comparer, séparés par un tableau (TAB), voir ODBCListe pour le nom des attributs. Ces membres sont utilisés pour déterminer la correspondance entre les connexions ODBC.
+      // 	xValMembre1 : valeur à comparer pour chaque membre spécifié dans sMembres.
+      // 	xValMembre2 (valeur optionnelle) : valeur à comparer pour chaque membre spécifié dans sMembres
+      // 	xValMembre3 (valeur optionnelle) : valeur à comparer pour chaque membre spécifié dans sMembres
+      // 	xValMembre4 (valeur optionnelle) : valeur à comparer pour chaque membre spécifié dans sMembres
+      // 	xValMembre5 (valeur optionnelle) : valeur à comparer pour chaque membre spécifié dans sMembres
+      // Valeur de retour : chaîne UNICODE : Une chaîne représentant le nom de la première connexion ODBC trouvée qui correspond aux valeurs spécifiées pour les membres. Si aucune correspondance n'est trouvée, une chaîne vide est renvoyée
+      // Exemple :
+      //	sNomConnexionTrouvee est une chaîne = ODBCRechercheParMembre("Nom"+TAB+"Serveur"+TAB+"BaseDonnees", "MaConnexion", "localhost", "MaBaseDeDonnees")
+      //
+      //
+      PROCEDURE ODBCRechercheParMembre(sMembres est une chaîne,xValMembre1<utile>,xValMembre2<utile>=null,xValMembre3<utile>=null,xValMembre4<utile>=Null,xValMembre5<utile>=null) : chaine
+      taListe est un tableau associatif de Variant = ODBCListe()
+      nMembre,nOK sont des entiers
+      vParamètres est un variant
+      pour tout element vParamètres,sNomConnexion de taListe
+      	//WD23 01NOV2018 : si vParamètres n'est pas déclaré comme variant avant le POUR TOUT, vParamètres est vide ! cas envoyé au support
+      	nMembre=0;nOK=0
+      	pour toute chaine sMembre de sMembres
+      		nMembre++
+      		si {"vParamètres."+sMembre,indvariable}~={"xValMembre"+nMembre,indVariable} alors nOK++
+      	FIN
+      	si nOK=chaineoccurrence(sMembres,tab)+1 alors renvoyer sNomConnexion
+      FIN
+      renvoyer ""
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1bdafbc821abb0ce
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Impossible de créer la clé "
+      en-GB : "Could not create key "
+      fr-CA : "Impossible de créer la clé "
+      en-US : "Could not create key "
+     index : 0
+   -
+     text :
+      fr-FR : La couche cliente de SQLServer 2012+ n'est pas installée
+      en-GB : The client layer of SQLServer 2012+ is not installed
+      fr-CA : La couche cliente de SQLServer 2012+ n'est pas installée
+      en-US : The client layer of SQLServer 2012+ is not installed
+     index : 1
+   -
+     text :
+      fr-FR : La connexion '%1' n'a pas pu être supprimée
+      en-GB : Connection '%1' could not be deleted
+      fr-CA : La connexion '%1' n'a pas pu être supprimée
+      en-US : Connection '%1' could not be deleted
+     index : 2
+   -
+     text :
+      fr-FR : Une connexion existe déjà avec ce nom
+      en-GB : A connection already exists with this name
+      fr-CA : Une connexion existe déjà avec ce nom
+      en-US : A connection already exists with this name
+     index : 3
+   -
+     text :
+      fr-FR : Le nom du serveur est obligatoire (%1)
+      en-GB : The server name is required (%1)
+      fr-CA : Le nom du serveur est obligatoire (%1)
+      en-US : The server name is required (%1)
+     index : 4
+   -
+     text :
+      fr-FR : La couche cliente de PostgreSQL n'est pas installée
+      en-GB : The PostgreSQL client layer is not installed
+      fr-CA : La couche cliente de PostgreSQL n'est pas installée
+      en-US : The PostgreSQL client layer is not installed
+     index : 5
+   -
+     text :
+      fr-FR : Le nom du serveur est obligatoire
+      en-GB : Sever name is mandatory
+      fr-CA : Le nom du serveur est obligatoire
+      en-US : Sever name is mandatory
+     index : 6
+   -
+     text :
+      fr-FR : La connexion ODBC '%1' n'existe pas
+      en-GB : ODBC connection '%1' does not exist
+      fr-CA : La connexion ODBC '%1' n'existe pas
+      en-US : ODBC connection '%1' does not exist
+     index : 7
+   -
+     text :
+      fr-FR : La couche ODBC Oracle n'a pas été trouvée
+      en-GB : Oracle ODBC layer was not found
+      fr-CA : La couche ODBC Oracle n'a pas été trouvée
+      en-US : Oracle ODBC layer was not found
+     index : 8
+   -
+     text :
+      fr-FR : Le nom du serveur/de l'instance est obligatoire
+      en-GB : The name of the server/instance is required
+      fr-CA : Le nom du serveur/de l'instance est obligatoire
+      en-US : The name of the server/instance is required
+     index : 9
+   -
+     text :
+      fr-FR : Le nom de la base de données est obligatoire (%1)
+      en-GB : The name of the database is required (%1)
+      fr-CA : Le nom de la base de données est obligatoire (%1)
+      en-US : The name of the database is required (%1)
+     index : 10
+   -
+     text :
+      fr-FR : La couche ODBC SQL Server n'a pas été trouvée
+      en-GB : ODBC SQL Server layer was not found
+      fr-CA : La couche ODBC SQL Server n'a pas été trouvée
+      en-US : ODBC SQL Server layer was not found
+     index : 11
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

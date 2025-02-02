@@ -1,0 +1,413 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cJauge
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1bf7713515fb53cc
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet gérer des jauges de progression non bloquante (gérée dans un thread) avec une personnalisation de l'affichage. Elle est notamment utilisée dans cHTTP, cFTP, cSourceDeDonnées et cSourceDeDonnéesLDAP.
+      ETypeJaugeProgression est une Enumération
+      	Aucune
+      	Jauge
+      	Fenêtre
+      	ProcédureCallBack
+      FIN
+      ETypeLibelléProgression est une énumération
+      	Aucune
+      	Libellé
+      	Fenêtre
+      fin
+      
+      cJauge est une Classe
+      	hérite de cGénérique
+      privé
+      	m_eTypeJauge			est un ETypeJaugeProgression			<serialise = faux>	//Type de jauge (voir énumération ci-dessus)
+      	m_sJauge				est une chaine							<serialise = faux>	//Nom du champ jauge (ou de la fenêtre selon le choix de m_eTypeJauge)
+      	                    	
+      	m_eTypeLibellé			est un eTypeLibelléProgression			<serialise = faux>	//Type de libellé (voir énumération ci-dessus)
+      	m_sObjetLibellé			est une chaine							<serialise = faux>	//Champ libellé qui affichera le pourcentage de progression (si m_eTypeLibellé=Libellé à été choisi)
+      	m_sTexteLibellé			est une chaine							<serialise = faux>	//Texte à afficher dans le champ libellé/le bas de la fenêtre. Peut contenir des tag pour afficher, par exemple, la progression.
+      	                    	
+      	m_nTailleMax			est un entier							<serialise = faux>	//Nombre d'éléments maximum à parcourir
+      	m_nTraité				est un entier							<serialise = faux>	//Nombre d'éléments déjà traités
+      	m_nPointeurVariable		est un entier système					<serialise = faux>	//Pointeur vers une variable passée en paramètre de la procédure Démarre. Permet de traiter la progression de manière personnalisée.
+      	                    	
+      	m_dhDébut				est une dateheure						<serialise = faux>	//Date et heure du début du traitement
+      	m_duRafraichissement	est une durée							<serialise = faux>	//Durée utilisée pour le rafraîchissement de la jauge
+      	m_nMultiple				est un entier							<serialise = faux>	//Puissance de 10 calculée depuis le nombre d'éléments maximum à parcourir. La jauge se rafraîchira maximum 1000x quelques soit le nombre d'éléments. 
+      	m_nAfficheTailleMax		est un entier							<serialise = faux>	//Est m_nTailleMax divisé par m_nMultiple. Sert pour l'affichage
+      	
+      	m_thAffiche				est une chaine							<serialise = faux>	//Nom du thread s'occupant de l'affichage.
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2015203831087649740
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise les membres de la classe et prépare la jauge pour être utilisée.
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2015203831087715276
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe. Arrête le thread de la jauge en cours le cas échéant.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      SI m_thAffiche>"" _ET_ ThreadEtat(m_thAffiche)<>threadInexistant ALORS ThreadArrête(m_thAffiche)
+     type : 655360
+   -
+     name : Démarre
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2015205106778758205
+     type_code : 12
+     code : |1-
+      // Résumé : Initialise et lance la jauge de progression. Elle permet de spécifier différents paramètres tels que le type de jauge, la valeur maximale, le rafraîchissement, et d'autres options de personnalisation.
+      // Syntaxe :
+      //Démarre (<sJaugeOuCallBack> est chaîne, <nValeurMaximale> est entier, <nPointeurVariable> est entier système [, <duRafraichissement> est durée [, <sChampLibellé> est chaîne [, <sTextePersonnaliséLibellé> est chaîne]]])
+      // Paramètres :
+      //	sJaugeOuCallBack (chaîne UNICODE) : Le nom du champ jauge, le nom de la fenêtre ou de la procédure de rappel.
+      //	nValeurMaximale (entier) : Le nombre d'éléments maximum à parcourir.
+      //	nPointeurVariable (entier système optionnel) : Le pointeur vers une variable utilisée pour traiter la progression de manière personnalisée.
+      //	duRafraichissement (durée optionnelle) : utilisée pour le rafraîchissement de la jauge, par défaut chaque 100ms (10x par seconde).
+      //	sChampLibellé (chaîne UNICODE optionnelle) : Affichera le pourcentage de progression (si applicable).
+      //	sTextePersonnaliséLibellé (chaîne UNICODE optionnelle) : Le texte à afficher dans le champ libellé/le bas de la fenêtre. Peut contenir des tags : %P (progression), %D (jours restants), %H (heures restantes), %M (minutes restantes) et %S (secondes restantes)
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Démarre(sJaugeOuCallBack est une chaine,nValeurMaximale est un entier,nPointeurVariable est un entier système,duRafraichissement est une durée = 100ms,sChampLibellé est une chaine="",sTextePersonnaliséLibellé est une chaine="")
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sJaugeOuCallBack,nValeurMaximale,nPointeurVariable,duRafraichissement,sChampLibellé,sTextePersonnaliséLibellé)
+      raz(vrai,vrai)
+      m_sJauge				= sJaugeOuCallBack
+      m_eTypeJauge			= Typejauge(m_sJauge)
+                          	
+      m_sTexteLibellé			= sTextePersonnaliséLibellé
+      si sChampLibellé>"" alors m_sObjetLibellé = NomComplet(sChampLibellé)
+      m_eTypeLibellé			= TypeLibellé(sChampLibellé)
+                          	
+      m_nTailleMax			= nValeurMaximale
+      m_nTraité				= 0
+      m_nPointeurVariable		= nPointeurVariable
+                          	
+      m_dhDébut				= dateheuresys()
+      m_duRafraichissement	= duRafraichissement
+      
+      SI m_nTailleMax<1000 ALORS m_nMultiple=1 sinon	m_nMultiple=Puissance(10,Taille(NumériqueVersChaîne(m_nTailleMax))-3)
+      m_nAfficheTailleMax	= PartieEntière(m_nTailleMax/m_nMultiple)
+      
+      SELON m_eTypeJauge
+      	CAS ETypeJaugeProgression.Jauge				: {sJaugeOuCallBack,indChamp}..BorneMin=0;{sJaugeOuCallBack,indChamp}..BorneMax=nValeurMaximale
+      	CAS ETypeJaugeProgression.Fenêtre			: 
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=Android ou CibleExécution=WindowsMobile>
+      	
+      		Jauge(0,nValeurMaximale)
+      	
+      <fin>
+      
+      		
+      	CAS ETypeJaugeProgression.ProcédureCallBack	: ExécuteTraitement(sJaugeOuCallBack,trtProcédure,0,nValeurMaximale,0,0,0,0,0)
+      FIN
+      raz(vrai,vrai)
+      m_thAffiche=DonneGUID(guidBrut);ThreadExécute(m_thAffiche,threadNormal,Affiche)
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 458752
+   -
+     name : Affiche
+     procedure_id : 2015206927844922941
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée pour gérer l'affichage. Est appelé depuis un thread initié dans Démarre().
+      PROCEDURE PRIVÉE Affiche()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      nTempsEcoulé,nTempsRestant,nAfficheTailleCur,nJour sont des entiers
+      sProgression,sAfficheProgression,sAfficheTempsRestant,sReste,sAffiche sont des chaines
+      moDébit	est un monétaire
+      
+      QUAND EXCEPTION DANS
+      
+      	boucle
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      			SI m_nPointeurVariable>0 ALORS Transfert(&m_nTraité,m_nPointeurVariable, 4)
+      	
+      <fin>
+      
+      	
+      		nTempsEcoulé=DateHeureDifférenceEnSecondes(m_dhDébut)
+      		
+      		SI m_nTraité>0 ALORS
+      			si nTempsEcoulé>0 alors moDébit=m_nTraité/nTempsEcoulé	//info/sec
+      			SI moDébit>0 ALORS nTempsRestant=PartieEntière((m_nTailleMax-m_nTraité)/moDébit)	//en secondes
+      		
+      			sReste="";sAffiche="";sAfficheProgression="";sAfficheProgression=""
+      			nAfficheTailleCur	= PartieEntière(m_nTraité/m_nMultiple)
+      			SI m_nAfficheTailleMax>0 _ET_ nAfficheTailleCur/m_nAfficheTailleMax<=1 ALORS sProgression = NumériqueVersChaîne(PartieEntière(nAfficheTailleCur/m_nAfficheTailleMax*1000)/10,"3.1f")
+      			SI nTempsRestant>86399 ALORS	//86400 = un jour (en seconde)
+      				nJour=PartieEntière(nTempsRestant/86400)
+      				sReste=HeureVersChaîne(EntierVersHeure(modulo(nTempsRestant,86400)*100),"HH:MM:SS")		//reste de la division en heures/minutes
+      			SINON SI nTempsRestant>0 ALORS
+      				nJour=0
+      				sReste=HeureVersChaîne(EntierVersHeure(nTempsRestant*100),"HH:MM:SS")	//une minute (en seconde)
+      			SINON	
+      				sReste="00:00:00"
+      			FIN
+      			SI m_sObjetLibellé>"" ALORS
+      				si position(m_sTexteLibellé,"%P",0,SansCasse+DepuisDébut)>0 alors 
+      					sAffiche=remplacE(m_sTexteLibellé,"%P",sProgression+" %",SansCasse)
+      				sinon
+      					sAfficheProgression=sProgression+" %"
+      				FIN
+      				SI Position(sAffiche,"%H",0,SansCasse+DepuisDébut)>0 _et_ Position(sAffiche,"%M",0,SansCasse+DepuisDébut)>0 ALORS 
+      					SI nJour=0 _ET_ Position(sAffiche,"%S",0,SansCasse+DepuisDébut)<1 _et_ Gauche(sReste,5)="00:00" ALORS
+      						sAffiche=Remplace(sAffiche,"%H",<§$0001§>,SansCasse)
+      						sAffiche=Remplace(sAffiche,"%M","",SansCasse);sAffiche=Remplace(sAffiche,"%S","",SansCasse)
+      					sinon
+      						sAffiche=Remplace(sAffiche,"%D",nJour,SansCasse)
+      						sAffiche=Remplace(sAffiche,"%H",Gauche(sReste,2),SansCasse)
+      						sAffiche=Remplace(sAffiche,"%M",milieu(sReste,4,2),SansCasse)
+      						sAffiche=Remplace(sAffiche,"%S",droite(sReste,2),SansCasse)
+      					fin
+      				SINON 
+      					si nJour=0 _et_ gauche(sReste,5)="00:00" alors
+      						sAfficheTempsRestant=<§$0001§>
+      					sinon
+      						sAfficheTempsRestant=(nJour=0 ? "" sinon nJour+chaineconstruit(<§$0002§>,nJour=1 ? "" sinon "s"))+Gauche(sReste,2)+["H"]+Milieu(sReste,4,2)
+      					fin
+      				FIN
+      				
+      			FIN
+      		SINON
+      			sAfficheTempsRestant=<§$0004§>
+      			sAfficheProgression="0 %"
+      		FIN
+      		
+      		SELON m_eTypeJauge
+      			CAS ETypeJaugeProgression.Jauge				: 
+      				{m_sJauge,indChamp}=m_nTraité
+      				SI m_sObjetLibellé>"" ALORS {m_sObjetLibellé,indChamp}=(sAffiche>"" ? sAffiche sinon m_sTexteLibellé+[" "]+sAfficheProgression+[<§$0003§>]+sAfficheTempsRestant)
+      			CAS ETypeJaugeProgression.Fenêtre			: 
+      						
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=WindowsMobile>
+      					SI m_eTypeLibellé=ETypeLibelléProgression.Fenêtre ALORS 
+      						Jauge(m_nTraité,m_nTailleMax,(sAffiche>"" ? sAffiche SINON m_sTexteLibellé+[" "]+sAfficheProgression+[<§$0003§>]+sAfficheTempsRestant))
+      					SINON
+      						Jauge(m_nTraité,m_nTailleMax)
+      					FIN
+      	
+      <fin>
+      
+      						
+      			CAS ETypeJaugeProgression.ProcédureCallBack	: 
+      				Exécutetraitement(m_sJauge,trtprocédure,m_nTraité,m_nTailleMax,Arrondi(m_nTraité/m_nTailleMax*100,1),nJour,val(gauche(sReste,2)),val(Milieu(sReste,4,2)),Val(droite(sReste,2)))
+      		FIN
+      		SI sAfficheProgression="100.0 %" ALORS SORTIR SINON ThreadPause(m_duRafraichissement)
+      	fin
+      FAIRE
+      	//rien, l'élément a disparu
+      	ThreadFin()
+      FIN
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 2015207357341752210
+     type_code : 12
+     code : |1-
+      // Résumé : Réinitialise la jauge de progression. Elle permet de vider la jauge et, en option, de vider le champ libellé associé.
+      // Syntaxe : Raz (<bViderJauge> est booléen, <bViderLibellé> est booléen)
+      // Paramètres :
+      //	bViderJauge (booléen) : Indique s'il faut vider la jauge.
+      //	bViderLibellé (booléen) : Indique s'il faut vider le champ libellé (si applicable).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Raz(bViderJauge est un booleen,bViderLibellé est un booleen)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bViderJauge,bViderLibellé)
+      FinAutomatismeProcédure(Affiche)
+      quand exception dans
+      	si bViderJauge alors
+      		SELON m_eTypeJauge
+      			CAS ETypeJaugeProgression.Jauge				: {m_sJauge,indChamp}=0
+      			CAS ETypeJaugeProgression.Fenêtre			: 
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=WindowsMobile>
+      					SI bViderLibellé ALORS Jauge(0,m_nTailleMax,"") SINON Jauge(0,m_nTailleMax)
+      	
+      <fin>
+      
+      
+      			CAS ETypeJaugeProgression.ProcédureCallBack	: ExécuteTraitement(m_sJauge,trtProcédure,m_nTailleMax,m_nTailleMax,100.0,0,0,0,0)
+      		FIN
+      	sinon
+      		SELON m_eTypeJauge
+      			CAS ETypeJaugeProgression.Jauge				: {m_sJauge,indChamp}=m_nTailleMax
+      			CAS ETypeJaugeProgression.Fenêtre			: 
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=WindowsMobile>
+      					Jauge(m_nTailleMax,m_nTailleMax)
+      	
+      <fin>
+      
+      				
+      			CAS ETypeJaugeProgression.ProcédureCallBack	: ExécuteTraitement(m_sJauge,trtProcédure,m_nTailleMax,m_nTailleMax,100.0,0,0,0,0)
+      		FIN
+      	fin
+      	si bViderLibellé _Et_ m_sObjetLibellé>"" _Et_ m_eTypeLibellé=Libellé alors {m_sObjetLibellé,indChamp}=""
+      faire
+      	//rien, la jauge ou la fenêtre ou la procédure ont disparus
+      fin
+     type : 458752
+   -
+     name : TypeJauge
+     procedure_id : 2016977433719134884
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée permettant de déterminer quelle est le type de jauge selon le nom du champ passé en paramètre
+      PROCEDURE privé TypeJauge(xNomJauge) : ETypeJaugeProgression
+      si xNomJauge<>"" _et_ xNomJauge<>null alors
+      	SI ChampExiste(xNomJauge) ALORS 
+      		sNomJauge est une chaine = NomComplet(xNomJauge)
+      		SI {sNomJauge,indChamp}..Type=typJauge ALORS 
+      			<compile si TypeConfiguration<>ServiceLinux et TypeConfiguration<>ServiceWindows>
+      				renvoyer ETypeJaugeProgression.Jauge 
+      			<fin>
+      		SINON
+      			<compile si TypeConfiguration=ApplicationWindows ou TypeConfiguration=ApplicationDotNet ou TypeConfiguration=ApplicationLinux ou TypeConfiguration=ios ou TypeConfiguration=WindowsMobile>
+      				RENVOYER ETypeJaugeProgression.Fenêtre
+      			<fin>
+      		FIN
+      	sinon
+      		RENVOYER ETypeJaugeProgression.ProcédureCallBack
+      	FIN
+      fin
+      renvoyer ETypeJaugeProgression.Aucune
+     type : 458752
+   -
+     name : TypeLibellé
+     procedure_id : 2017054567341745570
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée permettant de déterminer quelle est le type de libellé selon le nom du champ passé en paramètre
+      PROCEDURE privé TypeLibellé(xNomJauge) : ETypelibelléProgression
+      SI xNomJauge<>"" _ET_ xNomJauge<>Null ALORS
+      	SI ChampExiste(xNomJauge) ALORS 
+      		sNomJauge est une chaine = NomComplet(xNomJauge)
+      		SI {sNomJauge,indChamp}..Type=typlibellé ALORS 
+      			<COMPILE SI TypeConfiguration<>ServiceLinux ET TypeConfiguration<>ServiceWindows>
+      				RENVOYER ETypelibelléProgression.Libellé 
+      			<FIN>
+      		SINON
+      			<COMPILE SI TypeConfiguration=ApplicationWindows OU TypeConfiguration=ApplicationDotNet OU TypeConfiguration=ApplicationLinux OU TypeConfiguration=iOS OU TypeConfiguration=WindowsMobile>
+      				RENVOYER ETypelibelléProgression.Fenêtre
+      			<FIN>
+      		FIN
+      	FIN
+      FIN
+      RENVOYER ETypeLibelléProgression.Aucune
+     type : 458752
+   -
+     name : Arrête
+     procedure_id : 2197201648314795723
+     type_code : 12
+     code : |1-
+      // Résumé : Arrête la jauge de progression. Elle permet d'arrêter le thread associé à l'affichage de la jauge et, en option, de vider la jauge et le champ libellé.
+      // Syntaxe : Arrête ( [<bViderJauge> est booléen [, <bViderLibellé> est booléen]])
+      // Paramètres :
+      // 	bViderJauge (booléen optionnel) : Indique s'il faut vider la jauge, par défaut Faux.
+      // 	bViderLibellé (booléen optionnel) :  Indique s'il faut vider le champ libellé (si applicable), par défaut Faux.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Arrête(bViderJauge est un booleen = faux,bViderLibellé est un booleen = faux)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bViderJauge,bViderLibellé)
+      SI m_thAffiche>"" _ET_ ThreadEtat(m_thAffiche)<>threadInexistant ALORS ThreadArrête(m_thAffiche)
+      RAZ(bViderJauge,bViderLibellé)
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1bf7712f15f53e0b
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Temps estimé : "
+      en-GB : "Estimated time : "
+      fr-CA : "Temps estimé : "
+      en-US : "Estimated time : "
+     index : 0
+   -
+     text :
+      fr-FR : moins d'une minute
+      en-GB : less than a minute
+      fr-CA : moins d'une minute
+      en-US : less than a minute
+     index : 1
+   -
+     text :
+      fr-FR : "jour%1 et "
+      en-GB : "day%1 and "
+      fr-CA : "jour%1 et "
+      en-US : "day%1 and "
+     index : 2
+   -
+     text :
+      fr-FR : " fin dans : "
+      en-GB : " end in : "
+      fr-CA : " fin dans : "
+      en-US : " end in : "
+     index : 3
+   -
+     text :
+      fr-FR : inconnu
+      en-GB : unknown
+      fr-CA : inconnu
+      en-US : unknown
+     index : 4
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

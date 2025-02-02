@@ -1,0 +1,365 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cAPILayer_Currency
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12b4b7bf2d2b541e
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe hérite de cAPILayer et permet de récupérer la liste des devises du service, les taux de change ...
+      //Ref : https://apilayer.com/marketplace/currency_data-api#documentation-tab
+      
+      STChange est une structure
+      	dDébut					est une date
+      	dFin					est une date
+      	sDeviseOrigine			est une chaine
+      	sDeviseDestination 		est une chaine
+      	rTauxDébut				est un réel
+      	rTauxFin				est un réel
+      	rDifférenceTaux			est un réel
+      	rDifférenceTauxPc		est un reel
+      fin
+      STTaux est une structure
+      	sDeviseOrigine			est une chaîne
+      	sDeviseDestination 		est une chaîne
+      	rTaux					est un reel
+      	nTimeStamp				est un entier sur 8 octets	
+      fin
+      cAPILayer_Currency est une Classe
+      	hérite de cAPILayer
+      	m_tabChange				est un tableau 	<serialise = faux> de STChange	//Tableau des taux de change entre 2 dates
+      	m_tabTaux				est un tableau 	<serialise = faux> de STTaux	//Tableau des taux de change courant
+      global constant
+      	mg_tabDevisesAcceptées	est un tableau 	<serialise = faux> de chaine	//Tableau des devises acceptées
+      	mg_nMaxRequêteParJour	est un entier	<serialise = faux>				//Nombre limite d'appels par jour dans l'offre choisie
+      	mg_nRequêteCeJour		est un entier   <serialise = faux>              //Nombre d'appels déjà effectués aujourd'hui
+      	mg_nMaxRequêteParMois	est un entier   <serialise = faux>              //Nombre limite d'appels par mois dans l'offre choisie
+      	mg_nRequêteCeMois		est un entier   <serialise = faux>              //Nombre d'appels déjà effectués ce mois
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1347904220215137326
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe cAPI.
+      // Syntaxe : Constructeur (<sCléAPI> est chaîne [, <duTimeOut> est durée])
+      // Paramètres :
+      //	sCléAPI (chaîne UNICODE) : La clé API pour permettre l'accès au service
+      //	duTimeOut (durée optionnelle) : Durée après laquelle le timeout se déclenche, par défaut : 5 secondes
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(sCléAPI est une chaine,duTimeOut est une durée = 5s)
+      capilayer.Constructeur("currency_data",sCléAPI,duTimeOut)
+      si mg_tabDevisesAcceptées..occurrence=0 alors Liste()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1347904220215202862
+     type_code : 28
+     code : |1+
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Change
+     procedure_id : 1347904220215268398
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère les taux de change entre deux dates pour une devise d'origine donnée et une ou plusieurs devises de destination spécifiées. Le résultat se trouve dans m_tabChange.
+      // Syntaxe : [ <Résultat> = ] Change (<dDébut> est date, <dFin> est date [, <sDeviseOrigine> est chaîne [, <sDevisesDestination> est chaîne]])
+      // Paramètres :
+      //	dDébut (date) : Date de début pour la recherche des taux de change.
+      //	dFin (date) : Date de fin pour la recherche des taux de change.
+      //	sDeviseOrigine (chaîne UNICODE optionnelle) : Devise d'origine pour la conversion. Par défaut, la devise d'origine est vide. Il est néanmoins conseillé de limiter le résultat à une devise.
+      //	sDevisesDestination (chaîne UNICODE optionnelle) : Liste des devises de destination séparées par des virgules. Par défaut, la liste est vide.
+      // Valeur de retour : booléen : Vrai si la récupération des taux réussit, Faux sinon.
+      // Exemple :
+      //
+      
+      //Exemple de réponse :
+      //{
+      //"change": true,
+      //"end_date": "2010-01-01",
+      //"quotes": {
+      //"USDAUD": {
+      //"change": -0.1726,
+      //"change_pct": -13.4735,
+      //"end_rate": 1.108609,
+      //"start_rate": 1.281236
+      //},
+      //"USDEUR": {
+      //"change": -0.0389,
+      //"change_pct": -5.2877,
+      //"end_rate": 0.697253,
+      //"start_rate": 0.73618
+      //},
+      //"USDMXN": {
+      //"change": 1.9594,
+      //"change_pct": 17.5741,
+      //"end_rate": 13.108757,
+      //"start_rate": 11.149362
+      //}
+      //},
+      //"source": "USD",
+      //"start_date": "2005-01-01",
+      //"success": true
+      //}
+      PROCEDURE Change(dDébut est une date,dFin est une date,sDeviseOrigine est une chaine = "",sDevisesDestination est une chaine = "") : booléen
+      m_pclErreur.RAZ();ancetre.raz();VariableRAZ(m_tabChange)
+      
+      si pas datevalide(dDébut) ou val(dDébut)=0 	alors m_pclerreur.AjouteErreur(<§$0000§>)
+      si pas datevalide(dFin) ou val(dFin)=0 		alors m_pclerreur.AjouteErreur(<§$0001§>)
+      si pas DeviseExiste(sDeviseOrigine) 		alors m_pclerreur.AjouteErreur(<§$0002§>)
+      pour toute chaine sDevise de sDevisesDestination separee par ","
+      	si pas DeviseExiste(sDevise) alors m_pclerreur.AjouteErreur(chaineconstruit(<§$0003§>,sDevise))
+      FIN
+      si m_pclErreur.p_sErreur>"" alors renvoyer Faux
+      
+      sURL est une chaine = m_sURLdeBase+"change?start_date=%1&end_date=%2"
+      sURL = ChaîneConstruit(sURL,DateVersChaîne(dDébut,"AAAA-MM-JJ"),DateVersChaîne(dFin,"AAAA-MM-JJ"))
+      si pas sDeviseOrigine~="" 		alors sURL+="&source="+sDeviseOrigine
+      si pas sDevisesDestination~="" 	alors sURL+="&currencies="+sDevisesDestination
+      
+      si APILayerExécute(sURL) alors
+      	POUR TOUT vBuffer,sCode de m_vRéponse.quotes
+      		stUnChange est un STChange
+      		stUnChange.dDébut				= m_vRéponse.start_date
+      		stUnChange.dfin					= m_vRéponse.end_date
+      		stUnChange.sDeviseOrigine		= gauche(sCode,3)
+      		stUnChange.sDeviseDestination	= droite(sCode,3)
+      		stUnChange.rTauxDébut			= {"m_vRéponse.quotes."+sCode+".start_rate",indVariable}
+      		stUnChange.rTauxfin				= {"m_vRéponse.quotes."+sCode+".end_rate",indVariable}
+      		stUnChange.rDifférenceTaux		= {"m_vRéponse.quotes."+sCode+".change",indVariable}
+      		stUnChange.rDifférenceTauxPc	= {"m_vRéponse.quotes."+sCode+".change_pct",indVariable}
+      		TableauAjoute(m_tabChange,stUnChange)
+      	FIN
+      	renvoyer Vrai
+      FIN
+      renvoyer faux
+     type : 458752
+   -
+     name : Converti
+     procedure_id : 1347905100683638163
+     type_code : 12
+     code : |1+
+      // Résumé : Converti un montant d'une devise d'origine vers une devise de destination pour une date spécifiée.
+      // Syntaxe : [ <Résultat> = ] Converti (<moMontant> est monétaire, <sDeviseOrigine> est chaîne, <sDeviseDestination> est chaîne [, <dJour> est date])
+      // Paramètres :
+      //	moMontant (monétaire) : Montant à convertir.
+      //	sDeviseOrigine (chaîne UNICODE) : Devise d'origine du montant.
+      //	sDeviseDestination (chaîne UNICODE) : Devise de destination pour la conversion.
+      //	dJour (date) : Date pour laquelle effectuer la conversion. Par défaut, la date du jour est utilisée.
+      // Valeur de retour : monétaire : montant converti dans la devise de destination.
+      // Exemple :
+      //
+      // Exemple de réponse :
+      //{
+      //  "date": "2005-01-01",
+      //  "historical": true,
+      //  "info": {
+      //    "quote": 0.51961,
+      //    "timestamp": 1104623999
+      //  },
+      //  "query": {
+      //    "amount": 10,
+      //    "from": "USD",
+      //    "to": "GBP"
+      //  },
+      //  "result": 5.1961,
+      //  "success": true
+      //}
+      PROCEDURE Converti(moMontant est un monétaire,sDeviseOrigine est une chaine,sDeviseDestination est une chaine,dJour est une date = DateVersChaîne(DateDuJour,"AAAA-MM-JJ")) : monétaire
+      m_pclErreur.Raz();ancetre.RAZ();VariableRAZ(m_tabChange)
+      
+      si moMontant=0 alors renvoyer 0
+      
+      SI PAS DeviseExiste(sDeviseOrigine) 		ALORS m_pclErreur.AjouteErreur(<§$0002§>)
+      SI PAS DeviseExiste(sDeviseDestination) 	ALORS m_pclErreur.AjouteErreur(<§$0004§>)
+      SI PAS DateValide(dJour) OU Val(dJour)=0 	ALORS m_pclErreur.AjouteErreur(<§$0005§>)
+      SI m_pclErreur.p_sErreur>"" ALORS RENVOYER Faux
+      
+      sURL est une chaine = ChaîneConstruit(m_sURLdeBase+"convert?from=%1&to=%2&amount=%3&date=%4",sDeviseOrigine,sDeviseDestination,moMontant,DateVersChaîne(dJour,"AAAA-MM-JJ"))
+      SI APILayerExécute(sURL) ALORS renvoyer m_vRéponse.result sinon renvoyer 0
+     type : 458752
+   -
+     name : Liste
+     procedure_id : 1347907845167788995
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui récupère la liste des devises prises en charge par le service
+      // Exemple de réponse :
+      //{
+      //  "success": true,
+      //  "currencies": {
+      //    "AED": "United Arab Emirates Dirham",
+      //    "AFN": "Afghan Afghani",
+      //    "ALL": "Albanian Lek",
+      //    "AMD": "Armenian Dram"
+      //  }
+      //}
+      PROCEDURE PRIVÉE Liste()
+      m_pclErreur.Raz();Ancêtre.raz()
+      
+      SI APILayerExécute(m_sURLdeBase+"list") ALORS
+      	POUR TOUT sNom,sCode de m_vRéponse.currencies
+      		tableauajoute(mg_tabDevisesAcceptées,sCode)
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : DeviseExiste
+     procedure_id : 1347943875648960381
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée permettant de s'assurer que la devise recherchée fait partie du tableau des devises couvertes par le service
+      PROCEDURE PRIVÉE DeviseExiste(sCodeDevise est une chaine) : booleen
+      renvoyer TableauCherche(mg_tabDevisesAcceptées,tcDichotomique,sCodeDevise)>0
+     type : 458752
+   -
+     name : Taux
+     procedure_id : 1347999263547325681
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère les taux de change courants pour une devise d'origine donnée et une ou plusieurs devises de destination spécifiées. Le résultat se trouve dans m_tabTaux.
+      // Syntaxe : [ <Résultat> = ] Taux ( [<sDeviseOrigine> est chaîne [, <sDevisesDestination> est chaîne]])
+      // Paramètres :
+      //	sDeviseOrigine (chaîne UNICODE optionnelle) : Devise d'origine pour la conversion. Par défaut, la devise d'origine est vide. Il est néanmoins conseillé de limiter le résultat à une devise.
+      //	sDevisesDestination (chaîne UNICODE optionnelle) : Liste des devises de destination séparées par des virgules. Par défaut, la liste est vide.
+      // Valeur de retour : booléen : Vrai si la récupération des taux réussit, Faux sinon.
+      // Exemple :
+      //
+      // Exemple de réponse :
+      //{
+      //  "quotes": {
+      //    "USDAUD": 1.278342,
+      //    "USDEUR": 1.278342,
+      //    "USDGBP": 0.908019,
+      //    "USDPLN": 3.731504
+      //  },
+      //  "source": "USD",
+      //  "success": true,
+      //  "timestamp": 1432400348
+      //}
+      PROCEDURE Taux(sDeviseOrigine est une chaine = "",sDevisesDestination est une chaine = "") : booleen
+      m_pclerreur.raz();ancetre.raz();VariableRAZ(m_tabTaux)
+      
+      SI pas sDeviseOrigine~="" _et_ PAS DeviseExiste(sDeviseOrigine) ALORS m_pclErreur.AjouteErreur(<§$0002§>)
+      POUR TOUTE CHAÎNE sDevise de sDevisesDestination separee par ","
+      	SI PAS DeviseExiste(sDevise) ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0003§>,sDevise))
+      FIN
+      SI m_pclErreur.p_sErreur>"" ALORS RENVOYER Faux
+      
+      sURL est une chaine = (sDeviseOrigine~="" ? "" SINON "source="+sDeviseOrigine)+(sDevisesDestination~="" ? "" SINON (sDeviseOrigine~="" ? "" SINON "&")+"currencies="+sDevisesDestination)
+      sURL = m_sURLdeBase+"live" + ["?"] + sURL
+      SI APILayerExécute(sURL) ALORS
+      	POUR TOUT rTaux,sCode de m_vRéponse.quotes
+      		stUnTaux est un STTaux
+      		stUnTaux.rTaux				= rTaux
+      		stUnTaux.sDeviseOrigine		= gauche(sCode,3)
+      		stUnTaux.sDevisedestination	= droite(sCode,3)
+      		stUnTaux.nTimeStamp			= m_vRéponse.timestamp
+      		tableauajoute(m_tabtaux,stUnTaux)
+      	FIN
+      	RENVOYER Vrai
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : APILayerExécute
+     procedure_id : 1348009773332517832
+     type_code : 12
+     code : |1-
+      //
+      PROCEDURE privé APILayerExécute(local sURL est une chaine) : booleen
+      si APILayerRestExécute(sURL) alors
+      	mg_nMaxRequêteParJour	= m_nMaxRequêteParJour		
+      	mg_nRequêteCeJour		= m_nRequêteCeJour	
+      	mg_nMaxRequêteParMois	= m_nMaxRequêteParMois
+      	mg_nRequêteCeMois		= m_nRequêteCeMois	
+      	renvoyer vrai
+      sinon
+      	renvoyer faux
+      FIN
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x12a78cc9015c2e1c
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : La date de début est obligatoire et doit être valide
+      en-GB : The start date is mandatory and must be valid
+      fr-CA : La date de début est obligatoire et doit être valide
+      en-US : The start date is mandatory and must be valid
+     index : 0
+   -
+     text :
+      fr-FR : La date de fin est obligatoire et doit être valide
+      en-GB : The end date is mandatory and must be valid
+      fr-CA : La date de fin est obligatoire et doit être valide
+      en-US : The end date is mandatory and must be valid
+     index : 1
+   -
+     text :
+      fr-FR : La devise d'origine n'est pas gérée
+      en-GB : The original currency is not supported
+      fr-CA : La devise d'origine n'est pas gérée
+      en-US : The original currency is not supported
+     index : 2
+   -
+     text :
+      fr-FR : La devise de destination %1 n'est pas gérée
+      en-GB : Destination currency %1 is not supported
+      fr-CA : La devise de destination %1 n'est pas gérée
+      en-US : Destination currency %1 is not supported
+     index : 3
+   -
+     text :
+      fr-FR : La devise de destination n'est pas gérée
+      en-GB : Destination currency is not supported
+      fr-CA : La devise de destination n'est pas gérée
+      en-US : Destination currency is not supported
+     index : 4
+   -
+     text :
+      fr-FR : La date doit être valide
+      en-GB : The date must be valid
+      fr-CA : La date doit être valide
+      en-US : The date must be valid
+     index : 5
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

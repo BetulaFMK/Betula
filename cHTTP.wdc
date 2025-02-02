@@ -1,0 +1,1161 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cHTTP
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1bdc53a00977ce77
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet de faire une requête HTTP. La procédure Télécharge() permet de télécharger, via socket, du contenu internet en limitant le débit (disponible depuis WD25).
+      //Cette classe contient également tous les codes erreur liés aux protocole HTTP et tous les codes couleurs standard. Facilite aussi les requêtes sur le serveur HTTP de Betula (voir cHTTPServeur)
+      
+      STHTTPRequête est une structure
+      	sAgentUtilisateur		est une chaine ansi
+      	sContentType			est une chaine ansi
+      	sContenu				est une chaine ansi
+      	sURL					est une chaine ansi
+      	eMéthode				est un EHTTPMéthode
+      	sUtilisateur			est une chaine
+      	sMotDePasse				est une chaine
+      	taEntête				est un tableau associatif de chaines
+      	nTimeOutConnexion		est un entier
+      	bUtiliserHTTPRequête	est un booleen							//Sinon utilisera RESTEnvoie, il faut savoir que les deux instructions peuvent renvoyer des résultats différents sur la même URL !
+      	bIgnoreErreur			est un booleen
+      fin
+      STHTTPRéponse est une structure										//Pour décrypter "à la main" une réponse HTTP (car restRéponse pas dispo sous toutes plateformes)
+      	bufContenu				est un buffer
+      	nCodeÉtat				est un entier
+      	bErreur					est un booleen
+      	sContentType			est une chaine ansi
+      	sDescriptionCodeEtat	est une chaine ansi
+      	taEntête				est un tableau associatif de chaines
+      	sEntêteBrut				est une chaine ansi
+      fin
+      COProtocoleHTTPS est une combinaison
+      	TLS1		
+      	TLS1_1		
+      	TLS1_2		
+      	SSL2		
+      	SSL3		
+      fin
+      EFinTransmission est une énumération
+      	FinBuffer	= SocketMarqueurFinBuffer
+      	TailleDébut	= SocketTailleDébut
+      	AvecFin		= SocketMarqueurFin
+      	SansFin		= SocketSansMarqueurFin
+      fin
+      EDébitTéléchargement est une énumération
+      	DébitMax	= 0
+      	Débit128ko	= 1
+      	Débit84ko	= 2	
+      	Débit64ko	= 4
+      	Débit50ko	= 5
+      	Débit42ko	= 7
+      	Débit36ko	= 8
+      	Débit32ko	= 10
+      fin
+      EMimeType est une énumération
+      	//extension des types mime de WD23 non reconnues en Android ! ref : https://technet.microsoft.com/en-us/library/cc995276.aspx à compléter avec https://www.iana.org/assignments/media-types/media-types.xhtml
+      	typeMimeHTML			= "text/html"
+      	typeMimeTexteXML		= "text/xml"
+      	typeMimeTexte			= "text/plain"
+      	typeMimeJPEG			= "image/jpeg"
+      	typeMimeGIF				= "image/gif"
+      	typeMimePNG				= "image/png"
+      	typeMimeCSS				= "text/css"
+      	typeMimeOgg				= "audio/ogg"
+      	typeMimeJavascript		= "text/javascript"
+      	typeMimeBMP				= "image/bmp"
+      	typeMimeTiff			= "image/tiff"
+      	typeMimePBM				= "image/x-portable-bitmap"
+      	typeMimeWMF				= "application/x-msmetafile"
+      	typeMimeWebp			= "image/webp"
+      	typeMimeAudio			= "audio/basic"
+      	typeMimeMidi			= "audio/midi"
+      	typeMimeWAV				= "audio/wav"
+      	typeMimeAudioMPEG		= "audio/mpeg"
+      	typeMimeWebm			= "audio/webm"
+      	typeMimeAIF				= "audio/aiff"
+      	typeMimePlaylistMPEG	= "audio/x-mpegurl"
+      	typeMimeVideoMPEG		= "video/mpeg"
+      	typeMimePS				= "application/postscript"
+      	typeMimeJSON			= "application/json"
+      	typeMimePDF				= "application/pdf"
+      	typeMimeMSProject		= "application/vnd.ms-project"
+      	typeMimeMSPowerPoint	= "application/vnd.mspowerpoint"
+      	typeMimeMSMoney			= "application/x-msmoney"
+      	typeMimeMSAccess		= "application/x-msaccess"
+      	typeMimeMSPublisher		= "application/x-mspublisher"
+      	typeMimeMSExcel			= "application/vnd.ms-excel"
+      	typeMimeXLSX			= "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      	typeMimeMSWord			= "application/msword"
+      	typeMimeDOCX			= "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      	typeMimeMSWrite			= "application/x-mswrite"
+      	typeMimeMSWorks			= "application/vnd.ms-works"
+      	typeMimeMSHelp			= "application/winhlp"
+      	typeMimeZIP				= "application/zip"
+      	typeMimeTAR				= "application/x-tar"
+      	typeMimeGZ				= "application/x-gzip"
+      	typeMimeTGZ				= "application/x-compressed"
+      	typeMimeRTF				= "application/rtf"
+      	typeMimeSVG				= "image/svg+xml"
+      	typeMimeReal 			= "audio/x-pn-realaudio"
+      	typeMimeBinaire			= "application/octet-stream"
+      fin
+      
+      constante	
+      	//ref : http://www.restapitutorial.com/httpstatuscodes.html
+      	//*** STATUT HTTP
+      	//informational
+      	_HTTPStatutContinue								= 100
+      	_HTTPStatutSwitchingProtocols					= 101
+      	_HTTPStatutProcessing							= 102	//WebDAV
+      	                            			
+      	//Success                   			
+      	_HTTPStatutOK									= 200
+      	_HTTPStatutCreated								= 201
+      	_HTTPStatutAccepted								= 202
+      	_HTTPStatutNonAuthoritativeInfo					= 203
+      	_HTTPStatutNoContent							= 204
+      	_HTTPStatutResetContent							= 205
+      	_HTTPStatutPartialContent						= 206
+      	_HTTPStatutMultiStatus							= 207	//WebDAV
+      	_HTTPStatutAlreadyReported						= 208	//WebDAV
+      	_HTTPStatutIMUsed								= 226
+      	                            			
+      	//Redirection               			
+      	_HTTPStatutMultipleChoices						= 300
+      	_HTTPStatutMovedPermanentely					= 301
+      	_HTTPStatutFound								= 302
+      	_HTTPStatutSeeOther								= 303
+      	_HTTPStatutNotModified							= 304
+      	_HTTPStatutUseProxy								= 305
+      	_HTTPStatutTemporaryRedirect					= 307
+      	_HTTPStatutPermanentRedirect					= 308
+      	                            			
+      	//Client error              			
+      	_HTTPStatutBadRequest							= 400
+      	_HTTPStatutUnauthorized							= 401
+      	_HTTPStatutPaymentRequired						= 402
+      	_HTTPStatutForbidden							= 403
+      	_HTTPStatutNotFound								= 404
+      	_HTTPStatutMethodNotAllowed						= 405
+      	_HTTPStatutNotAcceptable						= 406
+      	_HTTPStatutProxyAuthenticationRequired			= 407
+      	_HTTPStatutRequestTimeout						= 408
+      	_HTTPStatutConflict								= 409
+      	_HTTPStatutGone									= 410
+      	_HTTPStatutLengthRequired						= 411
+      	_HTTPStatutPreconditionFailed					= 412
+      	_HTTPStatutRequestEntityTooLarge				= 413
+      	_HTTPStatutRequestURITooLong					= 414
+      	_HTTPStatutUnsupportedMediaType					= 415
+      	_HTTPStatutRequestRangeNotSatisfiable			= 416
+      	_HTTPStatutExpectationFailed					= 417
+      	_HTTPStatutImATeapot							= 418
+      	_HTTPStatutEnhanceYourCalm						= 420
+      	_HTTPStatutUnproccessableEntityWebDAV			= 422
+      	_HTTPStatutLocked								= 423	//WebDAV
+      	_HTTPStatutFailedDependancy						= 424	//WebDAV
+      	_HTTPStatutReservedForWebDAV					= 425
+      	_HTTPStatutUpgradeRequired						= 426
+      	_HTTPStatutPreconditionRequired					= 428
+      	_HTTPStatutTooManyRequest						= 429
+      	_HTTPStatutRequestHeaderFieldsTooLarge			= 431
+      	_HTTPStatutNoResponse							= 444 	//Nginx
+      	_HTTPStatutRetryWith							= 449	//Microsoft
+      	_HTTPStatutBlockedByWindowsParentalControl		= 450
+      	_HTTPStatutUnavailableForLegalReason			= 451
+      	_HTTPStatutClientClosedRequest					= 499
+      	
+      	//server error
+      	_HTTPStatutInternalServerError					= 500
+      	_HTTPStatutNotImplemented						= 501
+      	_HTTPStatutBadGateway							= 502
+      	_HTTPStatutServiceUnavailable					= 503
+      	_HTTPStatutGatewayTimeout						= 504
+      	_HTTPStatutHTTPVersionNotSupported				= 505
+      	_HTTPStatutVariantAlsoNegotiates				= 506
+      	_HTTPStatutInsufficientStorage					= 507	//WebDAV
+      	_HTTPStatutLoopDetected							= 508 	//WebDAV
+      	_HTTPStatutBandwidthLimitExceeded				= 509	//Apache
+      	_HTTPStatutNotExtended							= 510
+      	_HTTPStatutNetworkAuthenticationRequired		= 511
+      	_HTTPStatutNetworkReadTimeoutError				= 598
+      	_HTTPStatutNetworkConnectTimeoutError			= 599
+      	
+      	//*** STATUT WINSOCK
+      	//ref : https://kb.globalscape.com/KnowledgebaseArticle10140.aspx
+      	_WinSockStatutWSAEINTR							= 10004
+      	_WinSockStatutWSAEACCES							= 10013
+      	_WinSockStatutWSAEFAULT							= 10014
+      	_WinSockStatutWSAEINVAL							= 10022
+      	_WinSockStatutWSAEMFILE							= 10024
+      	_WinSockStatutWSAEWOULDBLOCK					= 10035
+      	_WinSockStatutWSAEINPROGRESS					= 10036
+      	_WinSockStatutWSAEALREADY						= 10037
+      	_WinSockStatutWSAENOTSOCK						= 10038
+      	_WinSockStatutWSAEDESTADDRREQ					= 10039
+      	_WinSockStatutWSAEMSGSIZE						= 10040
+      	_WinSockStatutWSAEPROTOTYPE						= 10041
+      	_WinSockStatutWSAENOPROTOOPT					= 10042
+      	_WinSockStatutWSAEPROTONOSUPPORT				= 10043
+      	_WinSockStatutWSAESOCKTNOSUPPORT				= 10044
+      	_WinSockStatutWSAEOPNOTSUPP						= 10045
+      	_WinSockStatutWSAEPFNOSUPPORT					= 10046
+      	_WinSockStatutWSAEAFNOSUPPORT					= 10047
+      	_WinSockStatutWSAEADDRINUSE						= 10048
+      	_WinSockStatutWSAEADDRNOTAVAIL					= 10049
+      	_WinSockStatutWSAENETDOWN						= 10050
+      	_WinSockStatutWSAENETUNREACH					= 10051
+      	_WinSockStatutWSAENETRESET						= 10052
+      	_WinSockStatutWSAECONNABORTED					= 10053
+      	_WinSockStatutWSAECONNRESET						= 10054
+      	_WinSockStatutWSAENOBUFS						= 10055
+      	_WinSockStatutWSAEISCONN						= 10056
+      	_WinSockStatutWSAENOTCONN						= 10057
+      	_WinSockStatutWSAESHUTDOWN						= 10058
+      	_WinSockStatutWSAETIMEDOUT						= 10060
+      	_WinSockStatutWSAECONNREFUSED					= 10061
+      	_WinSockStatutWSAEHOSTDOWN						= 10064
+      	_WinSockStatutWSAEHOSTUNREACH					= 10065
+      	_WinSockStatutWSAEPROCLIM						= 10067
+      	_WinSockStatutWSASYSNOTREADY					= 10091
+      	_WinSockStatutWSAVERNOTSUPPORTED				= 192
+      	_WinSockStatutWSANOTINITIALISED					= 10093
+      	_WinSockStatutWSAEDISCON						= 10101
+      	_WinSockStatutWSATYPE_NOT_FOUND					= 10109
+      	_WinSockStatutWSAHOST_NOT_FOUND					= 11001
+      	_WinSockStatutWSATRY_AGAIN						= 11002
+      	_WinSockStatutWSANO_RECOVERY					= 11003
+      	_WinSockStatutWSANO_DATA						= 11004
+      	//OS dépendant
+      //	_WinSockStatutWSA_INVALID_HANDLE
+      //	_WinSockStatutWSA_INVALID_PARAMETER
+      //	_WinSockStatutWSA_IO_INCOMPLETE
+      //	_WinSockStatutWSA_IO_PENDING
+      //	_WinSockStatutWSA_NOT_ENOUGH_MEMORY
+      //	_WinSockStatutWSA_OPERATION_ABORTED
+      //	_WinSockStatutWSAINVALIDPROCTABLE
+      //	_WinSockStatutWSAINVALIDPROVIDER
+      //	_WinSockStatutWSAPROVIDERFAILEDINIT
+      //	_WinSockStatutWSASYSCALLFAILURE
+      	
+      	//ref : https://fr.wikipedia.org/wiki/Couleur_du_Web
+      	//couleurs rouges
+      	_CouleurIndianRed								= 205+092*256+092*65536
+      	_CouleurLightCoral								= 240+128*256+128*65536
+      	_CouleurSalmon									= 250+128*256+114*65536
+      	_CouleurDarkSalmon								= 233+150*256+122*65536
+      	_CouleurLightSalmon								= 255+160*256+122*65536
+      	_CouleurCrimson									= 220+020*256+060*65536
+      	_CouleurRed										= 255+000*256+000*65536
+      	_CouleurFireBrick								= 178+034*256+034*65536
+      	_CouleurDarkRed									= 139+000*256+000*65536
+      	_CouleurMaroon									= 128+000*256+000*65536
+      	//couleurs roses
+      	_CouleurPink									= 255+192*256+203*65536
+      	_CouleurLightPink								= 255+182*256+193*65536
+      	_CouleurHotPink									= 255+105*256+180*65536
+      	_CouleurDeepPink								= 255+020*256+147*65536
+      	_CouleurMediumVioletRed							= 199+021*256+133*65536
+      	_CouleurPaleVioletRed							= 219+112*256+147*65536
+      	//couleurs orange
+      	_CouleurCoral									= 255+127*256+080*65536
+      	_CouleurTomato									= 255+099*256+071*65536
+      	_CouleurOrangeRed								= 255+069*256+000*65536
+      	_CouleurDarkOrange								= 255+140*256+000*65536
+      	_CouleurOrange									= 255+165*256+000*65536
+      	//Couleurs jaunes
+      	_CouleurGold									= 255+215*256+000*65536
+      	_CouleurYellow									= 255+255*256+000*65536
+      	_CouleurLightYellow								= 255+255*256+224*65536
+      	_CouleurLemonChiffon							= 255+250*256+205*65536
+      	_CouleurLightGoldenrodYellow					= 250+250*256+210*65536
+      	_CouleurPapayaWhip								= 255+239*256+213*65536
+      	_CouleurMoccasin								= 255+228*256+181*65536
+      	_CouleurPeachPuff								= 255+218*256+185*65536
+      	_CouleurPaleGoldenrod							= 238+232*256+170*65536
+      	_CouleurKhaki									= 240+230*256+140*65536						
+      	_CouleurDarkKhaki								= 189+183*256+107*65536
+      	//Couleurs violettes
+      	_CouleurLavender								= 230+230*256+250*65536
+      	_CouleurThistle									= 216+191*256+216*65536
+      	_CouleurPlum									= 221+160*256+221*65536
+      	_CouleurViolet									= 238+130*256+238*65536
+      	_CouleurOrchid									= 218+112*256+214*65536
+      	_CouleurFuchsia									= 255+000*256+255*65536
+      	_CouleurMagenta									= 255+000*256+255*65536
+      	_CouleurMediumOrchid							= 186+085*256+211*65536
+      	_CouleurMediumPurple							= 147+112*256+219*65536
+      	_CouleurBlueViolet								= 138+043*256+226*65536
+      	_CouleurDarkViolet								= 148+000*256+211*65536
+      	_CouleurDarkOrchid								= 153+050*256+204*65536
+      	_CouleurDarkMagenta								= 139+000*256+139*65536
+      	_CouleurPurple									= 128+000*256+128*65536
+      	_CouleurIndigo									= 075+000*256+130*65536
+      	_CouleurSlateBlue								= 106+090*256+205*65536
+      	_CouleurDarkSlateBlue							= 072+061*256+139*65536
+      	_CouleurRosyBrown								= 188+143*256+143*65536
+      	_CouleurMediumSlateBlue							= 123+104*256+238*65536
+      	//Couleurs vertes
+      	_CouleurGreenYellow								= 173+255*256+047*65536
+      	_CouleurChartreuse								= 127+255*256+000*65536
+      	_CouleurLawnGreen								= 124+252*256+000*65536
+      	_CouleurLime									= 000+255*256+000*65536
+      	_CouleurLimeGreen								= 050+205*256+050*65536
+      	_CouleurPaleGreen								= 152+251*256+152*65536
+      	_CouleurLightGreen								= 144+238*256+144*65536
+      	_CouleurMediumSpringGreen						= 000+250*256+154*65536
+      	_CouleurSpringGreen								= 000+255*256+127*65536
+      	_CouleurMediumSeaGreen							= 060+179*256+113*65536
+      	_CouleurSeaGreen								= 046+139*256+087*65536
+      	_CouleurForestGreen								= 034+139*256+034*65536
+      	_CouleurGreen									= 000+128*256+000*65536
+      	_CouleurDarkGreen								= 000+100*256+000*65536
+      	_CouleurYellowGreen								= 154+205*256+050*65536
+      	_CouleurOliveDrab								= 107+142*256+035*65536
+      	_CouleurOlive									= 128+128*256+000*65536
+      	_CouleurDarkOliveGreen							= 085+107*256+047*65536
+      	//Couleurs bleues
+      	_CouleurMediumAquamarine						= 102+205*256+170*65536
+      	_CouleurDarkSeaGreen							= 143+188*256+143*65536
+      	_CouleurLightSeaGreen							= 032+178*256+170*65536
+      	_CouleurDarkCyan								= 000+139*256+139*65536
+      	_CouleurTeal									= 000+128*256+128*65536
+      	_CouleurAqua									= 000+255*256+255*65536
+      	_CouleurCyan									= 000+255*256+255*65536
+      	_CouleurLightCyan								= 224+255*256+255*65536
+      	_CouleurPaleTurquoise							= 175+238*256+238*65536
+      	_CouleurAquamarine								= 127+255*256+212*65536
+      	_CouleurTurquoise								= 064+224*256+208*65536
+      	_CouleurMediumTurquoise							= 072+209*256+204*65536
+      	_CouleurDarkTurquoise							= 000+206*256+209*65536
+      	_CouleurCadetBlue								= 095+158*256+160*65536
+      	_CouleurSteelBlue								= 070+130*256+180*65536
+      	_CouleurLightSteelBlue							= 176+196*256+222*65536
+      	_CouleurPowderBlue								= 176+224*256+230*65536
+      	_CouleurLightBlue								= 173+216*256+230*65536
+      	_CouleurSkyBlue									= 135+206*256+235*65536
+      	_CouleurLightSkyBlue							= 135+206*256+250*65536
+      	_CouleurDeepSkyBlue								= 000+191*256+255*65536
+      	_CouleurDodgerBlue								= 030+144*256+255*65536
+      	_CouleurCornflowerBlue							= 100+149*256+237*65536
+      	_CouleurRoyalBlue								= 065+105*256+225*65536
+      	_CouleurBlue									= 000+000*256+255*65536
+      	_CouleurMediumBlue								= 000+000*256+205*65536
+      	_CouleurDarkBlue								= 000+000*256+139*65536
+      	_CouleurNavy									= 000+000*256+128*65536
+      	_CouleurMidnightBlue							= 025+025*256+112*65536
+      	//Couleurs marron
+      	_CouleurCornsilk								= 255+248*256+220*65536
+      	_CouleurBlanchedAlmond							= 255+235*256+205*65536
+      	_CouleurBisque									= 255+228*256+196*65536
+      	_CouleurNavajoWhite								= 255+222*256+173*65536
+      	_CouleurWheat									= 245+222*256+179*65536
+      	_CouleurBurlyWood								= 222+184*256+135*65536
+      	_CouleurTan										= 210+180*256+140*65536
+      	_CouleurSandyBrown								= 244+164*256+096*65536
+      	_CouleurGoldenrod								= 218+165*256+032*65536
+      	_CouleurDarkGoldenrod							= 184+134*256+011*65536
+      	_CouleurPeru									= 205+133*256+063*65536
+      	_CouleurChocolate								= 210+105*256+030*65536
+      	_CouleurSaddleBrown								= 139+069*256+019*65536
+      	_CouleurSienna									= 160+082*256+045*65536
+      	_CouleurBrown									= 165+042*256+042*65536
+      	//Couleurs blanches
+      	_CouleurWhite									= 255+255*256+255*65536
+      	_CouleurSnow									= 255+250*256+250*65536
+      	_CouleurHoneydew								= 240+255*256+240*65536
+      	_CouleurMintCream								= 245+255*256+250*65536
+      	_CouleurAzure									= 240+255*256+255*65536
+      	_CouleurAliceBlue								= 0xF0F8FF	//240+248*256+255*65536
+      	_CouleurGhostWhite								= 248+248*256+255*65536
+      	_CouleurWhiteSmoke								= 245+245*256+245*65536
+      	_CouleurSeashell								= 255+245*256+238*65536
+      	_CouleurBeige									= 245+245*256+220*65536
+      	_CouleurOldLace									= 253+245*256+230*65536
+      	_CouleurFloralWhite								= 255+250*256+240*65536
+      	_CouleurIvory									= 255+255*256+240*65536
+      	_CouleurAntiqueWhite							= 250+235*256+215*65536
+      	_CouleurLinen									= 250+240*256+230*65536
+      	_CouleurLavenderBlush							= 255+240*256+245*65536
+      	_CouleurMistyRose								= 255+228*256+225*65536
+      	//Couleurs grises
+      	_CouleurGainsboro								= 220+220*256+220*65536
+      	_CouleurLightGrey								= 211+211*256+211*65536
+      	_CouleurSilver									= 192+192*256+192*65536
+      	_CouleurDarkGray								= 169+169*256+169*65536
+      	_CouleurGray									= 128+128*256+128*65536
+      	_CouleurDimGray									= 105+105*256+105*65536
+      	_CouleurLightSlateGray							= 119+136*256+153*65536
+      	_CouleurSlateGray								= 112+128*256+144*65536
+      	_CouleurDarkSlateGray							= 047+079*256+079*65536
+      	_CouleurBlack									= 000+000*256+000*65536
+                                                      	
+      	_AgentRequêteParDéfaut							= "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)" //voir https://www.useragentstring.com/pages/All/
+      fin
+      EHTTPMéthode est une énumération
+      	HTTP_GET		= "GET"
+      	HTTP_PUT		= "PUT"
+      	HTTP_POST		= "POST"
+      	HTTP_PATCH		= "PATCH"
+      	HTTP_DELETE		= "DELETE"
+      	HTTP_COPY		= "COPY"
+      	HTTP_HEAD		= "HEAD"
+      FIN
+      cHTTP est une Classe
+      	hérite de créseau
+      PUBLIC CONSTANT
+      	m_nTéléchargementMax		est un entier sur 8 octets		<serialise = faux>	//Taille maximale à télécharger
+      	m_nTéléchargementCourant	est un entier sur 8 octets		<serialise = faux>	//Taille déjà téléchargée
+      	m_rTéléchargementPourcent	est un réel						<serialise = faux>	//Pourcentage représentant la taille téléchargée par rapport à la taille maximale à télécharger
+      	m_rTéléchargementDébit		est un réel						<serialise = faux>	//Débit du téléchargement (en Koctets/secondes)
+      PRIVÉ	
+      	m_bTéléchargeAnnule			est un booleen					<serialise = faux>	//Indicateur pour l'arrêt du téléchargement
+      	m_clJauge					est une cJauge					<serialise = faux>	//Objet jauge de progression
+      	m_nProtocoleHTTPS			est un entier					<serialise = faux>	//Protocole HTTP sécurisé (ProtocoleTLS1,ProtocoleTLS1_1,ProtocoleTLS1_2,ProtocoleSSL2,ProtocoleSSL3)
+      	m_eFinTransmission			est un EFinTransmission			<serialise = faux>	//Mode de fin de transmission passé dans le constructeur
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2007571480719183479
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe pour effectuer des opérations HTTP. Il configure les paramètres de la connexion réseau, tels que le protocole HTTPS, le mode de fin de transmission, et d'autres propriétés spécifiques aux opérations HTTP.
+      // Syntaxe : Constructeur ( [<coProtocoleHTTPS> est cHTTP.COProtocoleHTTPS [, <eFinTransmission> est cHTTP.EFinTransmission]])
+      // Paramètres :
+      //	coProtocoleHTTPS (cHTTP.COProtocoleHTTPS optionnel) : permet de spécifier les protocoles de sécurité pris en charge pour les connexions HTTPS. Il est défini par défaut à TLS1+TLS1_1+TLS1_2, ce qui signifie que les protocoles TLS version 1.0, 1.1 et 1.2 sont activés.
+      //	eFinTransmission (cHTTP.EFinTransmission optionnel) : permet de spécifier le mode de fin de transmission. Il est défini par défaut à TailleDébut, ce qui signifie que la taille des données à transférer est spécifiée au début de la transmission.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(coProtocoleHTTPS est un COProtocoleHTTPS =TLS1+TLS1_1+TLS1_2,eFinTransmission est un EFinTransmission = TailleDébut )
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(coProtocoleHTTPS..valeur,eFinTransmission..nom)
+      si coProtocoleHTTPS[TLS1] 	alors m_nProtocoleHTTPS+=ProtocoleTLS1
+      si coProtocoleHTTPS[TLS1_1] alors m_nProtocoleHTTPS+=8	//ProtocoleTLS1_1
+      si coProtocoleHTTPS[TLS1_2] alors m_nProtocoleHTTPS+=16	//ProtocoleTLS1_2
+      si coProtocoleHTTPS[SSL2] 	alors m_nProtocoleHTTPS+=ProtocoleSSL2
+      si coProtocoleHTTPS[SSL3] 	alors m_nProtocoleHTTPS+=ProtocoleSSL3
+      m_eFinTransmission	= eFinTransmission
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2007571480719249015
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe. Annule le téléchargement en cours le cas échéant.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      m_bTéléchargeAnnule=vrai
+     type : 655360
+   -
+     name : Requête
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2007571480719314551
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'envoyer une requête HTTP spécifiée par la chaîne sReq et de récupérer la réponse du serveur. La méthode prend en charge les opérations telles que GET, POST, etc., en fonction du contenu de la chaîne sReq. L'agent utilisateur peut être spécifié en utilisant le paramètre sAgent.
+      // Syntaxe : [ <Résultat> = ] Requête (<stRequête> est STHTTPRequête)
+      // Paramètres : 
+      //	stRequête (STHTTPRequête) : Une structure contenant l'URL à contacter ainsi que les autres paramètres nécessaires
+      // Valeur de retour : STHTTPRéponse : Une structure contenant la réponse à la requête
+      // Exemple :
+      //
+      PROCEDURE Requête(stRequête est un STHTTPRequête) : STHTTPRéponse
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(ExtraitChaîne(stRequête.sURL,1,"?")) 	//extraction de chaine car des mot de passe, des API key ou des token peuvent se trouver dans les paramètres qui suivent
+      m_pclErreur.Raz()
+      
+      si stRequête.eMéthode..Valeur=0 alors stRequête.eméthode=HTTP_GET
+      
+      stRéponse est un STHTTPRéponse
+      si stRequête.bUtiliserHTTPRequête alors
+      	sXML,sTemp,sLigne,sEntête sont des chaînes ansi
+      	nDesc est un entier
+      	sContenu est une chaine
+      	POUR TOUT sContenu,sNom de stRequête.taEntête
+      		sEntête+=[rc]+sNom+": "+sContenu
+      	FIN
+      	HTTP.IgnoreErreur=(stRequête.bIgnoreErreur ? HTTP.IgnoreErreur=httpErreurCertificatInvalide+httpErreurNomCertificatInvalide+httpErreurCertificatExpiré+httpErreurRenvoiHTTP+httpErreurRenvoiHTTPs sinon 0)
+      	httptimeout(Max(Abs(stRequête.nTimeOutConnexion),5s))
+      	SI HTTPRequête(stRequête.sURL,stRequête.sAgentUtilisateur,sEntête,stRequête.scontenu,"",stRequête.sUtilisateur,stRequête.sMotDePasse) ALORS
+      		Multitâche(-1);sEntête=HTTPDonneRésultat(httpEntête);Multitâche(-1)
+      		pour toute chaine sLigneEntête de sEntête separee par rc
+      			si gauche(sLigneEntête,5)	="HTTP/" alors 
+      				stRéponse.nCodeÉtat=val(Extraitchaine(sLigneEntête,2," "))
+      				nDesc = position(sLigneEntête," ",10)
+      				si nDesc>0 alors stRéponse.sDescriptionCodeEtat=milieu(sLigneEntête,nDesc+1)
+      			sinon
+      				stRéponse.taEntête[sansespace(extraitchaine(sLigneEntête,1,":"))]=SansEspace(ExtraitChaîne(sLigneEntête,2,":"))
+      			FIN
+      		fin
+      		SI stRéponse.taEntête["Content-Type"]..existe	ALORS stRéponse.sContentType=stRéponse.taEntête["Content-Type"]
+      		Multitâche(-1);stRéponse.bufContenu=HTTPDonneRésultat(httpRésultat);Multitâche(-1)
+      		sContenu=UTF8VersChaîne(stRéponse.bufContenu)
+      		si position(gauche(sContenu,50),"XML")>0 alors
+      			//au cas ou la réponse est trop grande, il y a des chiffres qui séparent la taille du contenu
+      			POUR TOUTE CHAÎNE sLigne DE sContenu SEPAREE PAR RC
+      				sXML=SansEspace(sLigne)
+      				SI Majuscule(NumériqueVersChaîne(Val(sXML,"x"),"08x"))<>sXML ALORS sTemp+=(sXML[[1]]="<" ? [RC]+sLigne SINON sLigne)
+      			FIN
+      			stRéponse.bufContenu=ChaîneVersUTF8(sTemp)
+      		sinon
+      			//rien la réponse est déjà  dans le buffer
+      		fin
+      	FIN
+      sinon
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android>
+      	                           
+      		restReq est un restrequete
+      		restReq.URL							= stRequête.sURL
+      		si stRequête.sAgentUtilisateur>"" 	alors restReq.AgentUtilisateur	= stRequête.sAgentUtilisateur
+      		si stRequête.sContentType>""		alors restReq.ContentType		= stRequête.sContentType
+      		si stRequête.sContenu>""			alors restReq.Contenu			= stRequête.sContenu
+      		restReq.Méthode						= HTTPMéthodeVersEntier(stRequête.eMéthode)
+      		si stRequête.sUtilisateur>"" 		alors restReq.Utilisateur		= stRequête.sUtilisateur
+      		si stRequête.sMotDePasse>"" 		alors restReq.MotDePasse		= stRequête.sMotDePasse
+      		restReq.TimeOutConnexion			= Max(Abs(stRequête.nTimeOutConnexion),5s)
+      		pour tout sContenu,sNom de stRequête.taEntête
+      			restReq.Entête[sNom]			= sContenu
+      		fin
+      		restReq.IgnoreErreur=httpIgnoreCertificatExpiré+httpIgnoreCertificatInvalide+httpIgnoreNomCertificatInvalide+httpIgnoreRedirection+httpIgnoreRenvoiHTTP+httpIgnoreRenvoiHTTPS+httpIgnoreRévocation  
+      		
+      		restRep est un restRéponse 			= RESTEnvoie(restReq)
+      		stRéponse.nCodeÉtat					= restRep.CodeEtat
+      		stRéponse.sDescriptionCodeEtat		= restRep.DescriptionCodeEtat
+      		POUR TOUT sContenu,sNom de restRep.Entête
+      			stRéponse.taEntête[sNom]		= sContenu
+      		FIN
+      		stRéponse.bufContenu				= restRep.Contenu
+      		stRéponse.sContentType				= restRep.ContentType
+      		stRéponse.sEntêteBrut				= restRep.EntêteBrut
+      	
+      <fin>
+      
+      	
+      fin
+      stRéponse.bErreur=(stRéponse.nCodeÉtat>299)
+      RENVOYER stRéponse
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER stRéponse
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();renvoyer stRéponse
+     type : 458752
+   -
+     name : Télécharger
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2007571480719380087
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée gérant le téléchargement initié par la procédure Télécharge()
+      PROCEDURE privé Télécharger(sFichierHTTP est une chaîne,sFichierDestination est une chaîne,nTimeOut est un entier,sJaugeOuCallBack est une chaine,eDébit est un EDébitTéléchargement,sAgent est une chaine,sNomDuThread est une chaîne,LOCAL sProxy est une chaîne,duRafraichiJauge est une durée=100ms,sLibelléJauge est une chaine = "",sTextePersoLibelléJauge est une chaine = "")
+      m_bTéléchargeAnnule=faux;m_nTéléchargementMax=0;m_nTéléchargementCourant=0;m_rTéléchargementDébit=0;m_rTéléchargementPourcent=0
+      ThreadEnvoieSignal(sNomDuThread)
+      
+      stOrigine est un creseau.STURL 	= cRéseau.URLVersStructure(sFichierHTTP)
+      stProxy est un creseau.STURL 	= cRéseau.URLVersStructure(sProxy)
+      
+      si pas stOrigine.sProtocole~="http" et pas stOrigine.sProtocole~="https" alors
+      	m_pclErreur.AjouteErreur(chaineconstruit(<§$000f§>,stOrigine.sProtocole))
+      FIN
+      
+      si stOrigine.nPort=0 alors
+      	si stOrigine.sProtocole~="http" alors stOrigine.nPort=_PortHTTP
+      	si stOrigine.sProtocole~="https" alors stOrigine.nPort=_PortHTTPS
+      FIN
+      si stProxy.sDomaine2ndNiveau>"" _et_ stProxy.nPort=0 alors stProxy.nPort=_PortProxy
+      
+      sReqDirect est une chaîne = [
+      	GET %1 HTTP/1.1
+      	Host: %2
+      	User-Agent: %3
+      	Connection: keep-alive
+      ]
+      
+      sReqProxy est une chaîne = [
+      	GET %1 HTTP/1.1
+      	Host: %2
+      	User-Agent: %3
+      	Proxy-Connection: keep-alive
+      	Cache-Control: max-age=0
+      	Proxy-Authorization: Basic %4
+      ]
+      
+      nRecuParSeconde,nSeconde,nCentieme,nDurée est un entier
+      sMsg,sEntête 	sont des chaines ansi
+      sLigne,sReq 	sont des chaines ansi
+      dhHCur,dhHInit 	sont des DateHeures
+      f 				est un entier = -2
+      sSocket 		est une chaine = DonneGUID(guidBrut)
+      
+      HTTP.IgnoreErreur=HTTPIgnoreCertificatInvalide+HTTPIgnoreNomCertificatInvalide+HTTPIgnoreCertificatExpiré+HTTPIgnoreRenvoiHTTP+HTTPIgnoreRenvoiHTTPS
+      
+      Selon stOrigine.sProtocole
+      	cas "https" 
+      		
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows ou CibleExécution=WindowsMobile>
+      			SI PAS SocketConnecteSSL(sSocket,(stProxy.sDomaine2ndNiveau>"" ? stProxy.nPort SINON stOrigine.nPort),(stProxy.sDomaine2ndNiveau>"" ? stProxy.sDomaine SINON stOrigine.sDomaine),...
+      					m_nProtocoleHTTPS,nTimeOut) _OU_ PAS SocketChangeModeTransmission(sSocket,m_eFinTransmission) ALORS	//SocketSansMarqueurFin : on récupère seulement l'entête
+      				m_pclErreur.AjouteErreurWx();SI SocketExiste(sSocket) ALORS SocketFerme(sSocket)
+      				RETOUR
+      			FIN
+      	
+      <sinon si CibleExécution=SiteLinux ou CibleExécution=SitePHP ou CibleExécution=WebserviceLinux ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp>
+      	m_pclerreur.ajouteerreur(<§$0010§>)
+      	RETOUR
+      	
+      <fin>
+      
+      		
+      	cas "http"
+      		SI PAS SocketConnecte(sSocket,(stProxy.sDomaine2ndNiveau>"" ? stProxy.nPort SINON stOrigine.nPort),(stProxy.sDomaine2ndNiveau>"" ? stProxy.sDomaine SINON stOrigine.sDomaine),nTimeOut) _OU_ PAS SocketChangeModeTransmission(sSocket,SocketSansMarqueurFin) ALORS
+      			m_pclErreur.AjouteErreurWx();SI SocketExiste(sSocket) ALORS SocketFerme(sSocket)
+      			rETOUR
+      		FIN
+      FIN
+      
+      //gestion du proxy
+      SI sProxy>"" ALORS
+      	sReq=ChaîneConstruit(sReqProxy,sFichierHTTP,stOrigine.sDomaine,sAgent,AnsiVersBase64(stProxy.sutilisateur+":"+stProxy.sMotdepasse))
+      SINON
+      	sReq=ChaîneConstruit(sReqDirect,stOrigine.sCheminAbsolu+["/"]+stOrigine.sNomFichier,stOrigine.sDomaine,sAgent)
+      FIN
+      
+      //gestion de l'authentification au serveur lui-même
+      SI stOrigine.sUtilisateur>"" ALORS sReq+=RC+"Authorization: Basic "+AnsiVersBase64(stOrigine.sUtilisateur+":"+stOrigine.sMotDePasse)
+      sReq+=RC+RC
+      SI SocketEcrit(sSocket,sReq) ALORS
+      	//mémorise la date et heure pour afficher une jauge chaque seconde
+      	dhHInit=DateSys()+HeureSys();nSeconde=Val(Milieu(dhHInit,13,2));nCentieme=Val(Milieu(dhHInit,15,2))
+      	TANTQUE SocketExiste(sSocket)
+      		//m_bHTTPTéléchargeAnnule est une variable globale qui indique que le téléchargement doit être arrêté prématurément
+      		SI m_bTéléchargeAnnule ALORS SORTIR
+      		sMsg = SocketLit(sSocket,faux,nTimeOut)
+      		SI PAS sMsg = "" ALORS 
+      			SI m_nTéléchargementCourant=0 ALORS
+      				sEntête=ExtraitChaîne(sMsg,1,RC+RC);sMsg=Milieu(sMsg,Position(sMsg,RC+RC)+4)
+      				SI PAS (ExtraitChaîne(sEntête,1,RC)="HTTP/1.1 200 OK" OU ExtraitChaîne(sEntête,1,RC)="HTTP/1.0 200 OK") ALORS 
+      					m_pclerreur.ajouteerreur(Milieu(ExtraitChaîne(sEntête,1,RC),10))
+      					SORTIR
+      				FIN
+      				si sJaugeOuCallBack>"" alors
+      					//trouve la taille du fichier à télécharger pour initialiser la jauge
+      					POUR TOUTE CHAINE sLigne DE sEntête SEPAREE PAR RC
+      						SI ExtraitChaîne(sLigne,1,":")~="Content-Length" ALORS m_nTéléchargementMax=Val(ExtraitChaîne(sLigne,2,":"));sortir
+      					FIN
+      					m_cljauge.Démarre(sJaugeOuCallBack,m_nTéléchargementMax,&m_nTéléchargementCourant,duRafraichiJauge,sLibelléJauge,sTextePersoLibelléJauge)
+      				fin
+      				si ffichierexiste(sFichierDestination) alors fSupprime(sFichierDestination)
+      				f=fCrée(sFichierDestination)
+      				SI f=-1 ALORS m_pclerreur.AjouteErreurWx();SORTIR
+      			fin
+      			SI m_bTéléchargeAnnule ALORS SORTIR
+      
+      			m_nTéléchargementCourant+=Taille(sMsg)
+      			fEcrit(f,sMsg)
+      			
+      			ThreadPause(1)
+      			dhHCur=DateSys()+HeureSys();nRecuParSeconde+=Taille(sMsg)
+      			SI PAS nSeconde=Val(Milieu(dhHCur,13,2)) ALORS
+      				nDurée=COL_Conversion.DateHeureDifférenceEnSecondes(dhHInit,dhHCur)
+      				SI nDurée>0 ALORS m_rTéléchargementDébit=arrondi(m_nTéléchargementCourant/1024/nDurée,2)
+      				
+      				nRecuParSeconde=0
+      				dhHCur=DateSys()+HeureSys();nSeconde=Val(Milieu(dhHCur,13,2));nCentieme=Val(Milieu(dhHCur,15,2))
+      
+      				SI m_nTéléchargementCourant=m_nTéléchargementMax ALORS
+      					m_nTéléchargementCourant=m_nTéléchargementMax
+      					fFerme(f);f=-1;SORTIR
+      				FIN
+      			FIN
+      		SINON 
+      			si erreurdetectée() alors m_pclErreur.AjouteErreurWx()
+      			SORTIR
+      		FIN
+      		si eDébit<>DébitMax	alors ThreadPause(eDébit..valeur)
+      	FIN
+      	m_clJauge.Arrête()
+      	SI f<>-1 _Et_ f<>-2 ALORS fFerme(f)
+      	
+      	SI sFichierDestination>"" ALORS
+      		SI (fFichierExiste(sFichierDestination) _ET_ fTaille(sFichierDestination)=m_nTéléchargementmax) ALORS
+      			//tout est beau
+      		SINON SI m_pclErreur.p_serreur="" ALORS
+      			m_pclerreur.ajouteerreur(<§$0003§>)
+      		FIN
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreurWx()
+      FIN
+      si SocketExiste(sSocket) alors SocketFerme(sSocket)
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 458752
+   -
+     name : Télécharge
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2007571480719445623
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de télécharger un fichier à partir d'une URL spécifiée vers un emplacement local. Elle prend en charge différentes options telles que l'écrasement du fichier existant, le délai d'attente, la gestion du débit, l'utilisation d'un agent utilisateur personnalisé, et la possibilité d'utiliser un proxy.
+      // Syntaxe : [ <Résultat> = ] Télécharge (<sFichierHTTP> est chaîne [, <sFichierDestination> est chaîne [, <bÉcraseSiExistant> est booléen [, <nTimeOut> est entier [, <eDébit> est cHTTP.EDébitTéléchargement [, <sAgent> est chaîne [, <sNomDuThread> est chaîne [, <sProxy> est chaîne [, <sJaugeOuCallBack> est chaîne [, <duRafraichiJauge> est durée [, <sLibelléJauge> est chaîne [, <sTextePersoLibelléJauge> est chaîne]]]]]]]]]]])
+      // Paramètres :
+      //	sFichierHTTP (chaîne UNICODE) : Une chaîne spécifiant l'URL du fichier à télécharger.
+      //	sFichierDestination (chaîne UNICODE optionnelle) : Une chaîne spécifiant le chemin local où le fichier téléchargé sera sauvegardé. Si non spécifié, le fichier sera sauvegardé dans le répertoire de travail avec le même nom que celui du fichier distant.
+      //	bÉcraseSiExistant (booléen optionnel) : Un booléen indiquant s'il faut écraser le fichier de destination s'il existe déjà. Par défaut, il est défini sur Faux.
+      //	nTimeOut (entier optionnel) : délai d'attente maximum pour la requête en secondes. Par défaut, il est défini sur 5 secondes.
+      //	eDébit (cHTTP.EDébitTéléchargement optionnel) : Une constante de l'énumération EDébitTéléchargement spécifiant la limite de débit pour le téléchargement. Par défaut, il est défini sur DébitMax.
+      //	sAgent (chaîne UNICODE optionnelle) : Une chaîne spécifiant l'agent utilisateur à utiliser pour la requête. Par défaut, il est défini sur la constante _AgentRequêteParDéfaut : "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)"
+      //	sNomDuThread (chaîne UNICODE optionnelle) : Une chaîne spécifiant le nom du thread utilisé pour le téléchargement. Par défaut, il est défini sur threadPrincipal.
+      //	sProxy (chaîne UNICODE optionnelle) : spécifiant l'URL du proxy à utiliser pour la requête. Si non spécifié, aucune utilisation de proxy n'est effectuée, valeur par défaut="".
+      //	sJaugeOuCallBack (chaîne UNICODE optionnelle) : Le nom de la jauge ou du callback qui sera utilisé pour suivre la progression du téléchargement. Si non spécifié, aucune jauge ne sera utilisée.
+      // 	duRafraichiJauge (durée optionnelle) : La fréquence de rafraîchissement de la jauge pendant le téléchargement. Par défaut, 100ms.
+      //	sLibelléJauge (chaîne UNICODE optionnelle) : Le libellé de la jauge qui apparaîtra pendant le téléchargement.
+      //	sTextePersoLibelléJauge (chaîne UNICODE optionnelle) : Un texte personnalisé qui peut être ajouté au libellé de la jauge.
+      // Valeur de retour : booléen : Si vrai, le téléchargement s'est déroulé sans erreur. Si faux, la propriété m_pclErreur de la classe peut être consultée pour obtenir des détails sur l'erreur.
+      // Exemple :
+      //
+      PROCEDURE Télécharge(sFichierHTTP est une chaîne,sFichierDestination est une chaîne="",bÉcraseSiExistant est un booleen = faux, nTimeOut est un entier = 5s,eDébit est un EDébitTéléchargement = DébitMax,sAgent est une chaine = _AgentRequêteParDéfaut,sNomDuThread est une chaîne = threadPrincipal,sProxy est une chaîne = "",sJaugeOuCallBack est une chaine = "",duRafraichiJauge est une durée=100ms,sLibelléJauge est une chaine = "",sTextePersoLibelléJauge est une chaine = "") : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sFichierHTTP,sFichierDestination,bÉcraseSiExistant,sJaugeOuCallBack,nTimeOut,eDébit..nom,sAgent,sNomDuThread,sProxy)
+      m_pclErreur.Raz()
+      
+      si fFichierExiste(sFichierDestination) alors
+      	si bÉcraseSiExistant alors fsupprime(sFichierDestination) sinon m_pclErreur.AjouteErreur(<§$000c§>)
+      FIN
+      si p_sErreur="" alors
+      	sThread est une chaine = DonneGUID(guidBrut)
+      	ThreadExécute(sThread,threadNormal,Télécharger,sFichierHTTP,sFichierDestination,nTimeOut,sJaugeOuCallBack,eDébit,sAgent,sNomDuThread,sProxy);ThreadAttendSignal()
+      	TANTQUE ThreadEtat(sThread)=threadEnCours
+      		SI m_bTéléchargeAnnule ALORS m_pclErreur.AjouteErreur(<§$0004§>);sortir	//ThreadArrête(sThread) pas reconnu en Android mais le thread s'arrête quand même naturellement grâce à m_bHTTPTéléchargeAnnule
+      		Multitâche(-5)
+      	FIN
+      fin
+      renvoyer (p_sErreur="")
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();renvoyer faux
+     type : 458752
+   -
+     name : TéléchargeAnnule
+     procedure_id : 2007571480719511159
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'annuler un téléchargement en cours. Elle met à jour la propriété interne m_bTéléchargeAnnule à Vrai, indiquant ainsi au processus de téléchargement en cours de s'arrêter.
+      // Syntaxe : TéléchargeAnnule ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE TéléchargeAnnule()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_bTéléchargeAnnule=vrai
+     type : 458752
+   -
+     name : RequêteServeurBetula
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2051033857480316348
+     type_code : 12
+     code : |1-
+      // Résumé : Effectue une requête HTTP vers un serveur distant utilisant cHTTPServeur en utilisant la méthode spécifiée (GET par défaut) et en passant éventuellement des paramètres.
+      // Syntaxe : [ <Résultat> = ] RequêteServeurBetula (<sURL> est chaîne [, <vParamètres> est variant [, <eType> est cHTTP.EMéthode [, <sCléCryptageServeur> est chaîne]]])
+      // Paramètres :
+      //	sURL (chaîne UNICODE) : URL du serveur distant.
+      //	vParamètres (variant optionnel) : Paramètres de la requête. Si spécifié, ces paramètres seront inclus dans la requête.
+      //	eType (cHTTP.EMéthode optionnel) : Méthode de requête HTTP (GET, POST, etc.). Par défaut : GET.
+      //	sCléCryptageServeur (chaîne UNICODE  optionnelle) : Clé de cryptage du serveur, utilisée pour crypter les données de la requête et décrypter la réponse. Par défaut : vide.
+      // Valeur de retour : chaîne UNICODE : La réponse du serveur après la requête (vide en cas de problème.
+      // Exemple :
+      //
+      PROCEDURE RequêteServeurBetula(sURL est une chaine,vParamètres est un variant = null,eType est un EHTTPMéthode = HTTP_GET,sCléCryptageServeur est une chaine="") : chaine
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sURL,vParamètres,eType..nom,sCléCryptageServeur)
+      m_pclErreur.Raz()
+      
+      sEntête,sRes 		sont des chaine ansi 
+      sFonction,sParams	sont des chaines
+      stURL				est un cRéseau.STURL
+      nTaille 			est un entier
+      
+      sMessageHTTP 		est une chaine ansi = eType..valeur
+      sSocket 			est une chaine = "HTTP_CLIENT_"+DonneGUID(guidBrut)
+      
+      stURL=cRéseau.URLVersStructure(sURL)
+      
+      sFonction=stURL.sCheminAbsolu+["/"]+stURL.sNomFichier
+      SI sCléCryptageServeur>"" ALORS sFonction=Remplace(Crypte(sFonction,sCléCryptageServeur,crypteSécurisé,encodeBASE64),RC,"")
+      sParams=(vParamètres=Null ? "" SINON VariantVersJSON(vParamètres,Faux))
+      SI sParams>"" ALORS sParams=Remplace(Crypte(sParams,sCléCryptageServeur,crypteSécurisé,encodeBASE64),RC,"")
+      
+      sMessageHTTP+=" "+["/"]+UnicodeVersAnsi(sFonction)+" HTTP/1.1"+RC+RC+sParams
+      
+      sMessageHTTP+=" "+["/"]+UnicodeVersAnsi(stURL.sCheminAbsolu+["/"]+stURL.sNomFichier)+" HTTP/1.1"+RC+RC+(vParamètres=Null ? "" SINON VariantVersJSON(vParamètres,Faux))	//stURL.sCheminAbsolu+"/"+stURL.sNomFichier au cas ou l'adresse contient un / (cas où l'adresse est cryptée)
+      
+      SI SocketConnecte(sSocket,stURL.nPort,stURL.sDomaine) ALORS
+      	SI SocketChangeModeTransmission(sSocket,m_eFinTransmission) _ET_ SocketEcrit(sSocket,sMessageHTTP) ALORS 
+      		sRes = SocketLit(sSocket)
+      		SI sRes>"" ALORS
+      			SI Position(sRes,RC+RC) ALORS sEntête=ExtraitChaîne(sRes,1,RC+RC);sRes=Milieu(sRes,Position(sRes,RC+RC)+4) SINON sEntête=sRes
+      			POUR TOUTE CHAÎNE sLigne DE sEntête SEPAREE PAR RC
+      				SI ExtraitChaîne(sLigne,1,":")~="Content-Length" ALORS 
+      					nTaille=Val(ExtraitChaîne(sLigne,2,":"))
+      					TANTQUE Taille(sRes)<nTaille sRes+=SocketLit(sSocket)	//pour aller chercher le reste de la réponse si elle est longue
+      					SORTIR
+      				FIN
+      			FIN
+      			SI sCléCryptageServeur>"" ALORS sRes=UnicodeVersAnsi(Décrypte(sRes,sCléCryptageServeur,crypteSécurisé,encodeBASE64))
+      		SINON	
+      			m_pclErreur.AjouteErreurWx()
+      		FIN
+      	SINON
+      		m_pclErreur.AjouteErreurWx()
+      	FIN
+      	SocketFerme(sSocket)
+      sinon
+      	m_pclErreur.AjouteErreurWx()
+      fin
+      RENVOYER sRes
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();renvoyer ""
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER ""
+     type : 458752
+   -
+     name : ExtensionFichierVersTypeMime
+     procedure_id : 1556942733887223686
+     type_code : 12
+     code : |1-
+      // Résumé : Convertit l'extension d'un fichier en son type MIME associé. Elle prend en entrée le chemin du fichier (ou le nom du fichier avec son extension) et renvoie le type MIME correspondant.
+      // Syntaxe : [ <Résultat> = ] ExtensionFichierVersTypeMime (<sCheminDuFichier> est chaîne)
+      // Paramètres :
+      //	sCheminDuFichier (chaîne UNICODE) : Le chemin complet ou le nom du fichier avec son extension.
+      // Valeur de retour : chaîne UNICODE : La fonction renvoie une chaîne représentant le type MIME associé à l'extension du fichier.
+      // Exemple :
+      // 	ExtensionFichierVersTypeMime("document.pdf")
+      // 	Renvoie "application/pdf"
+      //
+      PROCEDURE PUBLIQUE GLOBALE ExtensionFichierVersTypeMime(sCheminDuFichier est une chaîne) : chaine
+      // compléter par exemple avec https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+      SELON Minuscule(fExtraitChemin(sCheminDuFichier,fExtension))
+      	CAS ".htm",".html"					: RENVOYER typeMimeHTML
+      	CAS ".xml"							: RENVOYER typeMimeTexteXML
+      	CAS ".ini",".txt",".bat"			: RENVOYER typeMimeTexte
+      	CAS ".css"							: RENVOYER typeMimeCSS
+      	CAS ".js"							: RENVOYER typeMimeJavascript
+      	CAS ".jpg",".jpeg",".jpe"			: RENVOYER typeMimeJPEG
+      	CAS ".gif"							: RENVOYER typeMimeGIF
+      	CAS ".png"							: RENVOYER typeMimePNG
+      	CAS ".bmp",".dib"					: RENVOYER typeMimeBMP
+      	CAS ".pbm"							: RENVOYER typeMimePBM
+      	CAS ".tiff"							: RENVOYER typeMimeTiff
+      	CAS ".svg"							: RENVOYER typeMimeSVG
+      	CAS ".webp"							: RENVOYER typeMimeWebp
+      	CAS ".mid"							: RENVOYER typeMimeMidi
+      	CAS ".mp3",".mp2"					: RENVOYER typeMimeAudioMPEG
+      	CAS ".webm"							: RENVOYER typeMimeWebm
+      	CAS ".ogg"							: RENVOYER typeMimeOgg	//attention peut être audio ou vidéo ou application :-s
+      	CAS ".wav"							: RENVOYER typeMimeWAV
+      	CAS ".ra",".ram"					: RENVOYER typeMimeReal
+      	CAS ".au",".snd"					: RENVOYER typeMimeAudio
+      	CAS ".aifc",".aiff"					: RENVOYER typeMimeAIF
+      	CAS ".m3u"							: RENVOYER typeMimePlaylistMPEG
+      	CAS ".eps",".ps",".ai"				: RENVOYER typeMimePS
+      	CAS ".json" 						: RENVOYER typeMimeJSON
+      	CAS ".pdf"							: RENVOYER typeMimePDF
+      	CAS ".doc",".dot"					: RENVOYER typeMimeMSWord
+      	CAS ".docx"							: RENVOYER typeMimeDOCX
+      	CAS ".ppt",".pptx",".pps",".pot"	: RENVOYER typeMimeMSPowerPoint
+      	CAS ".xlm",".xla",".xls"			: RENVOYER typeMimeMSExcel
+      	CAS ".xlc",".xlt",".xlw"			: RENVOYER typeMimeMSExcel
+      	CAS ".xlsx"							: RENVOYER typeMimeXLSX		
+      	CAS ".mdb"							: RENVOYER typeMimeMSAccess	//access
+      	CAS ".mpp"							: RENVOYER typeMimeMSProject
+      	CAS ".mny"							: RENVOYER typeMimeMSMoney
+      	CAS ".pub"							: RENVOYER typeMimeMSPublisher
+      	CAS ".wri"							: RENVOYER typeMimeMSWrite
+      	CAS ".wps",".wks",".wcm",".wdb"		: RENVOYER typeMimeMSWorks
+      	CAS ".hlp"							: RENVOYER TypeMimeMSHelp
+      	CAS ".wmf"							: RENVOYER typeMimeWMF
+      	CAS ".zip"							: RENVOYER typeMimeZIP
+      	CAS ".tar"							: RENVOYER TypeMimeTAR
+      	CAS ".gz"							: RENVOYER typeMimeGZ
+      	CAS ".tgz"							: RENVOYER typeMimeTGZ
+      	CAS ".rtf"							: RENVOYER typeMimeRTF
+      	AUTRE CAS							: RENVOYER typeMimeBinaire
+      FIN
+     type : 458752
+   -
+     name : CodeHTTPVersDescription
+     procedure_id : 1556948506323368279
+     type_code : 12
+     code : |1-
+      // Résumé : Convertit un code HTTP en sa description anglaise correspondante.
+      // Syntaxe : [ <Résultat> = ] CodeHTTPVersDescription (<nCodeHTTP> est entier)
+      // Paramètres :
+      //	nCodeHTTP (entier) : Le code HTTP à convertir en description.
+      // Valeur de retour : chaîne UNICODE : Le texte correspondant au code envoyé en paramètre
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE CodeHTTPVersDescription(nCodeHTTP est un entier) : chaine
+      selon nCodeHTTP	//ne pas traduite car fait partie de l'entête HTTP
+      	cas	chttp._HTTPStatutOK									: renvoyer "OK" 
+      	cas	cHTTP._HTTPStatutCreated							: renvoyer "Created"
+      	cas	cHTTP._HTTPStatutAccepted							: renvoyer "Accepted"
+      	cas	cHTTP._HTTPStatutNonAuthoritativeInfo				: renvoyer "Non Authoritative Info"
+      	cas	cHTTP._HTTPStatutNoContent							: renvoyer "No Content"
+      	cas	cHTTP._HTTPStatutResetContent						: renvoyer "Reset Content"
+      	cas	cHTTP._HTTPStatutPartialContent						: renvoyer "Partial Content"
+      	cas	cHTTP._HTTPStatutMultiStatus						: renvoyer "Multi Status"
+      	cas	cHTTP._HTTPStatutAlreadyReported					: renvoyer "Already Reported"
+      	cas	cHTTP._HTTPStatutIMUsed								: renvoyer "IM Used"
+      	cas	cHTTP._HTTPStatutMultipleChoices					: renvoyer "Multiple Choices"
+      	cas	cHTTP._HTTPStatutMovedPermanentely					: renvoyer "Moved Permanentely"
+      	cas	cHTTP._HTTPStatutFound								: renvoyer "Found"
+      	cas	cHTTP._HTTPStatutSeeOther							: renvoyer "See Other"
+      	cas	cHTTP._HTTPStatutNotModified						: renvoyer "Not Modified"
+      	cas	cHTTP._HTTPStatutUseProxy							: renvoyer "Use Proxy"
+      	cas	cHTTP._HTTPStatutTemporaryRedirect					: renvoyer "Temporary Redirect"
+      	cas	cHTTP._HTTPStatutPermanentRedirect					: renvoyer "Permanent Redirect"
+      	cas	cHTTP._HTTPStatutBadRequest							: renvoyer "Bad Request"
+      	cas	cHTTP._HTTPStatutUnauthorized						: renvoyer "Unauthorized"
+      	cas	cHTTP._HTTPStatutPaymentRequired					: renvoyer "Payment Required"
+      	cas	cHTTP._HTTPStatutForbidden							: renvoyer "Forbidden"
+      	cas	cHTTP._HTTPStatutNotFound							: renvoyer "Not Found"
+      	cas	cHTTP._HTTPStatutMethodNotAllowed					: renvoyer "Method Not Allowed"
+      	cas	cHTTP._HTTPStatutNotAcceptable						: renvoyer "Not Acceptable"
+      	cas	cHTTP._HTTPStatutProxyAuthenticationRequired		: renvoyer "Proxy Authentication Required"
+      	cas	cHTTP._HTTPStatutRequestTimeout						: renvoyer "Request Timeout"
+      	cas	cHTTP._HTTPStatutConflict							: renvoyer "Conflict"
+      	cas	cHTTP._HTTPStatutGone								: renvoyer "Gone"
+      	cas	cHTTP._HTTPStatutLengthRequired						: renvoyer "Length Required"
+      	cas	cHTTP._HTTPStatutPreconditionFailed					: renvoyer "Precondition Failed"
+      	cas	cHTTP._HTTPStatutRequestEntityTooLarge				: renvoyer "Request Entity TooLarge"
+      	cas	cHTTP._HTTPStatutRequestURITooLong					: renvoyer "Request URI Too Long"
+      	cas	cHTTP._HTTPStatutUnsupportedMediaType				: renvoyer "Unsupported Media Type"
+      	cas	cHTTP._HTTPStatutRequestRangeNotSatisfiable			: renvoyer "Request Range Not Satisfiable"
+      	cas	cHTTP._HTTPStatutExpectationFailed					: renvoyer "Expectation Failed"
+      	cas	cHTTP._HTTPStatutImATeapot							: renvoyer "I am A Teapot"
+      	cas	cHTTP._HTTPStatutEnhanceYourCalm					: renvoyer "Enhance Your Calm"
+      	cas	cHTTP._HTTPStatutUnproccessableEntityWebDAV			: renvoyer "Unproccessable Entity WebDAV"
+      	cas	cHTTP._HTTPStatutLocked								: renvoyer "Locked"
+      	cas	cHTTP._HTTPStatutFailedDependancy					: renvoyer "Failed Dependancy"
+      	cas	cHTTP._HTTPStatutReservedForWebDAV					: renvoyer "Reserved For WebDAV"
+      	cas	cHTTP._HTTPStatutUpgradeRequired					: renvoyer "Upgrade Required"
+      	cas	cHTTP._HTTPStatutPreconditionRequired				: renvoyer "Precondition Required"
+      	cas	cHTTP._HTTPStatutTooManyRequest						: renvoyer "Too Many Request"
+      	cas	cHTTP._HTTPStatutRequestHeaderFieldsTooLarge		: renvoyer "Request Header Fields Too Large"
+      	cas	cHTTP._HTTPStatutNoResponse							: renvoyer "No Response"
+      	cas	cHTTP._HTTPStatutRetryWith							: renvoyer "Retry With"
+      	cas	cHTTP._HTTPStatutBlockedByWindowsParentalControl	: renvoyer "Blocked By Windows Parental Control"
+      	cas	cHTTP._HTTPStatutUnavailableForLegalReason			: renvoyer "Unavailable For Legal Reason"
+      	cas	cHTTP._HTTPStatutClientClosedRequest				: renvoyer "Client Closed Request"
+      	cas	cHTTP._HTTPStatutInternalServerError				: renvoyer "Internal Server Error"
+      	cas	cHTTP._HTTPStatutNotImplemented						: renvoyer "Not Implemented"
+      	cas	cHTTP._HTTPStatutBadGateway							: renvoyer "Bad Gateway"
+      	cas	cHTTP._HTTPStatutServiceUnavailable					: renvoyer "Service Unavailable"
+      	cas	cHTTP._HTTPStatutGatewayTimeout						: renvoyer "Gateway Timeout"
+      	cas	cHTTP._HTTPStatutHTTPVersionNotSupported			: renvoyer "HTTP Version Not Supported"
+      	cas	cHTTP._HTTPStatutVariantAlsoNegotiates				: renvoyer "Variant Also Negotiates"
+      	cas	cHTTP._HTTPStatutInsufficientStorage				: renvoyer "Insufficient Storage"
+      	cas	cHTTP._HTTPStatutLoopDetected						: renvoyer "Loop Detected"
+      	cas	cHTTP._HTTPStatutBandwidthLimitExceeded				: renvoyer "Bandwidth Limit Exceeded"
+      	cas	cHTTP._HTTPStatutNotExtended						: renvoyer "Not Extended"
+      	cas	cHTTP._HTTPStatutNetworkAuthenticationRequired		: renvoyer "Network Authentication Required"
+      	cas	cHTTP._HTTPStatutNetworkReadTimeoutError			: renvoyer "Network Read Timeout Error"
+      	cas cHTTP._HTTPStatutNetworkConnectTimeoutError			: renvoyer "Network Connect Timeout Error"
+      	autres cas 												: renvoyer "Unknown HTTP message"
+      fin
+     type : 458752
+   -
+     name : HTTPMéthodeVersEntier
+     procedure_id : 1561658348740439413
+     type_code : 12
+     code : |1-
+      // Résumé : Convertit un type énuméré EHTTPMéthode en une valeur entière correspondante.
+      // Syntaxe : [ <Résultat> = ] HTTPMéthodeVersEntier (<eMéthode> est cHTTP.EHTTPMéthode)
+      // Paramètres :
+      //	eMéthode (cHTTP.EHTTPMéthode) : Type énuméré représentant la méthode HTTP.
+      // Valeur de retour : entier : La valeur entière correspondante à la méthode HTTP. Si la méthode n'est pas reconnue, la fonction renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE HTTPMéthodeVersEntier(eMéthode est un EHTTPMéthode) : entier
+      selon eMéthode
+      	cas HTTP_GET		: renvoyer httpget
+      	cas HTTP_PUT		: renvoyer httpPut
+      	cas HTTP_POST		: renvoyer httpPost
+      	cas HTTP_PATCH		: renvoyer httpPatch
+      	cas HTTP_DELETE		: renvoyer httpDelete
+      	cas HTTP_COPY		: renvoyer httpCopy
+      	cas HTTP_HEAD		: renvoyer httpHead
+      	AUTRE CAS			: renvoyer 0
+      FIN
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1ae73c1405286c1d
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Erreur durant le téléchargement HTTP : "
+      en-GB : "Error while downloading over HTTP : "
+      fr-CA : "Erreur durant le téléchargement HTTP : "
+      en-US : "Error while downloading over HTTP : "
+     index : 0
+   -
+     text :
+      fr-FR : Fichier vide ou incomplet
+      en-GB : Empty or incomplete file
+      fr-CA : Fichier vide ou incomplet
+      en-US : Empty or incomplete file
+     index : 1
+   -
+     text :
+      fr-FR : "Impossible créer le fichier de destination : "
+      en-GB : "Could not create the destination file : "
+      fr-CA : "Impossible créer le fichier de destination : "
+      en-US : "Could not create the destination file : "
+     index : 2
+   -
+     text :
+      fr-FR : Fichier vide ou incomplet
+      en-GB : Empty or incomplete file
+      fr-CA : Fichier vide ou incomplet
+      en-US : Empty or incomplete file
+     index : 3
+   -
+     text :
+      fr-FR : Téléchargement annulé
+      en-GB : Download canceled
+      fr-CA : Téléchargement annulé
+      en-US : Download canceled
+     index : 4
+   -
+     text :
+      fr-FR : "Méthode non reconnue : "
+      en-GB : "Unrecognized method : "
+      fr-CA : "Méthode non reconnue : "
+      en-US : "Unrecognized method : "
+     index : 5
+   -
+     text :
+      fr-FR : "La fonction n'existe pas : "
+      en-GB : "The function doesn't exist : "
+      fr-CA : "La fonction n'existe pas : "
+      en-US : "The function doesn't exist : "
+     index : 6
+   -
+     text :
+      fr-FR : "Erreur de compilation de %1 : %2"
+      en-GB : "Compilation error of %1 : %2"
+      fr-CA : "Erreur de compilation de %1 : %2"
+      en-US : "Compilation error of %1 : %2"
+     index : 7
+   -
+     text :
+      fr-FR : "Erreur d'exécution de %1 : %2"
+      en-GB : "Runtime error of %1 : % 2"
+      fr-CA : "Erreur d'exécution de %1 : %2"
+      en-US : "Runtime error of %1 : % 2"
+     index : 8
+   -
+     text :
+      fr-FR : Le fichier distant n'existe pas
+      en-GB : Remote file does not exist
+      fr-CA : Le fichier distant n'existe pas
+      en-US : Remote file does not exist
+     index : 9
+   -
+     text :
+      fr-FR : "Le protocole n'est par reconnu : "
+      en-GB : "The protocol is not recognized : "
+      fr-CA : "Le protocole n'est par reconnu : "
+      en-US : "The protocol is not recognized : "
+     index : 10
+   -
+     text :
+      fr-FR : L'adresse de destination du fichier est incomplète
+      en-GB : The destination address of the file is incomplete
+      fr-CA : L'adresse de destination du fichier est incomplète
+      en-US : The destination address of the file is incomplete
+     index : 11
+   -
+     text :
+      fr-FR : Le fichier de destination existe déjà
+      en-GB : The destination file already exists
+      fr-CA : Le fichier de destination existe déjà
+      en-US : The destination file already exists
+     index : 12
+   -
+     text :
+      fr-FR : Impossible d'écraser le fichier existant
+      en-GB : Unable to overwrite the existing file
+      fr-CA : Impossible d'écraser le fichier existant
+      en-US : Unable to overwrite the existing file
+     index : 13
+   -
+     text :
+      fr-FR : Le nom du fichier de destination est vide
+      en-GB : The destination file name is empty
+      fr-CA : Le nom du fichier de destination est vide
+      en-US : The destination file name is empty
+     index : 14
+   -
+     text :
+      fr-FR : Le protocole doit être http ou https (ici %1)
+      en-GB : The protocol must be http or https (here %1)
+      fr-CA : Le protocole doit être http ou https (ici %1)
+      en-US : The protocol must be http or https (here %1)
+     index : 15
+   -
+     text :
+      fr-FR : Téléchargement https non disponible
+      en-GB : Download https not available
+      fr-CA : Téléchargement https non disponible
+      en-US : Download https not available
+     index : 16
+   -
+     text :
+      fr-FR : Le nom du fichier d'origine est vide
+      en-GB : The original file name is empty
+      fr-CA : Le nom du fichier d'origine est vide
+      en-US : The original file name is empty
+     index : 17
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

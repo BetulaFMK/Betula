@@ -1,0 +1,371 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cGénérique
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1ad75ce104bf617a
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe est la classe de base de l'ensemble du framework Betula, elle n'est d'ailleurs pas accessible directement. Elle contient quelques constantes et une gestion d'erreur.
+      
+      constante
+      	_Sep							= "•"	//caractère 149						//ce séparateur permet de concaténer des informations qui ne devraient pas contenir ce caractère spécial. Le point a été choisi car il permet de facilement visualiser ce séparateur dans une chaine.
+      	_DateMin						= "19000101"
+      	_DateMax						= "29991231"
+      	_HeureMin						= "000000000"
+      	_HeureMax						= "235959999"
+      	_DateHeureMax					= _DateMax+_HeureMin
+      	_DateHeureMin					= _DateMin+_HeureMin
+      	_Guillemet						= """"
+      	_LettresMinuscules				= "abcdefghijklmnopqrstuvwxyz"
+      	_LettresMajuscules				= "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      	_LettresGrecquesMinuscules		= "αβγδεζηθικλμνξοπρστυφχψω"
+      	_LettresGrecquesMajuscules		= "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ"
+      	_LettresRussesMinuscules		= "абвгдежзийклмнопрстуфхцчшщъыьэюя"
+      	_LettresRussesMajuscules		= "АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
+      	_LettresArméniennesMinuscules	= "աբգդեզէըթժիլխծկհձղճմյնշոչպջռսվտրցուփքևօֆ"
+      	_LettresArméniennesMajuscules	= "ԱԲԳԴԵԶԷԸԹԺԻԼԽԾԿՀՁՂՃՄՅՆՇՈՉՊՋՌՍՎՏՐՑՈՒՓՔԵՎՕՖ"
+      	_LettresAccentMinuscules		= "àáâãäåæçèéêëìíîïñòóôõöùúûüýÿ"
+      	_LettresAccentMajuscules		= "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝŸ"
+      	_CaractèresNumériques			= "0123456789"
+      	_CaractèresSpéciaux				= " #-=^¸;`<«,.|!/$%?&*()_+¨:`>»'.\±@£¢¤¬¦²³¼½¾[]~{}°¯­´"+_Guillemet
+      	_CouleursStandard				= Transparent+tab+Blanc+tab+Noir+tab+GrisClair+tab+GrisFoncé+tab+rougeclair+tab+rougefoncé+tab+vertclair+tab+vertfoncé+tab+bleuclair+tab+bleufoncé+tab+cyanclair+tab+cyanfoncé+tab+jauneclair+tab+jaunefoncé+tab+magentaclair+tab+magentafoncé
+      	_CouleursSupplémentaires		= Argent+TAB+Bronze+TAB+JauneOr+tab+jaunebulle+tab+RoseClair+tab+rosefoncé+tab+violetclair+tab+violetfoncé+tab+MarronClair+tab+MarronFoncé+tab+orangeclair+tab+orangefoncé
+      	_CouleursPastel					= RougePastel+tab+VertPastel+tab+BleuPastel+tab+CyanPastel+tab+JaunePastel+tab+MagentaPastel+tab+RosePastel+tab+VioletPastel+tab+MarronPastel+tab+orangepastel
+      	
+      	_FormatImageWindows				= ".BMP"+tab+".GIF"+TAB+".JPG"+TAB+".JPEG"+TAB+".PCD"+TAB+".PCX"+TAB+".PSD"+TAB+".TGA"+tab+".TARGA"+TAB+".TIF"+TAB+".TIFF"+TAB+".PNG"+TAB+".EMF"+TAB+".WMF"+TAB+".ICO"+TAB+".ICW"+TAB+".CUR"+TAB+".PDF"+TAB+".SVG"+TAB+".WDPIC"
+      	_FormatImageLinux				= ".BMP"+TAB+".GIF"+TAB+".JPG"+TAB+".JPEG"+TAB+".PNG"+TAB+".PBM"+TAB+".PGM"+TAB+".PPM"+TAB+".TIFF"+TAB+".XBM"+TAB+".XPM"+TAB+".SVG"+TAB+".WDPIC"
+      	_FormatImageWinMobile			= ".BMP"+TAB+".GIF"+TAB+".JPG"+TAB+".JPEG"+TAB+".ICO"+TAB+".ICW"+TAB+".WDPIC"
+      	_FormatImageAndroid				= ".BMP"+TAB+".JPG"+TAB+".PNG"+TAB+".SVG"+TAB+".WDPIC"
+      	_FormatImageIOS					= ".BMP"+TAB+".JPG"+TAB+".JPEG"+TAB+".PNG"+TAB+".TIF"+TAB+".TIFF"+TAB+".GIF"+TAB+".XBM"+TAB+".SVG"+TAB+".WDPIC"
+      	_FormatImageJava				= ".BMP"+TAB+".GIF"+TAB+".JPEG"+TAB+".PNG"+TAB+".WDPIC"
+      fin                         
+      cGénérique est une Classe,abstraite
+      	m_pclErreur				est un cErreur dynamique 	<serialise = faux>
+      public constant
+      	ChaineAnsiVide			est une chaine ANSI			<serialise = Faux>
+      privé
+      	m_vDéfinition			est un variant				<Sérialise = Faux>
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1934116686496031098
+     type_code : 27
+     code : |1-
+      // Résumé : Initialisation de la classe cGénérique lors de sa création. Elle alloue un objet de la classe cErreur pour la gestion des erreurs au sein de l'instance.
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur()
+      m_pclErreur = allouer un cErreur
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1934116686496096634
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : TousLesMessages
+     procedure_id : 2189535648444893047
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée permettant de récupérer tous les messages d'erreur de l'objet principal et de tous ses objets imbriqués
+      PROCEDURE PRIVÉE TousLesMessages(LOCAL sVariable est une chaine,local bEnJSON est un booleen)
+      sMessage	est une chaine
+      nErreur		est un entier
+      nTypeInit	est un entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64>
+      	
+      	defStructure est une Définition = RécupèreDéfinition(objet)
+      	POUR i=1 _À_ defStructure.Variable..Occurrence
+      		QUAND EXCEPTION DANS
+      			nTypeInit=TypeVar({defStructure.Variable[i]..Nom,indVariable})
+      		FAIRE
+      			nErreur++;SI nErreur>10 ALORS RENVOYER ""	//pour éviter le bouclage quand un objet est imbriqué avec lui-même
+      		SINON
+      			SI nTypeInit DANS (wlInstance,wlVariantTableau,wlTableau) _ET_ PAS Minuscule(defStructure.Variable[i]..Nom) DANS ("m_pclErreur","m_tabenregistrement","m_vdéfinition") ALORS	//sinon c'est l'erreur déjà dans sErr
+      				nErreur=0;RécupErreur(defStructure.Variable[i]..Nom)
+      			FIN
+      		FIN
+      	FIN
+      	
+      		PROCÉDURE INTERNE RécupErreur(sNomEnfant est une chaine)
+      		sMessageEnfant	est une chaine
+      		
+      		nType 			est un entier
+      		QUAND EXCEPTION DANS
+      			SI {sNomEnfant,indVariable}=Null ALORS RETOUR
+      			
+      			nType=TypeVar({sNomEnfant,indVariable})
+      		FAIRE
+      			RETOUR
+      		FIN
+      		SELON nType
+      			CAS wlInstance
+      				QUAND EXCEPTION DANS
+      					sMessageEnfant={sNomEnfant+"."+sVariable,indVariable}
+      					SI sMessageEnfant>"" _ET_ sMessageEnfant<>"0" ALORS
+      						SI bEnJSON ALORS
+      							SI Position(sMessage,"{"+_Guillemet+sNomEnfant+_Guillemet+":"+JSONEncode(sMessageEnfant)+"}")<1 ALORS 
+      								sMessage+=[","]+"{"+_Guillemet+sNomEnfant+_Guillemet+":"+JSONEncode(sMessageEnfant)+"}"
+      							FIN
+      						SINON
+      							SI Position(sMessage,sMessageEnfant)<1 ALORS sMessage+=[RC]+sMessageEnfant
+      						FIN
+      					FIN
+      				FAIRE
+      					//rien, la propriété n'existe pas
+      				SINON
+      					defEnfant est une définition = RécupèreDéfinition({sNomEnfant,indVariable})
+      					POUR j=1 _À_ defEnfant.Variable..Occurrence
+      						SI defEnfant..Type=wlInstance ALORS
+      							SI PAS Minuscule(defEnfant.Variable[j]..Nom) DANS ("m_pclErreur","_Application") ALORS			//sinon c'est l'erreur déjà dans sErr
+      								RécupErreur(sNomEnfant+"."+defEnfant.Variable[j]..Nom)
+      							FIN
+      						FIN
+      					FIN
+      				FIN
+      			CAS wlVariantTableau,wlTableau,wlTableauAssociatif,wlListe
+      				POUR j=1 _À_ {sNomEnfant,indVariable}..Occurrence
+      					RécupErreur(sNomEnfant+"["+j+"]")
+      					
+      				FIN
+      		FIN
+      		
+      		
+      		FIN
+      	
+      <fin>
+      
+      
+      RENVOYER sMessage
+     type : 458752
+  properties :
+   -
+     name : p_sErreur
+     identifier : 0x1b193364042e339d
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le message d'erreur sous forme de chaîne de caractères
+         PROCEDURE PUBLIQUE p_sErreur() : chaine
+         si m_pclErreur<>null alors RENVOYER m_pclErreur.p_sErreur sinon renvoyer ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sExtensionImage
+     identifier : 0x1b8c3925522c3bf8
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'ensemble des extensions de fichiers, reconnus selon la plateforme en cours, pouvant contenir une image.
+         PROCEDURE PUBLIQUE globale p_sExtensionImage()
+         sExtensions est une chaine
+         
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+         	sExtensions=cGénérique._FormatImageWindows
+         	
+         <sinon si CibleExécution=SiteLinux ou CibleExécution=WebserviceLinux ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceLinux64>
+         	sExtensions=cGénérique._FormatImageLinux
+         	
+         <sinon si CibleExécution=WindowsMobile>
+         	sExtensions=cGénérique._FormatImageWinMobile
+         	
+         <sinon si CibleExécution=Android>
+         	sExtensions=cGénérique._FormatImageAndroid
+         	
+         <sinon si CibleExécution=Java>
+         	sExtensions=cGénérique._FormatImageJava
+         	
+         <fin>
+         
+         
+         renvoyer sExtensions
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sErreurTout
+     identifier : 0x1bc09a9a07c71229
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoi l'ensemble des messages d'erreur sous forme de chaîne de caractères (de l'objet principal et de tous ses objets imbriqués)
+         PROCEDURE PUBLIQUE p_sErreurTout() : chaine
+         sErr est une chaine = TousLesMessages("p_sErreur",faux)
+         si position(p_sErreur,sErr)>0 alors renvoyer p_sErreur sinon renvoyer p_sErreur+[rc]+sErr
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sErreurToutJSON
+     identifier : 0x1bfd5a1b0c488433
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoi l'ensemble des messages d'erreur sous forme JSON (de l'objet principal et de tous ses objets imbriqués)
+         PROCEDURE PUBLIQUE p_sErreurToutJSON() : chaine
+         sErr est une chaine = TousLesMessages("p_sErreurJSON",vrai)
+         sErr = (sErr<>"" ? "["+sErr+"]" SINON "")
+         sErr = p_serreurjson+[","]+sErr
+         RENVOYER sErr
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sErreurJSON
+     identifier : 0x1bfd5a4a0c493eea
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le message d'erreur au format JSON.
+         PROCEDURE PUBLIQUE p_sErreurJSON() : chaine
+         SI m_pclErreur<>Null _et_ m_pclErreur.p_sErreurJSON<>"0" ALORS RENVOYER m_pclErreur.p_sErreurjson SINON RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sAvertissement
+     identifier : 0x1c62cca500f33d79
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le message d'erreur sous forme de chaîne de caractères
+         PROCEDURE PUBLIQUE p_sAvertissement() : chaîne
+         SI m_pclErreur<>Null ALORS RENVOYER m_pclErreur.p_sAvertissement SINON RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sAvertissementJSON
+     identifier : 0x1c62cce600f43ec0
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le message d'avertissement au format JSON.
+         PROCEDURE PUBLIQUE p_sAvertissementJSON() : chaîne
+         SI m_pclErreur<>Null _ET_ m_pclErreur.p_sAvertissementJSON<>"0" ALORS RENVOYER m_pclErreur.p_sAvertissementJSON SINON RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sAvertissementToutJSON
+     identifier : 0x1c62cd1c03520f76
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoi l'ensemble des messages d'avertissement sous forme JSON (de l'objet principal et de tous ses objets imbriqués)
+         PROCEDURE PUBLIQUE p_sAvertissementToutJSON() : chaîne
+         sAvertissement est une chaine = TousLesMessages("p_sAvertissementJSON",vrai)
+         sAvertissement = (sAvertissement<>"" ? "["+sAvertissement+"]" SINON "")
+         sAvertissement = p_sAvertissementJSON+[","]+sAvertissement
+         RENVOYER sAvertissement
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sAvertissementTout
+     identifier : 0x1c62cdba035479cd
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoi l'ensemble des messages d'avertissement sous forme de chaîne de caractères (de l'objet principal et de tous ses objets imbriqués)
+         PROCEDURE PUBLIQUE p_sAvertissementTout() : chaîne
+         sAvertissement est une chaine = TousLesMessages("p_sAvertissement",faux)
+         SI Position(p_sAvertissement,sAvertissement)>0 ALORS RENVOYER p_sAvertissement SINON RENVOYER p_sErreur+[RC]+sAvertissement
+        type : 1966080
+     template_refs : []
+   -
+     name : p_Définition
+     identifier : 0x1c76ddee3732b62d
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoi la définition de l'objet (sa structure). Attention, cette information n'est pas disponible sur certaines plateformes.
+         PROCEDURE PUBLIQUE p_Définition()
+         
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp>
+         	SI m_vDéfinition=Null ALORS m_vDéfinition=RécupèreDéfinition(objet)
+         	
+         <fin>
+         
+         
+         renvoyer m_vDéfinition
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sErreurCode
+     identifier : 0x1e77e81a1b1d79da
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Résumé : Renvoie le code de l'erreur
+         PROCEDURE PUBLIQUE p_sErreurCode() : chaîne
+         SI m_pclErreur<>Null ALORS RENVOYER m_pclErreur.p_serreurCode sinon renvoyer ""
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1ad75ca604bc797c
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : erreur vide
+      en-GB : empty error
+      fr-CA : erreur vide
+      en-US : empty error
+     index : 0
+   -
+     text :
+      fr-FR : avertissement vide
+      en-GB : empty warning
+      fr-CA : avertissement vide
+      en-US : empty warning
+     index : 1
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

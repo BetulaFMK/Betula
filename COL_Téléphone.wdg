@@ -1,0 +1,360 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_Téléphone
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1e976de231c45dab
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1+
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      PRIVÉ
+      CONSTANTE
+      	ErreurTéléphone	= 190
+      FIN
+     type : 720896
+  procedures :
+   -
+     name : BEL_ChiffresVersTéléphone
+     procedure_id : 2204351506915123921
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure convertit une chaîne de chiffres en une chaîne représentant un numéro de téléphone belge formaté. Elle prend en compte les différents formats pour les numéros spéciaux, ainsi que les indicatifs régionaux pour Bruxelles, Anvers, Liège et Gand.
+      // Syntaxe : [ <Résultat> = ] BEL_ChiffresVersTéléphone (<sChiffres> est chaîne [, <bAvecIndicatifInternational> est booléen])
+      // Paramètres :
+      //	sChiffres (chaîne UNICODE) :  La chaîne de chiffres à convertir en numéro de téléphone.
+      // 	bAvecIndicatifInternational (booléen facultatif): Indique s'il faut inclure l'indicatif international dans le numéro de téléphone. Par défaut, la valeur est False.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne représentant le numéro de téléphone belge formaté.
+      // Exemple :
+      //	sNumeroTéléphone est une chaîne = BEL_ChiffresVersTéléphone("0487654321", Vrai)
+      //	sNumeroTéléphone contiendra "+32 4 876 54 32"
+      //
+      PROCEDURE BEL_ChiffresVersTéléphone(local sChiffres est une chaine,bAvecIndicatifInternational est un booleen = faux) : chaine
+      sIndicatifInternational est une chaine = "32"
+      sChiffres=ChiffresSeulement(sChiffres)
+      si taille(sChiffres)>9 _Et_ sChiffres[1 a taille(sIndicatifInternational)]=sIndicatifInternational alors sChiffres=milieu(sChiffres,Taille(sIndicatifInternational)+1)
+      si sChiffres[1 a 2]="08" alors			//numéros spéciaux
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"08CC CC CCC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      sinon SI sChiffres[1 À 2]="09" ALORS	//numéros spéciaux
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"09CC CC CCC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      sinon
+      	si (sChiffres[1]="0" _Et_ sChiffres[2] dans ("2","3","4","9")) _ou_ (sChiffres[1]<>"0" _ET_ sChiffres[1] DANS ("2","3","4","9")) alors 			//Bruxelles : 2, Anvers : 3, Liège : 4, Gand : 9
+      		RENVOYER INT_ChiffresVersTéléphone(sChiffres,"0C CCC CC CC",(bAvecIndicatifInternational ? sIndicatifInternational sinon ""))
+      	sinon
+      		RENVOYER INT_ChiffresVersTéléphone(sChiffres,"0CC CC CC CC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      	fin
+      FIN
+     type : 458752
+   -
+     name : CAN_ChiffresVersTéléphone
+     procedure_id : 2204351506915189566
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure convertit une chaîne de chiffres en une chaîne représentant un numéro de téléphone canadien formaté. Elle prend en compte la possibilité d'inclure l'indicatif international (1) dans le numéro de téléphone.
+      // Syntaxe : [ <Résultat> = ] CAN_ChiffresVersTéléphone (<sChiffres> est chaîne [, <bAvecIndicatifInternational> est booléen])
+      // Paramètres :
+      //	sChiffres (chaîne UNICODE) : La chaîne de chiffres à convertir en numéro de téléphone.
+      // 	bAvecIndicatifInternational (booléen optionnel): Indique s'il faut inclure l'indicatif international dans le numéro de téléphone. Par défaut, la valeur est False.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne représentant le numéro de téléphone canadien formaté.
+      // Exemple :
+      //	sNumeroTéléphone est une chaîne = CAN_ChiffresVersTéléphone("4165551234", Vrai)
+      //	sNumeroTéléphone contiendra "+1 416 555-1234"
+      //
+      PROCEDURE CAN_ChiffresVersTéléphone(sChiffres est une chaine,bAvecIndicatifInternational est un booleen = faux) : chaine
+      sIndicatifInternational est une chaine = "1"
+      sChiffres=ChiffresSeulement(sChiffres)
+      SI Taille(sChiffres)>10 _ET_ sChiffres[1 À Taille(sIndicatifInternational)]=sIndicatifInternational ALORS sChiffres=Milieu(sChiffres,Taille(sIndicatifInternational)+1)
+      renvoyer INT_ChiffresVersTéléphone(sChiffres,"CCC CCC-CCCC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+     type : 458752
+   -
+     name : FRA_ChiffresVersTéléphone
+     procedure_id : 2204351506915320919
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure convertit une chaîne de chiffres en une chaîne représentant un numéro de téléphone français formaté. Elle prend en compte la possibilité d'inclure l'indicatif international (33) dans le numéro de téléphone.
+      // Syntaxe : [ <Résultat> = ] FRA_ChiffresVersTéléphone (<sChiffres> est chaîne [, <bAvecIndicatifInternational> est booléen])
+      // Paramètres :
+      //	sChiffres (chaîne UNICODE) : La chaîne de chiffres à convertir en numéro de téléphone.
+      // 	bAvecIndicatifInternational (booléen optionnel): Indique s'il faut inclure l'indicatif international dans le numéro de téléphone. Par défaut, la valeur est False.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne représentant le numéro de téléphone français formaté.
+      // Exemple :
+      //	sNumeroTéléphone est une chaîne = FRA_ChiffresVersTéléphone("0123456789", Vrai)
+      //	sNumeroTéléphone contiendra "+33 1 23 45 67 89"
+      //
+      PROCEDURE FRA_ChiffresVersTéléphone(local sChiffres est une chaine,bAvecIndicatifInternational est un booleen = faux) : chaine
+      sIndicatifInternational est une chaine = "33"
+      sChiffres=ChiffresSeulement(sChiffres)
+      SI Taille(sChiffres)>9 _ET_ sChiffres[1 À Taille(sIndicatifInternational)]=sIndicatifInternational ALORS sChiffres=Milieu(sChiffres,Taille(sIndicatifInternational)+1)
+      SI sChiffres[1 À 2]="08" ALORS			//numéros spéciaux
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"08CC CC CCC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      sinon
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"0C CC CC CC CC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      fin
+     type : 458752
+   -
+     name : GLP_ChiffresVersTéléphone
+     procedure_id : 2204351506915386627
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de formater une chaîne de chiffres en un numéro de téléphone guadeloupéen en ajoutant un indicatif international si nécessaire.
+      // Syntaxe : [ <Résultat> = ] GLP_ChiffresVersTéléphone (<sChiffres> est chaîne [, <bAvecIndicatifInternational> est booléen])
+      // Paramètres :
+      //	sChiffres (chaîne UNICODE) : La chaîne de chiffres à convertir en numéro de téléphone.
+      // 	bAvecIndicatifInternational (booléen optionnel, par défaut à Faux): Indique si l'indicatif international doit être ajouté.
+      // Valeur de retour : chaîne UNICODE : renvoie le numéro de téléphone formaté.
+      // Exemple :
+      //	sNumeroTéléphone est une chaîne = GLP_ChiffresVersTéléphone("590 690 00 01 02", vrai)
+      //	sNumeroTéléphone contiendra "+590 690 000102"
+      //
+      PROCEDURE GLP_ChiffresVersTéléphone(LOCAL sChiffres est une chaine,bAvecIndicatifInternational est un booleen = faux) : chaine
+      sIndicatifInternational est une chaine = "590"
+      sChiffres=ChiffresSeulement(sChiffres)
+      SI Taille(sChiffres)>9 _ET_ sChiffres[1 À Taille(sIndicatifInternational)]=sIndicatifInternational ALORS sChiffres=Milieu(sChiffres,Taille(sIndicatifInternational)+1)
+      SI sChiffres[1 À 2]="08" ALORS			//numéros spéciaux
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"08CC CC CCC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      SINON
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"CCC CCCCCC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      FIN
+     type : 458752
+   -
+     name : GUF_ChiffresVersTéléphone
+     procedure_id : 2204351506915452350
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de formater une chaîne de chiffres en un numéro de téléphone guyanais en ajoutant un indicatif international si nécessaire.
+      // Syntaxe : [ <Résultat> = ] GUF_ChiffresVersTéléphone (<sChiffres> est chaîne [, <bAvecIndicatifInternational> est booléen])
+      // Paramètres :
+      //	sChiffres (chaîne UNICODE) :  La chaîne de chiffres à convertir en numéro de téléphone.
+      // 	bAvecIndicatifInternational (booléen optionnel, par défaut à Faux): Indique si l'indicatif international doit être ajouté.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne représentant le numéro de téléphone formaté.
+      // Exemple :
+      //	sNumeroTéléphone est une chaîne = GUF_ChiffresVersTéléphone("594123456789", vrai)
+      //	sNumeroTéléphone contiendra "+594 123 45 67 89"
+      //
+      PROCEDURE GUF_ChiffresVersTéléphone(LOCAL sChiffres est une chaine,bAvecIndicatifInternational est un booleen = faux) : chaine
+      sIndicatifInternational est une chaine = "594"
+      sChiffres=ChiffresSeulement(sChiffres)
+      SI Taille(sChiffres)>9 _ET_ sChiffres[1 À Taille(sIndicatifInternational)]=sIndicatifInternational ALORS sChiffres=Milieu(sChiffres,Taille(sIndicatifInternational)+1)
+      SI sChiffres[1 À 2]="08" ALORS			//numéros spéciaux
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"08CC CC CCC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      SINON
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"CCC CC CC CC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      FIN
+     type : 458752
+   -
+     name : INT_ChiffresVersTéléphone
+     procedure_id : 2204351511210485385
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de formater une chaîne de chiffres en un numéro de téléphone selon un format spécifié, avec la possibilité d'ajouter un indicatif international.
+      // Syntaxe : [ <Résultat> = ] INT_ChiffresVersTéléphone (<sChiffres> est chaîne, <sFormat> est chaîne [, <sIndicatifInternational> est chaîne])
+      // Paramètres :
+      //	sChiffres (chaîne UNICODE) : La chaîne de chiffres à convertir en numéro de téléphone.
+      //	sFormat (chaîne UNICODE) : Le format du numéro de téléphone contenant des chiffres (pour un code régional) et la lettre C pour chaque chiffre à placer.
+      //	sIndicatifInternational (chaîne UNICODE optionnelle): L'indicatif international à ajouter au numéro de téléphone, par défaut à "".
+      // Valeur de retour :
+      // 	chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      // Exemple :
+      //	sNumeroChiffres est une chaîne = "0123456789"
+      //	sFormatTelephone est une chaîne = "CC.CC.CC.CC"
+      //	sIndicatif est une chaîne = "1"
+      //	sNumeroTéléphone = INT_ChiffresVersTéléphone(sNumeroChiffres, sFormatTelephone, sIndicatif)
+      //	sNuméroTéléphone contiendra "+1 23.45.67.89"
+      //
+      PROCEDURE INT_ChiffresVersTéléphone(local sChiffres est une chaine,sFormat est une chaine,sIndicatifInternational est une chaine ="") : chaine
+      SI sChiffres~="" ALORS RENVOYER ""
+      sChiffres=SansEspace(ChiffresSeulement(sChiffres))
+      si sIndicatifInternational>"" alors 
+      	sFormat="+"+sIndicatifInternational+" "+(sFormat[1]="0" ? milieu(sFormat,2) sinon sFormat)
+      	si sChiffres[1]="0" alors sChiffres=milieu(sChiffres,2)
+      FIN
+      sRes		est une chaine
+      nCaractère	est un entier
+      nFormat		est un entier = 1
+      POUR nCaractère = 1 _À_ Taille(sChiffres)
+      	SI sFormat[nFormat]="C" _ET_ EstNumérique(sChiffres[nCaractère]) ALORS 
+      		sRes+=sChiffres[nCaractère];nFormat++
+      	SINON SI sFormat[nFormat]<>"C" ALORS
+      		SI sChiffres[nCaractère]=sFormat[nFormat] ALORS sRes+=sChiffres[nCaractère] SINON sRes+=sFormat[nFormat];nCaractère--
+      		nFormat++
+      	FIN
+      	si nFormat>taille(sFormat) alors sortir
+      FIN
+      RENVOYER sRes
+     type : 458752
+   -
+     name : MTQ_ChiffresVersTéléphone
+     procedure_id : 2204351511210551155
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de formater une chaîne de chiffres en un numéro de téléphone en ajoutant un indicatif international si nécessaire.
+      // Syntaxe : [ <Résultat> = ] MTQ_ChiffresVersTéléphone (<sChiffres> est chaîne [, <bAvecIndicatifInternational> est booléen])
+      // Paramètres :
+      //	sChiffres (chaîne UNICODE) : La chaîne de chiffres à convertir en numéro de téléphone.
+      // 	bAvecIndicatifInternational (booléen optionnel): Indique si l'indicatif international doit être ajouté, par défaut à Faux.
+      // Valeur de retour : chaîne UNICODE : renvoie le numéro de téléphone formaté.
+      // Exemple :
+      //	sNumeroTéléphone est une chaîne = MTQ_ChiffresVersTéléphone("123456789", vrai)
+      //	sNumeroTéléphone contiendra +596 123 45 67 89
+      //
+      PROCEDURE MTQ_ChiffresVersTéléphone(LOCAL sChiffres est une chaine,bAvecIndicatifInternational est un booleen = faux) : chaine
+      sIndicatifInternational est une chaine = "596"
+      sChiffres=ChiffresSeulement(sChiffres)
+      SI Taille(sChiffres)>9 _ET_ sChiffres[1 À Taille(sIndicatifInternational)]=sIndicatifInternational ALORS sChiffres=Milieu(sChiffres,Taille(sIndicatifInternational)+1)
+      SI sChiffres[1 À 2]="08" ALORS			//numéros spéciaux
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"08CC CC CCC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      SINON
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"CCC CC CC CC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      FIN
+     type : 458752
+   -
+     name : USA_ChiffresVersTéléphone
+     procedure_id : 2204351511210616940
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure USA_ChiffresVersTéléphone a pour objectif de formater une chaîne de chiffres en un numéro de téléphone selon le format américain, avec la possibilité d'ajouter un indicatif international.
+      // Syntaxe : [ <Résultat> = ] USA_ChiffresVersTéléphone (<sChiffres> est chaîne [, <bAvecIndicatifInternational> est booléen])
+      // Paramètres :
+      //	sChiffres (chaîne UNICODE) : La chaîne de chiffres à convertir en numéro de téléphone.
+      // 	bAvecIndicatifInternational (booléen optionnel): Indique si l'indicatif international doit être ajouté, par défaut à Faux.
+      // Valeur de retour : chaîne UNICODE : renvoie le numéro de téléphone formaté.
+      // Exemple :
+      //	sNumeroTéléphone est une chaîne = USA_ChiffresVersTéléphone("12025551234", Vrai)
+      //	sNumeroTéléphone contiendra ""+1 202 555-1234"
+      //
+      PROCEDURE USA_ChiffresVersTéléphone(sChiffres est une chaine,bAvecIndicatifInternational est un booleen = faux) : chaine
+      sIndicatifInternational est une chaine = "1"
+      sChiffres=ChiffresSeulement(sChiffres)
+      SI Taille(sChiffres)>10 _ET_ sChiffres[1 À Taille(sIndicatifInternational)]=sIndicatifInternational ALORS sChiffres=Milieu(sChiffres,Taille(sIndicatifInternational)+1)
+      RENVOYER INT_ChiffresVersTéléphone(sChiffres,"CCC CCC-CCCC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+     type : 458752
+   -
+     name : REU_ChiffresVersTéléphone
+     procedure_id : 2204352215595837275
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de formater une chaîne de chiffres en un numéro de téléphone destiné à l'île de La Réunion, en ajoutant un indicatif international si nécessaire.
+      // Syntaxe : [ <Résultat> = ] REU_ChiffresVersTéléphone (<sChiffres> est chaîne [, <bAvecIndicatifInternational> est booléen])
+      // Paramètres :
+      //	sChiffres (chaîne UNICODE) : La chaîne de chiffres à convertir en numéro de téléphone.
+      // 	bAvecIndicatifInternational (booléen optionnel): Indique si l'indicatif international doit être ajouté, par défaut à Faux.
+      // Valeur de retour : chaîne UNICODE : Indicatif international par défaut, initialisé à "262".
+      // Exemple :
+      //	sNumeroTéléphone est une chaîne = REU_ChiffresVersTéléphone("262123456789", Vrai)
+      //	sNuméroTéléphone contiendra "+262 123 45 67 89"
+      //
+      PROCEDURE REU_ChiffresVersTéléphone(LOCAL sChiffres est une chaine,bAvecIndicatifInternational est un booleen = faux) : chaine
+      sIndicatifInternational est une chaine = "262"
+      sChiffres=ChiffresSeulement(sChiffres)
+      SI Taille(sChiffres)>9 _ET_ sChiffres[1 À Taille(sIndicatifInternational)]=sIndicatifInternational ALORS sChiffres=Milieu(sChiffres,Taille(sIndicatifInternational)+1)
+      SI sChiffres[1 À 2]="08" ALORS			//numéros spéciaux
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"08CC CC CCC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      SINON
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"CCC CC CC CC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      FIN
+     type : 458752
+   -
+     name : MYT_ChiffresVersTéléphone
+     procedure_id : 2204352640798616347
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de formater une chaîne de chiffres en un numéro de téléphone destiné à Mayotte, en ajoutant un indicatif international si nécessaire.
+      // Syntaxe : [ <Résultat> = ] MYT_ChiffresVersTéléphone (<sChiffres> est chaîne [, <bAvecIndicatifInternational> est booléen])
+      // Paramètres :
+      //	sChiffres (chaîne UNICODE) : La chaîne de chiffres à convertir en numéro de téléphone.
+      // 	bAvecIndicatifInternational (booléen optionnel): Indique si l'indicatif international doit être ajout, par défaut à Fauxé.
+      // Valeur de retour : chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      // Exemple :
+      //	sNumeroTéléphone est une chaîne = MYT_ChiffresVersTéléphone("262123456789", vrai)
+      //	sNumeroTéléphone contiendra "+262 123 45 67 89"
+      //
+      PROCEDURE MYT_ChiffresVersTéléphone(LOCAL sChiffres est une chaine,bAvecIndicatifInternational est un booleen = faux) : chaine
+      sIndicatifInternational est une chaine = "262"
+      sChiffres=ChiffresSeulement(sChiffres)
+      SI Taille(sChiffres)>9 _ET_ sChiffres[1 À Taille(sIndicatifInternational)]=sIndicatifInternational ALORS sChiffres=Milieu(sChiffres,Taille(sIndicatifInternational)+1)
+      SI sChiffres[1 À 2]="08" ALORS			//numéros spéciaux
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"08CC CC CCC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      SINON
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"CCC CC CC CC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      FIN
+     type : 458752
+   -
+     name : NCL_ChiffresVersTéléphone
+     procedure_id : 2204352846957094915
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de formater une chaîne de chiffres en un numéro de téléphone destiné à la Nouvelle-Calédonie, en ajoutant un indicatif international si nécessaire.
+      // Syntaxe : [ <Résultat> = ] NCL_ChiffresVersTéléphone (<sChiffres> est chaîne [, <bAvecIndicatifInternational> est booléen])
+      // Paramètres :
+      //	sChiffres (chaîne UNICODE) : La chaîne de chiffres à convertir en numéro de téléphone.
+      // 	bAvecIndicatifInternational (booléen optionnel): Indique si l'indicatif international doit être ajouté, par défaut à Faux.
+      // Valeur de retour : chaîne UNICODE : renvoie le numéro de téléphone formaté.
+      // Exemple :
+      //	sNumeroTéléphone est une chaîne = NCL_ChiffresVersTéléphone("687123456789", vrai)
+      //	sNumeroTéléphone contiendra "+687 123 45 67 89"
+      //
+      PROCEDURE NCL_ChiffresVersTéléphone(LOCAL sChiffres est une chaine,bAvecIndicatifInternational est un booleen = faux) : chaine
+      sIndicatifInternational est une chaine = "687"
+      sChiffres=ChiffresSeulement(sChiffres)
+      SI Taille(sChiffres)>9 _ET_ sChiffres[1 À Taille(sIndicatifInternational)]=sIndicatifInternational ALORS sChiffres=Milieu(sChiffres,Taille(sIndicatifInternational)+1)
+      SI sChiffres[1 À 2]="08" ALORS			//numéros spéciaux
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"08CC CC CCC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      SINON
+      	RENVOYER INT_ChiffresVersTéléphone(sChiffres,"CCC CC CC CC",(bAvecIndicatifInternational ? sIndicatifInternational SINON ""))
+      FIN
+     type : 458752
+   -
+     name : LettreVersTéléphone
+     procedure_id : 2204356605223764188
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de convertir une chaîne de lettres représentant un numéro de téléphone en une chaîne de chiffres conformément à la numérotation téléphonique traditionnelle.
+      // Syntaxe : [ <Résultat> = ] LettreVersTéléphone (<sNuméroDeTéléphone> est chaîne)
+      // Paramètres :
+      //	sNuméroDeTéléphone (chaîne UNICODE) : La chaîne de lettres à convertir en numéro de téléphone.
+      // Valeur de retour : chaîne UNICODE : renvoie la chaîne de chiffres correspondant à la conversion des lettres du numéro de téléphone.
+      // Exemple :
+      //	sNuméroChiffres est une chaîne = LettreVersTéléphone("1-800-FLOWERS")
+      //	sNuméroChiffres va contenir "1-800-3569377"
+      //
+      PROCEDURE LettreVersTéléphone(sNuméroDeTéléphone est une chaine) : chaine
+      sRes est une chaine = remplaCE(majuscule(sNuméroDeTéléphone),["A","B","C"],"2")
+      sRes=remplaCE(sRes,["D","E","F"],"3")
+      sRes=remplaCE(sRes,["G","H","I"],"4")
+      sRes=remplaCE(sRes,["J","K","L"],"5")
+      sRes=remplaCE(sRes,["M","N","O"],"6")
+      sRes=remplaCE(sRes,["P","R","S"],"7")
+      sRes=remplaCE(sRes,["T","U","V"],"8")
+      sRes=remplaCE(sRes,["W","X","Y","Z"],"9")
+      renvoyer sRes
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1e976dda31c23e39
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,436 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cFichier
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1b64ebb109e66bfa
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe générique permet l'ouverture de fichier, quelque soit leur type, et d'effectuer diverses opération. Gère indifféremment les fichiers au format ANSI ou UNICODE.
+      
+      EModeOuverture est une énumération
+      	foLectureEcriture		= wl.foLectureEcriture
+      	foLecture				= wl.foLecture
+      	foEcriture				= wl.foEcriture
+      	foBloqueLecture			= wl.foBloqueLecture
+      	foBloqueEcriture		= wl.foBloqueEcriture
+      fin
+      EModeCréation est une énumération
+      	foNePasCréer			= 0
+      	foCréation				= wl.foCréation
+      	foCréationSiInexistant	= wl.foCréationSiInexistant
+      fin
+      EOriginePosition est une énumération
+      	fpCourant				= wl.fpcourant
+      	fpDébut					= wl.fpDébut
+      	fpFin					= wl.fpFin
+      fin
+      EFormatInterne est une énumération
+      	fiDétectionAutomatique
+      	fiANSI
+      	fiUnicode
+      fin
+      cFichier est une Classe
+      	hérite de cGénérique	
+      public constant
+      	m_nIDFichier			est un entier					<serialise = faux>	//Identifiant du fichier (tel que reçu par fOuvre)
+      
+      	m_sFichier				est une chaine					<serialise = faux>	//Chemin complet du fichier
+      	m_sDisque				est une chaine					<serialise = faux>	//Disque du fichier
+      	m_sRépertoire			est une chaine					<serialise = faux>	//Répertoire du fichier
+      	m_sNomFichier			est une chaine					<serialise = faux>	//Nom du fichier
+      	m_sExtension			est une chaine					<serialise = faux>	//Extension du fichier
+      	m_dDateAccès			est une date					<serialise = faux>	//Date du dernier accès au fichier
+      	m_dDateCréation			est une date					<serialise = faux>	//Date de création du fichier
+      	m_dDateModification		est une date					<serialise = faux>	//Date de dernière modification du fichier
+      	m_hHeureAccès			est une heure					<serialise = faux>	//Heure du dernier accès au fichier
+      	m_hHeureCréation		est une heure					<serialise = faux>	//Heure de création du fichier
+      	m_hHeureModification	est une heure					<serialise = faux>	//Heure de dernière modification du fichier
+      	m_eFormat				est un EFormatInterne			<serialise = faux>	//Format du fichier (voir énumération ci-dessus)
+      	
+      	m_sAttributs			est une chaine					<serialise = faux>	//Attributs du fichier
+      	m_sCheminCourt			est une chaine					<serialise = faux>	//Chemin court du fichier
+      	m_sCheminLong			est une chaine					<serialise = faux>	//Chemin long du fichier
+      	m_bEstImage				est un booleen					<serialise = faux>	//Indique si le fichier est une image
+      	
+      	m_eModeOuverture		est un EModeOuverture			<serialise = faux>	//Mode d'ouverture du fichier (voir énumération ci-dessus)
+      privé	
+      	m_nTaille				est un entier sur 8 octets		<serialise = faux>	//Taille du fichier
+      	m_nPosition				est un entier sur 8 octets		<serialise = faux>	//Position du curseur dans le fichier
+      	m_bEstTrace				est un booleen					<serialise = faux>	//Détecter si c'est le fichier de trace lui-même, dans ce cas, ne pas faire de trace !
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1973961682303020026
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise certaines propriétés de l'objet cFichier lors de sa création.
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	MonFichier est un cFichier
+      //	SI MonFichier.Ouvre("C:\Chemin\vers\MonFichier.txt", foLecture, foNePasCréer, fiUnicode) ALORS
+      //		MonFichier.Positionne(50)
+      //		Info("Contenu des caractères 50 à 100 : "+MonFichier.Lit(50))
+      //		MonFichier.Ferme()
+      //	SINON
+      //		Erreur("Erreur lors de l'ouverture du fichier : " + MonFichier.m_pclErreur.DernierMessage())
+      //	FIN
+      //
+      PROCEDURE Constructeur()
+      m_nIDFichier= -1
+      m_bEstTrace	= Position(dbgInfo(dbgPile),"cTrace")>0
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1973961682303085562
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      si m_nIDFichier<>-1 alors ferme()
+     type : 655360
+   -
+     name : Ouvre
+     procedure_id : 1973961742432707766
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ouvrir un fichier selon le chemin spécifié avec des options de mode d'ouverture, de création et de format. Elle met à jour les propriétés de l'objet cFichier en fonction des informations du fichier ouvert.
+      // Syntaxe : [ <Résultat> = ] Ouvre (<sCheminDuFichier> est chaîne [, <eModeOuverture> est cFichier.EModeOuverture [, <eCréation> est cFichier.EModeCréation [, <eFormat> est cFichier.EFormatInterne]]])
+      // Paramètres :
+      //	sCheminDuFichier (chaîne UNICODE) : Le chemin complet du fichier à ouvrir. Par défaut, il utilise la valeur de la propriété m_sFichier
+      //	eModeOuverture (cFichier.EModeOuverture, optionnel) : Choix du mode d'ouverture (lecture, écriture, blocage). Par défaut en lecture seule
+      //	eCréation (cFichier.EModeCréation, optionnel) : L'option de création du fichier en cas d'absence. Par défaut, il est configuré pour ne pas créer le fichier.
+      //	eFormat (cFichier.EFormatInterne, optionnel) : Le format interne du fichier. Par défaut, il est configuré en tant que format ANSI.
+      // Valeur de retour : booléen : renvoie Vrai si l'ouverture du fichier est réussie, sinon Faux. En cas d'échec, elle ajoute une erreur à l'objet m_pclErreur.
+      // Exemple : voir constructeur
+      //
+      PROCEDURE Ouvre(sCheminDuFichier est une chaine,eModeOuverture est un EModeOuverture = foLecture,local eCréation est un EModeCréation = foNePasCréer,local eFormat est un EFormatInterne = EFormatInterne.fiANSI) : booléen
+      si pas m_bEstTrace alors 
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCheminDuFichier,eModeOuverture..Nom,eCréation..Nom,eFormat..nom)
+      FIN
+      m_pclErreur.Raz()
+      
+      nModeOuverture est un entier = eModeOuverture..Valeur
+      SI eCréation=foNePasCréer _et_ PAS fFichierExiste(sCheminDuFichier) ALORS m_pclErreur.AjouteErreur(<§$0002§>);RENVOYER Faux
+      
+      si eCréation=foCréationSiInexistant alors
+      	si PAS fFichierExiste(sCheminDuFichier) alors eCréation=foCréation sinon eCréation=foNePasCréer
+      FIN
+      selon eCréation
+      	CAS foNePasCréer	: m_nIDFichier	= fOuvre(sCheminDuFichier,nModeOuverture,eFormat=EFormatInterne.fiUnicode)
+      	CAS foCréation		: m_nIDFichier	= fCrée(sCheminDuFichier,(position(eModeOuverture..nom,"Bloque") ? nModeOuverture sinon 0),eFormat=EFormatInterne.fiUnicode)
+      FIN
+      SI m_nIDFichier	= -1 ALORS 
+      	si pas m_bEstTrace alors m_pclErreur.AjouteErreurWx()	//pour éviter le bouclage quand le framework n'arrive pas à ouvrir son fichier de trace
+      	renvoyer faux
+      FIN
+      
+      m_sFichier				= sCheminDuFichier
+      m_sDisque				= fExtraitChemin(sCheminDuFichier,fDisque)
+      m_sRépertoire			= fExtraitChemin(sCheminDuFichier,fRépertoire)
+      m_sNomFichier			= fExtraitChemin(sCheminDuFichier,fFichier)
+      m_sExtension			= fExtraitChemin(sCheminDuFichier,fExtension)
+      m_bEstImage				= fEstUneImage(sCheminDuFichier)
+      m_eFormat				= eFormat
+      
+      m_dDateAccès			= fdate(m_sFichier,"",fAccès)
+      m_dDateCréation			= fdate(m_sFichier,"",fCréation)
+      m_dDateModification		= fdate(m_sFichier,"",fModification)
+      m_hHeureAccès			= fheure(m_sFichier,"",fAccès)
+      m_hHeureCréation		= fheure(m_sFichier,"",fCréation)
+      m_hHeureModification	= fheure(m_sFichier,"",fModification)
+      
+      m_nTaille				= ftaille(m_sFichier)
+      m_sAttributs			= fAttribut(m_sFichier)
+      m_eModeOuverture		= eModeOuverture
+      
+      m_sCheminLong			= sCheminDuFichier
+      m_sCheminCourt			= sCheminDuFichier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	m_sCheminLong			= fNomLong(sCheminDuFichier)	
+      	m_sCheminCourt			= fNomCourt(sCheminDuFichier)
+      	
+      <fin>
+      
+      
+      renvoyer vrai
+     type : 458752
+   -
+     name : Ferme
+     procedure_id : 1973961759612646729
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de fermer le fichier actuellement ouvert. Elle réinitialise les propriétés de l'objet cFichier après
+      // Syntaxe : [ <Résultat> = ] Ferme ()
+      // Paramètres :	Aucun
+      // Valeur de retour : booléen : renvoie Vrai si la fermeture du fichier est réussie, sinon Faux. En cas d'échec, elle ajoute une erreur à l'objet m_pclErreur indiquant que aucun fichier n'est ouvert.
+      // Exemple : voir constructeur
+      //
+      PROCEDURE Ferme() : booleen
+      //pas de trace ici car risque de bouclage
+      m_pclErreur.Raz()
+      si m_nIDFichier=-1 alors
+      	SI PAS m_bEstTrace alors m_pclErreur.AjouteErreur(<§$0000§>)
+      sinon
+      	si fferme(m_nIDFichier)=-1 alors m_pclErreur.AjouteErreurWx() sinon RAZ();renvoyer vrai
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : Positionne
+     procedure_id : 2017716567840932240
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de positionner le curseur de lecture/écriture dans le fichier actuellement ouvert à une position spécifique. La position est relative à l'origine spécifiée (début, fin ou courant).
+      // Syntaxe : [ <Résultat> = ] Positionne (<nPosition> est entier [, <eDepuis> est cFichier.EOriginePosition])
+      // Paramètres :
+      //	nPosition (entier) : La position à atteindre dans le fichier. Toujours positif, utiliser EOriginePosition pour savoir quel origine est prise pour la position.
+      //	eDepuis (cFichier.EOriginePosition, optionnel) : L'origine à partir de laquelle la position doit être calculée. Il peut s'agir du début, de la fin ou de la position courante dans le fichier. Par défaut, la position est relative au début du fichier.
+      // Valeur de retour : booléen : envoie Vrai si le positionnement du curseur est réussi, sinon Faux. En cas d'échec, elle ajoute une erreur à l'objet m_pclErreur.
+      // Exemple : voir constructeur
+      //
+      PROCEDURE Positionne(nPosition est un entier,eDepuis est un cFichier.EOriginePosition = fpDébut) : booleen
+      si pas m_bEstTrace _Et_ cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nPosition,eDepuis..Nom)
+      m_pclErreur.Raz()
+      
+      SI m_nIDFichier=-1 ALORS
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      SINON
+      	nMulti est un entier = (m_eFormat=fiANSI ? 1 SINON 2)*(eDepuis=fpFin ? -1 sinon 1)
+      	m_nPosition=fpositionne(m_nIDFichier,abs(nPosition)*nMulti,eDepuis..valeur)
+      	si m_nPosition<>-1 alors renvoyer vrai sinon m_pclErreur.AjouteErreurWx()
+      fin
+      renvoyer faux
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 2017726970251785772
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de réinitialiser tous les attributs de l'objet cFichier à leurs valeurs par défaut. 
+      // Syntaxe : Raz ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE virtuelle Raz()
+      m_nIDFichier			= -1
+      m_sFichier				= ""
+      m_sDisque				= ""
+      m_sRépertoire			= ""
+      m_sNomFichier			= ""
+      m_sExtension			= ""
+      m_dDateAccès			= ""
+      m_dDateCréation			= ""
+      m_dDateModification		= ""
+      m_hHeureAccès			= ""
+      m_hHeureCréation		= ""
+      m_hHeureModification	= ""
+      
+      m_nTaille				= 0
+      m_sAttributs			= ""
+      m_sCheminCourt			= ""
+      m_sCheminLong			= ""
+      m_bEstImage				= faux
+      
+      m_eModeOuverture		= foLectureEcriture
+      m_nPosition				= 0
+     type : 458752
+   -
+     name : Ecrit
+     procedure_id : 2046558260450543555
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'écrire un texte dans le fichier ouvert. Elle renvoie un booléen indiquant si l'opération d'écriture a réussi.
+      // Syntaxe : [ <Résultat> = ] Ecrit (<sTexte>)
+      // Paramètres :
+      // 	sTexte : Le texte à écrire dans le fichier.
+      // Valeur de retour : booléen : renvoie Vrai si l'écriture a réussi, Faux sinon. Elle renvoie également Faux si le fichier n'est pas ouvert ou si le fichier est en mode lecture seule.
+      // Exemple :
+      //
+      PROCEDURE Ecrit(sTexte) : booleen
+      SI PAS m_bEstTrace _et_ cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sTexte)
+      m_pclErreur.Raz()
+      
+      SI m_nIDFichier=-1 ALORS
+      	m_pclErreur.AjouteErreur(<§$0004§>)
+      SINON
+      	SI m_eModeOuverture DANS (eModeOuverture.foLecture,eModeOuverture.foBloqueLecture) ALORS
+      		m_pclErreur.AjouteErreur(<§$0005§>)
+      	SINON
+      		si fEcrit(m_nIDFichier,(m_eFormat=fiUnicode ? sTexte sinon UnicodeVersAnsi(sTexte)))<>-1 ALORS 
+      			m_nPosition+=Taille(sTexte)*(m_eFormat=fiUnicode ? 2 sinon 1)
+      			m_ntaille=max(m_nTaille,m_nposition);RENVOYER Vrai 
+      		SINON 
+      			m_pclErreur.AjouteErreurWx()
+      		FIN
+      	FIN
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : Lit
+     procedure_id : 2217407548301164758
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de lire un bloc de données à partir du fichier ouvert. Elle retourne une chaîne de caractères représentant le contenu lu.
+      // Syntaxe : [ <Résultat> = ] Lit (<nTaille> est entier [, <bDepuisFin> est booléen])
+      // Paramètres :
+      //	nTaille (entier) : La taille du bloc de données à lire, en caractères (indépendant du format ANSI ou UNICODE).
+      // 	bDepuisFin (booléen, optionnel) : Si vrai, la lecture se fait depuis la fin du fichier, par défaut Faux.
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne de caractères représentant le contenu lu à partir du fichier. Si le fichier n'est pas ouvert, elle renvoie une chaîne vide.
+      // Exemple : voir constructeur
+      //
+      PROCEDURE Lit(nTaille est un entier,bDepuisFin est un booleen = faux) : chaine
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nTaille,bDepuisFin)
+      m_pclErreur.Raz()
+      
+      SI m_nIDFichier=-1 ALORS
+      	m_pclErreur.AjouteErreur(<§$0004§>);renvoyer ""
+      SINON
+      	si m_eFormat=fiUnicode alors
+      		si bDepuisFin alors positionne(nTaille*2,fpFin)
+      		sLuUnicode est une chaine = flit(m_nIDFichier,nTaille*2)
+      		renvoyer sLuUnicode 
+      	sinon
+      		si bDepuisFin alors positionne(nTaille,fpFin)
+      		sLuANSI est une chaine ansi = flit(m_nIDFichier,nTaille)
+      		renvoyer sLuANSI
+      	FIN
+      fin
+     type : 458752
+  properties :
+   -
+     name : p_bFermé
+     identifier : 0x1bfd789811eb9dfd
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Résumé : Indicateur de fichier fermé
+         PROCEDURE PUBLIQUE p_bFermé()
+         renvoyer (m_nIDFichier=-1)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bOuvert
+     identifier : 0x1bfd78b211ec045d
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Résumé : Indicateur de fichier ouvert
+         PROCEDURE PUBLIQUE p_bOuvert()
+         RENVOYER (m_nIDFichier<>-1)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nPosition
+     identifier : 0x1bfd83b011eef31f
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Résumé : Récupère la position du pointeur dans le fichier
+         PROCEDURE PUBLIQUE p_nPosition() : entier sur 8 octets
+         renvoyer m_nPosition
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nTaille
+     identifier : 0x1bfd853111f0d330
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Résumé : Récupère la taille du fichier
+         PROCEDURE PUBLIQUE p_nTaille() : entier sur 8 octets
+         renvoyer m_ntaille
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1b64ebac09e05936
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Aucun fichier ouvert
+      en-GB : No open file
+      fr-CA : Aucun fichier ouvert
+      en-US : No open file
+     index : 0
+   -
+     text :
+      fr-FR : Le fichier est en lecture seule
+      en-GB : The file is read-only
+      fr-CA : Le fichier est en lecture seule
+      en-US : The file is read-only
+     index : 1
+   -
+     text :
+      fr-FR : Le fichier n'existe pas
+      en-GB : File does not exist
+      fr-CA : Le fichier n'existe pas
+      en-US : File does not exist
+     index : 2
+   -
+     text :
+      fr-FR : "Lors de la création d'un fichier, il faut spécifier s'il est Unicode ou pas"
+      en-GB : "When creating a file, you must specify whether it is Unicode or not"
+      fr-CA : "Lors de la création d'un fichier, il faut spécifier s'il est Unicode ou pas"
+      en-US : "When creating a file, you must specify whether it is Unicode or not"
+     index : 3
+   -
+     text :
+      fr-FR : Aucun fichier ouvert
+      en-GB : No open file
+      fr-CA : Aucun fichier ouvert
+      en-US : No open file
+     index : 4
+   -
+     text :
+      fr-FR : Le fichier est en lecture seule
+      en-GB : The file is read-only
+      fr-CA : Le fichier est en lecture seule
+      en-US : The file is read-only
+     index : 5
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

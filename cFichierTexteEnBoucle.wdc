@@ -1,0 +1,250 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cFichierTexteEnBoucle
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1599bd543ac30c13
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet d'écrire des fichiers textes mais en limitant leur nombre et leur taille. Elle est utilisée dans cLog et cTrace.
+      EFichierBoucleSuffixe est une énumération
+      	eFichierBoucleIndice
+      	eFichierBoucleDateheure
+      	eFichierBoucleDateIndice
+      FIN
+      cFichierTexteEnBoucle est une Classe
+      	hérite de cfichiertexte
+      public constant
+      	m_sFichierNomGénériqueChemin	est une chaine					<serialise = faux>	//nom générique du fichier (ex : C:\Temp\MonFichier.txt)
+      	m_eFichierSuffixe 				est un EFichierBoucleSuffixe	<serialise = faux>	//type de suffixe à ajouter au nom de fichier générique, s'ajoutera entre la fin du nom du fichier et son extension
+      	m_sFichierEnCoursChemin			est une chaine					<serialise = faux>	//nom du fichier en cours d'utilisation
+      	m_nTailleMax					est un entier sur 8 octets		<serialise = faux>	//taille maximale du fichier avant qu'un autre soit créé (en octets)
+      	m_nNbrMax						est un entier					<serialise = faux>	//nombre maximum de fichier au-delà duquel le premier fichier sera supprimé au profit du plus récent
+      	m_bUnicode						est un booleen					<serialise = faux>	//le fichier doit-il gérer l'Unicode ?
+      	m_bFermeAChaqueÉcriture			est un booleen					<serialise = faux>	//fermeture du fichier à chaque écriture. Permet de forcer l'écriture sur le disque (utile dans certaine situation)
+      privé
+      	m_sFichierSansExt				est une chaine					<serialise = faux>	//nom du fichier générique sans extension
+      	m_sFichierExt					est une chaine					<serialise = faux>	//nom de l'extension du fichier générique
+      	m_nFichierNum					est un entier					<serialise = faux>	//numéro de séquence du fichier
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1556483315694046227
+     type_code : 27
+     code : |1-
+      // Résumé : Utilisé pour initialiser une nouvelle instance de la classe. Elle configure les paramètres spécifiques liés à la rotation de fichiers, tels que le chemin générique du fichier, le type de suffixe à utiliser (indice, date/heure, ou combinaison), la taille maximale des fichiers, le nombre maximum de fichiers à conserver, le choix d'utiliser l'Unicode, et la fermeture du fichier après chaque écriture si nécessaire.
+      // Syntaxe : Constructeur (<sFichierGénériqueChemin> est chaîne, <eFichierSuffixe> est cFichierTexteEnBoucle.EFichierBoucleSuffixe [, <nTailleMax> est entier sur 8 octets [, <nNbrMax> est entier [, <bUnicode> est booléen [, <bFermeAChaqueÉcriture> est booléen]]]])
+      // Paramètres :
+      //	sFichierGénériqueChemin (chaîne UNICODE) : Le chemin générique du fichier sans le suffixe spécifique.
+      //	eFichierSuffixe (cFichierTexteEnBoucle.EFichierBoucleSuffixe) : Le type de suffixe à utiliser pour générer les noms de fichiers.
+      //	nTailleMax (entier sur 8 octets optionnel) : La taille maximale en octets que chaque fichier peut atteindre avant d'être remplacé. Si non spécifié, la valeur par défaut est 0, indiquant aucune limite.
+      //	nNbrMax (entier optionnel) : Le nombre maximal de fichiers à conserver. Si non spécifié, la valeur par défaut est 0, indiquant aucune limite.
+      //	bUnicode (booléen optionnel) : Indique si les fichiers doivent être créés en utilisant l'encodage Unicode. La valeur par défaut est Vrai.
+      //	bFermeAChaqueÉcriture (booléen optionnel) : Indique si le fichier doit être fermé après chaque opération d'écriture (pourrait être nécessaire dans certains contexte technique où un buffer est utilisé pour la gestion des fichiers > la fermeture force l'écriture). La valeur par défaut est Faux.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(sFichierGénériqueChemin est une chaine,eFichierSuffixe est un EFichierBoucleSuffixe,nTailleMax est un entier sur 8 octets = 0,nNbrMax est un entier = 0,bUnicode est un booleen = vrai, bFermeAChaqueÉcriture est un booleen = faux)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sFichierGénériqueChemin,eFichierSuffixe..Nom,nTailleMax,nNbrMax,bUnicode,bFermeAChaqueÉcriture)
+      
+      m_eFichierSuffixe 			= eFichierSuffixe
+      m_sFichierNomGénériqueChemin= sFichierGénériqueChemin
+      m_sFichierSansExt 			= fExtraitChemin(m_sFichierNomGénériqueChemin,fDisque+fRépertoire+fFichier)
+      m_sFichierExt 				= fExtraitChemin(m_sFichierNomGénériqueChemin,fExtension)
+      m_nTailleMax				= nTailleMax
+      m_nNbrMax					= nNbrMax
+      m_bUnicode					= bUnicode
+      m_bFermeAChaqueÉcriture		= bFermeAChaqueÉcriture
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1556483315694111763
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : SupprimeTout
+     procedure_id : 1556497497676541603
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour supprimer tous les fichiers associés au chemin générique du fichier, y compris le fichier actuellement ouvert. Elle effectue cette opération en utilisant le chemin générique pour identifier les fichiers à supprimer, puis ferme le fichier en cours et réinitialise le compteur d'indice si nécessaire. Notamment utilisé EnModeTest pour avoir toujours le 1er fichier qui correspond au démarrage de l'application.
+      // Syntaxe : [ <Résultat> = ] SupprimeTout ()
+      // Paramètres :	Aucun
+      // Valeur de retour : booléen : Vrai si la suppression des fichiers est réussie, Faux sinon. En cas d'échec, la procédure ajoute une erreur à l'objet m_pclErreur.
+      // Exemple :
+      //
+      PROCEDURE SupprimeTout() : booléen
+      m_pclErreur.Raz()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteProcédure()
+      
+      SI m_sFichierNomGénériqueChemin>"" ALORS
+      	ferme()
+      	SI fSupprime(fExtraitChemin(m_sFichierNomGénériqueChemin,fDisque+fRépertoire+fFichier)+"*"+fExtraitChemin(m_sFichierNomGénériqueChemin,fExtension)) ALORS
+      		Ferme()
+      		m_nFichierNum=0
+      	SINON
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteErreurWx()
+      		RENVOYER Faux
+      	FIN
+      FIN
+      RENVOYER Vrai
+     type : 458752
+   -
+     name : AjouteLigne
+     procedure_id : 1556527953989116441
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter une nouvelle ligne de texte au fichier actuellement ouvert. Elle vérifie au préalable si le fichier est ouvert en mode écriture et s'il existe des erreurs potentielles, renvoyant false en cas d'échec.
+      // Syntaxe : [ <Résultat> = ] AjouteLigne ( [<sTexte> est chaîne])
+      // Paramètres :
+      //	sTexte (chaîne UNICODE optionnel) : Le texte à ajouter comme nouvelle ligne dans le fichier.
+      // Valeur de retour : booléen : Vrai si l'ajout de la ligne est réussi, Faux sinon. En cas d'échec, la méthode ajoute une erreur à l'objet m_pclErreur.
+      // Exemple :
+      //
+      PROCEDURE AjouteLigne(sTexte est une chaine = "") : booleen
+      si ancetre.ajouteligne(sTexte) alors 
+      	si m_bFermeAChaqueÉcriture alors ferme()
+      	renvoyer vrai
+      sinon
+      	renvoyer faux
+      fin
+     type : 458752
+  properties :
+   -
+     name : p_bOuvert
+     identifier : 0x1599c8023acac5a8
+     type_code : 103
+     p_codes :
+      -
+        code : |1+
+         // Résumé : Utilisé pour gérer l'ouverture du fichier en rotation. Prend en compte diverses conditions telles que la taille maximale du fichier, le type de suffixe (indice, date/heure,...), le nombre maximal de fichiers à conserver, et la fermeture du fichier après chaque écriture si nécessaire. La propriété nettoie également les fichiers en trop selon les paramètres spécifiés.
+         PROCEDURE PUBLIQUE p_bOuvert() : booleen
+         //m_pclErreur.Raz()	//pas nécessaire
+         
+         tabFichiersLog 		est un tableau de chaines
+         sFichiers			est une chaine
+         dDateCourante		est une date = DateSys()
+         sDate				est une chaine
+         
+         si m_sFichierEnCoursChemin>"" alors
+         	si m_nTailleMax>0 alors
+         		si ffichierexiste(m_sFichierEnCoursChemin) _et_ fTaille(m_sFichierEnCoursChemin)>m_nTailleMax alors Ferme()	//si le fichier dépasse la taille max, il est forcément fermé car un autre va être créé
+         	sinon
+         		ferme()	//quand la taille max est à 0, il crée autant de fichier que de message à y inscrire
+         	FIN
+         fin
+         
+         SELON m_eFichierSuffixe
+         	CAS eFichierBoucleIndice,eFichierBoucleDateIndice
+         		si m_eFichierSuffixe=eFichierBoucleDateIndice alors
+         			si m_sFichierEnCoursChemin<>"" alors sDate=ExtraitChaîne(fExtraitChemin(m_sFichierEnCoursChemin,fFichier),2,"_",DepuisFin)
+         			si sDate<>dDateCourante alors 
+         				sDate=dDateCourante;m_nFichierNum=0
+         				ferme()	//la date du suffixe change, donc il faut fermer le fichier en cours
+         			FIN
+         		FIN
+         		si pas Ancêtre.p_bOuvert alors	//si le précédent fichier a été fermé par une des conditions ci-dessus, alors ouvrir un autre fichier
+         			SI m_nFichierNum=0 ALORS
+         				//cherche le dernier fichier
+         				sFichiers=(sDate>"" ? fListeFichier(m_sFichierSansExt+"_"+sDate+"*"+m_sFichierExt) sinon fListeFichier(m_sFichierSansExt+"*"+m_sFichierExt))
+         				SI sFichiers>"" ALORS 
+         					ChaîneVersTableau(sFichiers,tabFichiersLog,RC);TableauTrie(tabFichiersLog,ttFonction,TriNumérique)
+         					m_sFichierEnCoursChemin=tabFichiersLog[tabFichiersLog..Occurrence]	//le dernier
+         				FIN
+         				m_nFichierNum=Val(ExtraitChaîne(fExtraitChemin(m_sFichierEnCoursChemin,fFichier),1,"_",DepuisFin))
+         			SINON
+         				m_sFichierEnCoursChemin=m_sFichierSansExt+(sDate>"" ? "_"+sDate sinon "")+"_"+m_nFichierNum+m_sFichierExt
+         			FIN
+         			SI PAS fFichierExiste(m_sFichierEnCoursChemin) _OU_ (m_nTailleMax>0 _ET_ fTaille(m_sFichierEnCoursChemin)>m_nTailleMax) ALORS
+         				m_nFichierNum++;m_sFichierEnCoursChemin=m_sFichierSansExt+(m_eFichierSuffixe=eFichierBoucleDateIndice ? "_"+sDate SINON "")+"_"+m_nFichierNum+m_sFichierExt
+         			FIN
+         		sinon
+         			renvoyer vrai
+         		fin
+         	CAS eFichierBoucleDateheure
+         		SI PAS Ancêtre.p_bOuvert ALORS	//si le précédent fichier a été fermé par une des conditions ci-dessus, alors ouvrir un autre fichier
+         			m_sFichierEnCoursChemin=m_sFichierSansExt+"_"+DateHeureSys()+m_sFichierExt
+         		sinon
+         			renvoyer vrai
+         		FIN
+         FIN
+         	
+         //nettoyage des fichiers en trop
+         SI m_nNbrMax>0 ALORS
+         	SI sFichiers="" ALORS sFichiers=fListeFichier(m_sFichierSansExt+"*"+m_sFichierExt)
+         	SI ChaîneOccurrence(sFichiers,RC)+1>m_nNbrMax ALORS
+         		ChaîneVersTableau(sFichiers,tabFichiersLog,RC);TableauTrie(tabFichiersLog,ttFonction,TriParDateCréation)
+         		POUR nFichier = 1 _a_ tabFichiersLog..occurrence+1-m_nNbrMax
+         			SI PAS fSupprime(tabFichiersLog[nFichier]) ALORS m_pclErreur.AjouteErreurWx()
+         		FIN
+         	FIN
+         FIN
+         //ouvre finalement le fichier
+         si Ancêtre.Ouvre(m_sFichierEnCoursChemin,cFichier.foEcriture,cFichier.foCréationSiInexistant,(m_bUnicode ? cFichier.EFormatInterne.fiUnicode SINON cFichier.EFormatInterne.fiANSI)) alors RENVOYER vrai
+         m_pclErreur.AjouteAvertissement(chaineconstruit(<§$0000§>,m_sFichierEnCoursChemin)+p_sErreur);renvoyer faux
+         
+         	PROCÉDURE INTERNE TriParDateCréation(sFichier1,sFichier2) : entier
+         	dCréation1 est une date = fdate(sFichier1,"",fCréation)
+         	dCréation2 est une date = fdate(sFichier2,"",fCréation)
+         	SI dCréation1 < dCréation2 ALORS RENVOYER -1
+         	SI dCréation1 > dCréation2 ALORS RENVOYER 1
+         	RENVOYER 0
+         	FIN
+         
+         	PROCÉDURE INTERNE TriNumérique(sFichier1,sFichier2) : entier
+         	nIndice1 est un entier = ExtraitChaîne(fExtraitChemin(sFichier1,fFichier),1,"_",DepuisFin)
+         	nIndice2 est un entier = ExtraitChaîne(fExtraitChemin(sFichier2,fFichier),1,"_",DepuisFin)
+         	SI nIndice1 < nIndice2 ALORS RENVOYER -1
+         	SI nIndice1 > nIndice2 ALORS RENVOYER 1
+         	RENVOYER 0
+         	FIN
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1599bcde3aba3e39
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Impossible d'écrire le message dans le fichier %1 : "
+      en-GB : "Unable to write message to file %1 : "
+      fr-CA : "Impossible d'écrire le message dans le fichier %1 : "
+      en-US : "Unable to write message to file %1 : "
+     index : 0
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

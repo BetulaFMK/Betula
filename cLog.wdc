@@ -1,0 +1,2059 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cLog
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1aa9652700cc482a
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet la gestion des logs d'application sur 5 niveaux (action utilisateur, information, avertissement, erreur et crash). Ce log est sauvé soit dans un fichier texte, l'EventLog de Windows, une base de données ou envoyé par courriel ... ou une combinaison de ces supports.
+      //Si l'information qu'on souhaite loguer ne peut pas être persistée/envoyée, la classe va réessayer plus tard.  
+      
+      ELogNiveau est une énumération
+      	eLogNiveauActionUtilisateur = 1			//attention pas d'envoi de courriel prévu pour ce niveau
+      	eLogNiveauInformation 	 	= 2
+      	eLogNiveauAvertissement 	= 3
+      	eLogNiveauErreur		 	= 4
+      	eLogNiveauCrash				= 5
+      fin
+      COLogNiveau est une combinaison
+      	coLogNiveauActionUtilisateur
+      	coLogNiveauInformation 	
+      	coLogNiveauAvertissement 
+      	coLogNiveauErreur		
+      	coLogNiveauCrash			
+      fin
+      
+      cLog est une Classe	
+      hérite de cGénérique
+      public
+      	m_bLogActif								est un booleen							<serialise = faux>	//Savoir que le log est actif ou pas, ou de l'activer/désactiver.
+      
+      	m_sCourrielDestinataires_Info			est une chaine							<serialise = faux>	//Adresse courriel du destinataire en cas de message de niveau "information".
+      	m_sCourrielDestinataires_Avertissement	est une chaine							<serialise = faux>	//Adresse courriel du destinataire en cas de message de niveau "avertissement".
+      	m_sCourrielDestinataires_Erreur			est une chaine							<serialise = faux>	//Adresse courriel du destinataire en cas de message de niveau "erreur".
+      privé
+      	m_nDelaiRecommenceEnMin					est un entier							<serialise = faux>	//Délai pour recommencer l'écriture d'un message de log si ce dernier n'a pas pu être écrit précédemment
+      	
+      	//membres pour les fichiers texte
+      	m_coFichierNiveaux						est un COlogniveau						<serialise = faux>	//Niveaux auxquels se déclenche l'enregistrement du message dans le fichier de log. Désactivé si 0.
+      	m_pclFichierLog							est un cfichiertexteEnBoucle dynamique	<serialise = faux>	//Objet qui gère le fichier texte de log en boucle.
+      	
+      	//membres pour l'eventLog de Windows
+      	m_coEventLogNiveaux						est un COlogniveau						<serialise = faux>	//Niveaux auxquels se déclenche l'enregistrement du message dans le EventLog de Windows. Désactivé si 0.
+      	
+      	//membres pour l'écriture en BD
+      	m_coBDNiveaux							est un COlogniveau						<serialise = faux>	//Niveaux auxquels se déclenche l'enregistrement du message dans une BD. Désactivé si 0.
+      	m_nCnxBD								est un entier							<serialise = faux>	//Indice de la connexion à la base de données.
+      	
+      	//variable pour l'envoi de courriel
+      	m_coCourrielNiveaux						est un COlogniveau						<serialise = faux>	//Niveaux auxquels se déclenche l'enregistrement du message dans le fichier de log. Désactivé si 0.
+      	m_pclCourriel							est un cCourriel dynamique				<serialise = faux>	//Objet courriel qui gère l'envoi du courriel contenant le message au(x) destinataire(s) ci-dessus.
+      	
+      	m_sCourrielExpéditeur_Info				est une chaine							<serialise = faux>	//Adresse courriel de l'expéditeur, pour les messages de niveau "information" si l'envoi de courriel est paramétré.
+      	m_sCourrielMotDePasse_Info				est une chaîne							<serialise = faux>	//Mot de passe du compte courriel de l'expéditeur, pour les message de niveau "information" si l'envoi de courriel est paramétré.
+      		
+      	m_sCourrielExpéditeur_Avertissement		est une chaine							<serialise = faux>	//Adresse courriel de l'expéditeur, pour les messages de niveau "avertissement" si l'envoi de courriel est paramétré.
+      	m_sCourrielMotDePasse_Avertissement		est une chaîne							<serialise = faux>	//Mot de passe du compte courriel de l'expéditeur, pour les message de niveau "avertissement" si l'envoi de courriel est paramétré.
+      	
+      	m_sCourrielExpéditeur_Erreur			est une chaine							<serialise = faux>	//Adresse courriel de l'expéditeur, pour les messages de niveau "erreur" si l'envoi de courriel est paramétré.
+      	m_sCourrielMotDePasse_Erreur			est une chaine							<serialise = faux>	//Mot de passe du compte courriel de l'expéditeur, pour les message de niveau "erreur" si l'envoi de courriel est paramétré.
+      
+      global public
+      	mg_nTimerImageÉcranEnSeconde			est un entier							<serialise = faux>	//Durée, en seconde, entre 2 captures d'écran. Captures désactivées si à 0.
+      	mg_bCrash								est un booleen							<serialise = faux>	//Savoir que la gestion des crash est active ou pas, ou de l'activer/désactiver.
+      	
+      global PRIVÉ
+      	mg_sCrashMotDePasse 					est une chaine							<serialise = faux>	//Mot de passe du compte courriel de l'expéditeur, pour les message de niveau "crash" si sa gestion est paramétré.				
+      
+      global PUBLIC CONSTANT
+      	//variables en cas de crash
+      	mg_sCrashDestinataires					est une chaine							<serialise = faux>	//Adresse courriel de(s) destinataire(s), pour les messages de niveau "crash" si sa gestion est activée.
+      	mg_sCrashExpéditeur						est une chaîne							<serialise = faux>	//Adresse courriel de l'expéditeur, pour les messages de niveau "crash" si sa gestion est activée.
+      	mg_sCrashServeur						est une chaine							<serialise = faux>	//Serveur de courriel, pour les messages de niveau "crash" si sa gestion est activée.
+      	mg_bCrashForceFichierEnTest				est un booleen							<serialise = faux>	//Savoir s'il faut créer un fichier de crash en mode test (normalement on a déjà toute l'information dans le débugueur)
+      	mg_sCrashMotDePasseCryptage				est une chaine							<serialise = faux>	//Mot de passe pour crypter le fichier de crash.
+      	mg_sCrashRépertoireDonnées				est une chaine							<serialise = faux>	//Répertoire dans lequel sera créer le fichier de crash si sa gestion est activée.
+      	
+      	mg_bufÉcran1							est un buffer							<serialise = faux>	//Buffer contenant la plus récente copie d'écran
+      	mg_bufÉcran2							est un Buffer							<serialise = faux>	//Buffer contenant une copie d'écran
+      	mg_bufÉcran3							est un Buffer							<serialise = faux>	//Buffer contenant la plus ancienne copie d'écran
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1921177934241810474
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise certains membres de la classe en récupérant des valeurs depuis les paramètres de l'application. Lit la balise "Active" de la section "Log" des paramètres pour activer/désactiver le log depuis, par exemple, le fichier IINI.
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur()
+      m_bLogActif	= cApplication._Application.m_pclParamètres.Lit("Log","Active") = "1"
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1921177934241876010
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      //SI ThreadEtat(m_sThCopieÉcran)<>threadInexistant ALORS ThreadArrête(m_sThCopieÉcran)		//fait une exception GPF impossible à intercepter. Le thread va quand même s'arrêter de lui-même
+     type : 655360
+   -
+     name : Ajoute
+     procedure_id : 1921209231729916593
+     type_code : 12
+     code : |1-
+      // Résumé : Enregistre un message de log avec les informations fournies telles que le message, le niveau de log, la date et l'heure de l'événement, le module et l'action associés. Le message peut être enregistré dans différents supports tels que le fichier texte, la base de données, le courriel, et l'EventLog de Windows, en fonction des niveaux de log paramétrés.
+      // Syntaxe : [ <Résultat> = ] Ajoute (<sMessage> est chaîne, <eNiveau> est cLog.ELogNiveau [, <dhÉvénement> est dateheure [, <sModule> est chaîne [, <sAction> est chaîne]]])
+      // Paramètres :
+      //	sMessage (chaîne UNICODE) : Le message à enregistrer.
+      //	eNiveau (cLog.ELogNiveau) : Le niveau de log associé au message.
+      //	dhÉvénement (dateheure optionnelle) : La date et l'heure de l'événement (par défaut, la date et l'heure système).
+      //	sModule (chaîne UNICODE optionnelle) : Le module associé au message (par défaut, une chaîne vide). Utilisé uniquement pour l'écriture en BD.
+      //	sAction (chaîne UNICODE optionnelle) : L'action associée au message (par défaut, une chaîne vide). Utilisé uniquement pour l'écriture en BD.
+      // Valeur de retour : booléen : Retourne Vrai si l'ajout du message de log a réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Ajoute(sMessage est une chaine,eNiveau est un elogniveau,dhÉvénement est une dateheure = DateHeureSys(),sModule est une chaine = "",sAction est une chaine = "") : booleen
+      m_pclErreur.Raz()
+      
+      si m_bLogActif alors 
+      	SI sMessage="" ALORS RENVOYER Faux
+      	TraiteAnciensMessages()
+      	SI NiveauCompatible(eNiveau,m_coFichierNiveaux) 	ALORS AjouteTexte(sMessage,eNiveau,dhÉvénement)
+      	SI NiveauCompatible(eNiveau,m_coCourrielNiveaux) 	ALORS AjouteCourriel(UnicodeVersAnsi(sMessage),eNiveau,dhÉvénement)
+      	SI NiveauCompatible(eNiveau,m_coBDNiveaux) 			ALORS AjouteDataBase(sMessage,eNiveau,dhÉvénement,sModule,sAction)
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      		SI NiveauCompatible(eNiveau,m_coEventLogNiveaux) 	ALORS AjouteEventLog(sMessage,eNiveau)
+      	
+      <fin>
+      
+      	
+      FIN
+      renvoyer vrai
+      
+      	procédure interne NiveauCompatible(eLeNiveau est un ELogNiveau,coNiveau est un COLogNiveau)
+      		si eLeNiveau=eLogNiveauInformation 			_et_ coNiveau[coLogNiveauInformation] 		alors renvoyer vrai
+      		si eLeNiveau=eLogNiveauAvertissement 		_et_ coNiveau[coLogNiveauAvertissement] 	alors renvoyer vrai
+      		si eLeNiveau=eLogNiveauErreur 				_et_ coNiveau[coLogNiveauErreur] 			alors renvoyer vrai
+      		si eLeNiveau=eLogNiveauCrash 				_et_ coNiveau[coLogNiveauCrash] 			alors renvoyer vrai
+      		si eLeNiveau=eLogNiveauActionUtilisateur 	_et_ coNiveau[coLogNiveauActionUtilisateur]	alors renvoyer vrai
+      		renvoyer faux
+      	FIN
+     type : 458752
+   -
+     name : LogInitCourriel
+     procedure_id : 1921479866222900326
+     type_code : 12
+     code : |1+
+      // Résumé : Initialise les paramètres de courriel pour le module de log. Elle permet de configurer l'envoi de courriels en fonction des niveaux de log spécifiés. La configuration inclut l'adresse de l'expéditeur, les destinataires, le serveur de courriel, le mot de passe, et d'autres paramètres nécessaires à l'envoi de courriels d'information, d'avertissement et d'erreur.
+      // Syntaxe :
+      //[ <Résultat> = ] LogInitCourriel (<sServeurPort> est chaîne [, <coNiveaux> est cLog.COLogNiveau [, <sDestinataires> est chaîne [, <sAdresseExpéditeur> est chaîne [, <sMotDePasse> [, <bFairePing> est booléen]]]]])
+      // Paramètres :
+      //	sServeurPort (chaîne UNICODE) : Le serveur de courriel avec éventuellement le numéro de port (mis à chaîne vide par défaut car pas le choix puisqu'entouré d'autre paramètres avec valeur par défaut).
+      //	coNiveaux (cLog.COLogNiveau) : Les niveaux de log pour lesquels l'envoi de courriels doit être configuré (par défaut, les niveaux d'information, d'avertissement et d'erreur).
+      //	sDestinataires (chaîne UNICODE) : Les adresses courriel des destinataires séparés par ; (par défaut, l'adresse spécifiée dans les informations du projet).
+      //	sAdresseExpéditeur (chaîne UNICODE) : L'adresse courriel de l'expéditeur (par défaut, le nom de l'application).
+      //	sMotDePasse (valeur par défaut="") : Le mot de passe associé à l'adresse de l'expéditeur (par défaut, chaîne vide car parfois pas nécessaire pour l'accès d'un serveur d'entreprise).
+      //	bFairePing (booléen - valeur par défaut=1) : Indique s'il faut effectuer un ping sur le serveur de courriel pour vérifier la connexion (par défaut, Vrai).
+      // Valeur de retour :
+      // 	booléen : 
+      // Exemple :
+      //
+      PROCEDURE LogInitCourriel(local sServeurPort est une chaine,coNiveaux est une COlogniveau = coLogNiveauAvertissement+coLogNiveauErreur+coLogNiveauInformation,sDestinataires est une chaine = ProjetInfo(piEmailApplication),Local sAdresseExpéditeur est une chaine = cApplication._Application.p_sNom,sMotDePasse = "",local bFairePing est un booleen = vrai)	//ne pas typer le mot de passe afin qu'il soit compatible avec le passage d'une chaîne indétectable
+      sDestinataire,sDomaine sont des chaines
+      nNiveau est un entier
+      
+      si m_pclCourriel=null alors 
+      	m_pclCourriel	= allouer un cCourriel(sServeurPort) 
+      sinon
+      	m_pclCourriel.p_sServeurCourriel=sServeurPort
+      FIN
+      
+      POUR nNiveau = 0 a 2
+      	si (nNiveau=0 _et_ coNiveaux[coLogNiveauInformation]) ou (nNiveau=1 _ET_ coNiveaux[coLogNiveauAvertissement]) OU (nNiveau=2 _ET_ coNiveaux[coLogNiveauErreur]) alors
+      		SI sAdresseExpéditeur>"" ALORS
+      			sDomaine=RéseauNomDomaineDNS()
+      			SI Position(sAdresseExpéditeur,"@")<1 ALORS sAdresseExpéditeur+="@"+sDomaine
+      			SI EmailVérifieAdresse(sAdresseExpéditeur,emailValideSyntaxe)=emailAdresseValide ALORS
+      
+      				SI PAS sDestinataires~="" ALORS
+      					POUR TOUTE CHAÎNE sDestinataire DE sDestinataires SEPAREE PAR ";"
+      						SI sDestinataire>"" ALORS
+      							SI Position(sDestinataire,"@")<1 ALORS sDestinataire+="@"+sDomaine
+      							SI EmailVérifieAdresse(sDestinataire,emailValideSyntaxe)<>emailAdresseValide ALORS m_pclErreur:AjouteErreur(ChaîneConstruit(<§$0008§>,sDestinataire))
+      						FIN
+      					FIN
+      					SI m_pclErreur.p_sErreur="" ALORS
+      						SI cApplication.mg_bSécurité _OU_ bPing() ALORS	//car en mode sécurité, le nom du serveur n'est pas le vrai et on ne peut pas faire de ping dessus
+      							SELON nNiveau
+      								CAS 0 
+      									m_sCourrielExpéditeur_Info=sAdresseExpéditeur;m_sCourrielDestinataires_Info=sDestinataires
+      									m_sCourrielMotDePasse_Info=sMotDePasse;m_coCourrielNiveaux+=coLogNiveauInformation
+      								CAS 1 
+      									m_sCourrielExpéditeur_Avertissement=sAdresseExpéditeur;m_sCourrielDestinataires_Avertissement=sDestinataires
+      									m_sCourrielMotDePasse_Avertissement=sMotDePasse;m_coCourrielNiveaux+=coLogNiveauAvertissement
+      								CAS 2
+      									m_sCourrielExpéditeur_Erreur=sAdresseExpéditeur;m_sCourrielDestinataires_Erreur=sDestinataires
+      									m_sCourrielMotDePasse_Erreur=sMotDePasse;m_coCourrielNiveaux+=coLogNiveauErreur
+      							FIN
+      						SINON
+      							m_pclErreur.AjouteErreur(<§$0004§>+ExtraitChaîne(m_pclCourriel.p_sServeurCourriel,1,":"))
+      						FIN
+      					FIN
+      				SINON
+      					m_pclErreur.AjouteErreur(<§$0005§>)
+      				FIN		
+      			SINON
+      				m_pclErreur.AjouteErreur(<§$0006§>)
+      			FIN
+      		SINON
+      			m_pclErreur.AjouteErreur(<§$0006§>)
+      		FIN
+      		SI m_pclErreur.p_sErreur>"" ALORS
+      			SELON nNiveau
+      				CAS 0	: SI m_coCourrielNiveaux=coLogNiveauInformation		ALORS m_coCourrielNiveaux-=coLogNiveauInformation
+      				CAS 1	: SI m_coCourrielNiveaux=coLogNiveauAvertissement 	ALORS m_coCourrielNiveaux-=coLogNiveauAvertissement
+      				CAS 2	: SI m_coCourrielNiveaux=coLogNiveauErreur 			ALORS m_coCourrielNiveaux-=coLogNiveauErreur
+      			FIN
+      			RENVOYER Faux
+      		FIN
+      	FIN
+      fin
+      RENVOYER Vrai
+      
+      	procédure interne bPing()
+      	si PAS bFairePing _ou_ m_pclCourriel.p_sServeurCourriel~="" renvoyer vrai
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      		
+      		RENVOYER Ping(ExtraitChaîne(m_pclCourriel.p_sServeurCourriel,1,":"))
+      	
+      <fin>
+      
+      	
+      	renvoyer vrai
+      	FIN
+     type : 458752
+   -
+     name : LogInitCrash
+     procedure_id : 1921480003661886090
+     type_code : 12
+     code : |1+
+      // Résumé : Initialise les paramètres de gestion des crashs pour le module de log. Elle permet de configurer la gestion des crashs, y compris l'enregistrement des copies d'écran en cas de crash, l'envoi de courriels d'alerte, et d'autres paramètres associés à la gestion des situations critiques. Tous les membres peuvent être modifiés individuellement mais cette fonction permet de faciliter la programmation.
+      // Syntaxe : LogInitCrash (<bForceFichierModeTest> est booléen, <sMotDePasseCryptage>, <sDestinataires> est chaîne, <sExpéditeur> est chaîne, <sServeurPort> est chaîne [, <sMotDePasseSMTP> [, <nTimerImageÉcranEnSeconde> est entier]])
+      // Paramètres :
+      //	bForceFichierModeTest (booléen) : Indique s'il faut créer un fichier de crash en mode test (par défaut, Faux).
+      //	sMotDePasseCryptage : Mot de passe utilisé pour crypter le fichier de crash.
+      //	sDestinataires (chaîne UNICODE) : Les adresses courriel des destinataires, séparés par ; , pour les messages de crash.
+      //	sExpéditeur (chaîne UNICODE) : L'adresse courriel de l'expéditeur des messages de crash.
+      //	sServeurPort (chaîne UNICODE) : Le serveur de courriel avec éventuellement le numéro de port pour l'envoi des messages de crash.
+      //	sMotDePasseSMTP (valeur par défaut="") : Le mot de passe associé au serveur SMTP (par défaut, chaîne vide car parfois pas nécessaire pour l'accès d'un serveur d'entreprise).
+      //	nTimerImageÉcranEnSeconde (entier - valeur par défaut=0) : La durée, en secondes, entre deux captures d'écran (par défaut, 0).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE global LogInitCrash(bForceFichierModeTest est un booleen,sMotDePasseCryptage,sDestinataires est une chaine,sExpéditeur est une chaine,sServeurPort est une chaine,sMotDePasseSMTP = "",nTimerImageÉcranEnSeconde est un entier = 0)	//ne pas typer les mots de passe afin qu'ils soient compatibles avec le passage d'une chaîne indétectable
+      mg_bCrashForceFichierEnTest	= bForceFichierModeTest
+      mg_sCrashMotDePasseCryptage	= sMotDePasseCryptage
+      mg_sCrashDestinataires		= sDestinataires
+      mg_sCrashExpéditeur			= sExpéditeur
+      mg_sCrashServeur			= sServeurPort
+      mg_sCrashMotDePasse			= sMotDePasseSMTP
+      mg_nTimerImageÉcranEnSeconde= nTimerImageÉcranEnSeconde
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java>
+      	//pas de web/webservice ou de service/deamon car s'occupe des copies d'écran
+      	SI ThreadEtat("FMK_ScreenCopy")<>threadInexistant ALORS ThreadArrête("FMK_ScreenCopy")	//ThreadExécute dispo en Android mais pas ThreadArrête ! Moins grave car dans le debug Android il y a déjà une copie d'écran
+      	ThreadExécute("FMK_ScreenCopy",threadNormal,ÉcranCapture)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : LogInitDataBase
+     procedure_id : 1921480059496539048
+     type_code : 12
+     code : |1-
+      // Résumé : Initialise les paramètres nécessaires à l'enregistrement des messages de log dans une base de données. Elle permet de configurer la connexion à la base de données, la requête SQL d'insertion, ainsi que les niveaux de log associés à l'enregistrement en base de données.
+      // Syntaxe : [ <Résultat> = ] LogInitDataBase (<nIDCnxLog> est entier [, <sRequête> est chaîne [, <coNiveaux> est cLog.COLogNiveau]])
+      // Paramètres :
+      //	nIDCnxLog (entier) : L'indice de connexion à la base de données (doit être différent de 0).
+      //	sRequête (chaîne UNICODE) : La requête SQL d'insertion avec des paramètres de substitution (%1, %2, %3, etc.). Elle doit comporter au moins les paramètres obligatoires %1=Action, %2=Message, %3=Statut, et peut inclure des paramètres optionnels tels que %4=Module, %5=LoginDuClient, %6=Machine, %7=Application, %8=DateHeure.
+      //	coNiveaux (cLog.COLogNiveau) : Les niveaux de log pour lesquels les messages seront enregistrés en base de données.
+      // Valeur de retour : booléen : Vrai si l'initialisation a réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE LogInitDataBase(nIDCnxLog est un entier,sRequête est une chaine = cApplication._Application.m_pclParamètres.Lit("Log","Query","INSERT INTO AppLog (Action,Message,Statut,Module,ChangeBy,Machine,Application,ChangeOn,IPAddress) VALUES ('%1','%2',%3,'%4','%5','%6','%7','%8','%9')"),coNiveaux est un COlogniveau = coLogNiveauAvertissement+coLogNiveauErreur+coLogNiveauInformation) : booleen
+      m_pclErreur.Raz()
+      
+      si nIDCnxLog=0 alors m_pclErreur.AjouteErreur(<§$000c§>)
+      SI sRequête~="" ALORS
+      	m_pclErreur.AjouteErreur(<§$000a§>)
+      SINON SI Position(sRequête,"%1")<1 _OU_ Position(sRequête,"%2")<1 _OU_ Position(sRequête,"%3")<1 ALORS
+      	m_pclErreur.AjouteErreur(<§$000b§>)
+      FIN
+      SI m_pclErreur.p_sErreur="" ALORS
+      	m_ncnxBD		= nIDCnxLog
+      	m_coBDNiveaux	= coNiveaux
+      	renvoyer vrai
+      SINON
+      	m_nCnxBD		= 0
+      	m_coBDNiveaux	= 0
+      FIN
+      RENVOYER faux
+     type : 458752
+   -
+     name : LogInitEventLog
+     procedure_id : 1921480119626161455
+     type_code : 12
+     code : |1-
+      // Résumé : Initialise les paramètres nécessaires à l'enregistrement des messages de log dans l'Event Log de Windows. Elle permet de configurer les niveaux de log associés à l'enregistrement dans l'Event Log.
+      // Syntaxe : [ <Résultat> = ] LogInitEventLog ( [<nNiveaux> est cLog.COLogNiveau])
+      // Paramètres :
+      //	nNiveaux (cLog.COLogNiveau) : Les niveaux de log pour lesquels les messages seront enregistrés dans l'Event Log.
+      // Valeur de retour : booléen : Vrai si l'initialisation a réussi en mode service, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE LogInitEventLog(nNiveaux est un COLogNiveau = coLogNiveauAvertissement+coLogNiveauErreur+coLogNiveauInformation) : booleen
+      m_pclErreur.RAZ()
+      SI EnModeService() ALORS 
+      	m_coEventLogNiveaux = nNiveaux
+      	renvoyer vrai
+      SINON 
+      	m_coEventLogNiveaux	= 0
+      	m_pclErreur.AjouteErreur(<§$000d§>)
+      FIN
+      renvoyer faux
+     type : 458752
+   -
+     name : LogInitTexte
+     procedure_id : 1921480188345653479
+     type_code : 12
+     code : |1-
+      // Résumé : Initialise les paramètres nécessaires à l'enregistrement des messages de log dans un fichier texte. Elle permet de spécifier le chemin du fichier log, le format du nom de fichier log, la taille maximale du fichier, le nombre maximum de fichiers, le support Unicode, les niveaux de log à enregistrer, et d'autres options.
+      // Syntaxe : [ <Résultat> = ] LogInitTexte ( [<sCheminFichierLog> est chaîne [, <eLogFichierSuffixe> est cFichierTexteEnBoucle.EFichierBoucleSuffixe [, <nTaille> est entier [, <nNbMax> est entier [, <bUnicode> est booléen [, <nNiveaux> est cLog.COLogNiveau [, <bFermeAChaqueÉcriture> est booléen [, <bSupprimeAncienLog> est booléen]]]]]]]])
+      // Paramètres :
+      //	sCheminFichierLog (chaîne UNICODE optionnelle) : Le chemin du fichier log avec un nom générique. Si vide, le fichier log sera créé dans le répertoire de l'application.
+      //	eLogFichierSuffixe (cFichierTexteEnBoucle.EFichierBoucleSuffixe optionnel) : Le format déterminant le nom du fichier log.
+      //	nTaille (entier optionnel) : La taille maximale du fichier log (en octets). 0 pour illimité.
+      //	nNbMax (entier optionnel) : Le nombre maximum de fichiers log à conserver. 0 pour illimité.
+      //	bUnicode (booléen optionnel) : Indique si le fichier log doit prendre en charge Unicode.
+      //	nNiveaux (cLog.COLogNiveau optionnel) : Combinaison des niveaux de log pour lesquels les messages seront enregistrés dans le fichier texte.
+      //	bFermeAChaqueÉcriture (booléen optionnel) : Si vrai, ferme le fichier log après chaque enregistrement. Ceci est nécessaire pour forcer l'écriture du fichier dans certains applications. Par défaut, c'est désactivé.
+      //	bSupprimeAncienLog (booléen optionnel) : Si vrai, supprime tous les logs existants lors de l'initialisation.
+      // Valeur de retour : booléen : Vrai si l'initialisation a réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE LogInitTexte(local sCheminFichierLog est une chaine = capplication._Application.p_sRépertoireDonnées,eLogFichierSuffixe est un cFichierTexteEnBoucle.EFichierBoucleSuffixe = cFichierTexteEnBoucle.eFichierboucleIndice,nTaille est un entier = 0,nNbMax est un entier = 0,bUnicode est un booleen = vrai,nNiveaux est un COlogniveau = coLogNiveauAvertissement+coLogNiveauErreur+coLogNiveauInformation+coLogNiveauActionUtilisateur,bFermeAChaqueÉcriture est un booleen = faux,bSupprimeAncienLog est un booleen = faux)
+      m_pclErreur.RAZ()
+      
+      sRep est une chaine = SysRepAppData
+      SI sRep="" ALORS sRep=cApplication._Application.p_sRépertoireSystème
+      
+      SI sCheminFichierLog~="" ALORS sCheminFichierLog=sRep+[fSep()]+cApplication._Application.p_sNom
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	SI Gauche(sCheminFichierLog,2)<>"\\" _ET_ sCheminFichierLog[[2 À 3]]<>":\" ALORS 
+      		//c'est un chemin relatif Windows, on le transforme en chemin absolu
+      		SI sCheminFichierLog[[1 À 2]]=".\" 	ALORS sCheminFichierLog=Milieu(sCheminFichierLog,3)
+      		SI sCheminFichierLog[[1]]="\"		ALORS sCheminFichierLog=Milieu(sCheminFichierLog,2)
+      		sCheminFichierLog					= ComplèteRep(sRep+["\"]+sCheminFichierLog)
+      	FIN
+      	
+      <fin>
+      
+      
+      //valeur par défaut du nom de fichier log
+      SI fExtraitChemin(sCheminFichierLog,fDisque)~="" 	ALORS sCheminFichierLog=fSéparateur(ComplèteRep(sRep+[fSep()]+sCheminFichierLog))+fExtraitChemin(sCheminFichierLog,fFichier+fExtension)
+      SI fExtraitChemin(sCheminFichierLog,fFichier)~="" 	ALORS sCheminFichierLog=fExtraitChemin(sCheminFichierLog,fDisque+fRépertoire)+(cApplication._Application.p_sNom~="" ? fExtraitChemin(ExeInfo(exeNom),fFichier) SINON cApplication._Application.p_sNom)+fExtraitChemin(sCheminFichierLog,fExtension)
+      SI fExtraitChemin(sCheminFichierLog,fExtension)~="" ALORS sCheminFichierLog+=".log"
+      
+      SI PAS fRepCrée(fExtraitChemin(sCheminFichierLog,fDisque+fRépertoire)) ALORS
+      	m_coFichierNiveaux		= 0
+      	m_pclErreur.AjouteErreurWx(chaineconstruit(<§$000e§>,fExtraitChemin(sCheminFichierLog,fDisque+fRépertoire)))
+      SINON 
+      	SI fSauveTexte(sCheminFichierLog,"test") ALORS 	//fichier de test pour voir si on a droit en écriture en prenant le nom générique du fichier (qui ne doit pas existe car il y a toujours un suffixe)
+      		fSupprime(sCheminFichierLog) 
+      		si m_pclFichierLog=null alors m_pclFichierLog = allouer un cFichierTexteEnBoucle(sCheminFichierLog,eLogFichierSuffixe,Max(0,nTaille),Max(0,nNbMax),bUnicode,bFermeAChaqueÉcriture)
+      		SI bSupprimeAncienLog ALORS m_pclFichierLog.SupprimeTout()
+      		m_coFichierNiveaux	= nNiveaux
+      		renvoyer vrai
+      	SINON 
+      		m_coFichierNiveaux	= 0
+      		m_pclErreur.AjouteErreurWx()
+      	FIN
+      FIN
+      renvoyer faux
+     type : 458752
+   -
+     name : TraiteAnciensMessages
+     procedure_id : 1921486154055896118
+     type_code : 12
+     code : |1-
+      // Résumé : Réessaye de persister/envoyer les messages de log qui n'ont pas pu être traité (ex : disque des destination plein, BD ou serveur de courriel temporairement non accessible, ...)
+      PROCEDURE PRIVÉE TraiteAnciensMessages()
+      f,fe sont des entiers
+      dhModif est une dateheure
+      dhSys est une dateheure = datesys()+heuresys()
+      
+      //vérifier s'il y a des messages JSON non envoyés. Si oui on réessaye de les renvoyer les messages dans leur destination
+      sFichiersJSON est une chaine = fListeFichier(fSéparateur(ComplèteRep(cApplication._Application.p_sRépertoireTemporaire))+cApplication._Application.p_sNom+"_erreur_*.*",frNonRécursif)
+      vErreur est un variant
+      POUR TOUTE CHAÎNE sFichier de sFichiersJSON separee par RC
+      	SI fDateHeure(sFichier,"",fModification)<=dhSys ALORS
+      		fe=fOuvre(sFichier)	
+      		SI fe<>-1 ALORS
+      			QUAND EXCEPTION DANS
+      				vErreur=JSONVersVariant(fLit(fe,fTaille(sFichier)))
+      			FAIRE
+      				fFerme(fe);fSupprime(sFichier)
+      			SINON
+      				SI Position(sFichier,"_Txt_")>0 ALORS
+      					f=fOuvre(vErreur.Fichier,foCréationSiInexistant+foAjout+foLectureEcriture,vErreur.Unicode)
+      					SI f<>-1 _ET_ fEcritLigne(f,vErreur.DateHeure+TAB+vErreur.Source+TAB+vErreur.Niveau+TAB+vErreur.Message) _ET_ fFerme(f) ALORS 
+      						fFerme(fe);fSupprime(sFichier)
+      					SINON
+      						dhModif=dhSys;dhModif..Minute+=m_nDelaiRecommenceEnMin;fDateHeure(sFichier,dhModif,fModification)	//on réessaye dans 10 min pour éviter de charger la machine
+      					FIN
+      				SINON SI Position(sFichier,"_Email_")>0 ALORS
+      					SI m_pclCourriel.Envoi(vErreur.Destintaires,vErreur.Message,vErreur.Titre,vErreur.Expéditeur,vErreur.Serveur+[":"]+vErreur.Port)>"" ALORS
+      						dhModif=dhSys;dhModif..Minute+=m_nDelaiRecommenceEnMin;fDateHeure(sFichier,dhModif,fModification)	//on réessaye dans 10 min pour éviter de charger la machine
+      					sinon
+      						fferme(fe);fSupprime(sFichier)
+      					FIN
+      				SINON SI Position(sFichier,"_DBase_")>0 ALORS
+      					SI HExécuteRequêteSQL("LOG-INS",cBaseDeDonnées.mg_tabConnexion[m_nCnxBD].cnxDonnées,hRequêteSansCorrection,vErreur.Requête) ALORS 
+      						fFerme(fe);fSupprime(sFichier)
+      					SINON
+      						dhModif=dhSys;dhModif..Minute+=m_nDelaiRecommenceEnMin;fDateHeure(sFichier,dhModif,fModification)	//on réessaye dans 10 min pour éviter de charger la machine
+      					FIN
+      				FIN
+      			FIN
+      		FIN
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : AjouteTexte
+     procedure_id : 1921486527718138106
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui formate et ajoute le message au fichier de log. Mémorise le contenu du log dans le cas où il n'a pas été envoyé (sera Utilisé dans TraiteAnciensMessages). Utilisé dans Ajoute() et les surcharges des boites de dialogue (Info, Avertissement, Erreur, OuiNon, ...).
+      PROCEDURE privé AjouteTexte(sMessage est une chaine,local eNiveau est un ELogNiveau,local dhEvenement est une dateheure = DateHeureSys())
+      SI pas m_bLogActif _ou_ sMessage~="" _OU_ m_pclFichierLog=null _ou_ m_pclFichierLog.m_sFichierNomGénériqueChemin="" ALORS RETOUR	//si pas de message ou la classe cFichierTexteEnBoucle pas initialisée, quitte cette procédure
+      
+      sMessageÉcrit,sFichierErreur sont des chaines
+      vErreurTexte 	est un variant
+      dhModif 		est une dateheure
+      
+      SI pas m_pclFichierLog.p_bOuvert ALORS
+      	SauveFicTemp()
+      SINON
+      	si sMessageÉcrit>"" alors sMessageÉcrit=Remplace(Remplace(sMessage,CRLF," "),CaractUnicode(10)," ")
+      	SI PAS m_pclFichierLog.AjouteLigne(LogTxtFormatDate(dhEvenement)+TAB+LogTxtFormatSource()+TAB+eNiveau..Valeur+TAB+sMessageÉcrit) ALORS 
+      		SauveFicTemp()
+      	sinon
+      		si (m_pclFichierLog.m_nTailleMax>0 _Et_ m_pclFichierLog.p_nTaille>m_pclFichierLog.m_nTailleMax) alors
+      			m_pclFichierLog.AjouteLigne("... suite dans le prochain fichier ...")
+      			si pas m_pclFichierLog.Ferme() alors m_pclErreur.AjouteErreur(m_pclFichierLog.p_serreur) 
+      		FIN
+      	FIN
+      FIN
+      	
+      	procédure interne SauveFicTemp()
+      	vErreurTexte.Fichier	= m_pclFichierLog.m_sFichierNomGénériqueChemin
+      	vErreurTexte.DateHeure	= LogTxtFormatDate(dhEvenement)
+      	vErreurTexte.Message	= sMessageÉcrit
+      	vErreurTexte.Niveau		= eNiveau..Valeur
+      	vErreurTexte.Source		= LogTxtFormatSource()
+      	vErreurTexte.Erreur		= m_pclFichierLog.p_Serreur
+      	vErreurTexte.Unicode	= m_pclFichierLog.m_bUnicode
+      	sFichierErreur			= cApplication._Application.p_sRépertoireTemporaire+cApplication._Application.p_sNom+"_Txt_"+dhEvenement..PartieDate+"_"+dhEvenement..PartieHeure+".json"
+      	SI fSauveTexte(sFichierErreur,VariantVersJSON(vErreurTexte)) ALORS
+      		dhModif=dhEvenement;dhModif..Minute+=m_nDelaiRecommenceEnMin;fDateHeure(sFichierErreur,dhModif,fModification)	//on réessaye dans 10 min pour éviter de charger la machine
+      	SINON
+      		m_pclErreur.AjouteErreurWx()
+      	FIN
+      	FIN
+      	
+      	procédure interne LogTxtFormatSource(sLogin est une chaine = cApplication._Application.m_pclUtilisateur.p_sLogin,sMachine est une chaine = cApplication._Application.p_sNomMachine,sIP est une chaine = cApplication._Application.p_sAdresseIPlocale) : chaine
+      	RENVOYER ChaîneConstruit("%1"+TAB+"%2"+TAB+"%3",sLogin,sIP,sMachine)	
+      	FIN
+      	
+      	procédure interne LogTxtFormatDate(LOCAL dhLog est une DateHeure = DateSys()+HeureSys()) : chaine
+      	SI PAS DateHeureValide(dhLog) ALORS dhLog=DateSys()+HeureSys()
+      	RENVOYER DateVersChaîne(dhLog..PartieDate)+["@"]+HeureVersChaîne(dhLog..PartieHeure)		
+      	FIN
+     type : 458752
+   -
+     name : AjouteEventLog
+     procedure_id : 1921486815481013566
+     type_code : 12
+     code : |1+
+      // Résumé : Méthode privée qui ajoute le message à l'EventLog de Windows. Pas de retry ici car ServiceEcritEvénementJournal ne renvoie pas de résultat. Utilisé dans Ajoute().
+      PROCEDURE PRIVÉE AjouteEventLog(sMessage est une chaine,eNiveau est un elogniveau)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	SELON eNiveau
+      		CAS eLogNiveauInformation 				: ServiceEcritEvénementJournal(sMessage,ejInformation)
+      		CAS eLogNiveauAvertissement				: ServiceEcritEvénementJournal(sMessage,ejAvertissement)
+      		CAS eLogNiveauErreur,eLogNiveauCrash 	: ServiceEcritEvénementJournal(sMessage,ejErreur)
+      	FIN	
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : AjouteCourriel
+     procedure_id : 1921487807618559017
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui envoie le message par courriel. Mémorise le contenu du log dans le cas où il n'a pas été envoyé (sera Utilisé dans TraiteAnciensMessages). Utilisé dans Ajoute().
+      PROCEDURE PRIVÉE AjouteCourriel(sMessage est une chaine ANSI,eNiveau est un ELogNiveau,dhÉvénement)
+      sCourrielServeur,sCourrielExpéditeur,sCourrielMDP,sCourrielDestinataires sont des chaines
+      sErreurCourriel,sFichierErreur,sAvertissement sont des chaines
+      nNbDestinataires 	est un entier
+      vErreurCourriel 	est un variant
+      dhModif 			est une dateheure
+      sCourrielServeur 	= m_pclCourriel.p_sServeurCourriel
+      
+      SELON eNiveau
+      	CAS eLogNiveauInformation	: sCourrielExpéditeur=m_sCourrielExpéditeur_Info;sCourrielMDP=m_sCourrielMotDePasse_Info;sCourrielDestinataires=m_sCourrielDestinataires_Info
+      	CAS eLogNiveauAvertissement	: sCourrielExpéditeur=m_sCourrielExpéditeur_Avertissement;sCourrielMDP=m_sCourrielMotDePasse_Avertissement;sCourrielDestinataires=m_sCourrielDestinataires_Avertissement
+      	CAS eLogNiveauErreur		: sCourrielExpéditeur=m_sCourrielExpéditeur_Erreur;sCourrielMDP=m_sCourrielMotDePasse_Erreur;sCourrielDestinataires=m_sCourrielDestinataires_Erreur
+      	AUTRES CAS					: sCourrielServeur="";m_pclErreur:AjouteErreur(<§$0010§>)
+      FIN
+      SI sCourrielServeur>"" ALORS
+      	SI pas m_pclCourriel.Envoi(sCourrielDestinataires,sMessage,"Message "+cApplication._Application.p_sNom,sCourrielExpéditeur,sCourrielMDP) ALORS
+      		m_pclErreur.AjouteErreur(m_pclCourriel.p_sErreur)
+      		sAvertissement=ChaîneConstruit(<§$0011§>,sCourrielServeur)+sErreurCourriel
+      		vErreurCourriel.Serveur			= (Position(sCourrielServeur,":")=0 ? sCourrielServeur SINON ExtraitChaîne(sCourrielServeur,1,":"))
+      		vErreurCourriel.Port			= Val(Position(sCourrielServeur,":")=0 ? "25" SINON ExtraitChaîne(sCourrielServeur,2,":"))
+      		vErreurCourriel.Niveau			= eNiveau..valeur
+      		vErreurCourriel.Expéditeur		= sCourrielExpéditeur
+      		vErreurCourriel.Titre			= "Message "+cApplication._Application.p_sNom
+      		vErreurCourriel.Message			= Email.HTML
+      		vErreurCourriel.Destinataires	= sCourrielDestinataires
+      		vErreurCourriel.NbDestintaires	= nNbDestinataires
+      		vErreurCourriel.Erreur			= sAvertissement
+      		sFichierErreur=cApplication._Application.p_sRépertoireTemporaire+cApplication._Application.p_sNom+"_Email_"+dhÉvénement..PartieDate+"_"+dhÉvénement..PartieHeure+".json"
+      		SI fSauveTexte(sFichierErreur,VariantVersJSON(vErreurCourriel)) ALORS
+      			dhModif=dhÉvénement;dhModif..Minute+=m_nDelaiRecommenceEnMin;fDateHeure(sFichierErreur,dhModif,fModification)	//on réessaye dans 10 min pour éviter de charger la machine
+      		FIN
+      		m_pclErreur.AjouteAvertissement(sAvertissement)
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : AjouteDataBase
+     procedure_id : 1921488082496529874
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui ajoute le message à la base de données. Mémorise le contenu du log dans le cas où il n'a pas été écrit en BD (sera Utilisé dans TraiteAnciensMessages). Utilisé dans Ajoute().
+      PROCEDURE PRIVÉE AjouteDataBase(sMessage est une chaine,eNiveau est un ELogNiveau,dhÉvénement est une dateheure,sModule est une chaine = "",sAction est une chaine = "")
+      sRequête,sFichierErreur,sAvertissement sont des chaines
+      vErreurBD 	est un variant
+      bÉcritureBD est un booleen
+      dhModif		est une dateheure
+      
+      //%1=Action,%2=Message,%3=Statut. Optionnels : %4=Module,%5=LoginDuClient,%6=Machine,%7=Application,%8=DateHeure,%9=IP
+      sRequête=cApplication._Application.m_pclParamètres.Lit("Log","Query","INSERT INTO AppLog (Action,Message,Statut,Module,ChangeBy,Machine,Application,ChangeOn,IPAddress) VALUES ('%1','%2',%3,'%4','%5','%6','%7','%8','%9')")
+      sRequête=Remplace(sRequête,"%1",FormateTexte(sAction))	
+      sRequête=Remplace(sRequête,"%2",FormateTexte(sMessage))
+      sRequête=Remplace(sRequête,"%3",eNiveau..Valeur)
+      sRequête=Remplace(sRequête,"%4",FormateTexte(sModule))
+      sRequête=Remplace(sRequête,"%5",FormateTexte(cApplication._Application.m_pclUtilisateur.p_sLogin))
+      sRequête=Remplace(sRequête,"%6",FormateTexte(cApplication._Application.p_sNomMachine))
+      sRequête=Remplace(sRequête,"%7",FormateTexte(cApplication._Application.p_sNom))
+      sRequête=Remplace(sRequête,"%8",DateVersChaîne(dhÉvénement..PartieDate,"AAAA-MM-JJ")+"T"+HeureVersChaîne(dhÉvénement..PartieHeure,"HH:MM:SS:CC"))	//YYYY-MM-DDThh:mm:ss
+      sRequête=Remplace(sRequête,"%9",cApplication._Application.p_sAdresseIPlocale)
+      QUAND EXCEPTION DANS
+      	bÉcritureBD=HExécuteRequêteSQL("LOG-INS",cBaseDeDonnées.mg_tabConnexion[m_nCnxBD].cnxDonnées,hRequêteSansCorrection,sRequête)
+      	si erreurdétectée() alors m_pclerreur.AjouteErreurHF(<§$0013§>)
+      FAIRE
+      	bÉcritureBD=Vrai
+      FIN
+      SI bÉcritureBD ALORS
+      	sAvertissement=<§$0012§>+cBaseDeDonnées.mg_tabConnexion[m_nCnxBD].cnxDonnées..serveur+" : "+herreurinfo()
+      	vErreurBD.Requête		= sRequête
+      	vErreurBD.Erreur		= sAvertissement
+      	sFichierErreur=cApplication._Application.p_sRépertoireTemporaire+cApplication._Application.p_sNom+"_DBase_"+dhÉvénement..PartieDate+"_"+dhÉvénement..partieheure+".json"
+      	SI fSauveTexte(VariantVersJSON(vErreurBD),sFichierErreur) ALORS
+      		dhModif=dhÉvénement;dhModif..Minute+=m_nDelaiRecommenceEnMin;fDateHeure(sFichierErreur,dhModif,fModification)	//on réessaye dans 10 min pour éviter de charger la machine
+      	FIN
+      	m_pclErreur.AjouteAvertissement(sAvertissement)
+      FIN
+      
+      	procédure interne FormateTexte(sTexte est une chaine) : chaîne
+      	renvoyer Remplace(sTexte,"'","''")		//quote remplacée par double-quote car les apostrophes perturbent la requête
+      	FIN
+     type : 458752
+   -
+     name : CourrielDestinataires
+     procedure_id : 1921901052151708696
+     type_code : 12
+     code : |1-
+      // Résumé : Retourne les adresses courriel des destinataires configurées pour un niveau de log spécifique. Elle est utilisée pour obtenir les adresses courriel correspondant au niveau de log lors de l'envoi de courriels.
+      // Syntaxe : [ <Résultat> = ] CourrielDestinataires (<eLogNiveau> est cLog.ELogNiveau)
+      // Paramètres :
+      //	eLogNiveau (cLog.ELogNiveau) : Le niveau de log pour lequel on souhaite obtenir les adresses courriel des destinataires.
+      // Valeur de retour : chaîne UNICODE : Les adresses courriel des destinataires configurées pour le niveau de log spécifié.
+      // Exemple :
+      //
+      PROCEDURE CourrielDestinataires(eLogNiveau est un ELogNiveau) : chaine
+      SELON eLogNiveau
+      	CAS eLogNiveauInformation 		: RENVOYER m_sCourrielDestinataires_Info
+      	CAS eLogNiveauAvertissement 	: RENVOYER m_sCourrielDestinataires_Avertissement
+      	CAS eLogNiveauErreur 			: RENVOYER m_sCourrielDestinataires_Erreur
+      FIN
+      renvoyer ""
+     type : 458752
+   -
+     name : Avertissement
+     procedure_id : 2009839154605838175
+     type_code : 12
+     code : |1+
+      // Résumé : Permet de générer un avertissement dans le système tout en enregistrant le message dans le système de logs. Appelé par COL_Log.Avertissement()
+      // Syntaxe : Avertissement ( [<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]]])
+      // Paramètres :
+      // 	xParam1 : Paramètre 1 pouvant contenir différentes informations utiles pour l'avertissement.
+      // 	xParam2 (valeur optionnelle): Paramètre 2, pouvant contenir des informations complémentaires utiles.
+      // 	xParam3 (valeur optionnelle): Paramètre 3, pouvant contenir des informations complémentaires utiles.
+      // 	xParam4 (valeur optionnelle): Paramètre 4, pouvant contenir des informations complémentaires utiles.
+      // 	xParam5 (valeur optionnelle): Paramètre 5, pouvant contenir des informations complémentaires utiles.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Avertissement(xParam1<utile>,xParam2<utile>=null,xParam3<utile>=null,xParam4<utile>=null,xParam5<utile>=null) //WD25 : on ne peut pas faire * car pas compatible avec Java
+      sMessage est une chaine = xParam1
+      POUR nParam = 2 a 5 
+      	sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [RC]+{"xParam"+nParam,indVariable})
+      FIN
+      AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64>
+      	WL.Avertissement(sMessage)
+      	
+      <sinon si CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	wl.Erreur(<§@1ae090c10326a0de0004§>+sMessage)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : Confirmer
+     procedure_id : 2009839158900937760
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de demander une confirmation à l'utilisateur tout en enregistrant le message correspondant dans le système de logs. Appelé par COL_Log.Confirmer()
+      // Syntaxe : [ <Résultat> = ] Confirmer ( [<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]]])
+      // Paramètres :
+      // 	xParam1 (valeur) : Paramètre 1 qui doit contenir la valeur par défaut parmi (Oui, Non, Annuler) ou le message.
+      // 	xParam2 (valeur optionnel): Paramètre 2, pouvant contenir des informations complémentaires utiles.
+      // 	xParam3 (valeur optionnel): Paramètre 3, pouvant contenir des informations complémentaires utiles.
+      // 	xParam4 (valeur optionnel): Paramètre 4, pouvant contenir des informations complémentaires utiles.
+      // 	xParam5 (valeur optionnel): Paramètre 5, pouvant contenir des informations complémentaires utiles.
+      // Valeur de retour : entier : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      // Exemple :
+      //
+      PROCEDURE Confirmer(xParam1<utile>,xParam2<utile>="",xParam3<utile>="",xParam4<utile>="",xParam5<utile>="") //WD25 : on ne peut pas faire * car pas compatible avec Java
+      nRéponse est un entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	sMessage est une chaine
+      	SI xParam1 DANS (Oui,Non,Annuler) ALORS
+      		POUR nParam = 2 a 5 
+      			sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [RC]+{"xParam"+nParam,indVariable})
+      		FIN
+      		nRéponse=WL.Confirmer(xParam1,sMessage)
+      	SINON 
+      		POUR nParam = 1 a 5 
+      			sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [RC]+{"xParam"+nParam,indVariable})
+      		FIN
+      		nRéponse=WL.Confirmer(sMessage)
+      	FIN
+      	Ajoute(sMessage+", répondu : "+(nRéponse=Oui ? "oui" SINON (nRéponse=Non ? "non" SINON "annuler")),eLogNiveauActionUtilisateur)
+      	
+      <fin>
+      
+      
+      RENVOYER nRéponse
+     type : 458752
+   -
+     name : Dialogue
+     procedure_id : 2009839163195971279
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'afficher une boîte de dialogue à l'utilisateur avec une question, des options de boutons, et enregistre la réponse dans le système de logs. La syntaxe est celle sans identifiant. Est appelé par COL_Log.Dialogue()
+      // Syntaxe : [ <Résultat> = ] Dialogue (<sQuestion> est chaîne, <tabLibelléBoutons> est tableau [, <nBoutonParDéfaut> est entier [, <nBoutonAnnulation> est entier [, <xIcône>]]])
+      // Paramètres :
+      //	sQuestion (chaîne UNICODE) : Chaîne contenant la question à afficher dans la boîte de dialogue.
+      //	tabLibelléBoutons (tableau) : Tableau de chaînes contenant les libellés des boutons disponibles dans la boîte de dialogue.
+      // 	nBoutonParDéfaut (entier optionnel): Entier représentant l'indice du bouton par défaut. La valeur par défaut est 0.
+      // 	nBoutonAnnulation (entier optionnel): Entier représentant l'indice du bouton d'annulation. La valeur par défaut est 0.
+      // 	xIcône (image optionnelle) : Paramètre permettant de spécifier une icône pour la boîte de dialogue.
+      // Valeur de retour : entier : Variable qui contient la réponse de l'utilisateur.
+      // Exemple :
+      //
+      PROCEDURE Dialogue(sQuestion est une chaine,tabLibelléBoutons est un tableau de chaine,nBoutonParDéfaut est un entier = 0,nBoutonAnnulation est un entier = 0,xIcône = null)
+      nRes est un entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      	SELON Vrai
+      		CAS nBoutonParDéfaut = 0 	: nRes = WL.Dialogue(sQuestion,tabLibelléBoutons)
+      		CAS nBoutonAnnulation = 0 	: nRes = WL.Dialogue(sQuestion,tabLibelléBoutons,nBoutonParDéfaut)
+      		CAS xIcône = Null			: nRes = WL.Dialogue(sQuestion,tabLibelléBoutons,nBoutonParDéfaut,nBoutonAnnulation)
+      		AUTRES CAS					: nRes = WL.Dialogue(sQuestion,tabLibelléBoutons,nBoutonParDéfaut,nBoutonAnnulation,xIcône)
+      	FIN
+      	
+      <fin>
+      
+      
+      AjouteTexte(sQuestion+", réponse = "+nRes,eLogNiveauActionUtilisateur)
+      renvoyer nRes
+     type : 458752
+   -
+     name : Erreur
+     procedure_id : 2009839163196102475
+     type_code : 12
+     code : |1+
+      // Résumé : Permet d'afficher un message d'erreur à l'utilisateur. Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché. Est utilisé par COL_Log.Erreur()
+      // Syntaxe : Erreur ( [<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]]])
+      // Paramètres :
+      // 	xParam1 (valeur) : Premier paramètre du message d'erreur.
+      // 	xParam2 (valeur optionnelle): Deuxième paramètre du message d'erreur. La valeur par défaut est une chaîne vide.
+      // 	xParam3 (valeur optionnelle): Troisième paramètre du message d'erreur. La valeur par défaut est une chaîne vide.
+      // 	xParam4 (valeur optionnelle): Quatrième paramètre du message d'erreur. La valeur par défaut est une chaîne vide.
+      // 	xParam5 (valeur optionnelle): Cinquième paramètre du message d'erreur. La valeur par défaut est une chaîne vide.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Erreur(xParam1,xParam2<utile>="",xParam3<utile>="",xParam4<utile>="",xParam5<utile>="")	//WD25 : on ne peut pas faire * car pas compatible avec Java
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	sMessage est une chaine
+      	POUR nParam = 1 a 5 
+      		sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [RC]+{"xParam"+nParam,indVariable})
+      	FIN
+      	AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      	WL.Erreur(sMessage)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : Info
+     procedure_id : 2009839171786366245
+     type_code : 12
+     code : |1+
+      // Résumé : Permet d'afficher un message informatif à l'utilisateur. Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché. Est utilisé par COL_Log.Info()
+      // Syntaxe : Info ( [<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]]])
+      // Paramètres :
+      // 	xParam1 (valeur) : Premier paramètre du message informatif.
+      // 	xParam2 (valeur optionnelle): Deuxième paramètre du message informatif. La valeur par défaut est une chaîne vide.
+      // 	xParam3 (valeur optionnelle): Troisième paramètre du message informatif. La valeur par défaut est une chaîne vide.
+      // 	xParam4 (valeur optionnelle): Quatrième paramètre du message informatif. La valeur par défaut est une chaîne vide.
+      // 	xParam5 (valeur optionnelle): Cinquième paramètre du message informatif. La valeur par défaut est une chaîne vide.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Info(xParam1,xParam2<utile>="",xParam3<utile>="",xParam4<utile>="",xParam5<utile>="")		//WD25 : on ne peut pas faire * car pas compatible avec Java
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	sMessage est une chaine = xParam1
+      	POUR nParam = 2 a 5 
+      		sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [RC]+{"xParam"+nParam,indVariable})
+      	FIN
+      	AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      	WL.Info(sMessage)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : OKAnnuler
+     procedure_id : 2009839171786431937
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'afficher une boîte de dialogue avec les boutons "OK" et "Annuler". Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché et de déterminer le bouton par défaut. Est utilisé par COL_Log.OKAnnuler()
+      // Syntaxe : [ <Résultat> = ] OKAnnuler ( [<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]]])
+      // Paramètres :
+      // 	xParam1 (valeur) : Premier paramètre du message affiché dans la boîte de dialogue.
+      // 	xParam2 (valeur optionnelle): Deuxième paramètre du message affiché dans la boîte de dialogue. La valeur par défaut est une chaîne vide.
+      // 	xParam3 (valeur optionnelle): Troisième paramètre du message affiché dans la boîte de dialogue. La valeur par défaut est une chaîne vide.
+      // 	xParam4 (valeur optionnelle): Quatrième paramètre du message affiché dans la boîte de dialogue. La valeur par défaut est une chaîne vide.
+      // 	xParam5 (valeur optionnelle): Cinquième paramètre du message affiché dans la boîte de dialogue. La valeur par défaut est une chaîne vide.
+      // Valeur de retour : entier : Variable qui contient la réponse de l'utilisateur.
+      // Exemple :
+      //
+      PROCEDURE OKAnnuler(xParam1,xParam2<utile>="",xParam3<utile>="",xParam4<utile>="",xParam5<utile>="")		//WD25 : on ne peut pas faire * car pas compatible avec Java
+      nRéponse est un entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      	sMessage est une chaine
+      	SI xParam1 DANS (Vrai,Faux) ALORS 
+      		POUR nParam = 2 a 5 
+      			sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [RC]+{"xParam"+nParam,indVariable})
+      		FIN
+      		nRéponse=WL.OKAnnuler(xParam1,sMessage) 
+      	SINON 
+      		POUR nParam = 1 a 5 
+      			sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [RC]+{"xParam"+nParam,indVariable})
+      		FIN
+      		nRéponse=WL.OKAnnuler(sMessage)
+      	FIN
+      	AjouteTexte(sMessage+", répondu : "+(nRéponse=Vrai ? "ok" SINON "annuler"),eLogNiveauActionUtilisateur)
+      	
+      <fin>
+      
+      
+      RENVOYER nRéponse
+     type : 458752
+   -
+     name : OuiNon
+     procedure_id : 2009839171786497614
+     type_code : 12
+     code : |1-
+      // Résumé : La procédure OuiNon permet d'afficher une boîte de dialogue avec les boutons "Oui" et "Non". Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché et de déterminer le bouton par défaut. Est utilisé par COL_Log.OuiNon()
+      // Syntaxe : [ <Résultat> = ] OuiNon ( [<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]]])
+      //
+      // Paramètres :
+      // 	xParam1 (valeur) : Premier paramètre du message affiché dans la boîte de dialogue. Il doit être soit Oui, soit Non pour déterminer le bouton par défaut, soit la question.
+      // 	xParam2 (valeur optionnelle): Deuxième paramètre du message affiché dans la boîte de dialogue. La valeur par défaut est une chaîne vide.
+      // 	xParam3 (valeur optionnelle): Troisième paramètre du message affiché dans la boîte de dialogue. La valeur par défaut est une chaîne vide.
+      // 	xParam4 (valeur optionnelle): Quatrième paramètre du message affiché dans la boîte de dialogue. La valeur par défaut est une chaîne vide.
+      // 	xParam5 (valeur optionnelle): Cinquième paramètre du message affiché dans la boîte de dialogue. La valeur par défaut est une chaîne vide.
+      // Valeur de retour : entier : Variable qui contient la réponse de l'utilisateur.
+      // Exemple :
+      //
+      PROCEDURE OuiNon(xParam1,xParam2<utile>="",xParam3<utile>="",xParam4<utile>="",xParam5<utile>="")		//WD25 : on ne peut pas faire * car pas compatible avec Java
+      nRéponse est un entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	sMessage est une chaine
+      	SI xParam1 DANS (Oui,Non) ALORS 
+      		POUR nParam = 2 a 5 
+      			sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [RC]+{"xParam"+nParam,indVariable})
+      		FIN
+      		nRéponse=WL.OuiNon(xParam1,sMessage)
+      	SINON 
+      		POUR nParam = 1 a 5
+      			sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [RC]+{"xParam"+nParam,indVariable})
+      		FIN
+      		nRéponse=WL.OuiNon(sMessage)
+      	FIN
+      	AjouteTexte(sMessage+", répondu : "+(nRéponse=Vrai ? "oui" SINON "non"),eLogNiveauActionUtilisateur)
+      	
+      <fin>
+      
+      
+      RENVOYER nRéponse
+     type : 458752
+   -
+     name : ÉcranCapture
+     procedure_id : 2009907948039845410
+     type_code : 12
+     code : |1+
+      // Résumé : Méthode privée faisant des captures d'écran et les mémorisent dans des variables buffer. Ces buffers seront ensuite transformés en fichier et joint au fichier de crash le cas échéant. Est appelé dans LogInitCrash()
+      PROCEDURE PRIVÉE GLOBALE ÉcranCapture()
+      bufImage est un buffer
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java>
+      	BOUCLE
+      		si mg_nTimerImageÉcranEnSeconde>0 alors
+      			quand exception dans
+      				bufImage 		= dCopieImageEcran()
+      			faire
+      				//rien
+      			sinon
+      				si bufImage<>mg_bufÉcran1 alors
+      					mg_bufÉcran3	= mg_bufÉcran2
+      					mg_bufÉcran2	= mg_bufÉcran1
+      					mg_bufÉcran1	= bufImage
+      				fin
+      			fin
+      			ThreadPause(mg_nTimerImageÉcranEnSeconde)	
+      		sinon
+      			threadpause(5s)
+      		fin
+      	FIN
+      	SI ThreadEtat("FMK_ScreenCopy")<>threadInexistant ALORS ThreadArrête("FMK_ScreenCopy")
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : FinProgramme
+     procedure_id : 2074360108139786472
+     type_code : 12
+     code : |1-
+      // Résumé : utilisée pour terminer le programme en cours. Elle peut également ajouter un message dans le système de logs avec le niveau "Action Utilisateur" avant de terminer le programme. Est utilisé par COL_Log.FinProgramme
+      // Syntaxe : FinProgramme ( [<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]]])
+      // Paramètres :
+      // 	xParam1 (valeur optionnelle): Premier paramètre du message à ajouter dans le système de logs. La valeur par défaut est une chaîne vide.
+      // 	xParam2 (valeur optionnelle): Deuxième paramètre du message à ajouter dans le système de logs. La valeur par défaut est une chaîne vide.
+      // 	xParam3 (valeur optionnelle): Troisième paramètre du message à ajouter dans le système de logs. La valeur par défaut est une chaîne vide.
+      // 	xParam4 (valeur optionnelle): Quatrième paramètre du message à ajouter dans le système de logs. La valeur par défaut est une chaîne vide.
+      // 	xParam5 (valeur optionnelle): Cinquième paramètre du message à ajouter dans le système de logs. La valeur par défaut est une chaîne vide.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE FinProgramme(xParam1<utile>="",xParam2<utile>="",xParam3<utile>="",xParam4<utile>="",xParam5<utile>="")		//WD25 : on ne peut pas faire * car pas compatible avec Java
+      sMessage est une chaîne
+      POUR nParam = 1 À 5 
+      	sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [RC]+{"xParam"+nParam,indVariable})
+      FIN
+      AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      si sMessage>"" alors WL.FinProgramme(sMessage) sinon WL.FinProgramme()
+     type : 458752
+   -
+     name : LogCrash
+     procedure_id : 2204583723497768220
+     type_code : 12
+     code : |1+
+      // Résumé : Est destinée à être appelée en cas de crash de l'application. Elle génère un rapport détaillé et crypté du crash, sauvegarde des informations utiles, et peut envoyer ces informations par courriel à un support technique.
+      //	Le rapport contient le dump, les informations du programme et de ses composants, toutes les informations possibles sur l'origine du crash, tous les fichiers de trace et de log et les copies d'écran prises juste avant le crash. Le tout est compressé dans un fichier .wdz.
+      // 	Si le rapport ne peut pas être envoyé par courriel (ex : pas d'information du serveur de courriel ou serveur indisponible), il est déposé sur le bureau.
+      // Syntaxe : LogCrash ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE global LogCrash()
+      sErreur est une chaîne 			= ErreurException()
+      sDH est une chaîne 				= DateHeureSys()
+      sRepTemp est une chaîne 		= fRépertoireTemp()
+      sNomProgramme est une chaîne 	= (EnModeWeb() _ou_ EnModeWebservice() _ou_ EnModeAWP() ? ProjetInfo(piNomSiteDéployé) sinon ProjetInfo(piNomProjet))
+      sFichierTempZip est une chaîne 	= sRepTemp+"crash_"+sNomProgramme+".txt"
+      sFichierZIP est une chaîne 		= sRepTemp+"crash_"+sNomProgramme+".wdz"
+      sFichierCrypté est une chaine 	= sRepTemp+"crash_"+sNomProgramme+".cry"
+      sFichierDump est une chaine 	= sRepTemp+"crash_"+sNomProgramme+".wdump"
+      sFichierImage1 est une chaine 	= sRepTemp+"crash_"+sNomProgramme+"1.jpg"
+      sFichierImage2 est une chaine 	= sRepTemp+"crash_"+sNomProgramme+"2.jpg"
+      sFichierImage3 est une chaine 	= sRepTemp+"crash_"+sNomProgramme+"3.jpg"
+      sFichierFinal est une chaine
+      sPlace,sErrCourriel,sTexte,sPlantage,sErr,sComposants,sComposant,sFichiersTrace,sFichiersLog sont des chaines
+      nErrZip est un entier
+      
+      SI EnModeTest() ET PAS mg_bCrashForceFichierEnTest ALORS	//pour le programmeur, affiche le message d'exception à l'écran
+      	FinProgramme(sErreur)
+      SINON
+      	SI mg_nTimerImageÉcranEnSeconde>0 ALORS 		//on sauve les 3 dernières copies d'écran avant le structureVersJSON et on vide les 3 buffers sinon les 3 images sont dans le JSON aussi !
+      		fSauveBuffer(sFichierImage1,mg_bufÉcran1);fSauveBuffer(sFichierImage2,mg_bufÉcran2);fSauveBuffer(sFichierImage3,mg_bufÉcran3)
+      		mg_bufÉcran1=null;mg_bufÉcran2=null;mg_bufÉcran3=null
+      	FIN	
+      	sPlantage+=[RC]+"Date et heure : "+DateVersChaîne(Gauche(sDH,8))+" à "+HeureVersChaîne(Milieu(sDH,9))		//pour vérifier que le nom de fichier n'a pas changé
+      	sPlantage+=[RC]+"Programme : "+ExeInfo(exeNom)
+      	sPlantage+=[RC]+"	Version exe : "+ExeInfo(exeVersion)+" / "+ExeInfo(exeVersionFormatWindows)
+      	QUAND EXCEPTION DANS
+      		SI fFichierExiste(fExtraitChemin(ExeInfo(exeNom),fDisque+fFichier+fRépertoire)+".wdl") ALORS
+      			sComposant= fExtraitChemin(ExeInfo(exeNom),fDisque+fFichier+fRépertoire)+".wdl"
+      			sPlantage+=[RC]+"	Version wdl : "+ComposantInfo("",ciVersion,sComposant)
+      			sPlantage+=[RC]+"	# patch : "+ComposantInfo("",ciNuméroPatch,sComposant)
+      			sPlantage+=[RC]+"	Version interne : "+ComposantInfo("",ciVersionInterne,sComposant)
+      		SINON si pas enmodetest() alors		//car en mode test il prend le fichier wdtstxx_user.exe
+      			sPlantage+=[RC]+"	Version wdl : "+ComposantInfo("",ciVersion,ExeInfo(exeNom))
+      			sPlantage+=[RC]+"	# patch : "+ComposantInfo("",ciNuméroPatch,ExeInfo(exeNom))
+      			sPlantage+=[RC]+"	Version interne : "+ComposantInfo("",ciVersionInterne,ExeInfo(exeNom))
+      		FIN
+      	FAIRE
+      		sPlantage+=[RC]+"   Version wdl : inconnue"
+      	FIN
+      	sPlantage+=[RC]+"	Mode : "+ExeInfo(exeMode)+"bits"
+      	
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=WindowsMobile>
+      	
+      		dbgSauveDumpDébogage(sFichierDump)
+      	
+      <fin>
+      
+      	
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64>
+      		
+      		sComposants=ComposantListe()
+      		POUR TOUTE CHAÎNE sComposant DE sComposants SEPAREE PAR RC
+      			sPlantage+=[RC]+"Composant : "+ExtraitChaîne(sComposant,1);sComposant=ExtraitChaîne(sComposant,2)
+      			sPlantage+=[RC]+"	Chargement au lancement : "+ComposantInfo("",ciChargementLancement,sComposant)
+      			sPlantage+=[RC]+"	État : "+ComposantInfo("",ciEtat,sComposant)
+      			sPlantage+=[RC]+"	Global : "+ComposantInfo("",ciComposantGlobal,sComposant)
+      			SI fExtraitChemin(sComposant,fDisque+fRépertoire+fFichier)<>fExtraitChemin(ExeInfo(exeNom),fDisque+fRépertoire+fFichier) ALORS	//car si le composant est dans la wdl de l'exe, rien d'exploitable
+      				sPlantage+=[RC]+"	Version : "+ComposantInfo("",ciVersion,sComposant)
+      				sPlantage+=[RC]+"	Libellé : "+ComposantInfo("",ciLibellé,sComposant)
+      				sPlantage+=[RC]+"	Nom physique : "+ComposantInfo("",ciNomPhysique,sComposant)
+      				sPlantage+=[RC]+"	# patch : "+ComposantInfo("",ciNuméroPatch,sComposant)
+      			FIN
+      			sPlantage+=[RC]+"	Version interne : "+ComposantInfo("",ciVersionInterne,sComposant)
+      			sPlantage+=[RC]+"	Version compatible : "+ComposantInfo("",ciVersionCompatible,sComposant)
+      			sPlantage+=[RC]+"	Version projet : "+ComposantInfo("",ciVersionProjet,sComposant)
+      		FIN
+      	
+      <fin>
+      
+      	
+      	sPlantage+=[RC+rc]+sErreur
+      	sPlantage+=[RC]+"Objet Application : "+rc+StructureVersJSON(cApplication._Application,faux)
+      	sPlantage+=[RC]+"Connexions aux BD : "+rc+StructureVersJSON(cBaseDeDonnées.mg_tabConnexion,faux)
+      	
+      	si frepcree(sRepTemp) alors
+      		SI fFichierExiste(sFichierTempZip) ALORS fSupprime(sFichierTempZip)
+      		SI fSauveTexte(sFichierTempZip,sPlantage) ALORS sFichierFinal=sFichierTempZip sinon sErr=ErreurInfo(errMessage)
+      	sinon
+      		sErr=ErreurInfo(errMessage)
+      	fin
+      	
+      	SI sErr="" ALORS
+      		SI mg_sCrashMotDePasseCryptage>"" ALORS
+      			SI fRepCrée(fExtraitChemin(sFichierZIP,fDisque+fRépertoire)) ALORS
+      				nErrZip=zipCrée("crash",sFichierZIP)
+      				SI nErrZip=0 ALORS
+      					
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	nErrZip=zipMotDePasse("crash",mg_sCrashMotDePasseCryptage)
+      	SI nErrZip=0 ALORS
+      		nErrZip=zipAjouteFichier("crash",sFichierTempZip,zipAucun)
+      		SI nErrZip=0 ALORS 
+      			si fFichierExiste(sFichierImage1) 	alors zipAjouteFichier("crash",sFichierImage1,zipAucun)
+      			si fFichierExiste(sFichierImage2) 	alors zipAjouteFichier("crash",sFichierImage2,zipAucun)
+      			si fFichierExiste(sFichierImage3) 	alors zipAjouteFichier("crash",sFichierImage3,zipAucun)
+      			SI fFichierExiste(sFichierDump) 	ALORS zipAjouteFichier("crash",sFichierDump)
+      			SI fFichierExiste(capplication._Application.m_pclParamètres.p_sCheminIni) ALORS zipAjouteFichier("crash",cApplication._Application.m_pclParamètres.p_sCheminIni)
+      			fSupprime(sFichierTempZip);sFichierFinal=sFichierZIP
+      		SINON 
+      			sErr=zipMsgErreur(nErrZip)
+      		FIN
+      		si cApplication._Application.m_pclTrace.m_bTraceActive _et_ cApplication._Application.m_pclTrace.p_sFichierEnCours>"" alors
+      			sFichiersTrace=fListeFichier(fExtraitChemin(cApplication._Application.m_pcltrace.p_sFichierEnCours,fDisque+fRépertoire+fFichier)+"*"+...
+      				fExtraitChemin(cApplication._Application.m_pclTrace.p_sFichierEnCours,fExtension))
+      			si sFichiersTrace>"" alors 
+      				nErrZip=zipAjouteFichier("crash",extraitchaine(sFichiersTrace,1,rc,DepuisFin),zipAucun)
+      				si chaineoccurrence(sFichiersTrace,rc)>0 alors nErrZip=zipAjouteFichier("crash",ExtraitChaîne(sFichiersTrace,2,RC,DepuisFin),zipAucun)
+      				si chaineoccurrence(sFichiersTrace,rc)>1 alors nErrZip=zipAjouteFichier("crash",ExtraitChaîne(sFichiersTrace,3,RC,DepuisFin),zipAucun)
+      			fin
+      		sinon
+      			//sauve la trace mémoire
+      			sFichiersTrace = fFichierTemp("FMK")
+      			nTrace			est un entier = fcree(sFichiersTrace)
+      			si nTrace>0 alors
+      				sLigne 			est une chaine
+      				TANTQUE Dépile(cApplication._Application.m_pclTrace.m_pileAppel,sLigne)
+      					fecritligne(nTrace,sLigne)
+      				FIN
+      				fferme(nTrace)
+      				nErrZip=zipAjouteFichier("crash",sFichiersTrace,zipAucun)
+      			fin
+      		fin
+      		si cApplication._Application.m_pclLog.p_sFichierEnCours>"" alors
+      			sFichiersLog=fListeFichier(fExtraitChemin(cApplication._Application.m_pclLog.p_sFichierEnCours,fDisque+fRépertoire+fFichier)+"*"+...
+      				fExtraitChemin(cApplication._Application.m_pclLog.p_sFichierEnCours,fExtension))
+      			SI sFichiersLog>"" ALORS 
+      				nErrZip=zipAjouteFichier("crash",ExtraitChaîne(sFichiersLog,1,RC,DepuisFin),zipAucun)
+      				SI ChaîneOccurrence(sFichiersLog,RC)>0 ALORS nErrZip=zipAjouteFichier("crash",ExtraitChaîne(sFichiersLog,2,RC,DepuisFin),zipAucun)
+      				SI ChaîneOccurrence(sFichiersLog,RC)>1 ALORS nErrZip=zipAjouteFichier("crash",ExtraitChaîne(sFichiersLog,3,RC,DepuisFin),zipAucun)
+      			FIN
+      		fin
+      	SINON
+      		sErr=zipMsgErreur(nErrZip)
+      	FIN
+      	
+      <sinon si CibleExécution=Java ou CibleExécution=Android ou CibleExécution=UniversalWindowsApp>
+      	SI fCrypte(sFichierTempZip,sFichierCrypté,mg_sCrashMotDePasseCryptage,crypteSécurisé) ALORS
+      		 nErrZip=zipAjouteFichier("crash",sFichierCrypté)
+      		 SI nErrZip=0 ALORS 
+      		 	fSupprime(sFichierTempZip);fSupprime(sFichierCrypté)
+      		 	SI fFichierExiste(sFichierImage1) 	ALORS zipAjouteFichier("crash",sFichierImage1)
+      		 	SI fFichierExiste(sFichierImage2) 	ALORS zipAjouteFichier("crash",sFichierImage2)
+      		 	SI fFichierExiste(sFichierImage3) 	ALORS zipAjouteFichier("crash",sFichierImage3)
+      		 	SI fFichierExiste(sFichierDump) 	ALORS zipAjouteFichier("crash",sFichierDump)
+      		 	sFichierFinal=sFichierCrypté
+      		 SINON 
+      		 	sErr=zipMsgErreur(nErrZip)
+      		 FIN
+      		SI cApplication._Application.m_pclTrace.m_bTraceActive _ET_ cApplication._Application.m_pclTrace.p_sFichierEnCours>"" ALORS
+      			sFichiersTrace=fListeFichier(fExtraitChemin(cApplication._Application.m_pclTrace.p_sFichierEnCours,fDisque+fRépertoire+fFichier)+"*"+...
+      				fExtraitChemin(cApplication._Application.m_pclLog.p_sDernierFichier,fExtension))
+      			SI sFichiersTrace>"" ALORS 
+      				nErrZip=zipAjouteFichier("crash",ExtraitChaîne(sFichiersTrace,1,RC,DepuisFin))
+      				SI ChaîneOccurrence(sFichiersTrace,RC)>0 ALORS nErrZip=zipAjouteFichier("crash",ExtraitChaîne(sFichiersTrace,2,RC,DepuisFin))
+      				SI ChaîneOccurrence(sFichiersTrace,RC)>1 ALORS nErrZip=zipAjouteFichier("crash",ExtraitChaîne(sFichiersTrace,3,RC,DepuisFin))
+      			FIN
+      			sFichiersLog=fListeFichier(fExtraitChemin(cApplication._Application.m_pclLog.p_sFichierEnCours,fDisque+fRépertoire+fFichier)+"*"+...
+      				fExtraitChemin(cApplication._Application.m_pclLog.p_sFichierEnCours,fExtension))
+      			SI sFichiersLog>"" ALORS 
+      				nErrZip=zipAjouteFichier("crash",ExtraitChaîne(sFichiersLog,1,RC,DepuisFin))
+      				SI ChaîneOccurrence(sFichiersLog,RC)>0 ALORS nErrZip=zipAjouteFichier("crash",ExtraitChaîne(sFichiersLog,2,RC,DepuisFin))
+      				SI ChaîneOccurrence(sFichiersLog,RC)>1 ALORS nErrZip=zipAjouteFichier("crash",ExtraitChaîne(sFichiersLog,3,RC,DepuisFin))
+      			FIN
+      		SINON
+      			//sauve la trace mémoire
+      			sFichiersTrace = fFichierTemp("FMK")
+      			nTrace			est un entier = fcree(sFichiersTrace)
+      			SI nTrace>0 ALORS
+      				sLigne 			est une chaine
+      				TANTQUE Dépile(cApplication._Application.m_pclTrace.m_pileAppel,sLigne)
+      					fEcritLigne(nTrace,sLigne)
+      				FIN
+      				fFerme(nTrace)
+      				nErrZip=zipAjouteFichier("crash",sFichiersTrace)
+      			FIN
+      		FIN
+      	SINON
+      		 sErr=ErreurInfo(errMessage)
+      	FIN
+      	
+      <fin>
+      
+      
+      					zipFerme("crash") 
+      				SINON
+      					sErr=zipMsgErreur(nErrZip)
+      				FIN
+      			FIN
+      		FIN
+      	fin
+      		
+      	SI sErr>"" ALORS	//on a eu un plantage dans les fonctions ZIP ou en sauvant le texte
+      		SI EnModeService() OU EnModeWebservice() ALORS
+      			sErreur+=[rc]+sErr	//on concatène les erreur pour les envoyer ci-nécessaire par courriel
+      		sinon
+      			FinProgramme(ChaîneConstruit(<§$0014§>,sNomProgramme),chaineconstruit(<§$0019§>+" :",(mg_sCrashDestinataires="" ? <§$001b§> sinon mg_sCrashDestinataires)),rc+sErreur+rc+"------------------------"+rc+sErr)
+      		fin
+      	fin
+      	
+      	si mg_sCrashServeur>"" _Et_ mg_sCrashDestinataires>"" alors
+      		SI EnModeService() _OU_ EnModeWebservice() _OU_ OuiNon(ChaîneConstruit(<§$0020§>,sNomProgramme),<§$0021§>) alors
+      			clEmail est un objet cCourriel(mg_sCrashServeur,(mg_sCrashExpéditeur="" ? sNomProgramme SINON mg_sCrashExpéditeur),mg_sCrashMotDePasse)
+      			sMessage est une chaine ANSI 
+      				
+      			si ffichierexiste(sFichierFinal) alors 
+      				clEmail.FichierAjoute(sFichierFinal)
+      				sMessage = [
+      				Bonjour
+      					
+      				L'application s'est arrêtée de manière inattendue. Merci de consulter le fichier joint pour les détails.
+      				]
+      			sinon
+      				SI fFichierExiste(sFichierImage1) 	ALORS clEmail.FichierAjoute(sFichierImage1)
+      				SI fFichierExiste(sFichierImage2) 	ALORS clEmail.FichierAjoute(sFichierImage2)
+      				SI fFichierExiste(sFichierImage3) 	ALORS clEmail.FichierAjoute(sFichierImage3)
+      				SI fFichierExiste(sFichierDump) 	ALORS clEmail.FichierAjoute(sFichierDump)
+      				sMessage = [
+      				Bonjour
+      				
+      				L'application s'est arrêtée de manière inattendue. Ci-dessous le détail de l'erreur :
+      				]
+      				sMessage+=rc+sErreur
+      			FIN
+      			cApplication.mg_bSécurité=faux	//
+      			si clEmail.Envoi(mg_sCrashDestinataires,sMessage,"Crash de l'application"+[" "]+sNomProgramme,(mg_sCrashExpéditeur="" ? sNomProgramme sinon mg_sCrashExpéditeur)) alors 
+      				
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=WindowsMobile>
+      	
+      	SI PAS EnModeTest() _ET_ WL.OuiNon(Oui,<§$0027§>) alors fRepSupprime(sRepTemp);LanceAppli(exeinfo(exeNom))
+      	
+      <sinon si CibleExécution=Webservice>
+      	
+      	RETOUR //le code appelant doit renvoyer une valeur
+      	
+      <fin>
+      
+      				
+      				finprogramme()
+      			sinon 
+      				sErrCourriel=clEmail.p_sErreur
+      			fin
+      		fin
+      	fin
+      		
+      
+      <si CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp>
+      			sFichierTempZip=cApplication._Application.p_sRépertoireDonnées
+      			sPlace=ChaîneConstruit(<§$002b§>,sFichierTempZip)
+      	
+      <sinon si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	sFichierTempZip=fSéparateur(ComplèteRep(SysRep(srBureau)))
+      	sPlace=<§$002a§>
+      	
+      <fin>
+      
+      	
+      	SI PAS EnModeService() _ET_ PAS EnModeWebservice() ALORS
+      		sFichierTempZip=fExtraitChemin(sFichierTempZip,fDisque+fRépertoire)+[fSep()]+fExtraitChemin(sFichierFinal,fFichier)+"_"+DateHeureSys()+fExtraitChemin(sFichierFinal,fExtension)
+      		si sErrCourriel>"" alors sTexte=chaineconstruit(<§$0029§>,mg_sCrashDestinataires)+sErrCourriel
+      		sTexte += [rc]+<§$0017§>
+      		sTexte += rc+ChaîneConstruit(<§$0028§>,(mg_sCrashDestinataires="" ? <§$001b§> sinon mg_sCrashDestinataires))
+      		si fRenomme(sFichierFinal,sFichierTempZip) alors FinProgramme(chaineconstruit(sTexte,sPlace)) sinon FinProgramme(chaineconstruit(sTexte,<§$001f§>+sFichierFinal))
+      	SINON SI PAS mg_sCrashRépertoireDonnées~="" ALORS
+      		fRenomme(sFichierFinal,mg_sCrashRépertoireDonnées+[fSep()]+fExtraitChemin(sFichierFinal,fFichier+fExtension))	//on met le fichier crash dans le répertoire des données
+      	FIN
+      fin
+      
+      	procédure interne ErreurException()
+      	sErreurException est une chaine
+      	sErreurDateHeure,sErreurNbSousErreur,sErreurComposant,sErreurPile sont des chaines
+      	quand exception dans
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      		
+      			sErreurDateHeure 		= ExceptionInfo(errDateHeure)
+      			sErreurNbSousErreur		= ExceptionInfo(errNombreSousErreur)
+      			sErreurComposant		= ExceptionInfo(errNomCompletComposant)
+      			sErreurPile				= ExceptionInfo(errPile)
+      	
+      <fin>
+      
+      	
+      		sErreurCode 			est une chaine = exceptioninfo(errCode)
+      		sErreurMessage			est une chaine = exceptioninfo(errMessage)
+      		sErreurRésumé			est une chaine = exceptioninfo(errRésumé)
+      		
+      		sErreurCodeSystème 		est une chaine = exceptioninfo(errCodeSystème)
+      		sErreurMessageSystème 	est une chaine = exceptioninfo(errMessageSystème)
+      		
+      	//	sErreurDotNet			est une chaine = exceptioninfo(errExceptionDotNet)	//documenté mais fait planter l'appli !
+      		
+      		sErreurFIC 				est une chaine = exceptioninfo(errFIC)
+      		sErreurMMO				est une chaine = ExceptionInfo(errMMO)
+      		sErreurNDX				est une chaine = ExceptionInfo(errNDX)
+      		sErreurNumEnr			est une chaine = ExceptionInfo(errNumEnr)
+      		sErreurWDD				est une chaine = ExceptionInfo(errWDD)
+      		
+      		sErreurTable			est une chaine = ExceptionInfo(errFichier)
+      		sErreurColonne			est une chaine = ExceptionInfo(errRubrique)
+      		sErreurLiaison			est une chaine = ExceptionInfo(errLiaison)
+      		
+      		sErreurInfo				est une chaine = ExceptionInfo(errInfo)	//idem message mais premier caractères tronqués ?!
+      		sErreurDebug			est une chaine = ExceptionInfo(errInfoDebug)
+      		
+      		sErreurTraitement		est une chaine = ExceptionInfo(errTraitement)		//déjà dans pile
+      		sErreurFonction			est une chaine = ExceptionInfo(errPendant)			//déjà dans pile
+      		sErreurLigne			est une chaine = ExceptionInfo(errLigne)			//déjà dans pile
+      		sErreurElement 			est une chaine = ExceptionInfo(errElément)			//déjà dans pile
+      		
+      		
+      		SI sErreurMessage>"" 		ALORS sErreurException+=[RC]+<§$0022§>+sErreurCode+[" : "]+sErreurMessage
+      		SI sErreurMessageSystème>"" ALORS sErreurException+=[RC]+<§$0023§>+sErreurCodeSystème+[" : "]+sErreurMessageSystème
+      		SI sErreurComposant>"" 		ALORS sErreurException+=[RC]+<§$0024§>+sErreurComposant
+      		SI sErreurTable>"" 			ALORS sErreurException+=[RC]+<§$0025§>+sErreurTable+["."]+sErreurColonne+[":"]+sErreurLiaison
+      	//		SI sErreurDotNet>"" 		ALORS sErreurException+=[RC]+"DotNet : "+sErreurDotNet
+      		sErreurException+=[RC+RC]+sErreurPile
+      		
+      		RENVOYER sErreurException
+      	FAIRE
+      		renvoyer exceptioninfo(errMessage)
+      	fin
+      	FIN
+     type : 458752
+   -
+     name : InfoAsynchrone
+     internal_properties : CQAAAAkAAABKg4tYdc4HIQR+54WZ7NiFUcsfxeUzGF85pVPgQkSCzoe7o12dKpXcEQ5PPIM835xL1ZNj02vlE1ZKBOgXeEyE4yiVPxVZFJIfUGOyQIPq5Zv/SLoTaXrM2EGFKXghRzAJ+jD7W+3KkrRLwa5T1+Sl6hiX0a/SFNfl7G1cZv/Qv8J9sVIZAycmefx2BHK9oZGycAzmjKBzQ7b2lsM7AG0N21cyzMD7rKt6P8mZHPuDoUb+7u8JuU9ls7VxUASQ98RExtpdkGI8fTqfVq2dHpkvbixDpxvwQlmqnxKH/leu/oYPXTm99yaA2CrmVCqKuxuPWS7t/w4eA/kvhGMOSgrFdAmhkQDjyAjTZtc51GPZMUoWHvRBKC/F3AKyP8kQ/U9l1L9QTh+VK4eRu2XALhvGw5MJlLUu
+     procedure_id : 1632470301809493387
+     type_code : 12
+     code : |1+
+      // Résumé : Permet d'afficher un message informatif à l'utilisateur. Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché. Est utilisé par COL_Log.InfoAsynchrone()
+      // Syntaxe : InfoAsynchrone (<xMessage> [, <procCallBack> est procédure])
+      // Paramètres :
+      //	xMessage : Message informatif.
+      //	procCallBack (procédure optionnelle) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre d'information. 
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE InfoAsynchrone(xMessage,procCallBack est une procédure = null)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	sMessage est une chaine = xMessage
+      	AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      	si VersionWinDev()<25 alors 
+      		info(sMessage) 
+      	sinon 
+      		WL.InfoAsynchrone(sMessage,procCallBack)
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : InfoAvecDélai
+     procedure_id : 1632472934761505615
+     type_code : 12
+     code : |1+
+      // Résumé : Afficher un message informatif à l'utilisateur après un délai. Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché. Est utilisé par COL_Log.InfoAvecDélai()
+      // Syntaxe : InfoAvecDélai (<duDélai> est durée, <xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      //	duDélai (durée) : durée avant la fermeture automatique de la fenêtre d'information système.
+      //	xParam1 : Premier paramètre du message informatif.
+      //	xParam2 (valeur par défaut="") : Deuxième paramètre du message informatif. La valeur par défaut est une chaîne vide.
+      //	xParam3 (valeur par défaut="") : Troisième paramètre du message informatif. La valeur par défaut est une chaîne vide.
+      //	xParam4 (valeur par défaut="") : Quatrième paramètre du message informatif. La valeur par défaut est une chaîne vide.
+      //	xParam5 (valeur par défaut="") : Cinquième paramètre du message informatif. La valeur par défaut est une chaîne vide.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE InfoAvecDélai(duDélai est une durée,xParam1,xParam2<utile>="",xParam3<utile>="",xParam4<utile>="",xParam5<utile>="")		//WD25 : on ne peut pas faire * car pas compatible avec Java)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64>
+      	
+      	sMessage est une chaine = xParam1
+      	POUR nParam = 3 a 6 
+      		sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [RC]+{"xParam"+nParam,indVariable})
+      	FIN
+      	AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      	DélaiAvantFermeture(1000)
+      	WL.Info(sMessage)
+      	DélaiAvantFermeture(0)	//évite que la prochaine boite de dialogue ait un délai inattendu
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : ErreurAvecDélai
+     procedure_id : 1696790462147229145
+     type_code : 12
+     code : |1+
+      // Résumé : Permet d'afficher un message d'erreur à l'utilisateur après un délai. Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché. Est utilisé par COL_Log.ErreurAvecDélai()
+      // Syntaxe : ErreurAvecDélai (<duDélai> est durée, <xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      //	duDélai (durée) : durée avant la fermeture automatique de la fenêtre d'information système. Le délai minimum est 1 seconde.
+      //	xParam1 : Premier paramètre du message d'erreur.
+      //	xParam2 (valeur par défaut="") : ligne supplémentaire de l'erreur
+      //	xParam3 (valeur par défaut="") : ligne supplémentaire de l'erreur
+      //	xParam4 (valeur par défaut="") : ligne supplémentaire de l'erreur
+      //	xParam5 (valeur par défaut="") : ligne supplémentaire de l'erreur
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE ErreurAvecDélai(duDélai est une durée,xParam1,xParam2<utile>="",xParam3<utile>="",xParam4<utile>="",xParam5<utile>="")		//WD25 : on ne peut pas faire * car pas compatible avec Java)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64>
+      	
+      	sMessage est une chaine = xParam1
+      	POUR nParam = 3 a 6 
+      		sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [RC]+{"xParam"+nParam,indVariable})
+      	FIN
+      	AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      	DélaiAvantFermeture(1000)
+      	WL.erreur(sMessage)
+      	DélaiAvantFermeture(0)	//évite que la prochaine boite de dialogue ait un délai inattendu
+      	
+      <fin>
+      
+      
+     type : 458752
+   -
+     name : InfoAvecDélaiAsynchrone
+     internal_properties : CQAAAAkAAABZwjWHp3Fhxk5QweVDgFiPoSx04s4ARS5i494yneb92FChHCLqyVbtYko/uzQxNq5kybOIdXqH9wVVXnh7ONpNBZkacwM+dxzeGlQkUSKG9Nq3bze8AeVK6sqqgYE2EbQq2SSb8BN4S1z+x1U2eCibkiWoQIzOitW5eotKWuNVUhDQ2tjf2iG/6TVGk1avzfaqbmbO8SWsqqJQWGjHy1B66lAWjCv4/0WvO9yh0en1OiHmt4X0a3SjQPl3SK2Cm9KGCOa9vxibVKOtJSo2EAG15LF6/mbDwYlga01pjr2AfQf7V5qdpQ0S68xZhXv2Y/I8XMKBAmHN//ZmrOgYZDJ+Y+Ejh/96C0Ss42wYfJTu
+     procedure_id : 1696796578180837106
+     type_code : 12
+     code : |1+
+      // Résumé : Afficher un message informatif asynchrone à l'utilisateur après un délai. Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché. Est utilisé par COL_Log.InfoAvecDélaiAsynchrone()
+      // Syntaxe : InfoAvecDélaiAsynchrone (<duDélai> est durée, <xMessage> [, <procCallBack> est procédure])
+      // Paramètres :
+      //	duDélai (durée) : durée avant la fermeture automatique de la fenêtre d'information système.
+      //	xMessage : Message informatif.
+      //	procCallBack (procédure - valeur par défaut=0) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre d'information.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE InfoAvecDélaiAsynchrone(duDélai est une durée,xMessage,procCallBack est une procédure = null)		//WD25 : on ne peut pas faire * car pas compatible avec Java)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	sMessage est une chaine = xMessage
+      	AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      	SI VersionWINDEV()<25 ALORS 
+      		Infoavecdelai(duDélai,sMessage) 
+      	SINON 
+      		WL.InfoAvecDélaiAsynchrone(duDélai,sMessage,procCallBack)
+      	FIN
+      	
+      <fin>
+      
+      
+     type : 458752
+   -
+     name : InfoConstruit
+     procedure_id : 1696823043772855680
+     type_code : 12
+     code : |1+
+      // Résumé : Permet d'afficher un message informatif personnalisé à l'utilisateur. Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché. Est utilisé par COL_Log.InfoConstruit()
+      // Syntaxe : Info ( [<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]]])
+      // Paramètres :
+      // 	xParam1 (valeur) : Premier paramètre du message informatif.
+      // 	xParam2 (valeur optionnelle): Premier paramètre de l'information (remplacera le %1)
+      // 	xParam3 (valeur optionnelle): Premier paramètre de l'information (remplacera le %2)
+      // 	xParam4 (valeur optionnelle): Premier paramètre de l'information (remplacera le %3)
+      // 	xParam5 (valeur optionnelle): Premier paramètre de l'information (remplacera le %4)
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE InfoConstruit(xParam1,xParam2<utile>="",xParam3<utile>="",xParam4<utile>="",xParam5<utile>="")		//WD25 : on ne peut pas faire * car pas compatible avec Java
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      	sMessage est une chaine = xParam1
+      	sMessage=chaineconstruit(sMessage,xParam2,xParam3,xParam4,xParam5)
+      	AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      	WL.Info(sMessage)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : ErreurAsynchrone
+     internal_properties : CQAAAAkAAADhpqbkvcy/nl5ioDHKw8pfOmgwp2rO2h+J37d/p/AjVDXpDS+3a8iATiWJ0abzZ1/4bo9POJHyTweLuPsHsgx0wUtPp/KaK4dFT3M8/BYsWy4htx98vSffT/qyo8K9zvP1kS5G9FmPmqA7GJVs2+0JeI7E/e19nObfBIieriqFHwBUwi6RSSHVMKVs7RXv67dRxGcb5L8AwiEbcN/zib9DIA2p+knbxo7lKrqc4vCfdq6ArOl5dDUgYKp1/5vyWnMN36MkNeZwjgvgul89na6t
+     procedure_id : 1696824817598038791
+     type_code : 12
+     code : |1+
+      // Résumé : Permet d'afficher un message d'erreur à l'utilisateur. Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché. Est utilisé par COL_Log.ErreurAsynchrone()
+      // Syntaxe : ErreurAsynchrone (<xMessage> [, <procCallBack> est procédure])
+      // Paramètres :
+      //	xMessage : Message d'erreur.
+      //	procCallBack (procédure optionnelle) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre d'erreur. 
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE ErreurAsynchrone(xMessage,procCallBack est une procédure = null)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	sMessage est une chaine = xMessage
+      	AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      	SI VersionWINDEV()<25 ALORS 
+      		Erreur(sMessage) 
+      	SINON 
+      		WL.ErreurAsynchrone(sMessage,procCallBack)
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : ErreurAvecDélaiAsynchrone
+     internal_properties : CQAAAAkAAABfEMhpe1RiyrhipQAE3lmuRc/bDPpunmsNk7frna+Ip215LxKrzkXM7+8sxw651nQ43VXc0J+K3lK9Kd/UCjYuc9CpVymK/2F+IIEVMUqGh/tBFRVeBsb+h0wsgtVhSfEtDhw+t4fz3qIfS5twpI1vqRFwbw4uuN58Ng7d00BMSewtEYELOjAofJlTNakOuvLMxntpm/pY/WYhODOLXTIZgyuMJiNlhCZ9wdREehBULNkEJalwg3XVo/oZFhxu3eL5j7hprqCxR73rYQXpbboJdgudH2M/wc0blZo5FZCgr/Y3s7RR408gVsgsS+3B3YzDcX5kVnBR3i44h3RsciIHcOOuPPa0EbNEfQsymX3uqkfN
+     procedure_id : 1696826668732651167
+     type_code : 12
+     code : |1+
+      // Résumé : Afficher un message d'erreur asynchrone à l'utilisateur après un délai. Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché. Est utilisé par COL_Log.ErreurAvecDélaiAsynchrone()
+      // Syntaxe : ErreurAvecDélaiAsynchrone (<duDélai> est durée, <xMessage> [, <procCallBack> est procédure])
+      // Paramètres :
+      //	duDélai (durée) : durée avant la fermeture automatique de la fenêtre d'information système.
+      //	xMessage : Message d'erreur.
+      //	procCallBack (procédure - valeur par défaut=0) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre d'erreur.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE ErreurAvecDélaiAsynchrone(duDélai est une durée,xMessage,procCallBack est une procédure = null)		//WD25 : on ne peut pas faire * car pas compatible avec Java)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	sMessage est une chaine = xMessage
+      	AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      	SI VersionWINDEV()<25 ALORS 
+      		Erreuravecdelai(duDélai,sMessage) 
+      	SINON 
+      		WL.ErreurAvecDélaiAsynchrone(duDélai,sMessage,procCallBack)
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : ErreurConstruit
+     procedure_id : 1696827287208085400
+     type_code : 12
+     code : |1+
+      // Résumé : Permet d'afficher un message d'erreur personnalisé à l'utilisateur. Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché. Est utilisé par COL_Log.ErreurConstruit()
+      // Syntaxe :
+      //ErreurConstruit (<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      //	xParam1 : Premier paramètre du message d'erreur.
+      //	xParam2 (valeur par défaut="") : Premier paramètre de l'erreur (remplacera le %1)
+      //	xParam3 (valeur par défaut="") : Premier paramètre de l'erreur (remplacera le %2)
+      //	xParam4 (valeur par défaut="") : Premier paramètre de l'erreur (remplacera le %3)
+      //	xParam5 (valeur par défaut="") : Premier paramètre de l'erreur (remplacera le %4)
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE ErreurConstruit(xParam1,xParam2<utile>="",xParam3<utile>="",xParam4<utile>="",xParam5<utile>="")		//WD25 : on ne peut pas faire * car pas compatible avec Java
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      	sMessage est une chaine = xParam1
+      	sMessage=chaineconstruit(sMessage,xParam2,xParam3,xParam4,xParam5)
+      	AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      	WL.Erreur(sMessage)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : ConfirmerAsynchrone
+     internal_properties : CQAAAAkAAACrpl9UVGr0Dkr0GWBNI4o3zzBMTNVWOl1Om79k0zxulQmXhUEJzZCyRSZDV0eLl244jmw80Lqmzjw7DQUnbITz8EN41CR/3P7hFZFWY2zt2YAP1HqAASydBkuGcHslnEi9pPKEzoNRzm1X0OAQxm66tn4kyuJVhdpSOPr9LkFOxojyEKfKRxIPo19s2FcCQNiqy0i1nty64cPsalhBqjLIxMlJD5bBJ+xkIHIZ5ZRz1NdhjANE0zK7zhk4oNG/V7s3DJ8SCfX6n/SvI5t5j6zVgamn
+     procedure_id : 1696828403899777402
+     type_code : 12
+     code : |1+
+      // Résumé : Permet d'afficher un message de confirmation à l'utilisateur. Est utilisé par COL_Log.ConfirmerAsynchrone()ErreurAsynchrone()synchrone()
+      // Syntaxe : [ <Résultat> = ] ConfirmerAsynchrone (<xBouton>, <xMessage> [, <procCallBack> est procédure])
+      // Paramètres :
+      //	xBouton : Bouton sélectionné par défaut (Oui, Non, Annuler) ou message principal de la confirmation
+      //	xMessage : Message de confirmation.
+      //	procCallBack (procédure - valeur par défaut=0) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre de confirmation.
+      // Valeur de retour (entier) : Valeur du bouton cliqué (Oui = 1, Non = 0, Annuler = 2)
+      // Exemple :
+      PROCEDURE ConfirmerAsynchrone(xBouton,xMessage,procCallBack est une procédure = null) : entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	sMessage est une chaine = xMessage
+      	AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      	SI VersionWINDEV()<25 ALORS 
+      		renvoyer Confirmer(xBouton,sMessage) 
+      	SINON 
+      		WL.ConfirmerAsynchrone(sMessage,procCallBack)
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : DialogueAsynchrone
+     internal_properties : CQAAAAkAAAAbLUmbvdx72opo39G5s3OmrNJQpeAE2OeC+c2wlkperQuC93o4aYS4aOpmbs8kfnk7u2Zumd0BTggZqKYT/gjVmrPXclcYS3ylvkf9jByWIRObH1/ee02y1A1AjV8W4s6zfNn7cxtM82NGqYduEeTR9vivozD0uTqA219kIPBuq36Wo0bGgrrDsaBnDT0nVu93BQMm5N1WYfk9HJkrqagfy+7L/IaEb0BOnMrAx117iftfqQx2o4mEOb0wRmB5QkvuhXl2DDWl7H8EvETHhx/rywIk3w==
+     procedure_id : 1696830890690091115
+     type_code : 12
+     code : |1+
+      // Résumé : Permet d'afficher une boite de dialogue à l'utilisateur. Elle prend en charge plusieurs paramètres permettant de personnaliser le message affiché. Est utilisé par COL_Log.DialogueAsynchrone()
+      // Syntaxe :
+      //[ <Résultat> = ] DialogueAsynchrone (<IDMessage> [, <procCallBack> est procédure [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]]])
+      // Paramètres :
+      //	IDMessage : Identifiant de la boite de dialogue.
+      //	procCallBack (procédure - valeur par défaut=0) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur une option de la boite de dialogue.
+      //	xParam2 (valeur par défaut="") : Premier paramètre de la question (remplacera le %1)
+      //	xParam3 (valeur par défaut="") : Second paramètre de la question (remplacera le %2)
+      //	xParam4 (valeur par défaut="") : Troisième paramètre de la question (remplacera le %3)
+      //	xParam5 (valeur par défaut="") : Quatrième paramètre de la question (remplacera le %4)
+      // Exemple :
+      // Valeur de retour (entier) : Valeur du bouton cliqué dans la boite de dialogue
+      PROCEDURE DialogueAsynchrone(IDMessage,procCallBack est une procédure = null,xParam2="",xParam3="",xParam4="",xParam5="")
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	sMessage est une chaine = IDMessage
+      	AjouteTexte(sMessage,eLogNiveauActionUtilisateur)
+      	SI VersionWINDEV()<25 ALORS 
+      		renvoyer wl.Dialogue(IDMessage,xParam2="",xParam3="",xParam4="",xParam5="") 
+      	SINON 
+      		WL.DialogueAsynchrone(IDMessage,procCallBack)
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+  properties :
+   -
+     name : p_nDelaiRecommenceEnMin
+     identifier : 0x1aac0919041d1e84
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le délai de "retry" pour la persistance/envoi d'un log
+         PROCEDURE PUBLIQUE p_nDelaiRecommenceEnMin() : entier
+         RENVOYER m_nDelaiRecommenceEnMin
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de prendre en compte un nouveau délai de "retry" pour la persistance/envoi d'un log
+         PROCEDURE PUBLIQUE p_nDelaiRecommenceEnMin(nValeur est un entier)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(nValeur)
+         si nValeur>1 alors m_nDelaiRecommenceEnMin=nValeur sinon m_nDelaiRecommenceEnMin=1
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sServeurCourriel
+     identifier : 0x1b86dfc61b1b3308
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'adresse du serveur de courriel utilisé pour l'envoi des logs
+         PROCEDURE PUBLIQUE p_sServeurCourriel() : chaine
+         renvoyer (m_pclCourriel=null ? "" sinon m_pclCourriel.p_sServeurCourriel)
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de modifier l'adresse du serveur de courriel utilisé pour l'envoi des logs
+         PROCEDURE PUBLIQUE p_sServeurCourriel(sServeurCourriel est une chaine)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(sServeurCourriel)
+         m_pclCourriel.p_sServeurCourriel=sServeurCourriel
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sFichierEnCours
+     identifier : 0x1b967e89108a69fc
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom du fichier log en cours d'utilisation
+         PROCEDURE PUBLIQUE p_sFichierEnCours() : chaîne
+         renvoyer (m_pclFichierLog=null ? "" sinon m_pclFichierLog.m_sFichierEnCoursChemin)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sRépertoireDonnées
+     identifier : 0x1c4f119810fda369
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Permet de modifier le répertoire dans lequel le fichier de crash sera créé le cas échéant
+         PROCEDURE PUBLIQUE GLOBALE p_sRépertoireDonnées(Valeur)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(Valeur)
+         mg_sCrashRépertoireDonnées=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sFichierGénériqueChemin
+     identifier : 0x1d2f1b3003d28700
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom générique des fichiers logs qui seront créés
+         PROCEDURE PUBLIQUE p_sFichierGénériqueChemin() : chaine
+         renvoyer (m_pclFichierLog=null ? "" sinon m_pclFichierLog.m_sFichierNomGénériqueChemin)
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_coFichierNiveaux
+     identifier : 0x1d2f1c3103f47296
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie les niveaux qui déclencheront l'écriture de message de log dans un fichier
+         PROCEDURE PUBLIQUE p_coFichierNiveaux()
+         renvoyer m_coFichierNiveaux
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_coEventLogNiveaux
+     identifier : 0x1d2f1c5a03f51470
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie les niveaux qui déclencheront l'écriture de message de log dans l'EventLog de Windows
+         PROCEDURE PUBLIQUE p_coEventLogNiveaux() : COlogniveau
+         renvoyer m_coEventLogNiveaux
+        type : 1966080
+     template_refs : []
+   -
+     name : p_coBDNiveaux
+     identifier : 0x1d2f1c7003f66a0e
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie les niveaux qui déclencheront l'écriture de message de log dans la base de données
+         PROCEDURE PUBLIQUE p_coBDNiveaux()
+         renvoyer m_coBDNiveaux
+        type : 1966080
+     template_refs : []
+   -
+     name : p_coCourrielNiveaux
+     identifier : 0x1d2f1c8603f7bec2
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie les niveaux qui déclencheront l'envoi de message de log par courriel
+         PROCEDURE PUBLIQUE p_coCourrielNiveaux() : COlogniveau
+         renvoyer m_coCourrielNiveaux
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1aa9652500c9403e
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : L'utilisateur %1 a ouvert l'application
+      en-GB : User %1 has opened the application
+      fr-CA : L'utilisateur %1 a ouvert l'application
+      en-US : User %1 has opened the application
+     index : 0
+   -
+     text :
+      fr-FR : Serveur Web PHP
+      en-GB : PHP Web Server
+      fr-CA : Serveur Web PHP
+      en-US : PHP Web Server
+     index : 2
+   -
+     text :
+      fr-FR : Appareil mobile
+      en-GB : Mobile device
+      fr-CA : Appareil mobile
+      en-US : Mobile device
+     index : 3
+   -
+     text :
+      fr-FR : "Impossible de faire un PING sur le serveur "
+      en-GB : "Unable to Ping Server "
+      fr-CA : "Impossible de faire un PING sur le serveur "
+      en-US : "Unable to Ping Server "
+     index : 4
+   -
+     text :
+      fr-FR : Aucun destinataire
+      en-GB : No recipient address
+      fr-CA : Aucun destinataire
+      en-US : No recipient address
+     index : 5
+   -
+     text :
+      fr-FR : Adresse d'expéditeur invalide
+      en-GB : Invalid sender address
+      fr-CA : Adresse d'expéditeur invalide
+      en-US : Invalid sender address
+     index : 6
+   -
+     text :
+      fr-FR : Aucun niveau à logguer (voir _LogNiveauXxx)
+      en-GB : No level to log (see _LogNiveauXxx)
+      fr-CA : Aucun niveau à logguer (voir _LogNiveauXxx)
+      en-US : No level to log (see _LogNiveauXxx)
+     index : 7
+   -
+     text :
+      fr-FR : L'adresse destinataire %1 invalide
+      en-GB : The destination address %1 is invalid
+      fr-CA : L'adresse destinataire %1 invalide
+      en-US : The destination address %1 is invalid
+     index : 8
+   -
+     text :
+      fr-FR : L'adresse courriel du support est invalide
+      en-GB : The support email address is invalid
+      fr-CA : L'adresse courriel du support est invalide
+      en-US : The support email address is invalid
+     index : 9
+   -
+     text :
+      fr-FR : La requête d'insertion est obligatoire
+      en-GB : The insert query is required
+      fr-CA : La requête d'insertion est obligatoire
+      en-US : The insert query is required
+     index : 10
+   -
+     text :
+      fr-FR : "La requête d'insertion doit comporter 3 paramètres obligatoires : %1=Action,%2=Message,%3=Statut. Optionnels : %4=Module,%5=LoginDuClient,%6=Machine,%7=Application,%8=DateHeure"
+      en-GB : "The insertion request has 3 parameters required : %1=Action,%2=Message,%3=Status. Optional : %4=Module,%5=CustomerLogin,%6=Machine,%7=Application,%8=DateTime"
+      fr-CA : "La requête d'insertion doit comporter 3 paramètres obligatoires : %1=Action,%2=Message,%3=Statut. Optionnels : %4=Module,%5=LoginDuClient,%6=Machine,%7=Application,%8=DateHeure"
+      en-US : "The insertion request has 3 parameters required : %1=Action,%2=Message,%3=Status. Optional : %4=Module,%5=CustomerLogin,%6=Machine,%7=Application,%8=DateTime"
+     index : 11
+   -
+     text :
+      fr-FR : L'indice de connexion doit être différent de 0
+      en-GB : The connection index must be different from 0
+      fr-CA : L'indice de connexion doit être différent de 0
+      en-US : The connection index must be different from 0
+     index : 12
+   -
+     text :
+      fr-FR : Cette méthode ne fonctionne qu'en mode service
+      en-GB : This method only works in service mode
+      fr-CA : Cette méthode ne fonctionne qu'en mode service
+      en-US : This method only works in service mode
+     index : 13
+   -
+     text :
+      fr-FR : "Le répertoire %1 ne peut pas être créé : "
+      en-GB : "Unable to create the directory %1 :"
+      fr-CA : "Le répertoire %1 ne peut pas être créé : "
+      en-US : "Unable to create the directory %1 :"
+     index : 14
+   -
+     text :
+      fr-FR : "Impossible d'écrire le message dans le fichier : "
+      en-GB : "Unable to write message to file : "
+      fr-CA : "Impossible d'écrire le message dans le fichier : "
+      en-US : "Unable to write message to file : "
+     index : 15
+   -
+     text :
+      fr-FR : Niveau d'envoi de courriel inconnu
+      en-GB : Unknown email level
+      fr-CA : Niveau d'envoi de courriel inconnu
+      en-US : Unknown email level
+     index : 16
+   -
+     text :
+      fr-FR : "Impossible d'ouvrir une session SMTP sur %1 : "
+      en-GB : "Unable to log on to SMTP on %1 : "
+      fr-CA : "Impossible d'ouvrir une session SMTP sur %1 : "
+      en-US : "Unable to log on to SMTP on %1 : "
+     index : 17
+   -
+     text :
+      fr-FR : "Impossible d'ouvrir la connexion aux données de "
+      en-GB : "Unable to open data connection to "
+      fr-CA : "Impossible d'ouvrir la connexion aux données de "
+      en-US : "Unable to open data connection to "
+     index : 18
+   -
+     text :
+      fr-FR : Impossible d'écrire le message dans la base de données
+      en-GB : Unable to write message to database
+      fr-CA : Impossible d'écrire le message dans la base de données
+      en-US : Unable to write message to database
+     index : 19
+   -
+     text :
+      fr-FR : Un erreur est survenue dans %1
+      en-GB : An error occurred in %1
+      fr-CA : Un erreur est survenue dans %1
+      en-US : An error occurred in %1
+     index : 20
+   -
+     text :
+      fr-FR : "Merci d'envoyer le message ci-dessous à <%1> avec la séquence des actions faites juste avant le problème : "
+      en-GB : "Please send the message below to <%1> with the sequence of actions made just before the problem : "
+      fr-CA : "Merci d'envoyer le message ci-dessous à <%1> avec la séquence des actions faites juste avant le problème : "
+      en-US : "Please send the message below to <%1> with the sequence of actions made just before the problem : "
+     index : 21
+   -
+     text :
+      fr-FR : support informatique
+      en-GB : IT support
+      fr-CA : support informatique
+      en-US : IT support
+     index : 22
+   -
+     text :
+      fr-FR : Un fichier a été créé %1 pour faciliter la correction de l'erreur survenue
+      en-GB : A file was created %1 to help correct the error
+      fr-CA : Un fichier a été créé %1 pour faciliter la correction de l'erreur survenue
+      en-US : A file was created %1 to help correct the error
+     index : 23
+   -
+     text :
+      fr-FR : Merci de l'envoyer à <%1> avec la séquence des actions faites juste avant le problème
+      en-GB : Please send it to <%1> with the sequence of actions done just before the problem
+      fr-CA : Merci de l'envoyer à <%1> avec la séquence des actions faites juste avant le problème
+      en-US : Please send it to <%1> with the sequence of actions done just before the problem
+     index : 24
+   -
+     text :
+      fr-FR : Merci d'envoyer le message ci-dessous à <%1> avec la séquence des actions faites juste avant le problème
+      en-GB : Please send the message below to <%1> with the sequence of actions taken just before the problem
+      fr-CA : Merci d'envoyer le message ci-dessous à <%1> avec la séquence des actions faites juste avant le problème
+      en-US : Please send the message below to <%1> with the sequence of actions taken just before the problem
+     index : 25
+   -
+     text : {}
+     index : 26
+   -
+     text :
+      fr-FR : support informatique
+      en-GB : helpdesk
+      fr-CA : support informatique
+      en-US : helpdesk
+     index : 27
+   -
+     text : {}
+     index : 28
+   -
+     text :
+      fr-FR : L'adresse courriel %1 invalide
+      en-GB : "%1 is an invalid email address"
+      fr-CA : L'adresse courriel %1 invalide
+      en-US : "%1 is an invalid email address"
+     index : 29
+   -
+     text :
+      fr-FR : sur votre bureau
+      en-GB : on your Windows desktop
+      fr-CA : sur votre bureau
+      en-US : on your Windows desktop
+     index : 30
+   -
+     text :
+      fr-FR : "dans "
+      en-GB : "in  "
+      fr-CA : "dans "
+      en-US : "in  "
+     index : 31
+   -
+     text :
+      fr-FR : L'application %1 s'est arrêtée de manière inattendue
+      en-GB : Application %1 stopped unexpectedly
+      fr-CA : L'application %1 s'est arrêtée de manière inattendue
+      en-US : Application %1 stopped unexpectedly
+     index : 32
+   -
+     text :
+      fr-FR : Voulez-vous envoyer le détail de l'erreur au support technique ?
+      en-GB : Would you like to send the details of the error to Technical Support ?
+      fr-CA : Voulez-vous envoyer le détail de l'erreur au support technique ?
+      en-US : Would you like to send the details of the error to Technical Support ?
+     index : 33
+   -
+     text :
+      fr-FR : "Erreur : "
+      en-GB : "Error : "
+      fr-CA : "Erreur : "
+      en-US : "Error : "
+     index : 34
+   -
+     text :
+      fr-FR : "Système : "
+      en-GB : "System : "
+      fr-CA : "Système : "
+      en-US : "System : "
+     index : 35
+   -
+     text :
+      fr-FR : "Composant : "
+      en-GB : "Component : "
+      fr-CA : "Composant : "
+      en-US : "Component : "
+     index : 36
+   -
+     text :
+      fr-FR : "Table : "
+      en-GB : "Table : "
+      fr-CA : "Table : "
+      en-US : "Table : "
+     index : 37
+   -
+     text :
+      fr-FR : "L'erreur a été envoyée au support.\",\"Vous pouvez relancer l'application"
+      en-GB : "L'erreur a été envoyée au support.\",\"Vous pouvez relancer l'application."
+      fr-CA : "L'erreur a été envoyée au support.\",\"Vous pouvez relancer l'application."
+     index : 38
+   -
+     text :
+      fr-FR : L'erreur a été envoyée au support. Voulez-vous relancer l'application ?
+      en-GB : The error was sent to the support. Do you want to restart the application ?
+      fr-CA : L'erreur a été envoyée au support. Voulez-vous relancer l'application ?
+      en-US : The error was sent to the support. Do you want to restart the application ?
+     index : 39
+   -
+     text :
+      fr-FR : Merci d'envoyer ce fichier à <%1> avec la séquence des actions faites juste avant le problème
+      en-GB : Please send this file to <%1> with the sequence of actions made just before the problem
+      fr-CA : Merci d'envoyer ce fichier à <%1> avec la séquence des actions faites juste avant le problème
+      en-US : Please send this file to <%1> with the sequence of actions made just before the problem
+     index : 40
+   -
+     text :
+      fr-FR : "Le courriel n'a pas pu être envoyé à <%1> : "
+      en-GB : "The email could not be sent to <%1> : "
+      fr-CA : "Le courriel n'a pas pu être envoyé à <%1> : "
+      en-US : "The email could not be sent to <%1> : "
+     index : 41
+   -
+     text :
+      fr-FR : le bureau Windows
+      en-GB : the Windows desktop
+      fr-CA : le bureau Windows
+      en-US : the Windows desktop
+     index : 42
+   -
+     text :
+      fr-FR : le répertoire <%1>
+      en-GB : the directory <%1>
+      fr-CA : le répertoire <%1>
+      en-US : the directory <%1>
+     index : 43
+   -
+     text :
+      fr-FR : Cliquez sur OK pour envoyer un courriel permettant d'envoyer le détail de l'erreur au support technique
+      en-GB : Click OK to send an email to send the details of the error to Technical Support
+      fr-CA : Cliquez sur OK pour envoyer un courriel permettant d'envoyer le détail de l'erreur au support technique
+      en-US : Click OK to send an email to send the details of the error to Technical Support
+     index : 44
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,148 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cAPILayer
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12a7883f01587191
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet d'interroger les services de APILayer parmi une 100aine proposée. Certains sont gratuits, d'autres payants.
+      //L'exemple proposé dans Betula permet de récupérer les taux de change.
+      //Attention : d'abord s'inscrire gratuitement sur https://apilayer.com/ pour avoir une clé API
+      
+      cAPILayer est une Classe, abstraite
+      	hérite de cHTTPAPI
+      public constant
+      	m_duTimeOut				est une durée		<serialise = faux>			//Durée après laquelle le timeout se déclenche
+      protégé
+      	m_vRéponse				est un variant		<serialise = faux>			//Réponse de l'appel API sous forme de variant
+      	m_nMaxRequêteParJour	est un entier		<serialise = faux>			//Nombre limite d'appels par jour dans l'offre souscrite
+      	m_nRequêteCeJour		est un entier		<serialise = faux>			//Nombre d'appels déjà effectués aujourd'hui
+      	m_nMaxRequêteParMois	est un entier		<serialise = faux>			//Nombre limite d'appels par mois dans l'offre souscrite
+      	m_nRequêteCeMois		est un entier		<serialise = faux>			//Nombre d'appels déjà effectués ce mois
+      privé
+      	m_sCléAPI				est une chaîne		<serialise = faux>			//Clé API pour accéder au service
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1344192817980338577
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe cAPI.
+      // Syntaxe : Constructeur (<sURLDeBase> est chaîne, <sCléAPI> est chaîne [, <duTimeOut> est durée])
+      // Paramètres :
+      //	sURLDeBase (chaîne UNICODE) : URL de base de la classe qui hérite
+      //	sCléAPI (chaîne UNICODE) : La clé API pour permettre l'accès au service
+      //	duTimeOut (durée optionnelle) : Durée après laquelle le timeout se déclenche, par défaut : 5 secondes
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(sURLDeBase est une chaine, sCléAPI est une chaine,duTimeOut est une durée = 5s)
+      cHTTPAPI.constructeur("https://api.apilayer.com/"+sURLDeBase+"/")	
+      m_sCléAPI 	= sCléAPI
+      m_duTimeOut = duTimeOut
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1344192817980404113
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : Aucune
+      //
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : APILayerRestExécute
+     procedure_id : 1344201206052241367
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute un appel API sur le service de APILayer. Récupère en même temps les limites et la consommation courante du service selon l'offre souscrite.
+      // Syntaxe : [ <Résultat> = ] APILayerRestExécute (<sURL> est chaîne)
+      // Paramètres :
+      //	sURL (chaîne UNICODE) : URL de l'appel
+      // Valeur de retour : booléen : Vrai si l'appel a donné un résultat, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE protégé APILayerRestExécute(local sURL est une chaine) : booleen
+      m_pclErreur.RAZ();ancetre.raz()
+      si m_sCléAPI~="" 	alors m_pclErreur.AjouteErreur(<§$0000§>)
+      si sURL~="" 		alors m_pclErreur.AjouteErreur(<§$0001§>)
+      si m_pclErreur.p_sErreur>"" alors renvoyer faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	m_stRequêteHTTPAPI.nTimeOutConnexion= m_duTimeOut
+      	m_stRequêteHTTPAPI.sURL				= sURL
+      	SI RestExecute(chttpAPI.APIKey,m_sCléAPI) ALORS
+      		vRéponse 	est un variant 		= RéponseJSONansiVersVariant()
+      		SI vRéponse.success ALORS
+      			m_nMaxRequêteParJour		= Val(m_stReponseHTTPAPI.taEntête["x-ratelimit-limit-day"])
+      			m_nRequêteCeJour			= Val(m_stReponseHTTPAPI.taEntête["x-ratelimit-limit-day"])-Val(m_stReponseHTTPAPI.taEntête["x-ratelimit-remaining-day"])
+      			m_nMaxRequêteParMois		= Val(m_stReponseHTTPAPI.taEntête["x-ratelimit-limit-month"])
+      			m_nRequêteCeMois			= Val(m_stReponseHTTPAPI.taEntête["x-ratelimit-limit-month"])-Val(m_stReponseHTTPAPI.taEntête["x-ratelimit-remaining-month"])
+      			m_vRéponse 					= vRéponse
+      			RENVOYER Vrai
+      		SINON
+      			m_pclErreur.AjouteErreur(vRéponse.error.info,vRéponse.error.code)
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x12a7883901525bb0
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : La clé API est obligatoire
+      en-GB : API key is mandatory
+      fr-CA : La clé API est obligatoire
+      en-US : API key is mandatory
+     index : 0
+   -
+     text :
+      fr-FR : L'URL est obligatoire
+      en-GB : URL is required
+      fr-CA : L'URL est obligatoire
+      en-US : URL is required
+     index : 1
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

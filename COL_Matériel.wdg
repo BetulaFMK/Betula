@@ -1,0 +1,1215 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_Matériel
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x119ef1400bd8778a
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      EImprimanteJobStatut est une énumération
+      	ImprimanteJobStatutEnPause 					= 1				//PRINTERJOB_CONTROL_PAUSE 			
+      	ImprimanteJobStatutReprise 					= 2             //PRINTERJOB_CONTROL_RESUME 			
+      	ImprimanteJobStatutAnnulé 					= 3             //PRINTERJOB_CONTROL_CANCEL 			
+      	ImprimanteJobStatutRedémarre 				= 4             //PRINTERJOB_CONTROL_RESTART 			
+      	ImprimanteJobStatutSupprime 				= 5             //PRINTERJOB_CONTROL_DELETE 			
+      	ImprimanteJobStatutEnvoiAImprimante 		= 6             //PRINTERJOB_CONTROL_SENT_TO_PRINTER 	
+      	ImprimanteJobStatutDernièrePageSortie		= 7             //PRINTERJOB_CONTROL_LAST_PAGE_EJECTED
+      FIN
+      EImprimanteStatut est une énumération
+      	ImprimanteStatutEnPause 					= 0x00000001 	//1			 :	PRINTER_STATUS_PAUSED 			
+      	ImprimanteStatutEnErreur 					= 0x00000002 	//2			 :	PRINTER_STATUS_ERROR 			
+      	ImprimanteStatutEnTrainDeSupprimer 			= 0x00000004 	//4			 :	PRINTER_STATUS_PENDING_DELETION 
+      	ImprimanteStatutBouragePapier 				= 0x00000008 	//8			 :	PRINTER_STATUS_PAPER_JAM 		
+      	ImprimanteStatutPlusDePapier 				= 0x00000010 	//16		 :	PRINTER_STATUS_PAPER_OUT 		
+      	ImprimanteStatutAlimentationManuelle		= 0x00000020 	//32		 :	PRINTER_STATUS_MANUAL_FEED 		
+      	ImprimanteStatutProblèmeDePapier 			= 0x00000040 	//64		 :	PRINTER_STATUS_PAPER_PROBLEM 	
+      	ImprimanteStatutHorsLigne 					= 0x00000080 	//128		 :	PRINTER_STATUS_OFFLINE 			
+      	ImprimanteStatutActive 						= 0x00000100 	//256		 :	PRINTER_STATUS_IO_ACTIVE 		
+      	ImprimanteStatutOccupée 					= 0x00000200 	//512		 :	PRINTER_STATUS_BUSY 			
+      	ImprimanteStatutEnTrainDImprimer			= 0x00000400 	//1024		 :	PRINTER_STATUS_PRINTING 		
+      	ImprimanteStatutSortiePapierPleine 			= 0x00000800 	//2048		 :	PRINTER_STATUS_OUTPUT_BIN_FULL 	
+      	ImprimanteStatutIndisponible	 			= 0x00001000 	//4096		 :	PRINTER_STATUS_NOT_AVAILABLE 	
+      	ImprimanteStatutEnAttente 					= 0x00002000 	//8192		 :	PRINTER_STATUS_WAITING 			
+      	ImprimanteStatutEnCoursDeTraitement			= 0x00004000 	//16384		 :	PRINTER_STATUS_PROCESSING 		
+      	ImprimanteStatutEnTrainDeSInitialiser		= 0x00008000 	//32768		 :	PRINTER_STATUS_INITIALIZING 	
+      	ImprimanteStatutEnTrainDeChauffer			= 0x00010000 	//65536		 :	PRINTER_STATUS_WARMING_UP 		
+      	ImprimanteStatutNiveauDEncreBas				= 0x00020000 	//131072	 :	PRINTER_STATUS_TONER_LOW 		
+      	ImprimanteStatutPlusDEncre 					= 0x00040000 	//262144	 :	PRINTER_STATUS_NO_TONER 		
+      	ImprimanteStatutAbandonImpression			= 0x00080000 	//524288	 :	PRINTER_STATUS_PAGE_PUNT 		
+      	ImprimanteStatutInterventionUtilisateur		= 0x00100000 	//1048576	 :	PRINTER_STATUS_USER_INTERVENTION
+      	ImprimanteStatutDépassementMémoire 			= 0x00200000 	//2097152	 :	PRINTER_STATUS_OUT_OF_MEMORY 	
+      	ImprimanteStatutPorteOuverte 				= 0x00400000 	//4194304	 :	PRINTER_STATUS_DOOR_OPEN 		
+      	ImprimanteStatutInconnu 					= 0x00800000 	//8388608	 :	PRINTER_STATUS_SERVER_UNKNOWN 	
+      	ImprimanteStatutÉconomieDÉnergie 			= 0x01000000 	//16777216	 :	PRINTER_STATUS_POWER_SAVE 			
+      fin
+      EVerrouClavierType est une énumération
+      	VerrouClavierCapsLock 			= 20
+      	VerrouClavierNumLock			= 144
+      	VerrouClavierScrollLock			= 145
+      fin
+      EVerrouClavierÉtat est une énumération
+      	VerrouClavierInverser			= -1
+      	VerrouClavierDésactiver			= 0
+      	VerrouClavierActiver			= 1
+      fin
+      STImprimanteInfo est une structure
+      	sNomDuServeur					est une chaine 
+      	sNomDeLImprimante 				est une chaine
+      	sNomDePartage					est une chaine
+      	sNomDuPort						est une chaine
+      	sNomDuPilote					est une chaine
+      	sCommentaire					est une chaine
+      	sLocalitation					est une chaine
+      	sProcesseur						est une chaine
+      	sTypeDeDonnées					est une chaine
+      	eStatut							est un EImprimanteStatut
+      FIN
+      STProcesseurInfo est une Structure
+      	sProcesseur						est une chaîne	
+      	sType							est une chaîne
+      	sNom							est une chaine
+      	nNbProcesseurs					est un entier
+      	nNiveau							est un entier
+      	nModèle							est un entier
+      	nRévision						est un entier
+      	nFréquenceMax					est un entier	//en MHz
+      	nFréquenceCourante				est un entier	//en MHz
+      	nFréquenceLimite				est un entier	//en MHz
+      	nÉtatInactivitéMax				est un entier
+      	nÉtatInactivitéCourant			est un entier
+      FIN
+      STMémoireInfo est une Structure
+      	nTaille							est un entier
+      	nPcUtilisé						est un entier
+      	nTaillePhysiqueTotale			est un entier sur 8 octets
+      	nTaillePhysiqueDispo			est un entier sur 8 octets
+      	nTailleFichierÉchangeTotale		est un entier sur 8 octets
+      	nTailleFichierÉchangeDispo		est un entier sur 8 octets
+      	nTailleVirtuelleTotale			est un entier sur 8 octets
+      	nTailleVirtuelleDispo			est un entier sur 8 octets
+      	nTailleVirtuelleÉtendueDispo	est un entier sur 8 octets
+      FIN
+      STCarteMèreInfo est une structure
+      	sFabriquant						est une chaîne
+      	sProduit						est une chaine
+      	sVersion						est une chaine
+      fin
+      STBiosInfo est une structure
+      	dSortie							est une date
+      	sFournisseur					est une chaine
+      	sVersion						est une chaine
+      fin
+      STOrdinateurInfo est une structure
+      	sFabriquant						est une chaîne
+      	sFamille						est une chaine
+      	sProduit						est une chaine
+      fin
+      STOSInfo est une structure
+      	sÉdition						est une chaine
+      	sVersion						est une chaine
+      	sNuméroDeSérie					est une chaine
+      	sIdentifiantDuProduit			est une chaine
+      	dhInstallation					est une dateheure
+      fin
+      
+      PRIVÉ
+      CONSTANTE
+      	ErreurDeMatériel	= 160
+      FIN
+     type : 720896
+   -
+     code : |1+
+      //
+     type : 720898
+  procedures :
+   -
+     name : ImprimanteDPI
+     procedure_id : 1269717402344060810
+     type_code : 15
+     group : 1
+     code : |1-
+      // Résumé : Cette fonction permet d'obtenir la résolution en points par pouce (DPI) d'une imprimante spécifiée.
+      // Syntaxe : [ <Résultat> = ] ImprimanteDPI (<sNomImprimante> est chaîne)
+      // Paramètres :
+      //	sNomImprimante (chaîne UNICODE) : Une chaîne représentant le nom de l'imprimante (récupérée de iListeImprimante ou ImprimanteListe) dont vous souhaitez obtenir la résolution DPI.
+      // Valeur de retour : (entier, entier) : représentant les résolutions horizontale (DPIx) et verticale (DPIy) respectivement.
+      // Exemple :
+      // 	nDPIx, nDPIy sont des entiers système
+      //	(nDPIx, nDPIy) = ImprimanteDPI("NomDeLImprimante")
+      //
+      PROCEDURE ImprimanteDPI(sNomImprimante est une chaine) : (entier,entier)
+      nDPIx,nDPIy sont des entiers systeme
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	nDC est un entier systeme = api("gdi32.dll","CreateICA","Winspool",sNomImprimante,Null,Null)
+      	SI nDC ALORS
+      		nPixelX est un entier = 88
+      		nPixelY est un entier = 90
+      		nDPIx = api("gdi32.dll","GetDeviceCaps" , nDC , nPixelX)
+      		nDPIy = api("gdi32.dll","GetDeviceCaps" , nDC , nPixelY)
+      		api("gdi32.dll","DeleteDC",nDC)
+      	FIN 
+      	
+      <fin>
+      
+      
+      renvoyer (nDPIx,nDPIy)
+     type : 458752
+   -
+     name : ImprimanteListe
+     procedure_id : 1269717402344126346
+     type_code : 15
+     group : 1
+     code : |1-
+      // Résumé : Cette fonction renvoie une chaîne contenant la liste des imprimantes disponibles sur le système. Cette fonction existe car la fonction standard iListeImprimante ne renvoyait pas certaines imprimantes réseau.
+      // Syntaxe : [ <Résultat> = ] ImprimanteListe ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : chaîne UNICODE : Une chaîne contenant la liste des noms des imprimantes disponibles, chaque nom étant séparé par un retour à la ligne (RC).
+      // Exemple :
+      //	sListeImprimantes est une chaîne = ImprimanteListe()
+      //
+      PROCEDURE ImprimanteListe() : chaine
+      sImprimantes		est une chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	nBuffer 			est un entier  
+      	nPointeurBuffer 	est un entier
+      	nPointeurRetourné 	est un entier  
+      	szNomImprimante 	est une chaîne ASCIIZ de 128
+      	szServeur 			est une chaîne ASCIIZ de 64
+      	
+      	stImprimante est composé de
+      		nPointeurFlags 			est un entier  
+      		nPointeurDescription 	est un entier  
+      		nPointeurNom 			est un entier  
+      		nPointeurCommentaire 	est un entier  
+      	FIN
+      	
+      	api("winspool.drv","EnumPrintersA",0x6,&szServeur,1,Null,nBuffer,&nPointeurBuffer,&nPointeurRetourné)
+      	nMem est un entier   = AppelDLL32("kernel32","GlobalAlloc",0x40,nPointeurBuffer)
+      	
+      	nBuffer = nPointeurBuffer
+      	SI api("winspool.drv","EnumPrintersA",0x6,&szServeur,1,nMem,nBuffer,&nPointeurBuffer,&nPointeurRetourné) ALORS
+      		nAdresse est un entier   = nMem
+      		nIndice est un entier
+      		POUR nIndice=1 À nPointeurRetourné
+      			api("kernel32.dll","RtlMoveMemory",&stImprimante,nAdresse,Dimension(stImprimante))
+      			SI stImprimante.nPointeurNom>0 ALORS
+      				szNomImprimante=""
+      				api("kernel32.dll","RtlMoveMemory",&szNomImprimante,stImprimante.nPointeurNom ,128)
+      				SI Taille(SansEspace(szNomImprimante))>0 ALORS sImprimantes+=[RC]+szNomImprimante
+      			FIN
+      			nAdresse+=16
+      		FIN
+      	FIN
+      	api("kernel32.dll","GlobalFree",nMem)
+      	
+      <fin>
+      
+      
+      renvoyer sImprimantes
+     type : 458752
+   -
+     name : ImprimanteInfo
+     procedure_id : 1269717402344191882
+     type_code : 15
+     group : 1
+     code : |1-
+      // Résumé : Cette fonction renvoie un tableau associatif contenant des informations détaillées sur les imprimantes disponibles sur le système.
+      // Syntaxe : ImprimanteInfo ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : Un tableau associatif où les clés sont les noms des imprimantes et les valeurs sont des structures de type STImprimanteInfo contenant les informations détaillées sur chaque imprimante.
+      // Exemple :
+      //	taInfoImprimantes est un tableau associatif de STImprimanteInfo = ImprimanteInfo()
+      //	POUR CHAQUE stInfo,sImprimante DE taInfoImprimantes
+      //		Info("Informations pour l'imprimante "+sImprimante+" : pilote = "+stInfoImprimante.sNomDuPilote
+      //	FIN
+      //
+      PROCEDURE ImprimanteInfo() : tableau associatif de stImprimanteInfo
+      taImprimanteInfo est un tableau associatif de stImprimanteInfo
+      
+      //ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/62242-connaitre-imprimante-poste-reseau-62254/read.awp
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	stAdresses est une Structure
+      		pServerName 		est un entier système  
+      		pPrinterName 		est un entier systeme 
+      		pShareName 			est un entier système  
+      		pPortName 			est un entier système  
+      		pDriverName 		est un entier système  
+      		pComment 			est un entier système
+      		pLocation 			est un entier système  
+      		pDevMode 			est un entier  
+      		pSepFile 			est un entier  
+      		pPrintProcessor 	est un entier système  
+      		pDatatype 			est un entier système  
+      		pParameters 		est un entier  
+      		pSecurityDescriptor est un entier  
+      		Attributes 			est un entier  
+      		Priority 			est un entier  
+      		DefaultPriority 	est un entier  
+      		StartTime 			est un entier  
+      		UntilTime 			est un entier  
+      		pStatus 			est un entier systeme 
+      		cJobs 				est un entier  
+      		AveragePPM 			est un entier  
+      	FIN
+      	
+      	nNiveau,pcbNeeded,pcReturned,i,nFlag sont des entiers
+      	nRet			est un entier système
+      	tabImprimante 	est un tableau de 3000 stAdresses
+      	szNomImprimante est une chaîne ASCIIZ sur 1024
+      	szBuf 			est une chaîne ASCIIZ sur 1024
+      	ComputerName 	est une chaîne ASCIIZ sur 128 = "\\" + NetNomMachine()
+      	ListeImprimante est une chaîne = ""
+      	
+      	nFlag=6	//OUBinaire(PRINTER_ENUM_LOCAL,PRINTER_ENUM_CONNECTIONS) avec PRINTER_ENUM_LOCAL=0x00000002 et PRINTER_ENUM_CONNECTIONS = 0x00000004
+      	nNiveau=2;pcbNeeded=0;pcReturned=0
+      	
+      	// Appel une fois la fonction avec 0 pour connaître le nombre d'octets rencaisse (renvoyé dans pcNeeded)
+      	API("winspool.drv","EnumPrintersA",nFlag,&ComputerName,nNiveau,&tabImprimante,0,&pcbNeeded,&pcReturned)
+      	
+      	// Appel une seconde fois avec la bonne valeur
+      	nRet=API("winspool.drv","EnumPrintersA",nFlag,&ComputerName,nNiveau,&tabImprimante,pcbNeeded,&pcbNeeded,&pcReturned)
+      	SI nRet=1 ALORS
+      		// C'est bon pcReturned contient le nombre d'imprimantes donc le nombre de structures valides dans le tableau
+      		pour i=1 a pcReturned
+      			SI ListeImprimante <> "" alors ListeImprimante += CRLF
+      			Transfert(&szNomImprimante,tabImprimante[i].pPrinterName,1023)
+      			Transfert(&szBuf,tabImprimante[i].pServerName,1023);taImprimanteInfo[szNomImprimante].sNomDuServeur=szBuf
+      			Transfert(&szBuf,tabImprimante[i].pShareName,1023);taImprimanteInfo[szNomImprimante].sNomDePartage=szBuf
+      			Transfert(&szBuf,tabImprimante[i].pPortName,1023);taImprimanteInfo[szNomImprimante].sNomDuPort=szBuf
+      			Transfert(&szBuf,tabImprimante[i].pDriverName,1023);taImprimanteInfo[szNomImprimante].sNomDuPilote=szBuf
+      			Transfert(&szBuf,tabImprimante[i].pComment,1023);taImprimanteInfo[szNomImprimante].sCommentaire=szBuf
+      			Transfert(&szBuf,tabImprimante[i].pLocation,1023);taImprimanteInfo[szNomImprimante].sLocalitation=szBuf
+      			Transfert(&szBuf,tabImprimante[i].pPrintProcessor,1023);taImprimanteInfo[szNomImprimante].sProcesseur=szBuf
+      			Transfert(&szBuf,tabImprimante[i].pDatatype,1023);taImprimanteInfo[szNomImprimante].sTypeDeDonnées=szBuf
+      			Transfert(&szBuf,tabImprimante[i].pStatus,1023);taImprimanteInfo[szNomImprimante].eStatut=val(szBuf)
+      			//		ListeImprimante += NumériqueVersChaine(tabImprimante[i]:Attributes)+TAB
+      			//		ListeImprimante += NumériqueVersChaine(tabImprimante[i]:cJobs)+TAB
+      			//		ListeImprimante += NumériqueVersChaine(tabImprimante[i]:Status)
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer taImprimanteInfo
+     type : 458752
+   -
+     name : ImprimanteAjoute
+     procedure_id : 1269717402344257418
+     type_code : 15
+     group : 1
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] ImprimanteAjoute (<sNomImprimante> est chaîne)
+      //
+      // Paramètres :
+      //	sNomImprimante (chaîne UNICODE) : <indiquez ici le rôle de sNomImprimante>
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCEDURE ImprimanteAjoute(sNomImprimante est une chaine) : booleen
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	szNomImprimante est une chaîne ASCIIZ sur 512 = sNomImprimante
+      	RENVOYER (API("winspool.drv","AddPrinterConnectionA", &sNomImprimante)=1)
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : ImprimanteChangeStatut
+     procedure_id : 1269717402344322954
+     type_code : 15
+     group : 1
+     code : |1-
+      // Résumé : Cette fonction permet de changer le statut d'un job d'impression associé à une imprimante spécifique.
+      // Syntaxe : [ <Résultat> = ] ImprimanteChangeStatut (<pPrinter>, <eStatut> est COL_Matériel.EImprimanteJobStatut)
+      // Paramètres :
+      // 	sPrinter : Nom de l'imprimante dont le statut du job d'impression doit être modifié (chaîne).
+      //	eStatut (COL_Matériel.EImprimanteJobStatut) : Nouveau statut à attribuer au job d'impression.
+      // Valeur de retour :
+      // 	booléen : Un booléen indiquant si le changement de statut a été effectué avec succès (Vrai) ou non (Faux).
+      // Exemple :
+      //	SI ImprimanteChangeStatut("NomImprimante", StatutEnPause) ALORS Info("Le statut du job d'impression a été changé avec succès.")
+      //
+      PROCEDURE ImprimanteChangeStatut(sPrinter,eStatut est un EImprimanteJobStatut) : booleen
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	stJobInfo est une Structure 
+      		nId 			est un entier 			// N° job
+      		pPrinterName 	est un entier 			// Pointer Name of the printer for which the job is spooled
+      		pMachineName 	est un entier 			// Pointer Name of the machine that created the print job. 
+      		pUserName 		est un entier 			// Pointer Name of the user who owns the print job. 
+      		pDocument 		est un entier 			// Pointer Name of the print job (for example, "MS-WORD: Review.doc"). 
+      		pDatatype 		est un entier 			// Pointer Type of data used to record the print job. 
+      		pStatus 		est un entier 			// Pointer to a null-terminated string that specifies the status of the print job. 
+      		// This member should be checked prior to Status and, if pStatus is NULL, the status 
+      		// is defined by the contents of the Status member. 
+      		Status 			est un entier 			// Specifies the job status
+      		Priority 		est un entier 			// Specifies the job priority. This member can be one of the following values or in the range between 1 through 99 (MIN_PRIORITY through MAX_PRIORITY). 
+      		Positi 			est un entier 			// Specifies the job's position in the print queue. 
+      		TotalPages 		est un entier 			// Specifies how many pages the document contains. This value may be zero if the print job does not contain page delimiting information. 
+      		PagesPrinted 	est un entier 			// Specifies the number of pages that have printed. This value may be zero if the print job does not contain page delimiting information. 
+      		Submitted 		est une stTempsSystème 	// A SYSTEMTIME structure that specifies the time that this document was spooled
+      	FIN
+      	hdPrint, nbDoc, i, pcbNeeded sont des entiers
+      	nRet est un entier système
+      	szNomImprimante est une chaîne ASCIIZ sur 512 = sPrinter
+      	tabJOB est un tableau de 300 stJobInfo
+      	nNiveau est un entier = 1
+      	
+      	// Ouverture du handle avec l'imprimante
+      	nRet=API("winspool.drv","OpenPrinterA",&szNomImprimante,&hdPrint,Null)
+      	SI nRet=0 ALORS RENVOYER False
+      	
+      	// Lance une fois pour obtenir le nombre d'octet dont on a besoin
+      	nRet=aPI("winspool.drv","EnumJobsA",hdPrint,0,1000,nNiveau,&tabJOB,1,&pcbNeeded,&nbDoc)
+      	
+      	// Lance une seconde fois pour obtenir le nombre de job dans la file d'attente
+      	nRet=API("winspool.drv","EnumJobsA",hdPrint,0,1000,nNiveau,&tabJOB,pcbNeeded,&pcbNeeded,&nbDoc)
+      	SI nRet=0 ALORS API("winspool.drv","ClosePrinter",hdPrint);RENVOYER Faux
+      	
+      	// nbDoc contient le nombre de document
+      	SI nbDoc=0 ALORS API("winspool.drv","ClosePrinter",hdPrint);RENVOYER Faux
+      	
+      	// tJOB la liste des jobs
+      	pour i=1 a nbDoc
+      		// Lance l'effacement du job
+      		nRet=API("winspool.drv","SetJobA",hdPrint,tabJOB[i].nId,nNiveau,&tabJOB,eStatut..valeur)
+      		SI nRet<>0 ALORS API("winspool.drv","ClosePrinter",hdPrint);RENVOYER Faux
+      	END
+      	API("winspool.drv","ClosePrinter",hdPrint)
+      	RENVOYER vrai
+      	
+      <fin>
+      
+      
+      renvoyer Faux
+     type : 458752
+   -
+     name : Processeur
+     procedure_id : 1269717402344388490
+     type_code : 15
+     code : |1-
+      // Résumé : Recueille des informations sur le processeur de l'ordinateur et les retourne sous forme d'une structure STProcesseurInfo
+      // Syntaxe : [ <Résultat> = ] Processeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : STProcesseurInfo : Informations sur le processeur
+      // Exemple :
+      //	stProc est un STProcesseurInfo = processeur()
+      //
+      PROCEDURE Processeur() : STProcesseurInfo
+      stUneInfo est un STProcesseurInfo
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	SYSTEM_INFO est composée de
+      		wProcessorArchitecture 		est un entier sur 2 octets
+      		wReserved 					est un entier sur 2 octets
+      		dwPageSize 					est un entier sur 4 octets
+      		lpMinimumApplicationAddress est un entier sur 4 octets
+      		lpMaximumApplicationAddress est un entier sur 4 octets
+      		dwActiveProcessorMask 		est un entier sur 4 octets
+      		dwNumberOfProcessors 		est un entier sur 4 octets
+      		dwProcessorType 			est un entier sur 4 octets
+      		dwAllocationGranularity 	est un entier sur 4 octets
+      		wProcessorLevel 			est un entier sur 2 octets
+      		wProcessorRevision 			est un entier sur 4 octets
+      	FIN
+      	// On demande les infos au système
+      	si WindowsVersion()=64 ALORS
+      		API("kernel32","GetNativeSystemInfo",&SYSTEM_INFO)
+      	sinon
+      		API("kernel32","GetSystemInfo",&SYSTEM_INFO)
+      	fin	
+      	// Récupération de l'architecture
+      	SELON SYSTEM_INFO.wProcessorArchitecture
+      		CAS 0 		: stUneInfo.sProcesseur = "Intel x86"				//PROCESSOR_ARCHITECTURE_INTEL
+      		CAS 1		: stUneInfo.sProcesseur = "MIPS"					//PROCESSOR_ARCHITECTURE_MIPS
+      		CAS 2		: stUneInfo.sProcesseur = "Alpha"					//PROCESSOR_ARCHITECTURE_ALPHA
+      		CAS 3		: stUneInfo.sProcesseur = "PowerPC"					//PROCESSOR_ARCHITECTURE_PPC
+      		CAS 4		: stUneInfo.sProcesseur = "SHX"						//PROCESSOR_ARCHITECTURE_SHX
+      		CAS 5		: stUneInfo.sProcesseur = "ARM"						//PROCESSOR_ARCHITECTURE_ARM
+      		CAS 6		: stUneInfo.sProcesseur = "Intel IA64"				//PROCESSOR_ARCHITECTURE_IA64
+      		CAS 7		: stUneInfo.sProcesseur = "Alpha 64"				//PROCESSOR_ARCHITECTURE_ALPHA64
+      		CAS 8		: stUneInfo.sProcesseur = "MSIL"					//PROCESSOR_ARCHITECTURE_MSIL
+      		CAS	9		: stUneInfo.sProcesseur = "AMD 64 bits"				//PROCESSOR_ARCHITECTURE_AMD64
+      		CAS 10		: stUneInfo.sProcesseur = "Intel IA32/Windows 64"	//PROCESSOR_ARCHITECTURE_IA32_ON_WIN64
+      		AUTRE CAS 	: stUneInfo.sProcesseur = <§@1b6673c8311509710000§>				//PROCESSOR_ARCHITECTURE_UNKNOWN 0xFFFF
+      	FIN
+      	
+      	SELON SYSTEM_INFO.dwProcessorType
+      		CAS 103		: stUneInfo.sType="SHx SH3"						//PROCESSOR_SHx_SH3
+      		CAS 104		: stUneInfo.sType="SHx SH4"						//PROCESSOR_SHx_SH4
+      		CAS 386		: stUneInfo.sType="Intel 80386"					//PROCESSOR_INTEL_386
+      		CAS 486		: stUneInfo.sType="Intel 80486"					//PROCESSOR_INTEL_486
+      		CAS 586		: stUneInfo.sType="Intel Pentium"				//PROCESSOR_INTEL_PENTIUM
+      		CAS 601		: stUneInfo.sType="PowerPC 601"					//PROCESSOR_PPC_601
+      		CAS 603		: stUneInfo.sType="PowerPC 603"					//PROCESSOR_PPC_603
+      		CAS 604		: stUneInfo.sType="PowerPC 604"					//PROCESSOR_PPC_604
+      		CAS 620		: stUneInfo.sType="PowerPC 620"					//PROCESSOR_PPC_620
+      		CAS 821		: stUneInfo.sType="Motorola 821"				//PROCESSOR_MOTOROLA_821
+      		CAS 1824	: stUneInfo.sType="ARM 720"						//PROCESSOR_ARM720
+      		CAS 2080	: stUneInfo.sType="ARM 820"						//PROCESSOR_ARM820
+      		CAS 2200	: stUneInfo.sType="Intel IA64"					//PROCESSOR_INTEL_IA64
+      		CAS 2336	: stUneInfo.sType="ARM 920"						//PROCESSOR_ARM920
+      		CAS 2577	: stUneInfo.sType="StrongARM"					//PROCESSOR_STRONGARM
+      		CAS 4000	: stUneInfo.sType="MIPS R4000, R4101, R3910"	//PROCESSOR_MIPS_R4000
+      		CAS 8664	: stUneInfo.sType="AMD X86 64 bit"				//PROCESSOR_AMD_X8664
+      		CAS 10003	: stUneInfo.sType="Hitachi SH3"					//PROCESSOR_HITACHI_SH3
+      		CAS 10004	: stUneInfo.sType="Hitachi SH3E"				//PROCESSOR_HITACHI_SH3E
+      		CAS 10005	: stUneInfo.sType="Hitachi SH4"					//PROCESSOR_HITACHI_SH4
+      		CAS 21064	: stUneInfo.sType="Alpha 210 64"				//PROCESSOR_ALPHA_21046
+      		CAS 70001	: stUneInfo.sType="ARM 7TDMI"					//PROCESSOR_ARM_7TDMI
+      		AUTRE CAS	: stUneInfo.sType=<§@1b6673c8311509710000§>	
+      	FIN
+      	
+      	// On détermine les sous-infos et on construit la chaine
+      	stUneInfo.nNiveau	= SYSTEM_INFO.wProcessorLevel
+      	stUneInfo.nModèle 	= partieentiere(SYSTEM_INFO.wProcessorRevision/256)
+      	stUneInfo.nRévision = modulo(SYSTEM_INFO.wProcessorRevision,256)
+      	
+      	// Recup du nombre de processeurs
+      	stUneInfo.nNbProcesseurs = SYSTEM_INFO.dwNumberOfProcessors
+      	
+      	//Code inspiré de Romain PETIT publié sur http://windev.dev4u.org sous licence WD-LIBRE (http://www.windevasso.org)
+      	PROCESSOR_POWER_INFORMATION est une structure
+      		nNumber 			est un entier
+      		nMaxMhz 			est un entier
+      		nCurrentMhz 		est un entier
+      		nMhzLimit 			est un entier
+      		nMaxIdleState 		est un entier
+      		nCurrentIdleState 	est un entier
+      	FIN
+      	
+      	strPPI 					est un PROCESSOR_POWER_INFORMATION
+      	tabStrPPI 				est un tableau de stUneInfo.nNbProcesseurs PROCESSOR_POWER_INFORMATION
+      	eProcessorInformation 	est un entier = 11
+      	
+      	nRetour est un entier = AppelDLL32("PowrProf.dll","CallNtPowerInformation",eProcessorInformation, Null, 0, &tabStrPPI,Dimension(strPPI)*stUneInfo.nNbProcesseurs)
+      	
+      	si nRetour=0 alors	//durant les tests sur un 16 proc, tous les processeurs étaient identiques > on prend le premier
+      		stUneInfo.nFréquenceMax				= tabStrPPI[1].nMaxMhz			//en MHz
+      		stUneInfo.nFréquenceCourante		= tabStrPPI[1].nCurrentMhz		//en MHz
+      		stUneInfo.nFréquenceLimite			= tabStrPPI[1].nMhzLimit		//en MHz
+      		stUneInfo.nÉtatInactivitéMax		= tabStrPPI[1].nMaxIdleState
+      		stUneInfo.nÉtatInactivitéCourant	= tabStrPPI[1].nCurrentIdleState
+      	FIN
+      	
+      	si RegistreExiste("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0") alors
+      		stUneInfo.sNom=sansespace(extraitchaine(Registrelit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0", "ProcessorNameString", vrai),1,"@"))
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer stUneInfo
+     type : 458752
+   -
+     name : Mémoire
+     procedure_id : 1269717402344454026
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction retourne des informations sur l'utilisation de la mémoire du système.
+      // Syntaxe : [ <Résultat> = ] Mémoire ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : STMémoireInfo : Une structure de type STMémoireInfo contenant les informations sur l'utilisation de la mémoire du système.
+      // Exemple :
+      //	stInfoMémoire est un STMémoireInfo = Mémoire()
+      //	Info("Pourcentage de mémoire utilisée : " + stInfoMémoire.nPcUtilisé + "%")
+      //
+      PROCEDURE Mémoire() : StMémoireInfo
+      //ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/76676-sysespace/read.awp
+      stUneInfo est un StMémoireInfo
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	MEMORYSTATUS est composée de
+      		dwLength 				est un entier	//taille de la structure
+      		dwMemoryLoad 			est un entier 	//en %
+      		dwTotalPhys 			est un entier
+      		dwAvailPhys 			est un entier
+      		dwTotalPageFile 		est un entier
+      		dwAvailPageFile 		est un entier
+      		dwTotalVirtual 			est un entier
+      		dwAvailVirtual 			est un entier
+      	FIN
+      	MEMORYSTATUSEX est composée de
+      		dwLength 				est un entier	//taille de la structure
+      		dwMemoryLoad 			est un entier 	//en %
+      		dwTotalPhys 			est un entier sur 8 octets
+      		dwAvailPhys 			est un entier sur 8 octets
+      		dwTotalPageFile 		est un entier sur 8 octets
+      		dwAvailPageFile 		est un entier sur 8 octets
+      		dwTotalVirtual 			est un entier sur 8 octets
+      		dwAvailVirtual 			est un entier sur 8 octets
+      		dwAvailExtendedVirtual 	est un entier sur 8 octet
+      	FIN
+      	MEMORYSTATUS.dwLength 	= Dimension(MEMORYSTATUS)
+      	MEMORYSTATUSEX.dwLength = Dimension(MEMORYSTATUSEX)
+      	
+      	nRésultat est un entier système 
+      	si WindowsVersion()=64 alors 
+      		nRésultat=API("kernel32","GlobalMemoryStatusEx",&MEMORYSTATUSEX) 
+      		stUneInfo.nTaille						= MEMORYSTATUSEX.dwLength
+      		stUneInfo.nPcUtilisé					= MEMORYSTATUSEX.dwMemoryLoad
+      		stUneInfo.nTaillePhysiqueTotale			= MEMORYSTATUSEX.dwTotalPhys
+      		stUneInfo.nTaillePhysiqueDispo			= MEMORYSTATUSEX.dwAvailPhys
+      		stUneInfo.nTailleFichierÉchangeTotale	= MEMORYSTATUSEX.dwTotalPageFile
+      		stUneInfo.nTailleFichierÉchangeDispo	= MEMORYSTATUSEX.dwAvailPageFile
+      		stUneInfo.nTailleVirtuelleTotale		= MEMORYSTATUSEX.dwTotalVirtual
+      		stUneInfo.nTailleVirtuelleDispo			= MEMORYSTATUSEX.dwAvailVirtual
+      		stUneInfo.nTailleVirtuelleétendueDispo	= MEMORYSTATUSEX.dwAvailExtendedVirtual
+      	sinon 
+      		nRésultat=API("kernel32","GlobalMemoryStatus",&MEMORYSTATUS) 
+      		stUneInfo.nTaille						= MEMORYSTATUS.dwLength
+      		stUneInfo.nPcUtilisé					= MEMORYSTATUS.dwMemoryLoad
+      		stUneInfo.nTaillePhysiqueTotale			= MEMORYSTATUS.dwTotalPhys
+      		stUneInfo.nTaillePhysiqueDispo			= MEMORYSTATUS.dwAvailPhys
+      		stUneInfo.nTailleFichierÉchangeTotale	= MEMORYSTATUS.dwTotalPageFile
+      		stUneInfo.nTailleFichierÉchangeDispo	= MEMORYSTATUS.dwAvailPageFile
+      		stUneInfo.nTailleVirtuelleTotale		= MEMORYSTATUS.dwTotalVirtual
+      		stUneInfo.nTailleVirtuelleDispo			= MEMORYSTATUS.dwAvailVirtual
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer stUneInfo
+     type : 458752
+   -
+     name : ClavierDélaiAvantRépétition
+     procedure_id : 1269717402344519562
+     type_code : 15
+     group : 4
+     code : |1-
+      // Résumé : Cette fonction permet d'obtenir ou de modifier le délai avant répétition d'une touche du clavier.
+      // Syntaxe : [ <Résultat> = ] ClavierDélaiAvantRépétition ( [<nNouvelleValeur> est entier])
+      // Paramètres :
+      // 	nNouvelleValeur (entier optionnel) : Nouvelle valeur du délai avant répétition. Si omis, la fonction retourne la valeur actuelle. Les valeurs valides vont de 0 à 3, où 0 représente le délai minimal (~250 ms) et 3 le délai maximal (~1 seconde).
+      // Valeur de retour : entier : La fonction retourne la valeur actuelle du délai avant répétition (si nNouvelleValeur est omis) ou 0 après avoir modifié la valeur.
+      // Exemple :
+      //	nValeurActuelle est un entier = ClavierDélaiAvantRépétition()
+      //	Info("La valeur actuelle du délai avant répétition est : " + nValeurActuelle)
+      //
+      // 	Exemple pour définir un nouveau délai avant répétition (par exemple, délai minimal)
+      //	ClavierDélaiAvantRépétition(2)
+      //
+      PROCEDURE ClavierDélaiAvantRépétition(nNouvelleValeur est un entier = -1)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	//Obtenir et modifier le délai avant répétition d'une touche
+      	SI 0<=nNouvelleValeur<4 ALORS
+      		// 0 pour le délai minimal ( ~= 250 ms )
+      		// 3 pour le délai maximal ( ~= 1 seconde )
+      		SPI_GETKEYBOARDDELAY est un entier = 22
+      		nDelai est un entier
+      		api("user32.dll","SystemParametersInfoA",SPI_GETKEYBOARDDELAY,0,&nDelai,0)
+      		RENVOYER nDelai
+      	SINON
+      		SPI_SETKEYBOARDDELAY est un entier = 23
+      		api("user32.dll","SystemParametersInfoA",SPI_SETKEYBOARDDELAY,nNouvelleValeur,0,0)
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer 0
+     type : 458752
+   -
+     name : ClavierVitesseRépétition
+     procedure_id : 1269717402344585098
+     type_code : 15
+     group : 4
+     code : |1-
+      // Résumé : Cette fonction permet d'obtenir ou de modifier la vitesse de répétition d'une touche du clavier.
+      // Syntaxe :
+      //[ <Résultat> = ] ClavierVitesseRépétition ( [<nNouvelleValeur> est entier])
+      // Paramètres :
+      //	nNouvelleValeur (entier - valeur par défaut=-1) : Nouvelle valeur de la vitesse de répétition. Si omis, la fonction retourne la valeur actuelle. Les valeurs valides vont de 0 à 31, où 0 représente la vitesse minimale (~2.50 répétitions par seconde) et 31 la vitesse maximale (~30 répétitions par seconde).
+      // Valeur de retour :
+      // 	entier : 
+      // Exemple :
+      //	nVitesseActuelle est un entier = ClavierVitesseRépétition()
+      //	Info("La valeur actuelle de la vitesse de répétition est : " + nVitesseActuelle)
+      //
+      // 	Exemple pour définir une nouvelle vitesse de répétition (par exemple, vitesse maximale)
+      //	ClavierVitesseRépétition(31)
+      //
+      PROCEDURE ClavierVitesseRépétition(nNouvelleValeur est un entier = -1)
+      //Obtenir et modifier la vitesse de répétition d'une touche
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	SI 0<=nNouvelleValeur<32 ALORS
+      		//0 pour la vitesse minimale ( ~= 2.50 répétitions par seconde )
+      		//31 pour la vitesse maximale ( ~= 30 répétition par seconde )
+      		SPI_GETKEYBOARDSPEED est un entier = 10
+      		nVitesse est un entier
+      		api("user32.dll","SystemParametersInfoA",SPI_GETKEYBOARDSPEED,0,&nVitesse,0)
+      		RENVOYER nVitesse
+      	SINON
+      		// pour modifier la vitesse
+      		SPI_SETKEYBOARDSPEED est un entier = 11
+      		RENVOYER api("user32.dll","SystemParametersInfoA",SPI_SETKEYBOARDSPEED,nNouvelleValeur,0,0)
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer 0
+     type : 458752
+   -
+     name : SourisBoutons
+     procedure_id : 1269717402344650634
+     type_code : 15
+     group : 4
+     code : |1-
+      // Résumé : Cette fonction permet d'obtenir le nombre de boutons de la souris actuellement connectée au système.
+      // Syntaxe : [ <Résultat> = ] SourisBoutons ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : entier : retourne le nombre de boutons de la souris en cours d'utilisation. Si la fonction ne parvient pas à obtenir cette information, elle renvoie 0.
+      // Exemple :
+      //	Info("Le nombre de boutons de la souris est : " + SourisBoutons())
+      //
+      PROCEDURE SourisBoutons() : entier	// Nombre de boutons
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	SM_CMOUSEBUTTONS est un entier = 43
+      	RENVOYER AppelDLL32("user32","GetSystemMetrics" , SM_CMOUSEBUTTONS)
+      	
+      <fin>
+      
+      
+      RENVOYER 0
+     type : 458752
+   -
+     name : SourisRoulette
+     procedure_id : 1269717402344716170
+     type_code : 15
+     group : 4
+     code : |1-
+      // Résumé : Cette fonction permet de déterminer si la souris actuellement connectée au système dispose d'une roulette.
+      // Syntaxe : [ <Résultat> = ] SourisRoulette ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : booléen : retourne Vrai si la souris possède une roulette, et Faux sinon.
+      // Exemple :
+      //	SI SourisRoulette() ALORS Info("La souris a une roulette.") SINON Info("La souris n'a pas de roulette.")
+      //
+      PROCEDURE SourisRoulette() : booleen
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	SM_MOUSEWHEELPRESENT est un entier = 75
+      	RENVOYER (AppelDLL32("user32","GetSystemMetrics" , SM_MOUSEWHEELPRESENT)>0)
+      	
+      <fin>
+      
+      
+      renvoyer Faux
+     type : 458752
+   -
+     name : PortCom
+     procedure_id : 1269717402344781706
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction permet de récupérer la liste des ports série (ports COM) disponibles sur le système.
+      // Syntaxe : [ <Résultat> = ] PortCom ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : retourne une chaîne contenant la liste des ports série disponibles. Chaque port est représenté sous la forme "COMx", où "x" est le numéro du port.
+      // Exemple :
+      //	Info(PortCom())
+      //
+      PROCEDURE PortCom() : chaine
+      // ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/71837-liste-port-series-disponible/read.awp
+      sListePortCOM 		est une chaîne
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	port2 est composé de
+      		pPortName 		est un entier
+      		pMonitorName 	est un entier
+      		pDescription 	est un entier
+      		fPortType 		est un entier
+      		Reserved 		est un entier
+      	FIN
+      	
+      	cbBuff 				est un entier
+      	pbNeeded 			est un entier
+      	pcReturned 			est un entier
+      	
+      	api("winspool.drv","EnumPortsA",Null,2,Null,cbBuff,&pbNeeded,&pcReturned)
+      	
+      	nHandleMem est un entier système = api("kernel32.dll","GlobalAlloc",0x40,pbNeeded)
+      	
+      	cbBuff = pbNeeded
+      	
+      	api("winspool.drv","EnumPortsA",Null,2,nHandleMem,cbBuff,&pbNeeded,&pcReturned)
+      	
+      	ind est un entier
+      	port est une chaîne ASCIIZ sur 64
+      	ch est une chaîne
+      	
+      	nAdr est un entier systeme = nHandleMem
+      	
+      	POUR ind = 1 À pcReturned
+      		api("kernel32.dll","RtlMoveMemory",&port2,nAdr,20)
+      		api("kernel32.dll","RtlZeroMemory",&port,64)
+      		api("kernel32.dll","RtlMoveMemory",&port,port2.pPortName,64)
+      		ch = port
+      		
+      		//	API("kernel32.dll","RtlZeroMemory",&port,64)
+      		//	API("kernel32.dll","RtlMoveMemory",&port,port2.pMonitorName,64)
+      		//	ch += port + " - "
+      		//
+      		//	API("kernel32.dll","RtlZeroMemory",&port,64)
+      		//	API("kernel32.dll","RtlMoveMemory",&port,port2.pDescription,64)
+      		//	ch += port + " - "
+      		SI ch[[À 3]] = "COM" ALORS
+      			sListePortCOM += [rc] + Gauche(ch,4)
+      		FIN
+      		
+      		nAdr += 20
+      	FIN
+      	api("kernel32.dll","GlobalFree",nHandleMem)
+      	
+      <fin>
+      
+      
+      RENVOYER sListePortCOM
+     type : 458752
+   -
+     name : DisquePartition
+     procedure_id : 1269717402344847242
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction renvoie le nom du système de fichiers associé à la partition du disque spécifié. Ne peux pas gérer les disques réseaux, uniquement les disques locaux.
+      // Syntaxe : [ <Résultat> = ] DisquePartition (<sDisque> est chaîne)
+      // Paramètres :
+      //	sDisque (chaîne UNICODE) : Le chemin ou le nom du disque dont vous souhaitez obtenir le système de fichiers.
+      // Valeur de retour : chaîne UNICODE : retourne une chaîne représentant le nom du système de fichiers associé à la partition du disque spécifié.
+      // Exemple :
+      //	Info(DisquePartition("C:\"))
+      //
+      PROCEDURE DisquePartition(LOCAL sDisque est une chaine) : chaine
+      //ref: http://aaa.windev.free.fr/api-wlangage.html
+      SI Gauche(sDisque,2)="\\" ALORS RENVOYER <§@1b6673c8311509710003§> sinon sDisque=sDisque[[1]]
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	szBufferNomDisque 			est chaîne ASCIIZ sur 255
+      	szBufferNomSystèmeDeFichier	est chaîne ASCIIZ sur 255
+      	nAdresseNomDisque			est entier systeme = &szBufferNomDisque
+      	nAdresseNomSystèmeDeFichier est entier systeme = &szBufferNomSystèmeDeFichier
+      	nAdresseNuméroSérieVolume 	est entier 
+      	nAdresseTailleMaximum 		est entier
+      	nIndicateursFichierSysteme 	est entier 
+      	SI API("KERNEL32","GetVolumeInformationA",sDisque+":\",nAdresseNomDisque,255,nAdresseNuméroSérieVolume,nAdresseTailleMaximum,
+      		nIndicateursFichierSysteme,nAdresseNomSystèmeDeFichier,255) ALORS RENVOYER szBufferNomSystèmeDeFichier
+      	
+      <fin>
+      
+      
+      rENVOYER ""
+     type : 458752
+   -
+     name : ClavierVerrou
+     procedure_id : 1269717402344912778
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction permet de gérer l'état des touches à bascule du clavier, telles que CapsLock, NumLock et ScrollLock.
+      // Syntaxe : [ <Résultat> = ] ClavierVerrou (<eTypeTouche> est COL_Matériel.EVerrouClavierType, <eAction> est COL_Matériel.EVerrouClavierÉtat)
+      // Paramètres :
+      //	eTypeTouche (COL_Matériel.EVerrouClavierType) : Le type de touche à bascule que vous souhaitez gérer (CapsLock, NumLock, ScrollLock)
+      //	eAction (COL_Matériel.EVerrouClavierÉtat) : L'action à effectuer sur la touche (Inverser, Désactiver, Activer).
+      // Valeur de retour : booléen : retourne Vrai si l'opération a réussi, Faux sinon.
+      // Exemple :
+      // SI ClavierVerrou(EVerrouClavierType.CapsLock, EVerrouClavierÉtat.Activer) ALORS Info("La touche CapsLock est activée.") SINON Erreur("Échec de l'activation de la touche CapsLock.")
+      //
+      PROCEDURE ClavierVerrou(eTypeTouche est un EVerrouClavierType, eAction est un EVerrouClavierÉtat) : booleen
+      // Version 1.00 pour WD7
+      // (c) Novembre 2002 Romain PETIT (mailto:rompetit@ifrance.com)
+      // sous licence WD-LIBRE (http://www.windevasso.org)
+      // But : Gestion des touches à bascule (NumLock, CapsLock et ScrollLock)
+      //       Activer, désactiver ou basculer
+      // Paramètres : - N° de touche virtuelle, entier : (20 = CAPSLOCK (par défaut), 144 = NUMLOCK, 145 = SCROLLLOCK)
+      //              - Action à effectuer : (-1 = basculer (par défaut), 0 = désactiver, 1=activer)
+      // Retour : entier, nouvel état de la touche (0 = inactive, 1=active)
+      //          En cas d'erreur, la fonction renvoie -1 et le message d'erreur
+      //          peut être récupéré dans la chaine sErr passée par référence.
+      // Notes : Il peut y avoir des problèmes sur certaines configuration spécifiques en W9x. Essayer d'augmenter le multitache dans ce cas.
+      // Références API: http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/winui/windowsuserinterface/userinput/keyboardinput.asp
+      
+      nMapVK 	est un entier système
+      bOk 	est un booléen = Faux
+      bShift 	est un booléen = Faux
+      tabFixe est un tableau fixe de 256 entiers sans signe sur 1 octet
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	//On récupère l'état actuel du clavier
+      	SI PAS api("user32.dll","GetKeyboardState",&tabFixe) ALORS RENVOYER <§@1b6673c8311509710004§>
+      	
+      	SELON eAction
+      		CAS EVerrouClavierÉtat.verrouclavierInverser
+      			SI eTypeTouche=VerrouClavierCapsLock ET tabFixe[(eTypeTouche..Valeur+1)]=1 ALORS bShift=Vrai SINON bOk = Vrai
+      		CAS EVerrouClavierÉtat.VerrouClavierDésactiver
+      			SI tabFixe[(eTypeTouche..Valeur+1)]<>0 ALORS
+      				SI eTypeTouche=VerrouClavierCapsLock ALORS bShift = Vrai SINON bOk=Vrai
+      			FIN
+      		CAS EVerrouClavierÉtat.VerrouClavierActiver
+      			SI tabFixe[(eTypeTouche..Valeur+1)]=0 ALORS bOk = Vrai
+      	FIN
+      	
+      	SI bShift ALORS
+      		SI cApplication.mg_sWindowsVersion<>"NT" ALORS
+      			bOk = Vrai
+      		SINON
+      			//On simule l'appui et le relâchement de la touche shift, NB : pas de retour sur cette API
+      			api("user32.dll", "keybd_event", 16, nMapVK, 1, 0)
+      			api("user32.dll", "keybd_event", 16, nMapVK, 3, 0)
+      		FIN
+      	FIN
+      	
+      	SI bOk ALORS
+      		//On simule l'appui et le relâchement sur la touche. La touche est traduite en scan code (mapping). 0 si echec, mais ce paramètre n'a pas l'air utile...
+      		nMapVK = api("user32.dll", "MapVirtualKeyA", eTypeTouche,0)
+      		api("user32.dll", "keybd_event", eTypeTouche, nMapVK, 1, 0)
+      		api("user32.dll", "keybd_event", eTypeTouche, nMapVK, 3, 0)
+      		//Pour Numlock en W9x, il faut aussi changer l'état du clavier
+      		SI cApplication.mg_sWindowsVersion<>"NT" ET eTypeTouche=VerrouClavierNumLock ALORS
+      			// On inverse l'état de la touche
+      			tabFixe[(eTypeTouche..Valeur+1)] = PAS (tabFixe[(eTypeTouche..Valeur+1)])
+      			SI PAS api("user32.dll","SetKeyboardState",&tabFixe) ALORS ErreurDéclenche(ErreurDeMatériel,<§@1b6673c8311509710005§>);renvoyer faux
+      		FIN
+      	FIN
+      	
+      	Multitâche(1)	// Multitache nécessaire avant de récupérer à nouveau l'état du clavier sinon la mise à jour n'a pas le temps de s'effectuer. A voir s'il faut l'augmenter...
+      	// On récupère l'état du clavier
+      	//SI PAS AppelDLL32("user32","GetKeyboardState",&tTab) ALORS renvoyer "Echec de l'API GetKeyboardState (2nd)"
+      	
+      <fin>
+      
+      
+      RENVOYER vrai
+     type : 458752
+   -
+     name : VolumeGlobal
+     procedure_id : 1351636379032216871
+     type_code : 15
+     code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe : [ <Résultat> = ] VolumeGlobal (<nNouveauVolume> est entier)
+      // Paramètres :
+      //	nNouveauVolume (Entier) : Nouvelle valeur du volume à définir (comprise entre 0 et 100). Si cette valeur est omise ou égale à -1, la fonction retournera la valeur actuelle du volume sans effectuer de modification.
+      // Valeur de retour : entier : retourne la valeur actuelle du volume après l'ajustement. Si la fonction est utilisée pour récupérer le volume actuel (sans spécifier de nNouveauVolume), elle retourne la valeur actuelle du volume sans effectuer de modification.
+      // Exemple :
+      //	nVolume est un entier = VolumeGlobal(75)
+      //
+      PROCEDURE VolumeGlobal(nNouveauVolume est un entier = -1)	//valeurs du volume entre 0 et 100
+      //ref : https://www.developpez.net/forums/d2129018/environnements-developpement/windev/contribuez/reglage-general-volume-audio/#post11825617
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	nEntierSystème 	est un entier système
+      	nVolume 		est un entier
+      	bDLLDétectée	est un booleen = faux
+      	SI Dimension(nEntierSystème) = 4 ALORS 
+      		SI fFichierExiste(fRepExe()+["\"]+"GVolume32.dll") ALORS bDLLDétectée=Vrai SINON ErreurDéclenche(ErreurDeMatériel,ChaîneConstruit(<§@1b6673c8311509710006§>,"GVolume32.dll"))
+      	SINON
+      		SI PAS fFichierExiste(fRepExe()+["\"]+"GVolume.dll") ALORS bDLLDétectée=Vrai SINON ErreurDéclenche(ErreurDeMatériel,ChaîneConstruit(<§@1b6673c8311509710006§>,"GVolume.dll"))
+      	FIN
+      	SI bDLLDétectée ALORS
+      		SI MesParamètres..NbReçus=1 ALORS nVolume=nNouveauVolume	//si le nouveau volume est reçu, on va l'utiliser
+      		SI Dimension(nEntierSystème) = 4 ALORS API("GVolume32", "_ChangeVolume@8", &nVolume,MesParamètres..NbReçus) SINON API("GVolume", "ChangeVolume", &nVolume,MesParamètres..NbReçus)
+      		SI MesParamètres..NbReçus=0 ALORS RENVOYER nVolume			//si pas de nouveau volume reçu, c'est qu'on veut récupérer la valeur
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : CarteMère
+     procedure_id : 1516741694870831620
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction récupère des informations sur la carte mère du système à partir du registre Windows.
+      // Syntaxe : [ <Résultat> = ] CarteMère ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : STCarteMèreInfo : retourne une structure STCarteMèreInfo contenant les informations suivantes :
+      // Exemple :
+      //	InfoCarteMere est un STCarteMèreInfo = CarteMère()
+      //	Info("Fabricant : " + InfoCarteMere.sFabriquant)
+      //	Info("Produit : " + InfoCarteMere.sProduit)
+      //	Info("Version : " + InfoCarteMere.sVersion)
+      //
+      PROCEDURE CarteMère() : STcartemereInfo
+      stUneInfo est un STCarteMèreInfo
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	si RegistreExiste("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0") alors
+      		stUneInfo.sFabriquant 	= RegistreLit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS", "BaseBoardManufacturer", vrai)
+      		stUneInfo.sProduit 		= RegistreLit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS", "BaseBoardProduct", Vrai)
+      		stUneInfo.sVersion 		= RegistreLit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS", "BaseBoardVersion", Vrai)
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer stUneInfo
+     type : 458752
+   -
+     name : Bios
+     procedure_id : 1516743000540997137
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction permet de récupérer des informations sur le BIOS du système.
+      // Syntaxe : [ <Résultat> = ] Bios ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : STBiosInfo : retourne une structure STBiosInfo contenant les informations suivantes :
+      // Exemple :
+      //	MonBiosInfo est un STBiosInfo = BIOS()
+      //	Info("Fournisseur du BIOS : " + MonBiosInfo.sFournisseur)
+      //	Info("Version du BIOS : " + MonBiosInfo.sVersion)
+      //	Info("Date de sortie du BIOS : " + DateVersChaine(MonBiosInfo.dSortie, "DD/MM/YYYY"))
+      //
+      PROCEDURE Bios() : STbiosInfo
+      stUneInfo est un STBiosInfo
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	SI RegistreExiste("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS") ALORS
+      		sDate est une chaine	= RegistreLit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS", "BIOSReleaseDate", Vrai)
+      		si sDate>"" alors stUneInfo.dSortie = chaineversdate(sDate,"JJ/MM/AAAA")
+      		stUneInfo.sFournisseur 	= RegistreLit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS", "BIOSVendor", Vrai)
+      		stUneInfo.sversion 		= RegistreLit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS", "BIOSVersion", Vrai)
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer stUneInfo
+     type : 458752
+   -
+     name : Ordinateur
+     procedure_id : 1516744336275940819
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction permet de récupérer des informations sur l'ordinateur, telles que le fabricant, la famille et le produit.
+      // Syntaxe : [ <Résultat> = ] Ordinateur ()
+      // Paramètres : Aucun
+      // Valeur de retour : STOrdinateurInfo : retourne une structure contenant 3 informations de l'ordinateur
+      // Exemple :
+      //	MonInfoOrdinateur est un STOrdinateurInfo = Ordinateur()
+      //	Info("Fabricant de l'ordinateur : " + MonInfoOrdinateur.sFabriquant)
+      //	Info("Famille de l'ordinateur : " + MonInfoOrdinateur.sFamille)
+      //	Info("Produit de l'ordinateur : " + MonInfoOrdinateur.sProduit)
+      //
+      PROCEDURE Ordinateur() : STordinateurInfo
+      stUneInfo est un STOrdinateurInfo
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	SI RegistreExiste("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS") ALORS
+      		stUneInfo.sFabriquant 	= RegistreLit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS", "SystemManufacturer", Vrai)
+      		stUneInfo.sFamille 		= RegistreLit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS", "SystemFamily", Vrai)
+      		stUneInfo.sProduit 		= RegistreLit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS", "SystemProductName", Vrai)
+      	fin
+      	
+      <fin>
+      
+      
+      renvoyer stUneInfo
+     type : 458752
+   -
+     name : OS
+     procedure_id : 1516747514551889504
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction permet de récupérer des informations sur le système d'exploitation, telles que l'édition, la version, le numéro de série, l'identifiant du produit et la date d'installation.
+      // Syntaxe : [ <Résultat> = ] OS ()
+      // Paramètres : Aucun
+      // Valeur de retour : STOSInfo : retourne une structure STOSInfo
+      // Exemple :
+      //	InfoSystème est un STOSInfo = OS()
+      //	Info("Édition du système d'exploitation : " + InfoSystème.sÉdition)
+      //
+      PROCEDURE OS() : STOSInfo
+      stUneInfo est un STOSInfo
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	SI RegistreExiste("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion") ALORS
+      		stUneInfo.sÉdition		 		= RegistreLit("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductName", Vrai)
+      		stUneInfo.sVersion 				= RegistreLit("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "DisplayVersion", Vrai)
+      		stUneInfo.sNuméroDeSérie		= RegistreLit("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "BuildGUID", Vrai)
+      		stUneInfo.sIdentifiantDuProduit	= RegistreLit("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductId", Vrai)
+      		nInstallation est un entier 	= RegistreLit("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "InstallDate", Vrai)
+      		si nInstallation>0 alors stUneInfo.dhInstallation = EpochVersDateHeure(nInstallation)
+      	fin
+      	
+      <fin>
+      
+      
+      renvoyer stUneInfo
+     type : 458752
+   -
+     name : CartesRéseau
+     procedure_id : 1516772094737105477
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction permet de récupérer la liste des cartes réseau installées sur l'ordinateur à partir des informations du registre Windows.
+      // Syntaxe : [ <Résultat> = ] CartesRéseau ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : tableau : retourne un tableau de chaînes contenant les descriptions des cartes réseau installées. 
+      // Exemple :
+      //	ListeCartes est un tableau de chaînes = CartesRéseau()
+      //	SI TableauOccurrence(ListeCartes) > 0 ALORS
+      //		POUR TOUTE CHAÎNE Carte DE ListeCartes
+      //			Info("Carte réseau : " + Carte)
+      //		FIN
+      //	SINON
+      //		Info("Aucune carte réseau trouvée.")
+      //	FIN
+      //
+      PROCEDURE CartesRéseau() : tableau de chaines
+      tabCartes	est un tableau de chaines
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	sCléRacine 	est une chaine = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards"
+      	SI RegistreExiste(sCléRacine) ALORS
+      		sDesc	est une chaine
+      		sClés 	est une chaine = RegistreListeClé(sCléRacine)
+      		POUR TOUTE CHAÎNE sClé de sClés separee par rc
+      			sDesc = RegistreLit(sCléRacine+"/"+sClé, "Description", Vrai)
+      			SI sDesc>"" ALORS TableauAjoute(tabCartes,sDesc)
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer tabCartes
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1b6673c831150971
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Inconnu
+      en-GB : Unknown
+      fr-CA : Inconnu
+      en-US : Unknown
+     index : 0
+   -
+     text :
+      fr-FR : "Niveau : "
+      en-GB : "Level : "
+      fr-CA : "Niveau : "
+      en-US : "Level : "
+     index : 1
+   -
+     text :
+      fr-FR : " Modèle : "
+      en-GB : " Model : "
+      fr-CA : " Modèle : "
+      en-US : " Model : "
+     index : 2
+   -
+     text :
+      fr-FR : Réseau
+      en-GB : Network
+      fr-CA : Réseau
+      en-US : Network
+     index : 3
+   -
+     text :
+      fr-FR : Echec de l'API GetKeyboardState
+      en-GB : GetKeyboardState API failure
+      fr-CA : Echec de l'API GetKeyboardState
+      en-US : GetKeyboardState API failure
+     index : 4
+   -
+     text :
+      fr-FR : Echec de l'API SetKeyboardState
+      en-GB : SetKeyboardState API Fails
+      fr-CA : Echec de l'API SetKeyboardState
+      en-US : SetKeyboardState API Fails
+     index : 5
+   -
+     text :
+      fr-FR : Le fichier %1 n'est pas présent dans le répertoire d'exécution
+      en-GB : File %1 is not present in the execution directory
+      fr-CA : Le fichier %1 n'est pas présent dans le répertoire d'exécution
+      en-US : File %1 is not present in the execution directory
+     index : 6
+   -
+     text :
+      fr-FR : Échec de l'API GlobalMemoryStatus
+      en-GB : GlobalMemoryStatus API failure
+      fr-CA : Échec de l'API GlobalMemoryStatus
+      en-US : GlobalMemoryStatus API failure
+     index : 7
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,596 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cBaseDeDonnéesSQLite
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1c3e485f894568de
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet d'accéder aux données SQLite.
+      //Attention, nécessaire de compléter certaines fonctions
+      
+      constante
+      	hAccèsNatifSQLite		= "WinDevSQLite"										//Valeur du type de base de données pour MySQL. N'est pas reconnu par toutes les plateformes, la répéter évite des erreurs dans Betula.
+      	hFichierSQLite 			= 89													//Valeur du type de base de données pour MySQL dans l'analyse. N'est pas reconnu par toutes les plateformes, la répéter évite des erreurs dans Betula.
+      fin
+      cBaseDeDonnéesSQLite est une Classe	
+      	hérite de cgenerique
+      	m_bTraceColonnesModifiées	est un booleen		<sérialise = faux>				//Renvoi ou permet de modifier le statut permettant la trace des colonnes modifiés lors de l'utilisation de la fonction cEnregistrement.Écrit() 
+      public constant local
+      	m_nIndiceDeConnexion		est un entier 		<serialise = faux>				//Indice de la connexion en cours
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2035143656780228830
+     type_code : 27
+     code : |1-
+      // Résumé : Permet d'initialiser la classe. Si un indice de connexion est passé en paramètre, récupère toutes les informations d'une précédente connexion qui avait renvoyé ledit indice.
+      // Syntaxe : Constructeur ( [<nIndiceDeConnexionExistant> est entier])
+      // Paramètres :
+      // 	nIndiceDeConnexionExistant (entier optionnel): L'indice de connexion existant à associer à l'instance de la classe. Par défaut, il est initialisé à zéro.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexionExistant est un entier = 0)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIndiceDeConnexionExistant)
+      m_pclErreur.Raz()
+      
+      m_nIndiceDeConnexion=nIndiceDeConnexionExistant
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2035143656780294366
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe. Déconnecte la connexion à la BD le cas échéant.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      SI p_bEstConnecté ALORS Déconnecte()
+     type : 655360
+   -
+     name : Connecte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035452330365558573
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour établir une connexion à des données sur SQLite en utilisant les paramètres fournis. Tous les paramètres de la méthode peuvent être récupérés des paramètres de l'application avec le nom de section "SQLite".
+      // Syntaxe :
+      //[ <Résultat> = ] Connecte ( [<sCheminDesDonnées> est chaîne [, <sGroupeOuTypeOuNomDeFichiers> est chaîne [, <sEmplacementDesMémos> est chaîne [, <sRépertoireCache> est chaîne [, <sInfosÉtendues> est chaîne [, <bResterConnecté> est booléen]]]]]])
+      // Paramètres :
+      //	sCheminDesDonnées (chaîne UNICODE) : Chemin vers le répertoire de la base de données HyperFile 7. Paramètre "Folder", par défaut cApplication._Application.p_sRépertoireDonnée.
+      //	sGroupeOuTypeOuNomDeFichiers (chaîne UNICODE) : Paramètre pour spécifier le groupe, type ou nom de fichiers. Paramètre "Group", par défaut "*".
+      //	sEmplacementDesMémos (chaîne UNICODE) : Emplacement des mémos. Paramètre "PathMemos".
+      //	sRépertoireCache (chaîne UNICODE) : Répertoire du cache des mémos. Paramètre "CacheMemos", par défaut cApplication._Application.p_sRépertoireCacheMémo.
+      //	sInfosÉtendues (chaîne UNICODE) : Informations étendues pour la connexion. Paramètre "ExtInfos".
+      //	bResterConnecté (booléen) : Indique si la connexion doit être maintenue ou non. Paramètre "StayConnected", par défaut Vrai.
+      // Valeur de retour :
+      // 	entier : 
+      // Exemple :
+      //
+      PROCEDURE Connecte(sCheminDesDonnées est une chaine = cApplication._Application.m_pclParamètres.Lit("SQLite","File",faux,cApplication._Application.p_sRépertoireDonnées),
+      			local sGroupeOuTypeOuNomDeFichiers est une chaine = cApplication._Application.m_pclParamètres.Lit("SQLite","Group",Faux,"*"),
+      			sEmplacementDesMémos est une chaine = cApplication._Application.m_pclParamètres.Lit("MySQL","PathMemos"),
+      			sRépertoireCache est une chaîne = cApplication._Application.m_pclParamètres.Lit("MySQL","CacheMemos",Faux,cApplication._Application.p_sRépertoireCacheMémo),
+      			sInfosÉtendues est une chaine = cApplication._Application.m_pclParamètres.Lit("SQLite","ExtInfos"),
+      			bResterConnecté est un booleen = cApplication._Application.m_pclParamètres.Lit("SQLite","StayConnected",faux,vrai)) : entier
+      
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCheminDesDonnées,sGroupeOuTypeOuNomDeFichiers,bResterConnecté)
+      m_pclErreur.Raz()
+      
+      si fExtraitChemin(sCheminDesDonnées,fFichier)~="" alors m_pclErreur.AjouteErreur(<§$0000§>)
+      si fExtraitChemin(sCheminDesDonnées,fExtension)~="" alors m_pclErreur.AjouteErreur(<§$0001§>)
+      si p_sErreur>"" alors renvoyer 0
+      
+      stUneConnexion 	est un cBaseDeDonnées.STConnexion
+      cnxDonnées 		est une connexion
+      sClé 			est une chaine = "SQLite"+TAB+Minuscule(sCheminDesDonnées)
+      
+      m_nIndiceDeConnexion = tableaucherche(cBaseDeDonnées.mg_tabConnexion,tcLinéaire,"sCLé","SQLite"+TAB+minuscule(sCheminDesDonnées))
+      SI m_nIndiceDeConnexion>0 _ET_ cBaseDeDonnées.mg_taUtilisationServeur[sClé]>0 ALORS cBaseDeDonnées.ConnexionAjoute(sClé);RENVOYER m_nIndiceDeConnexion	//la connexion existe déjà, renvoyer l'indice pour minimiser le nombre de connexions faites par l'appli
+      
+      
+      cnxDonnées..Provider										= hAccèsNatifSQLite
+      cnxDonnées..Serveur											= sCheminDesDonnées
+      cnxDonnées..Cryptage										= hCryptageNon
+      cnxDonnées..Accès											= hOLectureEcriture
+      cnxDonnées..InfosEtendues									= sInfosÉtendues
+      
+      SI HOuvreConnexion(cnxDonnées) _ET_ ChangeConnexion() ALORS
+      	cBaseDeDonnées.ConnexionAjoute(sClé)
+      	SI m_nIndiceDeConnexion<1 ALORS 
+      		stUneConnexion.sNomUnique							= Minuscule(sCheminDesDonnées+cGénérique._Sep+"")
+      		stUneConnexion.cnxDonnées							= cnxDonnées
+      		stUneConnexion.bConnecté							= Vrai
+      		stUneConnexion.sClé									= sClé
+      		stUneConnexion.eAccès								= cBaseDeDonnées.FonctionsH
+      		stUneConnexion.sRépertoireCache						= sRépertoireCache
+      		stUneConnexion.sEmplacementDesMémos					= sEmplacementDesMémos
+      		stUneConnexion.bResterConnecté						= bResterConnecté
+      		m_nIndiceDeConnexion=TableauAjoute(cBaseDeDonnées.mg_tabConnexion,stUneConnexion)	//ne pas faire TableauAjouteTrié car il peut prendre un indice déjà utilisé par une autre connexion
+      	SINON
+      		cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté	= Vrai
+      	fin
+      	RENVOYER m_nIndiceDeConnexion
+      SINON
+      	m_pclErreur.AjouteErreurHF(ChaîneConstruit(<§$0002§>,"SQLite",sCheminDesDonnées))
+      FIN
+      RENVOYER 0
+      
+      	PROCÉDURE INTERNE ChangeConnexion()
+      	SI sGroupeOuTypeOuNomDeFichiers="*" ALORS
+      		RENVOYER HChangeConnexion("*",cnxDonnées) _Et_ HCréationSiInexistant(sGroupeOuTypeOuNomDeFichiers)
+      	SINON SI sGroupeOuTypeOuNomDeFichiers=hFichiersqlite ALORS
+      		POUR TOUTE CHAÎNE sTable de cApplication.mg_sTablesAnalyse separee par rc
+      			SI {sTable,indFichier}..Type=hFichierSQLite _ET_ (PAS HChangeConnexion(sTable,cnxDonnées) _OU_ PAS HCréationSiInexistant(sTable)) ALORS RENVOYER Faux
+      		FIN
+      	SINON si sGroupeOuTypeOuNomDeFichiers>"" ALORS
+      		POUR TOUTE CHAÎNE sTable de sGroupeOuTypeOuNomDeFichiers separee par [rc," ",",",";",tab]
+      			SI (PAS HChangeConnexion(sTable,cnxDonnées) _ou_ pas HCréationSiInexistant(sTable)) ALORS RENVOYER Faux
+      		FIN
+      	FIN	
+      	RENVOYER Vrai
+      	FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : Connecte_
+     procedure_id : 2035452330365624499
+     type_code : 12
+     code : |1-
+      // Résumé : Même fonction que Connecte() mais en passant en paramètre le nom de la section des paramètres de l'application (pour spécifier une valeur autre que "SQLite")
+      // Syntaxe : [ <Résultat> = ] Connecte_ ( [<sSectionParamètres> est chaîne])
+      // Paramètres :
+      // 	sSectionParamètres (chaîne UNICODE) : Nom de la section des paramètres de l'application dans laquelle aller récupérer les autres paramètres de connexion, par défaut="SQLite".
+      // Valeur de retour : entier : L'indice de la connexion si elle est établie.
+      // Exemple :
+      //
+      PROCEDURE Connecte_(sSectionParamètres est une chaîne = "SQLite") : entier
+      RENVOYER Connecte(cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"File"),
+      			cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Group",Faux,"*"),
+      			cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"StayConnected",Faux,Vrai))		
+     type : 458752
+   -
+     name : TableExiste
+     procedure_id : 2035469793344498604
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui vérifie l'existence d'une table dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableExiste (<sNomTable> est chaîne)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Nom de la table dont on souhaite vérifier l'existence.
+      // Valeur de retour : booléen : Retourne Vrai si la table existe dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCÉDURE TableExiste(sNomTable est une chaîne) : booléen
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0006§>);renvoyer faux
+      SI cApplication.mg_taInfo[cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sNomTable)]<>null ALORS RENVOYER Vrai
+      renvoyer faux
+     type : 458752
+   -
+     name : Tables
+     procedure_id : 2035469810524437161
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] Tables ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE Tables() : chaine
+      //à compléter
+      renvoyer ""
+     type : 458752
+   -
+     name : ColonneExiste
+     procedure_id : 2035469819114439536
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] ColonneExiste (<sNomTableEtColonne> est chaîne)
+      //
+      // Paramètres :
+      //	sNomTableEtColonne (chaîne UNICODE) : <indiquez ici le rôle de sNomTableEtColonne>
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE ColonneExiste(sNomTableEtColonne est une chaîne) : booléen
+      //à compléter
+      renvoyer faux
+     type : 458752
+   -
+     name : Colonnes
+     procedure_id : 2035469827704441832
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] Colonnes (<sNomTable> est chaîne)
+      //
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : <indiquez ici le rôle de sNomTable>
+      // Valeur de retour :
+      // 	chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE Colonnes(LOCAL sNomTable est une chaine) : chaine
+      //à compléter
+      renvoyer ""
+     type : 458752
+   -
+     name : DateHeureUTC
+     procedure_id : 2035471854984461621
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] DateHeureUTC ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	dateheure : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE DateHeureUTC() : DateHeure
+      //à compléter
+      m_pclErreur.AjouteAvertissement(<§$0004§>)
+      renvoyer ""
+     type : 458752
+   -
+     name : Déconnecte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035477773513557468
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui déconnecte la base de données. 
+      // Syntaxe : [ <Résultat> = ] Déconnecte ( [<bForce> est booléen])
+      // Paramètres :
+      // 	bForce (booléen) : Indique s'il faut forcer la déconnexion même si la connexion a été paramétré pour garder la connexion et que la base de données est utilisée.
+      // Valeur de retour : booléen : Renvoie vrai si la déconnexion s'est correctement déroulée, faux sinon
+      // Exemple :
+      //
+      PROCÉDURE Déconnecte(bForce est un booleen = faux) : booléen
+      m_pclErreur.Raz()
+      
+      si m_nIndiceDeConnexion>0 alors
+      	sClé 			est une chaine = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé
+      	nUtilisation 	est un entier = cBaseDeDonnées.mg_taUtilisationServeur[sClé]
+      	SI ((PAS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bResterConnecté _ET_ nUtilisation=1) OU bForce) ALORS	//nUtilisation=1 ALORS c'est la dernière connexion active sur ce serveur
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bForce)
+      		SI HFermeConnexion(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées) ALORS 
+      			cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté=Faux
+      			cBaseDeDonnées.ConnexionSupprimeTout(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)
+      			m_nIndiceDeConnexion=0;nUtilisation=0
+      		SINON
+      			m_pclErreur.AjouteErreurHF(ChaîneConstruit(<§$0005§>,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..BaseDeDonnées))
+      			RENVOYER Faux
+      		FIN
+      	FIN
+      	SI nUtilisation>1 ALORS cBaseDeDonnées.ConnexionSupprime(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)
+      SINON
+      	m_pclErreur.AjouteAvertissement(<§$0007§>)
+      FIN
+      RENVOYER Vrai
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Sauvegarde
+     procedure_id : 2035481214046289311
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] Sauvegarde ( [<bÉcraseSiExistant> est booléen [, <sNomTables> est chaîne [, <sRépertoireLocal> est chaîne [, <eSuffixe> est cBaseDeDonnées.ESauvegardeSuffixe]]]])
+      //
+      // Paramètres :
+      // 	bÉcraseSiExistant (booléen - valeur par défaut=1) : <indiquez ici le rôle de bÉcraseSiExistant>
+      //	sNomTables (chaîne UNICODE) : <indiquez ici le rôle de sNomTables>
+      //	sRépertoireLocal (chaîne UNICODE) : <indiquez ici le rôle de sRépertoireLocal>
+      //	eSuffixe (cBaseDeDonnées.ESauvegardeSuffixe) : <indiquez ici le rôle de eSuffixe>
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE Sauvegarde(bÉcraseSiExistant est un booléen = Vrai, LOCAL sNomTables est une chaîne = "", sRépertoireLocal est une chaîne = "",eSuffixe est un cBaseDeDonnées.ESauvegardeSuffixe = cBaseDeDonnées.ESauvegardeSuffixe.SuffixeAucun) : booléen	//les tables peuvent être séparées par des , ou RC
+      //à compléter
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bÉcraseSiExistant,sNomTables,sRépertoireLocal,eSuffixe)
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0006§>);renvoyer faux
+      
+      sSuffixe est une chaine
+      SELON eSuffixe
+      	CAS cBaseDeDonnées.SuffixeDate 		: sSuffixe="_"+DateSys()
+      	CAS cBaseDeDonnées.SuffixeHeure 	: sSuffixe="_"+HeureSys()
+      	CAS cBaseDeDonnées.SuffixeDateHeure : sSuffixe="_"+DateSys()+"_"+HeureSys()
+      FIN
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : SQLColonneMémoVide
+     procedure_id : 2036158164828792491
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui renvoie du code SQL d'une colonne binaire vide. Permet de récupérer un binaire vide dans le résultat plutôt que de charger le binaire dès le départ.
+      // Syntaxe : [ <Résultat> = ] SQLColonneMémoVide (<sNomColonne> est chaîne)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Le nom de la colonne mémo pour laquelle la vérification sera faite.
+      // Valeur de retour : chaîne UNICODE : Code SQL d'une colonne binaire vide
+      // Exemple :
+      //
+      PROCEDURE SQLColonneMémoVide(sNomColonne est une chaine) : chaine
+      RENVOYER "CAST('' AS VARBINARY(max)) AS "+sNomColonne
+     type : 458752
+   -
+     name : TableVersion
+     procedure_id : 2036158886391855120
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] TableVersion (<sNomTable> est chaîne)
+      //
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : <indiquez ici le rôle de sNomTable>
+      // Valeur de retour :
+      // 	entier : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCEDURE TableVersion(sNomTable est une chaine) : entier
+      //à compléter
+      renvoyer 0
+     type : 458752
+   -
+     name : SQLLimiteRequêteA
+     procedure_id : 2036167532251115327
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] SQLLimiteRequêteA (<nNombre> est entier, <bAvecWhere> est booléen)
+      //
+      // Paramètres :
+      //	nNombre (entier) : <indiquez ici le rôle de nNombre>
+      //	bAvecWhere (booléen) : <indiquez ici le rôle de bAvecWhere>
+      // Valeur de retour :
+      // 	multi-valeur : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCEDURE SQLLimiteRequêteA(nNombre est un entier,bAvecWhere est un booleen) : (chaine,chaine)
+      //à compléter
+      sPréLimite,sPostLimite sont des chaines
+      RENVOYER (sPréLimite,sPostLimite)
+     type : 458752
+   -
+     name : BooléenVersSQL
+     procedure_id : 2301528663054756221
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui transforme un booléen dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] BooléenVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	nValeur : Valeur booléenne à transformer en SQL.
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne un booléen au format SQL. En cas d'erreur, elle renvoie une chaîne vide.
+      // Exemple :
+      //
+      PROCEDURE BooléenVersSQL(nValeur) : chaine
+      renvoyer (nValeur="1" ? "1" sinon "0")
+     type : 458752
+   -
+     name : SQLImageVersBinaire
+     procedure_id : 2301591812073488487
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] SQLImageVersBinaire (<sNomColonne> est chaîne)
+      //
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : <indiquez ici le rôle de sNomColonne>
+      // Valeur de retour :
+      // 	chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCEDURE SQLImageVersBinaire(sNomColonne est une chaine) : chaine
+      //à compléter
+      renvoyer sNomColonne
+     type : 458752
+   -
+     name : SQLBinaireLit32
+     procedure_id : 2301591979577252718
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] SQLBinaireLit32 (<sNomColonne> est chaîne [, <bEstBinaireImage> est booléen])
+      //
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : <indiquez ici le rôle de sNomColonne>
+      // 	bEstBinaireImage (booléen - valeur par défaut=0) : <indiquez ici le rôle de bEstBinaireImage>
+      // Valeur de retour :
+      // 	chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCEDURE SQLBinaireLit32(LOCAL sNomColonne est une chaine,bEstBinaireImage est un booleen = faux) : chaine
+      //à compléter
+      RENVOYER sNomColonne
+     type : 458752
+   -
+     name : SQLTableAvantColonne
+     procedure_id : 1156820410572760396
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] SQLTableAvantColonne ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCEDURE SQLTableAvantColonne() : booleen
+      //à compléter
+      renvoyer faux
+     type : 458752
+  properties :
+   -
+     name : p_bEstConnecté
+     identifier : 0x1c5d994c0a3ead5f
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut de la connexion
+         PROCEDURE PUBLIQUE p_bEstConnecté() : booleen
+         renvoyer m_nIndiceDeConnexion>0
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1c3e4854893f3e84
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le nom du fichier est obligatoire
+      en-GB : The file name is required
+      fr-CA : Le nom du fichier est obligatoire
+      en-US : The file name is required
+     index : 0
+   -
+     text :
+      fr-FR : L'extension du fichier est obligatoire
+      en-GB : The file extension is required
+      fr-CA : L'extension du fichier est obligatoire
+      en-US : The file extension is required
+     index : 1
+   -
+     text :
+      fr-FR : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to open data connection (%1 - %2) : "
+      fr-CA : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-US : "Unable to open data connection (%1 - %2) : "
+     index : 2
+   -
+     text :
+      fr-FR : Pas de date pour cette base de données
+      en-GB : No date for this database
+      fr-CA : Pas de date pour cette base de données
+      en-US : No date for this database
+     index : 3
+   -
+     text :
+      fr-FR : Cette base de données n'est pas encore prise en charge
+      en-GB : This database is not yet supported
+      fr-CA : Cette base de données n'est pas encore prise en charge
+      en-US : This database is not yet supported
+     index : 4
+   -
+     text :
+      fr-FR : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to close data connection (%1 - %2) : "
+      fr-CA : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-US : "Unable to close data connection (%1 - %2) : "
+     index : 5
+   -
+     text :
+      fr-FR : Aucune connexion
+      en-GB : No connection
+      fr-CA : Aucune connexion
+      en-US : No connection
+     index : 6
+   -
+     text :
+      fr-FR : La base de données n'était pas connectée
+      en-GB : The database was not connected
+      fr-CA : La base de données n'était pas connectée
+      en-US : The database was not connected
+     index : 7
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

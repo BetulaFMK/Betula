@@ -1,0 +1,367 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cUtilisateurAvecExt
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12a1dcb3005acbd7
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe hérite de cUtilisateur et ajoute la personnalisation 15 extensionAttribute possibles (sur serveur 2012).
+      //Utilisez une classe héritée pour limiter les extensions à celle vraiment utilisées et pour les renommer selon les données qu'elles contiennent
+      
+      cUtilisateurAvecExt est une Classe
+      	hérite de cUtilisateur
+      	CONSTANTE
+      		_AttribusLus			= [
+      			isDeleted,EmployeeID,sn,mail,objectGUID,givenName,userAccountControl,department,title,telephoneNumber,company,displayname,userName,postalCode,employeeNumber,
+      			extensionAttribute1,extensionAttribute2,extensionAttribute3,extensionAttribute4,extensionAttribute5,extensionAttribute6,extensionAttribute7,extensionAttribute8,
+      			extensionAttribute9,extensionAttribute10,extensionAttribute11,extensionAttribute12,extensionAttribute13,extensionAttribute14,extensionAttribute15
+      			]
+      	FIN
+      privé	//y accéder via les propriétés
+      	extensionAttribute1			est une chaine		//Contenu de l'extension 1
+      	extensionAttribute2			est une chaine		//Contenu de l'extension 2
+      	extensionAttribute3			est une chaine		//Contenu de l'extension 3
+      	extensionAttribute4			est une chaine		//Contenu de l'extension 4
+      	extensionAttribute5			est une chaine		//Contenu de l'extension 5
+      	extensionAttribute6			est une chaine		//Contenu de l'extension 6
+      	extensionAttribute7			est une chaine		//Contenu de l'extension 7
+      	extensionAttribute8			est une chaine		//Contenu de l'extension 8
+      	extensionAttribute9			est une chaine		//Contenu de l'extension 9
+      	extensionAttribute10		est une chaine		//Contenu de l'extension 10
+      	extensionAttribute11		est une chaine		//Contenu de l'extension 11
+      	extensionAttribute12		est une chaine		//Contenu de l'extension 12
+      	extensionAttribute13		est une chaine		//Contenu de l'extension 13
+      	extensionAttribute14		est une chaine		//Contenu de l'extension 14
+      	extensionAttribute15		est une chaine		//Contenu de l'extension 15
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1342596825297832919
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise des membres de la classe lors de sa création. Elle permet de spécifier le compte Windows associé à l'utilisateur et de gérer des informations telles que le token ADFS utilisé pour l'authentification.
+      // Syntaxe : Constructeur ( [<sLogin> est chaîne [, <pclLDAP> est ceLDAP2012User dynamique]])
+      // Paramètres :
+      //	sLogin (chaîne UNICODE optionnelle) : utilisé pour identifier le compte Windows. Par défaut, il est vide.
+      // 	pclLDAP (ceLDAP2012User dynamique - valeur par défaut=0) : Un objet dynamique hérité de ceLDAP2012User. Par défaut, un objet dynamique ceLDAP2012User.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(sLogin est une chaine = "",pclLDAP est un ceLDAP2012User dynamique = null)
+      Constructeur cUtilisateur(sLogin,pclLDAP)
+      SI Position(cUtilisateur.m_pclLDAP.m_sAttributs,"extensionAttribute1")<1 ALORS	//ajout des extensions qu'il faut lire lors d'un LoginLDAP
+      	cUtilisateur.m_pclLDAP.m_sAttributs+=[
+      		extensionAttribute1,extensionAttribute2,extensionAttribute3,extensionAttribute4,extensionAttribute5,extensionAttribute6,extensionAttribute7,extensionAttribute8,...
+      		extensionAttribute9,extensionAttribute10,extensionAttribute11,extensionAttribute12,extensionAttribute13,extensionAttribute14,extensionAttribute15
+      	]
+      FIN
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1342596825297898455
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+  properties :
+   -
+     name : p_sExt1
+     identifier : 0x12a1dcb3005bcbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 1
+         PROCEDURE PUBLIQUE p_sExt1() : chaine
+         sValeur est une chaine = (extensionAttribute1<>Null ? extensionAttribute1 SINON "")		//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt2
+     identifier : 0x12a1dcb3005ccbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 2
+         PROCEDURE PUBLIQUE p_sExt2() : chaîne
+         sValeur est une chaine = (extensionAttribute2<>Null ? extensionAttribute2 SINON "")		//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt3
+     identifier : 0x12a1dcb3005dcbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 3
+         PROCEDURE PUBLIQUE p_sExt3() : chaîne
+         sValeur est une chaine = (extensionAttribute3<>Null ? extensionAttribute3 SINON "")		//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt4
+     identifier : 0x12a1dcb3005ecbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 4
+         PROCEDURE PUBLIQUE p_sExt4() : chaîne
+         sValeur est une chaine = (extensionAttribute4<>Null ? extensionAttribute4 SINON "")		//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt5
+     identifier : 0x12a1dcb3005fcbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 5
+         PROCEDURE PUBLIQUE p_sExt5() : chaîne
+         sValeur est une chaine = (extensionAttribute5<>Null ? extensionAttribute5 SINON "")		//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt6
+     identifier : 0x12a1dcb30060cbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 6
+         PROCEDURE PUBLIQUE p_sExt6() : chaîne
+         sValeur est une chaine = (extensionAttribute6<>Null ? extensionAttribute6 SINON "")		//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt7
+     identifier : 0x12a1dcb30061cbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 7
+         PROCEDURE PUBLIQUE p_sExt7() : chaîne
+         sValeur est une chaine = (extensionAttribute7<>Null ? extensionAttribute7 SINON "")		//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt8
+     identifier : 0x12a1dcb30062cbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 8
+         PROCEDURE PUBLIQUE p_sExt8() : chaîne
+         sValeur est une chaine = (extensionAttribute8<>Null ? extensionAttribute8 SINON "")		//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt9
+     identifier : 0x12a1dcb30063cbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 9
+         PROCEDURE PUBLIQUE p_sExt9() : chaîne
+         sValeur est une chaine = (extensionAttribute9<>Null ? extensionAttribute9 SINON "")		//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt10
+     identifier : 0x12a1dcb30064cbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 10
+         PROCEDURE PUBLIQUE p_sExt10() : chaîne
+         sValeur est une chaine = (extensionAttribute10<>Null ? extensionAttribute10 SINON "")	//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt11
+     identifier : 0x12a1dcb30065cbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 11
+         PROCEDURE PUBLIQUE p_sExt11() : chaîne
+         sValeur est une chaine = (extensionAttribute11<>Null ? extensionAttribute11 SINON "")	//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt12
+     identifier : 0x12a1dcb30066cbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 12
+         PROCEDURE PUBLIQUE p_sExt12() : chaîne
+         sValeur est une chaine = (extensionAttribute12<>Null ? extensionAttribute12 SINON "")	//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt13
+     identifier : 0x12a1dcb30067cbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 13
+         PROCEDURE PUBLIQUE p_sExt13() : chaîne
+         sValeur est une chaine = (extensionAttribute13<>Null ? extensionAttribute13 SINON "")	//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt14
+     identifier : 0x12a1dcb30068cbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 14
+         PROCEDURE PUBLIQUE p_sExt14() : chaîne
+         sValeur est une chaine = (extensionAttribute14<>Null ? extensionAttribute14 SINON "")	//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sExt15
+     identifier : 0x12a1dcb30069cbd7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la valeur de l'extension 15
+         PROCEDURE PUBLIQUE p_sExt15() : chaîne
+         sValeur est une chaine = (extensionAttribute15<>Null ? extensionAttribute15 SINON "")	//force au format chaine
+         RENVOYER sValeur
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x128386410133c0f7
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : L'ID de l'employé est obligatoire
+      en-GB : Employee ID is required
+     index : 0
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,183 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cLDAP2000User
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f1fe30048486a8
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe qui donne la structure d'un enregistrement User sur un serveur Windows 2000.
+      
+      //ref : https://docs.microsoft.com/en-us/troubleshoot/windows-server/identity/useraccountcontrol-manipulate-account-properties
+      //ref : https://support.microsoft.com/en-us/topic/0b5d8e78-1e7d-41e7-7010-1de1d04b4e9b
+      CONSTANTE
+      	_ADUserAccountScript								= 0x0001		//The logon script will be run.
+      	_ADUserAccountAccountDisable						= 0x0002		//The user account is disabled.
+      	_ADUserAccountHomeDirRequired						= 0x0008		//The home folder is required.
+      	_ADUserAccountLockOut								= 0x0010		//In a Windows Server 2003-based domain, LOCK_OUT and PASSWORD_EXPIRED have been replaced with a new attribute called ms-DS-User-Account-Control-Computed. For more information about this new attribute, see ms-DS-User-Account-Control-Computed attribute.
+      	_ADUserAccountPasswordNotRequired					= 0x0020		//No password is required. 
+      	_ADUserAccountPasswordCannotChange					= 0x0040		//The user can't change the password.
+      	_ADUserAccountPasswordEncryptAllowed				= 0x0080		//The user can send an encrypted password.
+      	_ADUserAccountTempDuplicateAccount					= 0x0100		//It's an account for users whose primary account is in another domain.
+      	_ADUserAccountNormalAccount							= 0x0200		//It's a default account type that represents a typical user.
+      	_ADUserAccountInterDomainTrustAccount				= 0x0800		//It's a permit to trust an account for a system domain that trusts other domains.
+      	_ADUserAccountWorkstationTrustAccount				= 0x1000		//It's a computer account for a computer that is running Microsoft Windows NT 4.0 Workstation, Microsoft Windows NT 4.0 Server, Microsoft Windows 2000 Professional, or Windows 2000 Server and is a member of this domain.
+      	_ADUserAccountServerTrustAccount					= 0x2000		//It's a computer account for a domain controller that is a member of this domain.
+      	_ADUserAccountDontExpirePassword					= 0x10000		//Represents the password, which should never expire on the account.
+      	_ADUserAccountMNSLogonAccount						= 0x20000		//It's an MNS logon account.
+      	_ADUserAccountSmartCardRequired						= 0x40000		//When this flag is set, it forces the user to log on by using a smart card.
+      	_ADUserAccountTrustedForDelegation					= 0x80000		//When this flag is set, the service account (the user or computer account) under which a service runs is trusted for Kerberos delegation.
+      	_ADUserAccountNotDelegated							= 0x100000		//When this flag is set, the security context of the user isn't delegated to a service even if the service account is set as trusted for Kerberos delegation.
+      	_ADUserAccountUseDESKeyOnly							= 0x200000		//(Windows 2000/Windows Server 2003) Restrict this principal to use only Data Encryption Standard (DES) encryption types for keys.
+      	_ADUserAccountDontRequestPreAuthentication			= 0x400000		//(Windows 2000/Windows Server 2003) This account doesn't require Kerberos pre-authentication for logging on.
+      	_ADUserAccountPassordExpired						= 0x800000		//(Windows 2000/Windows Server 2003) The user's password has expired. In a Windows Server 2003-based domain, LOCK_OUT and PASSWORD_EXPIRED have been replaced with a new attribute called ms-DS-User-Account-Control-Computed. For more information about this new attribute, see ms-DS-User-Account-Control-Computed attribute.
+      	_ADUserAccountTrustedToAuthenticationForDelegation	= 0x1000000		//(Windows 2000/Windows Server 2003) The account is enabled for delegation.
+      	_ADUserAccountPartialSecretAccount					= 0x04000000	//(Windows Server 2008/Windows Server 2008 R2) The account is a read-only domain controller (RODC).
+      	
+      	_ADUserAccountDisabled								= _ADUserAccountNormalAccount+_ADUserAccountAccountDisable
+      	_ADUserAccountEnabledNoPassword						= _ADUserAccountNormalAccount+_ADUserAccountPasswordNotRequired
+      	_ADUserAccountDisabledNoPassword					= _ADUserAccountNormalAccount+_ADUserAccountPasswordNotRequired+_ADUserAccountAccountDisable
+      	_ADUserAccountDisabledPasswordNotExpire				= _ADUserAccountNormalAccount+_ADUserAccountDontExpirePassword+_ADUserAccountAccountDisable
+      FIN
+      
+      cLDAP2000User est une Classe, abstraite		//ref : https://docs.microsoft.com/en-us/windows/win32/adschema/c-user#windows-2000-server-attributes
+      	accountExpires											est un entier sur 8 octets				//The date when the account expires. This value represents the number of 100-nanosecond intervals since January 1, 1601 (UTC). A value of 0 or 0x7FFFFFFFFFFFFFFF (9223372036854775807) indicates that the account never expires.	
+      	aCSPolicyName											est une chaîne							//String name of an ACS policy that applies to this user.
+      	adminCount												est un entier							//Indicates that a given object has had its ACLs changed to a more secure value by the system because it was a member of one of the administrative groups (directly or transitively).
+      	badPasswordTime											est un entier sur 8 octets	//dateheure	//The last time and date that an attempt to log on to this account was made with a password that is not valid. 
+      	badPwdCount												est un entier							//The number of times the user tried to log on to the account using an incorrect password. A value of 0 indicates that the value is unknown.
+      	codePage												est un entier							//Specifies the code page for the user's language of choice. This value is not used by Windows 2000.
+      	controlAccessRights										est une chaîne	//replica-link			//Used by DS Security to determine which users can perform specific operations on the host object.
+      	dBCSPwd													est une chaîne	//replica-link			//The account's LAN Manager password.
+      	defaultClassStore										est une chaîne	//DN					//The default Class Store for a given user.
+      	desktopProfile											est une chaîne							//The location of the desktop profile for a user or group of users. Not used.
+      	dynamicLDAPServer										est une chaîne	//DN					//DNS name of server handing dynamic properties for this account.
+      	groupMembershipSAM										est une chaîne	//replica-link			//Windows NT Security. Down level Windows NT support.
+      	groupPriority											est une chaîne							//The Group-Priority attribute is not currently used.
+      	groupsToIgnore											est une chaîne							//The Groups-to-Ignore attribute is not currently used.
+      	homeDirectory											est une chaîne							//The home directory for the account. If homeDrive is set and specifies a drive letter, homeDirectory must be a UNC path.
+      	homeDrive												est une chaîne							//Specifies the drive letter to which to map the UNC path specified by homeDirectory.
+      	lastLogoff												est un entier sur 8 octets				//This attribute is not used.
+      	lastLogon												est un entier sur 8 octets				//The last time the user logged on. This value is stored as a large integer that represents the number of 100-nanosecond intervals since January 1, 1601 (UTC). A value of zero means that the last logon time is unknown.
+      	lmPwdHistory											est une chaîne	//replica-link			//The password history of the user in LAN Manager (LM) one-way format (OWF). The LM OWF is used for compatibility with LAN Manager 2.x clients, Windows 95, and Windows 98.
+      	localeID												est un entier							//This attribute contains a list of locale IDs supported by this application. A locale ID represents a geographic location, such as a country/region, city, county, and so on.
+      	lockoutTime												est un entier sur 8 octets				//The date and time (UTC) that this account was locked out. This value is stored as a large integer that represents the number of 100-nanosecond intervals since January 1, 1601 (UTC). A value of zero means that the account is not currently locked out.
+      	logonCount												est un entier							//The number of times the account has successfully logged on. A value of 0 indicates that the value is unknown.
+      	logonHours												est une chaîne	//replica-link			//The hours that the user is allowed to logon to the domain.
+      	logonWorkstation										est une chaîne	//replica-link			//This attribute is not used. 
+      	maxStorage												est un entier sur 8 octets				//The maximum amount of disk space the user can use. Use the value specified in USER_MAXSTORAGE_UNLIMITED to use all available disk space.
+      	mS_DS_CreatorSID										est une chaîne	//sid					//The security ID of the creator of the object that contains this attribute.
+      	mSMQDigests												est une chaîne	//replica-link			//An array of digests of the corresponding certificates in attribute mSMQ-Sign-Certificates. They are used for mapping a digest into a certificate.
+      	mSMQDigestsMig											est une chaîne	//replica-link			//In MSMQ mixed-mode, contains the previous value of mSMQDigests.
+      	mSMQSignCertificates									est une chaîne	//replica-link			//This attribute contains a number of certificates. A user can generate a certificate per computer. For each certificate we also keep a digest.
+      	mSMQSignCertificatesMig									est une chaîne	//replica-link			//In MSMQ mixed-mode, the attribute contains the previous value of mSMQSignCertificates. 
+      	msNPAllowDialin											est un booléen							//Indicates whether the account has permission to dial in to the RAS server. Do not modify this value directly.
+      	msNPCallingStationID									est une chaîne							//The msNPCallingStationID attribute is used internally. Do not modify this value directly.
+      	msNPSavedCallingStationID								est une chaîne							//The msNPSavedCallingStationID attribute is used internally. Do not modify this value directly.
+      	msRADIUSCallbackNumber									est une chaîne							//The msRADIUSCallbackNumber attribute is used internally. Do not modify this value directly.
+      	msRADIUSFramedIPAddress									est un entier							//The msRADIUSFramedIPAddress attribute is used internally. Do not modify this value directly.
+      	msRADIUSFramedRoute										est une chaîne							//The msRADIUSFramedRoute attribute is used internally. Do not modify this value directly.
+      	msRADIUSServiceType										est un entier							//The msRADIUSServiceType attribute is used internally. Do not modify this value directly.
+      	msRASSavedCallbackNumber								est une chaîne							//The msRASSavedCallbackNumber attribute is used internally. Do not modify this value directly.
+      	msRASSavedFramedIPAddress								est un entier							//The msRASSavedFramedIPAddress attribute is used internally. Do not modify this value directly.
+      	msRASSavedFramedRoute									est une chaîne							//The msRASSavedFramedRoute attribute is used internally. Do not modify this value directly.
+      	networkAddress											est une chaîne							//The TCP/IP address for a network segment. Also called the subnet address.
+      	ntPwdHistory											est une chaîne	//DN					//The password history of the user in Windows NT one-way format (OWF). Windows 2000 uses the Windows NT OWF.
+      	operatorCount											est un entier							//Operator count.
+      	otherLoginWorkstations									est une chaîne							//Non Windows NT or LAN Manager workstations from which a user can log on.
+      	preferredOU												est une chaîne	//DN					//The Organizational Unit to show by default on user' s desktop.
+      	primaryGroupID											est un entier							//Contains the relative identifier (RID) for the primary group of the user. By default, this is the RID for the Domain Users group.
+      	profilePath												est une chaîne							//Specifies a path to the user's profile. This value can be a null string, a local absolute path, or a UNC path.
+      	pwdLastSet												est un entier							//The date and time that the password for this account was last changed. This value is stored as a large integer that represents the number of 100 nanosecond intervals since January 1, 1601 (UTC). If this value is set to 0 and the User-Account-Control attribute does not contain the UF_DONT_EXPIRE_PASSWD flag, then the user must set the password at the next logon.
+      	scriptPath												est une chaîne							//This attribute specifies the path for the user's logon script. The string can be null.
+      	securityIdentifier										est une chaîne	//sid					//A unique value of variable length used to identify a user account, group account, or logon session to which an ACE applies.
+      	terminalServer											est une chaîne	//replica-link			//Opaque data used by the Windows NT terminal server.
+      	unicodePwd												est une chaîne	//replica-link			//The password of the user in Windows NT one-way format (OWF). Windows 2000 uses the Windows NT OWF. This property is used only by the operating system. Note that you cannot derive the clear password back from the OWF form of the password.
+      	userAccountControl										est un entier							//Flags that control the behavior of the user account.
+      	userParameters											est une chaîne							//Parameters of the user. Points to a Unicode string that is set aside for use by applications. This string can be a null string, or it can have any number of characters before the terminating null character. Microsoft products use this member to store user data specific to the individual program.
+      	userPrincipalName										est une chaîne          				//This attribute contains the UPN that is an Internet-style login name for a user based on the Internet standard RFC 822. 
+      	userSharedFolder										est une chaîne							//Specifies a UNC path to the user's shared documents folder. The path must be a network UNC path of the form **\\Server\Share\**Directory. This value can be a null string.
+      	userSharedFolderOther									est une chaîne							//Specifies a UNC path to the user's additional shared documents folder. The path must be a network UNC path of the form **\\Server\Share\**Directory. This value can be a null string.
+      	userWorkstations										est une chaîne							//Contains the NetBIOS or DNS names of the computers running Windows NT Workstation or Windows 2000 Professional from which the user can log on. Each NetBIOS name is separated by a comma. Multiple names should be separated by commas.
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1293094050219787944
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1293094050219853480
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+  properties :
+   -
+     name : p_bCompteActif
+     identifier : 0x11f1fe780487a1d6
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut du compte utilisateur
+         PROCEDURE PUBLIQUE p_bCompteActif() : booléen
+         RENVOYER (PAS userAccountControl DANS (cLDAP2000User._ADUserAccountDisabled,cLDAP2000User._ADUserAccountDisabledPasswordNotExpire))
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie le statut du compte utilisateur
+         PROCEDURE PUBLIQUE p_bCompteActif(Valeur)
+         SI Valeur ALORS 
+         	SI userAccountControl=_ADUserAccountDisabled ALORS userAccountControl=_ADUserAccountNormalAccount
+         	SI userAccountControl=_ADUserAccountDisabledPasswordNotExpire ALORS userAccountControl=_ADUserAccountNormalAccount+_ADUserAccountDontExpirePassword
+         SINON
+         	SI userAccountControl=_ADUserAccountNormalAccount ALORS userAccountControl=_ADUserAccountDisabled
+         	SI userAccountControl=_ADUserAccountNormalAccount+_ADUserAccountDontExpirePassword ALORS userAccountControl=_ADUserAccountDisabledPasswordNotExpire
+         FIN
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f1fe2e047e7e9d
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

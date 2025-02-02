@@ -1,0 +1,522 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_DDE
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1d092c64002f299c
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      gsPréfixeHyperlien	est une chaine			= "monappli"
+      Privé
+      	constante
+      		ErreurDDE 			= 120
+      	fin
+      	gsDDESujet			est une chaine		= "MONDDE"
+      	gsDDEObjet			est une chaine		= "[CommandLine]"
+      	gprocLigneCommande 	est une procédure	= null
+     type : 720896
+  procedures :
+   -
+     name : DDECodeErreurVersChaine
+     procedure_id : 2092253031462123619
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction convertit un code d'erreur DDE (Dynamic Data Exchange) en une chaîne de description lisible. Elle est utile pour interpréter les erreurs générées lors d'opérations DDE dans les applications WinDev.
+      // Syntaxe : [ <Résultat> = ] CodeErreurVersChaine (<nNumErreur> est entier)
+      // Paramètres :
+      // 	nNumErreur (entier) : Le code d'erreur DDE à convertir en chaîne. Il peut être obtenu lors d'opérations DDE pour identifier la nature spécifique de l'erreur.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne de caractères décrivant le code d'erreur DDE donné.
+      // Exemple :
+      //	sDescriptionErreur est une chaîne = DDECodeErreurVersChaine(15)
+      //	Info(sDescriptionErreur)
+      //
+      PROCEDURE DDECodeErreurVersChaine(nNumErreur est un entier) : chaine
+      SELON nNumErreur
+      	CAS -1 		: RENVOYER <§@1d092c59002dfce20000§>
+      	CAS 1  		: RENVOYER <§@1d092c59002dfce20001§>
+      	CAS 2  		: RENVOYER <§@1d092c59002dfce20002§>
+      	CAS 3  		: RENVOYER <§@1d092c59002dfce20003§>
+      	CAS 4  		: RENVOYER <§@1d092c59002dfce20004§>
+      	CAS 5  		: RENVOYER <§@1d092c59002dfce20005§>
+      	CAS 6  		: RENVOYER <§@1d092c59002dfce20006§>
+      	CAS 7  		: RENVOYER <§@1d092c59002dfce20007§>
+      	CAS 8  		: RENVOYER <§@1d092c59002dfce20008§>
+      	CAS 9  		: RENVOYER <§@1d092c59002dfce20009§>
+      	CAS 10 		: RENVOYER <§@1d092c59002dfce2000a§>
+      	CAS 11 		: RENVOYER <§@1d092c59002dfce2000b§>
+      	CAS 12 		: RENVOYER <§@1d092c59002dfce2000c§>
+      	CAS 13 		: RENVOYER <§@1d092c59002dfce2000d§>
+      	CAS 14 		: RENVOYER <§@1d092c59002dfce2000e§>
+      	CAS 15 		: RENVOYER <§@1d092c59002dfce2000f§>
+      	CAS 16 		: RENVOYER <§@1d092c59002dfce20010§>
+      	CAS 16384 	: RENVOYER <§@1d092c59002dfce20011§>				//	DMLERR_ADVACKTIMEOUT
+      	CAS	16385 	: RENVOYER <§@1d092c59002dfce20012§>									//	DMLERR_BUSY
+      	CAS	16386 	: RENVOYER <§@1d092c59002dfce20013§>	//	DMLERR_DATAACKTIMEOUT
+      	CAS	16387 	: RENVOYER <§@1d092c59002dfce20014§>								//	DMLERR_DLL_NOT_INITIALIZED
+      	CAS	16388 	: RENVOYER <§@1d092c59002dfce20015§>						//	DMLERR_DLL_USAGE
+      	CAS	16389 	: RENVOYER <§@1d092c59002dfce20016§>	//	DMLERR_EXECACKTIMEOUT
+      	CAS	16390 	: RENVOYER <§@1d092c59002dfce20017§>		//	DMLERR_INVALIDPARAMETER
+      	CAS	16391 	: RENVOYER <§@1d092c59002dfce20018§>								//	DMLERR_LOW_MEMORY
+      	CAS	16392 	: RENVOYER <§@1d092c59002dfce20019§>										//	DMLERR_MEMORY_ERROR
+      	CAS	16393 	: RENVOYER <§@1d092c59002dfce2001a§>				//	DMLERR_NOTPROCESSED
+      	CAS	16394 	: RENVOYER <§@1d092c59002dfce2001b§>					//	DMLERR_NO_CONV_ESTABLISHED
+      	CAS	16395 	: RENVOYER <§@1d092c59002dfce2001c§>		//	DMLERR_POKEACKTIMEOUT
+      	CAS	16396 	: RENVOYER <§@1d092c59002dfce2001d§>			// 	DMLERR_POSTMSG_FAILED
+      	CAS	16397 	: RENVOYER <§@1d092c59002dfce2001e§>	//	DMLERR_REENTRANCY
+      	CAS	16398 	: RENVOYER <§@1d092c59002dfce2001f§>									//	DMLERR_SERVER_DIED
+      	CAS	16399 	: RENVOYER <§@1d092c59002dfce20020§>						//	DMLERR_SYS_ERROR
+      	CAS	16400 	: RENVOYER <§@1d092c59002dfce20021§>				//	DMLERR_UNADVACKTIMEOUT
+      	CAS	16401 	: RENVOYER <§@1d092c59002dfce20022§>					//	DMLERR_UNFOUND_QUEUE_ID
+      	AUTRE CAS 	: RENVOYER chaineconstruit(<§@1d092c59002dfce20023§>,nNumErreur)
+      FIN
+     type : 458752
+   -
+     name : DDEConnecter
+     procedure_id : 1296659312503952911
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure DDEConnecter est conçue pour gérer les demandes de connexion DDE en fonction du sujet DDE (gsDDESujet).
+      // Syntaxe : DDEConnecter ()
+      //// Paramètres : 	Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	Est utilisée par LigneCommandeExt
+      //
+      PROCEDURE DDEConnecter()
+      SI _DDE.Sujet = gsDDESujet ALORS _DDE.Cr = 1 SINON _DDE.Cr = 0
+     type : 458752
+   -
+     name : LigneCommandeExt
+     procedure_id : 1296659411288289546
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure LigneCommandeExt permet de gérer les communications via DDE (Dynamic Data Exchange) pour le traitement des lignes de commande entre différentes instances du programme.
+      // Syntaxe :
+      //[ <Résultat> = ] LigneCommandeExt ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : entier : 0=ok sinon #erreur DDE
+      // Exemple :
+      //	voir https://wlplus.org/betula/communication-dde/
+      //
+      PROCEDURE LigneCommandeExt() : entier	 
+      si gprocLigneCommande=null alors ErreurDéclenche(ErreurDDE,<§@1d092c59002dfce20027§>);renvoyer 1
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	nPID est un entier = AutreInstance()
+      	SI nPID>0 ALORS 
+      		sCommande	est une chaine ansi 
+      		sExe		est une chaîne = fExtraitChemin(ExeInfo(exeNom),fFichier)
+      		Multitâche(-10)
+      		nDDECnx 	est un entier = DDEConnecte(fExtraitChemin(exeinfo(exeNom),fFichier),gsDDEsujet)
+      		SI nDDECnx<>0 ALORS
+      			sCommande=UnicodeVersAnsi(LigneCommande(1))
+      			SI ExtraitChaîne(sCommande,1,":")~=gsPréfixeHyperLien _ET_ DDEEnvoie(nDDECnx,gsDDEobjet,sCommande) ALORS DDEDéconnecte(nDDECnx);FinProgramme()
+      			nErr est un entier = DDEErreur(nDDECnx)
+      			wl.info(sCommande,nErr,gsPréfixeHyperlien,gsDDEObjet,sCommande)
+      			DDEDéconnecte(nDDECnx);renvoyer nErr
+      		FIN
+      		RENVOYER 1
+      	SINON
+      		//permet de communiquer avec une autre instance du programme, ces deux procédures "DDEConnecter" et "DDEMessage" doivent exister pour un bon fonctionnement
+      		DDEEvénement("DDEConnecter",DDEALier);DDEEvénement("DDEMessage",DDEARecevoir)
+      	FIN
+      	
+      		PROCÉDURE INTERNE AutreInstance() : entier
+      		nProcessus est un entier sur 8 octets = ExeDonnePID()
+      		sProcess,sAllProcess sont des chaînes
+      		//attention, en TSE, on doit récupérer le nom d'utilisateur du processus
+      		sAllProcess=ExeListeProcessus(exePID,exeNomLong)
+      		POUR TOUTE CHAÎNE sProcess DE sAllProcess SEPAREE PAR RC
+      			SI Val(ExtraitChaîne(sProcess,1))<>nProcessus ET ExtraitChaîne(sProcess,2)~=ExeInfo(exeNom) ALORS 
+      				RENVOYER Val(ExtraitChaîne(sProcess,1))
+      			FIN
+      		FIN
+      		RENVOYER 0
+      		FIN
+      	
+      <fin>
+      
+      
+      RENVOYER 0
+     type : 458752
+   -
+     name : DDEInit
+     procedure_id : 1552675354035610647
+     type_code : 15
+     code : |1-
+      // Résumé : La méthode initialise le mécanisme DDE pour la gestion des hyperliens. Le DDE est utilisé pour permettre à une application d'être activée via un hyperlien.
+      // Syntaxe : [ <Résultat> = ] DDEInit (<sPréfixeHyperlien> est chaîne, <procTraitementLigneCommande> est procédure [, <sDDESujet> est chaîne [, <sDDEObjet> est chaîne]])
+      // Paramètres :
+      //	sPréfixeHyperlien (chaîne UNICODE) : Le préfixe Hyperlien de l'application.
+      //	procTraitementLigneCommande (procédure) : La procédure de traitement de la ligne de commande pour les hyperliens.
+      //	sDDESujet (chaîne UNICODE optionnelle)  : Le sujet DDE (par défaut : "MONDDE").
+      //	sDDEObjet (chaîne UNICODE optionnelle) : L'objet DDE (par défaut : "[CommandLine]").
+      // Valeur de retour : booléen : Vrai indique que l'initialisation DDE est réussie (donc son écriture dans la base de registre), et False indique un échec.
+      // Exemple :
+      //	voir https://wlplus.org/betula/communication-dde/
+      //
+      PROCEDURE DDEInit(sPréfixeHyperlien est une chaine,procTraitementLigneCommande est une procédure,sDDESujet est une chaine = "MONDDE",sDDEObjet est une chaine = "[CommandLine]") : booléen
+      si sPréfixeHyperlien~="" alors ErreurDéclenche(ErreurDDE,<§@1d092c59002dfce20025§>)
+      gprocLigneCommande	= procTraitementLigneCommande
+      gsPréfixeHyperlien	= sPréfixeHyperlien
+      gsDDESujet 			= sDDESujet;si gsDDESujet~="" alors gsDDESujet = "MONDDE"
+      gsDDEObjet 			= sDDEObjet;SI gsDDEObjet~="" ALORS gsDDEObjet = "[CommandLine]"
+      sCheminAppli est une chaîne = ExeInfo(exeNom)+" "+cGénérique._Guillemet+"%1"+cGénérique._Guillemet
+      SI RegistreLit("HKEY_CLASSES_ROOT\"+gsPréfixeHyperlien+"\shell\open\command","")~=sCheminAppli ALORS RENVOYER Vrai
+      sReg est une chaîne = [
+      	Windows Registry Editor Version 5.00
+      	[HKEY_CLASSES_ROOT\%1]
+      	@="URL:%1 Protocol"
+      	"URL Protocol"="%1"
+      	[HKEY_CLASSES_ROOT\%1\shell]
+      	[HKEY_CLASSES_ROOT\%1\shell\open]
+      	[HKEY_CLASSES_ROOT\%1\shell\open\command]
+      	@="##"
+      ]
+      sFichierReg est une chaîne = fRepTemp()+["\"]+gsPréfixeHyperlien+"-protocol.reg"
+      SI (PAS fFichierExiste(sFichierReg) _OU_ fSupprime(sFichierReg)) _ET_ fSauveTexte(sFichierReg,Remplace(chaineconstruit(sReg,gsPréfixeHyperlien),"##",TexteVersReg(sCheminAppli))) ALORS
+      	SI LanceAppliWin(SysRep(srWindows)+["\"]+"regedit.exe"," /s "+""""+sFichierReg+"""")>0 ALORS RENVOYER Vrai
+      SINON
+      	ErreurDéclenche(ErreurDDE,<§@1d092c59002dfce20024§>+" "+erreurinfo(errmessage))
+      FIN
+      renvoyer faux
+     type : 458752
+   -
+     name : DDEMessage
+     procedure_id : 1552678940559320253
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure gère les messages DDE reçus par l'application. Elle examine les messages DDE et exécute la procédure de traitement de la ligne de commande associée.
+      // Syntaxe : DDEMessage ()
+      // Paramètres : 
+      // 	Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	Est utilisée par LigneCommandeExt
+      //
+      PROCEDURE DDEMessage()
+      SI gprocLigneCommande=Null ALORS ErreurDéclenche(ErreurDDE,<§@1d092c59002dfce20027§>);_DDE.Cr = 0;retour
+      sCommande est une chaîne ANSI = _DDE.Chaine
+      SI _DDE.Sujet = gsDDESujet ET _DDE.Item=gsDDEObjet ALORS
+      	_DDE.Cr = 1
+      	SI ExtraitChaîne(sCommande,1,":")~=gsPréfixeHyperlien ALORS gprocLigneCommande(sCommande) sINON ErreurDéclenche(ErreurDDE,<§@1d092c59002dfce20026§>+sCommande)
+      SINON
+      	_DDE.Cr = 0
+      FIN
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1d092c59002dfce2
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Erreur de syntaxe (client = *, sujet = *, etc.)"
+      en-GB : "Syntax error (client = *, subject = *, etc.)"
+      fr-CA : "Erreur de syntaxe (client = *, sujet = *, etc.)"
+      en-US : "Syntax error (client = *, subject = *, etc.)"
+     index : 0
+   -
+     text :
+      fr-FR : Erreur d'initialisation
+      en-GB : Initialization error
+      fr-CA : Erreur d'initialisation
+      en-US : Initialization error
+     index : 1
+   -
+     text :
+      fr-FR : Le programme est déjà terminé
+      en-GB : The program is already finished
+      fr-CA : Le programme est déjà terminé
+      en-US : The program is already finished
+     index : 2
+   -
+     text :
+      fr-FR : Le programme en cours d'exécution est lancé alors qu'il est toujours enregistré auprès de WinDev/WebDev (le programme n'a pas appelé la fonction DDEDéconnecte lors d'une précédente exécution)
+      en-GB : The program in execution is launched while it is still registered with WinDev/WebDev (the program did not call the DDEDisconnect function during a previous execution).
+      fr-CA : Le programme en cours d'exécution est lancé alors qu'il est toujours enregistré auprès de WinDev/WebDev (le programme n'a pas appelé la fonction DDEDéconnecte lors d'une précédente exécution)
+      en-US : The program in execution is launched while it is still registered with WinDev/WebDev (the program did not call the DDEDisconnect function during a previous execution).
+     index : 3
+   -
+     text :
+      fr-FR : Trop de programmes sont enregistrés auprès de WDDE.DLL (50 programmes maximum)
+      en-GB : Too many programs are registered with WDDE.DLL (max. 50 programs)
+      fr-CA : Trop de programmes sont enregistrés auprès de WDDE.DLL (50 programmes maximum)
+      en-US : Too many programs are registered with WDDE.DLL (max. 50 programs)
+     index : 4
+   -
+     text :
+      fr-FR : Trop de messages sont en mémoire (400 messages maximum)
+      en-GB : Too many messages are in memory (max. 400 messages)
+      fr-CA : Trop de messages sont en mémoire (400 messages maximum)
+      en-US : Too many messages are in memory (max. 400 messages)
+     index : 5
+   -
+     text :
+      fr-FR : Destinataire inconnu
+      en-GB : Recipient unknown
+      fr-CA : Destinataire inconnu
+      en-US : Recipient unknown
+     index : 6
+   -
+     text :
+      fr-FR : "Aucun message n'est à récupérer : la file des messages est vide pour le sujet demandé"
+      en-GB : "There are no messages to retrieve: the message queue is empty for the requested topic"
+      fr-CA : "Aucun message n'est à récupérer : la file des messages est vide pour le sujet demandé"
+      en-US : "There are no messages to retrieve: the message queue is empty for the requested topic"
+     index : 7
+   -
+     text :
+      fr-FR : Pas assez de mémoire pour lancer le serveur
+      en-GB : Not enough memory to run the server
+      fr-CA : Pas assez de mémoire pour lancer le serveur
+      en-US : Not enough memory to run the server
+     index : 8
+   -
+     text :
+      fr-FR : Programme appelé inconnu (chemin incorrect)
+      en-GB : Program called unknown (incorrect path)
+      fr-CA : Programme appelé inconnu (chemin incorrect)
+      en-US : Program called unknown (incorrect path)
+     index : 9
+   -
+     text :
+      fr-FR : Programme appelé déjà lancé
+      en-GB : Program called already launched
+      fr-CA : Programme appelé déjà lancé
+      en-US : Program called already launched
+     index : 10
+   -
+     text :
+      fr-FR : Erreur de lancement du programme
+      en-GB : Program Start Error
+      fr-CA : Erreur de lancement du programme
+      en-US : Program Start Error
+     index : 11
+   -
+     text :
+      fr-FR : Erreur lors d'une allocation mémoire
+      en-GB : Error during memory allocation
+      fr-CA : Erreur lors d'une allocation mémoire
+      en-US : Error during memory allocation
+     index : 12
+   -
+     text :
+      fr-FR : Erreur lors de l'initialisation DDE
+      en-GB : Error during DDE initialization
+      fr-CA : Erreur lors de l'initialisation DDE
+      en-US : Error during DDE initialization
+     index : 13
+   -
+     text :
+      fr-FR : Erreur lors de la connexion à l'application (serveur)
+      en-GB : Error when connecting to the application (server)
+      fr-CA : Erreur lors de la connexion à l'application (serveur)
+      en-US : Error when connecting to the application (server)
+     index : 14
+   -
+     text :
+      fr-FR : Erreur lors de la transaction DDE
+      en-GB : Error during the DDE transaction
+      fr-CA : Erreur lors de la transaction DDE
+      en-US : Error during the DDE transaction
+     index : 15
+   -
+     text :
+      fr-FR : Erreur lors de la récupération d'une donnée DDE
+      en-GB : Error while retrieving DDE data
+      fr-CA : Erreur lors de la récupération d'une donnée DDE
+      en-US : Error while retrieving DDE data
+     index : 16
+   -
+     text :
+      fr-FR : Temps d'attente d'accusé de réception trop long
+      en-GB : Timeout waiting for an advise acknowledge
+      fr-CA : Temps d'attente d'accusé de réception trop long
+      en-US : Timeout waiting for an advise acknowledge
+     index : 17
+   -
+     text :
+      fr-FR : Le destinataire est occupé
+      en-GB : Recipient is busy
+      fr-CA : Le destinataire est occupé
+      en-US : Recipient is busy
+     index : 18
+   -
+     text :
+      fr-FR : Temps d'attente d'accusé de réception (données) trop long
+      en-GB : Timeout waiting for an advise data acknowledge
+      fr-CA : Temps d'attente d'accusé de réception (données) trop long
+      en-US : Timeout waiting for an advise data acknowledge
+     index : 19
+   -
+     text :
+      fr-FR : DDEML.DLL n'a pas été initialisé
+      en-GB : DDEML.DLL is not initialized
+      fr-CA : DDEML.DLL n'a pas été initialisé
+      en-US : DDEML.DLL is not initialized
+     index : 20
+   -
+     text :
+      fr-FR : Erreur générale dans la bibliothèque DDE
+      en-GB : General DDE library usage error
+      fr-CA : Erreur générale dans la bibliothèque DDE
+      en-US : General DDE library usage error
+     index : 21
+   -
+     text :
+      fr-FR : Temps d'attente d'accusé de réception (exécutable) trop long
+      en-GB : Timeout waiting for an exec acknowledgment
+      fr-CA : Temps d'attente d'accusé de réception (exécutable) trop long
+      en-US : Timeout waiting for an exec acknowledgment
+     index : 22
+   -
+     text :
+      fr-FR : Paramètre invalide lors de l'appel à une fonction DDEML
+      en-GB : Invalid parameter to DDEML function call
+      fr-CA : Paramètre invalide lors de l'appel à une fonction DDEML
+      en-US : Invalid parameter to DDEML function call
+     index : 23
+   -
+     text :
+      fr-FR : La mémoire devient trop basse
+      en-GB : Memory is becoming low
+      fr-CA : La mémoire devient trop basse
+      en-US : Memory is becoming low
+     index : 24
+   -
+     text :
+      fr-FR : La mémoire est pleine
+      en-GB : Memory is exhausted
+      fr-CA : La mémoire est pleine
+      en-US : Memory is exhausted
+     index : 25
+   -
+     text :
+      fr-FR : La tâche reçue était une message sans intérêt
+      en-GB : Receiving task was not interested in message
+      fr-CA : La tâche reçue était une message sans intérêt
+      en-US : Receiving task was not interested in message
+     index : 26
+   -
+     text :
+      fr-FR : Aucune conversation DDE ne peut être établie
+      en-GB : No DDE conversation could be established
+      fr-CA : Aucune conversation DDE ne peut être établie
+      en-US : No DDE conversation could be established
+     index : 27
+   -
+     text :
+      fr-FR : Temps d'attente d'accusé de réception (poke) trop long
+      en-GB : Timeout waiting for a poke acknowledge
+      fr-CA : Temps d'attente d'accusé de réception (poke) trop long
+      en-US : Timeout waiting for a poke acknowledge
+     index : 28
+   -
+     text :
+      fr-FR : Une tentative d'envoi d'un message Windows a échoué
+      en-GB : Attempt to post a window message failed
+      fr-CA : Une tentative d'envoi d'un message Windows a échoué
+      en-US : Attempt to post a window message failed
+     index : 29
+   -
+     text :
+      fr-FR : La bibliothèque DDE a été appelée durant un appel bloquant
+      en-GB : The DDE library was re-entered during a blocking call
+      fr-CA : La bibliothèque DDE a été appelée durant un appel bloquant
+      en-US : The DDE library was re-entered during a blocking call
+     index : 30
+   -
+     text :
+      fr-FR : Le serveur DDE a été fermé
+      en-GB : DDE server has died
+      fr-CA : Le serveur DDE a été fermé
+      en-US : DDE server has died
+     index : 31
+   -
+     text :
+      fr-FR : Un appel DDE a causé une erreur système
+      en-GB : A DDE call has caused a system error
+      fr-CA : Un appel DDE a causé une erreur système
+      en-US : A DDE call has caused a system error
+     index : 32
+   -
+     text :
+      fr-FR : Temps d'attente d'accusé de réception trop long
+      en-GB : Timeout waiting for an unadvised acknowledge
+      fr-CA : Temps d'attente d'accusé de réception trop long
+      en-US : Timeout waiting for an unadvised acknowledge
+     index : 33
+   -
+     text :
+      fr-FR : La file d'attente DDE n'a pas été trouvée
+      en-GB : DDE queue id could not be found
+      fr-CA : La file d'attente DDE n'a pas été trouvée
+      en-US : DDE queue id could not be found
+     index : 34
+   -
+     text :
+      fr-FR : "Erreur inconnue [%1]"
+      en-GB : "Unknown error [%1]"
+      fr-CA : "Erreur inconnue [%1%]"
+      en-US : "Unknown error [%1]"
+     index : 35
+   -
+     text :
+      fr-FR : Impossible de sauver le protocole hyperlien
+      en-GB : Unable to save the hyperlink protocol
+      fr-CA : Impossible de sauver le protocole hyperlien
+      en-US : Unable to save the hyperlink protocol
+     index : 36
+   -
+     text :
+      fr-FR : Le nom du préfixe Hyperlien de l'application est obligatoire
+      en-GB : The name of the Hyperlink prefix of the application is mandatory
+      fr-CA : Le nom du préfixe Hyperlien de l'application est obligatoire
+      en-US : The name of the Hyperlink prefix of the application is mandatory
+     index : 37
+   -
+     text :
+      fr-FR : "Commande non reconnue : "
+      en-GB : "Unrecognized command : "
+      fr-CA : "Commande non reconnue : "
+      en-US : "Unrecognized command : "
+     index : 38
+   -
+     text :
+      fr-FR : Veuillez initialiser la communication avec DDEInit
+      en-GB : Please initialize communication with DDEInit
+      fr-CA : Veuillez initialiser la communication avec DDEInit
+      en-US : Please initialize communication with DDEInit
+     index : 39
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

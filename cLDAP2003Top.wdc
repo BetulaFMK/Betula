@@ -1,0 +1,86 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cLDAP2003Top
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f55802117c63f1
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe qui donne la structure d'un enregistrement Top sur un serveur Windows 2003.
+      
+      cLDAP2003Top est une Classe, abstraite		//ref : https://docs.microsoft.com/en-us/windows/win32/adschema/c-top#windows-server-2003-attributes
+      	hérite de cLDAP2000Top
+      	msCOM_PartitionSetLink					est une chaine 	//DN					//A link used to associate a COM+ Partition with a COM+ PartitionSet object.
+      	msCOM_UserLink							est une chaine 	//DN					//A link used to associate a COM+ PartitionSet with a User object.
+      	msDS_Approx_Immed_Subordinates			est un entier							//The value returned by this attribute is based on index sizes. This may be off by +/ 10% on large containers, and the error is theoretically unbounded, but using this attribute helps the UI display the contents of a container.
+      	msDS_MembersForAzRoleBL					est une chaine	//DN					//Backward link from member application group or user to Az-Role objects linking to it.
+      	msDS_NCReplCursors						est une chaine							//A list of past and present replication partners, and how current we are with each of them.
+      	msDS_NCReplInboundNeighbors				est une chaine							//Replication partners for this partition. This server obtains replication data from these other servers, which act as sources.
+      	msDS_NCReplOutboundNeighbors			est une chaine							//Replication partners for this partition. This server sends replication data to these other servers, which act as destinations. This server will notify these other servers when new data is available.
+      	msDS_NonMembersBL						est une chaine	//DN					//Backward link from non-member group or user to Az groups that link to it (same functionality as Non-Security-Member-BL).
+      	msDS_ObjectReferenceBL					est une chaine	//DN					//Backward link for ms-DS-Object-Reference.
+      	msDS_OperationsForAzRoleBL				est une chaine	//DN					//Backward link from Az-Operation to Az-Role objects that link to it.
+      	msDS_OperationsForAzTaskBL				est une chaine	//DN					//Backward link from Az-Operation to Az-Task objects that link to it.
+      	msDS_ReplAttributeMetaData				est une chaine							//A list of metadata for each replicated attribute. The metadata indicates who changed the attribute last.
+      	msDS_ReplValueMetaData					est une chaine							//A list of metadata for each value of an attribute. The metadata indicates who changed the value last.
+      	msDS_TasksForAzRoleBL					est une chaine	//DN					//Backward link from Az-Task to Az-Role objects that link to it.
+      	msDS_TasksForAzTaskBL					est une chaine	//DN					//Backward link from Az-Task to the Az-Task objects that link to it.
+      	ownerBL									est une chaine	//DN					//The backward link to the owner attribute. Contains a list of owners for an object.
+      	structuralObjectClass					est une chaine	//OID					//This constructed attribute stores a list of classes contained in a class hierarchy, including abstract classes. This list does contain dynamically linked auxiliary classes.
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1294037233845494769
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1294037233845560305
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f5580011765a7f
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

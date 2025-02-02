@@ -1,0 +1,440 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cHTML
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x116c0f53009a4e0d
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet de mettre toutes les balises du code HTML dans un tableau de balise. La recherche ainsi que l'obtention du parent permet de parcourir facilement ce tableau à la recherche d'une information particulière
+      // Les balises suivantes sont n'auront pas de détail (car ne contiennent pas d'informations utiles) : img,br,input,hr,!doctype,area,base,param,meta,link,source,track
+      STBaliseHTML est une structure
+      	sNom		est une chaine								//nom de la balise
+      	nNum		est un entier								//séquence de lecture
+      	nPère		est un entier								//balise père
+      	sAttributs	est une chaîne								//attributs de la balise
+      	sContenu	est une chaîne								//contenu entre balise d'ouverture et de fermeture (excluant les autres balises)
+      	sClé		est une chaine								//nPère+nNum (est utile pour garder le bon ordre pour l'écriture)
+      fin
+      EHTMLTransformation est une énumération
+      	SansTransformation
+      	DepuisANSI
+      	DepuisUTF8
+      FIN
+      cHTML est une Classe
+      	hérite de cGénérique
+      public constant
+      	m_tabBalises 	est un tableau de stBaliseHTML			//Tableau de structure contenant toutes les balises détectées
+      	m_nTailleHTML	est un entier							//Taille du contenu HTML analysé
+      privé
+      	m_sURL			est une chaine							//URL de la page analysée
+      	m_sHTML			est une chaine ansi						//Contenu HTML analysé
+      	m_nNbBalises	est un entier							//Nombre de balises détectées
+      	m_eTransforme	est un EHTMLTransformation				//Transformation à appliquer au code HTML lors de la lecture
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1255395245296406029
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise la classe cHTML lors de sa création. Elle permet de spécifier une transformation du HTML lors de la lecture, en prenant en compte l'encodage spécifié.
+      // Syntaxe : Constructeur (<eTransformation> est cHTML.EHTMLTransformation)
+      // Paramètres :
+      //	eTransformation (cHTML.EHTMLTransformation optionnel) : indique la transformation à appliquer lors de la lecture du HTML. Les valeurs possibles sont SansTransformation (par défaut), DepuisANSI, et DepuisUTF8.
+      // Valeur de retour : Aucune
+      // Exemple : voir https://wlplus.org/betula/net/
+      //
+      PROCEDURE Constructeur(eTransformation est un EHTMLTransformation = SansTransformation)
+      m_eTransforme = eTransformation
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1255395245296471565
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : LitURL
+     procedure_id : 1255395812232286005
+     type_code : 12
+     code : |1-
+      // Résumé : Lit contenu HTML à partir d'une URL spécifiée. Elle prend en charge les transformations d'encodage ANSI ou UTF-8 selon la configuration de la classe.
+      // Syntaxe : [ <Résultat> = ] LitURL (<sURL> est chaîne)
+      // Paramètres :
+      //	sURL (chaîne UNICODE) : Une chaîne spécifiant l'URL du fichier HTML à lire.
+      // Valeur de retour : booléen : Si la lecture est réussie, la méthode retourne Vrai, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE LitURL(local sURL est une chaine) : booleen
+      m_pclErreur.Raz()
+      bufRéponse est un buffer
+      m_sHTML="";m_nNbBalises=0;m_nTailleHTML=0;m_sURL=sURL
+      TableauSupprimeTout(m_tabBalises)
+      
+      si pas sURL~="" alors
+      	sURL=extraitchaine(sURL,1,"#")	//juste l'URL sans l'ancre dans le document s'il existe
+      	si gauche(sURL,7)~="http://" _ou_ Gauche(sURL,8)~="https://" _ou_ Gauche(sURL,7)~="file://" _ou_ ffichierexiste(sURL) alors
+      		si Gauche(sURL,7)~="file://" _OU_ fFichierExiste(sURL) alors 
+      			SI Gauche(sURL,7)~="file://" alors sURL=remplace(URLDécode(milieu(sURL,9)),"/","\")
+      			si fFichierExiste(sURL) alors bufRéponse = fChargebuffer(sURL) SINON m_pclErreur.Ajouteerreur(<§$0004§>);RENVOYER Faux
+      		sinon
+      			SI HTTPRequête(m_sURL) ALORS bufRéponse = HTTPDonneRésultat(httpRésultat) sinon m_pclErreur.AjouteErreurWx();renvoyer faux
+      		FIN
+      		SI m_eTransforme=DepuisANSI ALORS 
+      			m_sHTML = AnsiVersUnicode(bufRéponse) 
+      		SINON SI m_eTransforme=DepuisUTF8 ALORS
+      			m_sHTML = UTF8VersChaîne(bufRéponse)
+      		FIN
+      		SI m_sHTML>"" ALORS
+      			m_sHTML=Remplace(m_sHTML,Caract(10),"")
+      			m_nTailleHTML = Taille(m_sHTML)
+      			TraiteHTML(m_sHTML)
+      		FIN
+      		RENVOYER Vrai
+      	sinon
+      		m_pclerreur.AjouteErreur(<§$0000§>)
+      	fin
+      sinon
+      	m_pclErreur.AjouteErreur(<§$0003§>)
+      fin
+      RENVOYER Faux
+     type : 458752
+   -
+     name : TraiteHTML
+     procedure_id : 1479149529503032702
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui traite le code HTML pour le mettre dans un tableau de structures. Les balises suivantes sont ignorées : "img","br","input","hr","!doctype","area","base","param","meta","link","source","track" 
+      PROCEDURE privé TraiteHTML(sHTML est une chaine ansi,nNumPère est un entier = 0)
+      nCaract,nDébut,nFin sont des entiers
+      stUneBalise est un STBaliseHTML
+      sCaract		est un caractere
+      sBalise		est une chaine ansi
+      POUR nCaract = 1 _À_ Taille(sHTML)
+      	sCaract=sHTML[[nCaract]]	
+      	SI sCaract="<" ALORS
+      		SI sHTML[[nCaract+1]]="/" ALORS CONTINUE																//début de balise de fermeture
+      		SI sHTML[[nCaract+1 À nCaract+3]]="!--" ALORS nCaract=Position(sHTML,"-->",nCaract+1)+2;CONTINUE		//commentaire dans le code
+      		VariableRAZ(stUneBalise)
+      		m_nNbBalises++
+      		stUneBalise.nNum	= m_nNbBalises
+      		stUneBalise.nPère	= nNumPère
+      		stUneBalise.sClé	= stUneBalise.nNum+"."+nNumPère
+      		stUneBalise.sNom	= Minuscule(Milieu(sHTML,nCaract+1,Position(Milieu(sHTML,nCaract+1),[" ",">"])-1))
+      		nCaract+=Taille(stUneBalise.sNom)
+      	SINON SI sCaract=">" ALORS
+      		SI stUneBalise.sNom="" ALORS CONTINUE
+      		//fin de la balise
+      		SI stUneBalise.sNom DANS ("img","br","input","hr","!doctype","area","base","param","meta","link","source","track") ALORS	
+      			//ces balises n'ont pas de balise de fermeture, seules les balises compatibles HTML5 sont détectées ici
+      			m_tabBalises.Ajoute(stUneBalise)
+      		SINON
+      			//chercher la balise de fermeture
+      			nPosDébut,nPosFin,nBalise,nTrouve sont des entiers
+      			SI stUneBalise.sNom="script" ALORS	//pas d'autres balises dedans
+      				nTrouve 	= Position(sHTML,"</"+stUneBalise.sNom+">",nCaract+1)
+      				si nTrouve>0 alors
+      					stUneBalise.sContenu= sHTML[[nCaract+2 À nTrouve-1]]
+      					nCaract				= nTrouve+8
+      				fin
+      				m_tabBalises.Ajoute(stUneBalise)
+      				CONTINUE
+      			SINON
+      				nTrouve = Position(sHTML,["<"+stUneBalise.sNom,"</"+stUneBalise.sNom+">"],nCaract+1)
+      				TANTQUE nTrouve>0
+      					SI sHTML[[nTrouve À nTrouve+1]]="</" ALORS
+      						SI nBalise=0 ALORS 
+      							nPosDébut	= nCaract+1
+      							nPosFin		= nTrouve-1
+      							nCaract		= nTrouve+Taille(stUneBalise.sNom)+2
+      							SORTIR 
+      						SINON
+      							nBalise--	//En cas d'imbrication, les balises de fermeture sont décomptées pour arriver à celle dont on a besoin ici.
+      						FIN
+      					SINON
+      						nBalise++		//c'est qu'il y a ouverture d'une balise de même type après (ex div imbriqués), on compte le nombre de balises identiques intermédiaires
+      					FIN
+      					nTrouve = Position(sHTML,["<"+stUneBalise.sNom,"</"+stUneBalise.sNom],nTrouve+Taille(stUneBalise.sNom)+1)
+      				FIN
+      				SI nPosFin>=nPosDébut ALORS
+      					sBalise = sHTML[[nPosDébut À nPosFin]]
+      					nDébut	= Position(sBalise,"<")
+      					SI nDébut>0 ALORS
+      						nFin	= Position(sBalise,">",0,DepuisFin)
+      						SI nDébut>1 				ALORS stUneBalise.sContenu=SansEspace(HTMLVersTexte(sBalise[[1 À nDébut-1]]))
+      						SI nFin<nPosFin-nPosDébut 	ALORS stUneBalise.sContenu+=SansEspace(HTMLVersTexte(sBalise[[nFin+1 À ]]))
+      						m_tabBalises.Ajoute(stUneBalise)
+      						TraiteHTML(Milieu(sBalise,nDébut,nFin-nDébut+1),stUneBalise.nNum)
+      					SINON
+      						stUneBalise.sContenu=SansEspace(HTMLVersTexte(sBalise))
+      						m_tabBalises.Ajoute(stUneBalise)
+      					FIN
+      				SINON
+      					m_tabBalises.Ajoute(stUneBalise)
+      				FIN
+      			FIN
+      		FIN
+      	SINON
+      		SI PAS (stUneBalise.sAttributs="" _ET_ sCaract=" ") ALORS stUneBalise.sAttributs+=sCaract
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : Recherche
+     procedure_id : 1479153571067281950
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de rechercher une balise HTML dans le contenu analysé de la classe cHTML. La recherche peut être effectuée en spécifiant le nom de la balise, un attribut spécifique, le contenu entre les balises, une position de départ, et la direction de la recherche (ascendante ou descendante).
+      // Syntaxe : [ <Résultat> = ] Recherche ( [<sNomBalise> est chaîne [, <sAttribut> est chaîne [, <sContenu> est chaîne [, <nDepuis> est entier [, <bCroissant> est booléen]]]]])
+      // Paramètres :
+      //	sNomBalise (chaîne UNICODE optionnelle) : Une chaîne spécifiant le nom de la balise à rechercher.
+      //	sAttribut (chaîne UNICODE optionnelle) : Une chaîne spécifiant l'attribut à rechercher dans les balises.
+      //	sContenu (chaîne UNICODE optionnelle) : Une chaîne spécifiant le contenu entre les balises à rechercher.
+      // 	nDepuis (entier  optionnel) : Un entier spécifiant la position de départ pour la recherche.
+      // 	bCroissant (booléen optionnel) : Un booléen indiquant si la recherche doit être effectuée en ordre croissant (Vrai) ou décroissant (Faux).
+      // Valeur de retour : entier : Représente la position de la première balise correspondante trouvée. Si aucune balise ne correspond aux critères de recherche, la méthode renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE Recherche(sNomBalise est une chaine = "",sAttribut est une chaine = "",sContenu est une chaine = "",nDepuis est un entier = 1,bCroissant est un booleen = vrai) : entier
+      t est un entier = (pas sNomBalise~="") + (pas sAttribut~="") + (pas sContenu~="")
+      si t=0 _ou_ nDepuis>m_nNbBalises _ou_ m_tabBalises..Occurrence=0 alors renvoyer 0
+      m,nDébut,nFin,nPas sont des entiers
+      si bCroissant alors nDébut=nDepuis;nFin=m_tabBalises..Occurrence;nPas=1 sinon nDébut=m_tabBalises..Occurrence;nFin=nDepuis;nPas=-1
+      pour n = nDébut _a_ nFin pas nPas
+      	m=0
+      	si pas sNomBalise~="" 	_Et_ m_tabBalises[n].snom~=sNomBalise 								ALORS m++
+      	si PAS sAttribut~="" 	_Et_ position(m_tabBalises[n].sattributs,sAttribut,0,SansCasse)>0 	ALORS m++
+      	si PAS sContenu~=""		_Et_ Position(m_tabBalises[n].scontenu,sContenu,0,SansCasse)>0 		ALORS m++
+      	si m=t alors renvoyer n
+      fin
+      renvoyer 0	
+     type : 458752
+   -
+     name : Parent
+     procedure_id : 1479166305672199748
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de récupérer l'indice de la balise parente d'une balise spécifiée dans le contenu analysé de la classe cHTML. Le niveau de parenté peut également être spécifié.e>
+      // Syntaxe : [ <Résultat> = ] Parent (<nIndice> est entier, <nNiveau> est entier)
+      // Paramètres :
+      //	nIndice (entier) : Un entier représentant l'indice de la balise dont on veut trouver le parent.
+      //	nNiveau (entier) : Un entier indiquant le niveau de parenté à remonter. Si nNiveau est égal à 0, la méthode renvoie directement le parent de la balise spécifiée.
+      // Valeur de retour : entier : indice de la balise parente. Si la balise spécifiée n'a pas de parent ou si une erreur survient, la méthode renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE Parent(local nIndice est un entier,nNiveau est un entier) : entier
+      si nIndice<1 _ou_ nIndice>m_tabBalises..occurrence _ou_ m_tabBalises[nIndice].nPère=0 alors renvoyer 0
+      si nNiveau=0 alors renvoyer nIndice
+      
+      pour n=1 _à_ nNiveau
+      	nIndice=m_tabBalises.cherche(tcLinéaire,"nNum",m_tabBalises[nIndice].nPère)
+      	si nIndice<1 alors renvoyer 0
+      FIN
+      renvoyer nIndice
+     type : 458752
+   -
+     name : ParentJusqueBalise
+     procedure_id : 1479168612069715904
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de remonter la hiérarchie parentale d'une balise jusqu'à atteindre une balise spécifiée dans le contenu analysé de la classe 
+      // Syntaxe : [ <Résultat> = ] ParentJusqueBalise (<nIndice> est entier, <sBalise> est chaîne)
+      // Paramètres :
+      //	nIndice (entier) : Un entier représentant l'indice de la balise dont on veut remonter la hiérarchie parentale.
+      //	sBalise (chaîne UNICODE) : Une chaîne indiquant le nom de la balise à atteindre lors de la remontée.
+      // Valeur de retour : entier : indice de la balise spécifiée par le paramètre sBalise dans la hiérarchie parentale de la balise d'indice nIndice. Si la balise spécifiée n'est pas trouvée ou si une erreur survient, la méthode renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE ParentJusqueBalise(local nIndice est un entier,sBalise est une chaine) : entier
+      SI nIndice<1 _OU_ nIndice>m_tabBalises..occurrence _ou_ sBalise~="" _OU_ m_tabBalises[nIndice].nPère=0 ALORS RENVOYER 0
+      
+      boucle
+      	nIndice=m_tabBalises.Cherche(tcLinéaire,"nNum",m_tabBalises[nIndice].nPère)
+      	SI nIndice<1 ALORS 
+      		RENVOYER 0 
+      	sinon 
+      		si m_tabBalises[nIndice].sNom=sBalise alors renvoyer nIndice
+      	FIN
+      FIN
+      RENVOYER 0
+     type : 458752
+   -
+     name : LitHTML
+     procedure_id : 1537434224411883713
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de traiter et d'analyser le contenu HTML fourni en paramètre dans la classe cHTML. Elle initialise le contenu, le nombre de balises et la taille du code HTML.
+      // Syntaxe : [ <Résultat> = ] LitHTML (<sHTML> est chaîne ANSI)
+      // Paramètres :
+      //	sHTML (chaîne ANSI) : Une chaîne ANSI représentant le contenu HTML à traiter.
+      // Valeur de retour : booléen : Si le traitement du HTML est réussi, la méthode renvoie Vrai. Sinon, elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE LitHTML(sHTML est une chaine ansi) : booleen
+      m_pclErreur.Raz()
+      m_sHTML=sHTML;m_nNbBalises=0;m_nTailleHTML=0;m_sURL=""
+      TableauSupprimeTout(m_tabBalises)
+      
+      si pas sHTML~=ChaineAnsiVide alors
+      	si position(sHTML,"<html")>0 _Et_ Position(sHTML,"</html>")>0 alors	TraiteHTML(sHTML);renvoyer vrai
+      	m_pclErreur.AjouteErreur(<§$0001§>)
+      sinon
+      	m_pclErreur.AjouteErreur(<§$0002§>)
+      fin
+      renvoyer faux
+     type : 458752
+   -
+     name : ÉcritHTML
+     procedure_id : 1537437359738084183
+     type_code : 12
+     code : |1+
+      // Résumé : Permet d'écrire le contenu HTML traité par la classe cHTML dans un fichier spécifié par le chemin de destination.
+      // Syntaxe : [ <Résultat> = ] ÉcritHTML (<sCheminFichierDestination> est chaîne)
+      // Paramètres :
+      //	sCheminFichierDestination (chaîne UNICODE) : Une chaîne représentant le chemin complet du fichier HTML de destination.
+      // Valeur de retour : booléen : Renvoie Vrai dans le cas où le contenu a bien été sauvegardé dans un fichier, faux sinon.
+      // Exemple :
+      //
+      PROCEDURE ÉcritHTML(sCheminFichierDestination est une chaine) : booleen
+      m_pclErreur.RAZ()
+      si pas sCheminFichierDestination~="" _et_ occurrence()>0 alors
+      	sTotal est une chaine = EcritFils(0)
+      	si fSauveTexte(sCheminFichierDestination,sTotal) alors renvoyer vrai sinon m_pclErreur.AjouteErreurWx()
+      FIN
+      renvoyer faux
+      
+      	PROCÉDURE INTERNE EcritFils(nNumPère est un entier) : chaine
+      	sRes,sFils	est une chaine
+      	nIndice est un entier = tableaucherche(m_tabBalises,tcLinéairePremier,"nPère",nNumPère)
+      	TANTQUE nIndice>0
+      		sFils=EcritFils(m_tabBalises[nIndice].nnum)
+      		sRes+=[RC]+"<"+m_tabBalises[nIndice].sNom+[" "]+m_tabBalises[nIndice].sAttributs+">"+m_tabBalises[nIndice].sContenu+(sFils="" ? "" SINON RC)+sFils+"</"+m_tabBalises[nIndice].sNom+">"
+      		nIndice = TableauCherche(m_tabBalises,tcLinéaireSuivant,"nPère",nNumPère,nIndice+1)
+      	FIN
+      	RENVOYER sRes
+      	FIN
+     type : 458752
+   -
+     name : Occurrence
+     procedure_id : 1537805052851299914
+     type_code : 12
+     code : |1-
+      // Résumé : Retourne le nombre d'occurrences (nombre d'éléments) dans le tableau de balises de la classe cHTML.
+      // Syntaxe : [ <Résultat> = ] Occurrence ()
+      // Paramètres : Aucun
+      // Valeur de retour :
+      // 	entier :  nombre d'occurrences (éléments) dans le tableau de balises.
+      // Exemple :
+      //
+      PROCEDURE Occurrence() : entier
+      RENVOYER m_tabBalises.Occurrence()
+     type : 458752
+  properties :
+   -
+     name : p_sURL
+     identifier : 0x116c0f9d009d6ed6
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le dernier URL qui a été analysé
+         PROCEDURE PUBLIQUE p_sURL()
+         renvoyer m_surl
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sHTML
+     identifier : 0x148719d905541814
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le dernier code HTML qui a été analysé
+         PROCEDURE PUBLIQUE p_sHTML() : chaine ansi
+         renvoyer m_sHTML
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x116c0f4c009430ae
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le paramètre n'est pas une URL
+      en-GB : Parameter is not a URL
+      fr-CA : Le paramètre n'est pas une URL
+      en-US : Parameter is not a URL
+     index : 0
+   -
+     text :
+      fr-FR : Le paramètre n'est pas du HTML
+      en-GB : Parameter is not HTML
+      fr-CA : Le paramètre n'est pas du HTML
+      en-US : Parameter is not HTML
+     index : 1
+   -
+     text :
+      fr-FR : Aucun code HTML
+      en-GB : No HTML code
+      fr-CA : Aucun code HTML
+      en-US : No HTML code
+     index : 2
+   -
+     text :
+      fr-FR : L'URL est vide
+      en-GB : URL is empty
+      fr-CA : L'URL est vide
+      en-US : URL is empty
+     index : 3
+   -
+     text :
+      fr-FR : Le fichier HTML n'existe pas
+      en-GB : The HTML file doesn't exist
+      fr-CA : Le fichier HTML n'existe pas
+      en-US : The HTML file doesn't exist
+     index : 4
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

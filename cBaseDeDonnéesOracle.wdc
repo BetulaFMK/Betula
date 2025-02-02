@@ -1,0 +1,1622 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cBaseDeDonnéesOracle
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1c3e483d893be36a
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet d'accéder aux données Oracle en accès natif ou ODBC.
+      
+      EConstraintType est une énumération
+      	CheckConstraint 		= "C"
+      	PrimaryKey				= "P"
+      	UniqueKey				= "U"
+      	ReferentialIntegrity	= "R"
+      	ViewWithCheckOption		= "V"
+      	ViewWithReadOnly		= "O"
+      fin
+      constante
+      	_Port					= 1521															//Port de communication par défaut
+      	ODBCOracleMicrosoft 	= "msoracl32.dll"												//DLL Microsoft pour l'accès ODBC
+      	ODBCOracleNatif			= "sqora32.dll"													//DLL Oracle pour l'accès ODBC
+      fin
+      cBaseDeDonnéesOracle est une Classe
+      	hérite de cGénérique
+      	m_bTraceColonnesModifiées	est un booleen				<sérialise = faux>				//Renvoi ou permet de modifier le statut permettant la trace des colonnes modifiés lors de l'utilisation de la fonction cEnregistrement.Écrit() 
+      public constant local
+      	m_nIndiceDeConnexion		est un entier 				<serialise = faux>				//Indice de la connexion en cours
+      privé global
+      	mg_taServeurVersion			est un tableau associatif 	<sérialise = faux> de chaines	//Tableau contenant la version de chaque serveur auquel l'application aura accès
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2035143510750716778
+     type_code : 27
+     code : |1-
+      // Résumé : Permet d'initialiser la classe. Si un indice de connexion est passé en paramètre, récupère toutes les informations d'une précédente connexion qui avait renvoyé ledit indice.
+      // Syntaxe : Constructeur ( [<nIndiceDeConnexionExistant> est entier])
+      // Paramètres :
+      // 	nIndiceDeConnexionExistant (entier optionnel): L'indice de connexion existant à associer à l'instance de la classe. Par défaut, il est initialisé à zéro.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexionExistant est un entier = 0)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIndiceDeConnexionExistant)
+      m_pclErreur.Raz()
+      
+      m_nIndiceDeConnexion=nIndiceDeConnexionExistant
+      
+      SI m_nIndiceDeConnexion>0 ALORS
+      	sServeur,sInstance sont des chaines
+      	sServeur=cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Serveur
+      	si position(sServeur,"/")>0 alors sInstance=extraitchaine(sServeur,2,"/");sServeur=ExtraitChaîne(sServeur,1,"/") sinon sInstance=sServeur;sServeur=""
+      	Connecte(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès,sServeur,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Utilisateur,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sMotDePasse,sInstance,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..BaseDeDonnées,*,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sEmplacementDesMémos)
+      FIN
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2035143510750782314
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe. Déconnecte la connexion à la BD le cas échéant.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      SI p_bEstConnecté ALORS Déconnecte()
+     type : 655360
+   -
+     name : Connecte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035452261645804061
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour établir une connexion à des données sur Oracle en utilisant les paramètres fournis. Tous les paramètres de la méthode peuvent être récupérés des paramètres de l'application avec le nom de section "Oracle".
+      // Syntaxe :
+      //[ <Résultat> = ] Connecte ( [<eAccès> est cBaseDeDonnées.ETypeAccès [, <sServeurPort> est chaîne [, <sUtilisateur> est chaîne [, <sMotDePasse> [, <sInstance> est chaîne [, <sSchema> est chaîne [, <sGroupeOuTypeOuNomDeFichiers> est chaîne [, <sEmplacementDesMémos> est chaîne [, <sRépertoireCache> est chaîne [, <sInfosÉtendues> est chaîne [, <bResterConnecté> est booléen]]]]]]]]]]])
+      // Paramètres :
+      //	eAccès (cBaseDeDonnées.ETypeAccès) : Type d'accès à la base de données (par défaut à partir des paramètres). Paramètre "Access", par défaut "RequêteSQL".
+      //	sServeurPort (chaîne UNICODE) : Nom du serveur et port de communication du serveur (format : Serveur:Port). Paramètre "Address" et "Port".
+      //	sUtilisateur (chaîne UNICODE) : Nom d'utilisateur pour la connexion. Paramètre "User".
+      //	sMotDePasse : Mot de passe pour la connexion. Paramètre "Password".
+      //	sInstance (chaîne UNICODE) : Nom de l'instance Oracle à accéder. Paramètre "Instance".
+      //	sSchema (chaîne UNICODE) : Nom du schéma avec lequel on va accéder au serveur Oracle. Paramètre "Schema".
+      //	sGroupeOuTypeOuNomDeFichiers (chaîne UNICODE) : Paramètre pour spécifier le groupe, type ou nom de fichiers. Paramètre "Group", par défaut "*".
+      //	sEmplacementDesMémos (chaîne UNICODE) : Emplacement des mémos. Paramètre "PathMemos".
+      //	sRépertoireCache (chaîne UNICODE) : Répertoire du cache des mémos. Paramètre "CacheMemos", par défaut cApplication._Application.p_sRépertoireCacheMémo.
+      //	sInfosÉtendues (chaîne UNICODE) : Informations étendues pour la connexion. Paramètre "ExtInfos".
+      //	bResterConnecté (booléen) : Indique si la connexion doit être maintenue ou non. Paramètre "StayConnected", par défaut Vrai.
+      // Valeur de retour : entier : Indice de la connexion établie. En cas d'échec, renvoie 0.
+      // Exemple :
+      PROCEDURE Connecte(local eAccès est un cBaseDeDonnées.ETypeAccès = EnumérationDepuisNom(cBaseDeDonnées.ETypeAccès,cApplication._Application.m_pclParamètres.Lit("Oracle","Access",faux,"RequêteSQL")),	//ETypeAccès.RequêteSQL..Nom affiche une erreur en Android et Java
+      				local sServeurPort est une chaine = cApplication._Application.m_pclParamètres.Lit("Oracle","Address")+[":"]+cApplication._Application.m_pclParamètres.Lit("Oracle","Port",faux,_port),
+      				sUtilisateur est une chaine = cApplication._Application.m_pclParamètres.Lit("Oracle","User"),
+      				sMotDePasse = cApplication._Application.m_pclParamètres.Lit("Oracle","Password",Vrai),
+      				sInstance est une chaine = cApplication._Application.m_pclParamètres.Lit("Oracle","Instance"),
+      				sSchema est une chaine = cApplication._Application.m_pclParamètres.Lit("Oracle","Schema",faux,cApplication._Application.m_pclParamètres.Lit("Oracle","Schema")),
+      				local sGroupeOuTypeOuNomDeFichiers est une chaine = cApplication._Application.m_pclParamètres.Lit("Oracle","Group",Faux,"*"),
+      				sEmplacementDesMémos est une chaine = cApplication._Application.m_pclParamètres.Lit("Oracle","PathMemos"),
+      				sRépertoireCache est une chaîne = cApplication._Application.m_pclParamètres.Lit("Oracle","CacheMemos",Faux,cApplication._Application.p_sRépertoireCacheMémo),
+      				sInfosÉtendues est une chaine = cApplication._Application.m_pclParamètres.Lit("Oracle","ExtInfos"),
+      				bResterConnecté est un booleen = cApplication._Application.m_pclParamètres.Lit("Oracle","StayConnected",faux,vrai)) : entier
+      
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(eAccès,sServeurPort,sUtilisateur,(EnModeTest() ? sMotDePasse SINON Répète(cGénérique._Sep,Taille(sMotDePasse))),sInstance,sSchema,sGroupeOuTypeOuNomDeFichiers,sEmplacementDesMémos,bResterConnecté)
+      m_pclErreur.Raz()
+      
+      SI eAccès=cBaseDeDonnées.ODBC _et_ ODBCChemin()="" 	ALORS m_pclErreur.AjouteErreur(<§$0009§>)
+      //SI sServeurPort~="" 										ALORS m_pclErreur.AjouteErreur(<§$000a§>)		//pas obligatoire quand le fichier tnsnames.ora est pris en compte
+      SI pas cApplication.mg_bSécurité _et_ sUtilisateur~="" 		ALORS m_pclErreur.AjouteErreur(<§$000b§>)
+      SI sInstance~="" 											ALORS m_pclErreur.AjouteErreur(<§$000c§>)
+      SI m_pclErreur.p_sErreur>"" 								ALORS RENVOYER 0
+      
+      //SI ExtraitChaîne(sServeurPort,2,":") DANS ("",EOT) ALORS sServeurPort+=":"+_Port
+      
+      stUneConnexion 	est un cBaseDeDonnées.STConnexion
+      cnxDonnées 		est une connexion
+      sConnexionODBC	est une chaine
+      sClé 			est une chaine = Minuscule(sServeurPort+["/"]+sInstance+TAB+sUtilisateur+TAB+sSchema)+tab+(eAccès=cBaseDeDonnées.ODBC)
+      sTables 		est une chaine
+      
+      SI eAccès=cBaseDeDonnées.ODBC ALORS
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64>
+      	
+      		vParamètres est un Variant
+      		//installer automatiquement l'ODBC, si l'ODBC d'Oracle est installé
+      		SI fExtraitChemin(ODBCChemin(),fFichier+fExtension)=ODBCOracleMicrosoft ALORS
+      			sConnexionODBC = ODBCRechercheParMembre("SERVER",sServeurPort+"/"+sInstance)
+      			SI sConnexionODBC="" ALORS
+      				sConnexionODBC			= sServeurPort+["/"]+sInstance
+      				vParamètres.Server		= sServeurPort
+      				vParamètres.UID			= sUtilisateur
+      				vParamètres.Password	= sMotDePasse
+      				vParamètres.Description	= <§$0014§>
+      				SI PAS ODBCinstalle(sServeurPort,sInstance,vParamètres) ALORS m_pclErreur.AjouteErreur(ErreurInfo());RENVOYER 0
+      			FIN
+      		SINON
+      			sConnexionODBC = ODBCRechercheParMembre("SERVER",sServeurPort+"/"+sInstance)
+      			SI sConnexionODBC="" ALORS
+      				sConnexionODBC			= sServeurPort+["/"]+sInstance
+      				vParamètres.ServerName	= sServeurPort
+      				vParamètres.UserID		= sUtilisateur
+      				vParamètres.Password	= sMotDePasse
+      				vParamètres.Description	= <§$0014§>
+      				SI PAS ODBCInstalle(sServeurPort,sInstance,vParamètres) ALORS m_pclErreur.AjouteErreur(ErreurInfo());RENVOYER 0
+      			FIN
+      		FIN
+      	
+      <sinon si CibleExécution=SitePHP ou CibleExécution=Java ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      	m_pclErreur.AjouteErreur(<§$0007§>);renvoyer 0
+      	
+      <fin>
+      
+      	
+      FIN
+      	
+      m_nIndiceDeConnexion = tableaucherche(cBaseDeDonnées.mg_tabConnexion,tcLinéaire,"sCLé",sClé)
+      SI m_nIndiceDeConnexion>0 _ET_ cBaseDeDonnées.mg_taUtilisationServeur[sClé]>0 ALORS cBaseDeDonnées.ConnexionAjoute(sClé);RENVOYER m_nIndiceDeConnexion	//la connexion existe déjà, renvoyer l'indice pour minimiser le nombre de connexions faites par l'appli
+      
+      SELON eAccès
+      	CAS cBaseDeDonnées.FonctionsH,cBaseDeDonnées.RequêteSQL
+      		SI cApplication.mg_bSécurité ALORS 
+      			procConnecte est une Procédure = ChercheProcédure("COL_Betula_Secu.BDConnecteSecurisé")
+      			SI procConnecte<>Null ALORS
+      				cnxDonnées			= Exécutetraitement("COL_Betula_Secu.BDConnecteSecurisé",trtProcédure,sServeurPort+"/"+sInstance,sSchema,sUtilisateur,sMotDePasse)
+      				si erreurdétectée() alors m_pclErreur.AjouteErreur(erreurinfo());renvoyer 0
+      			fin
+      		sinon
+      			cnxDonnées..Provider									= hAccèsNatifOracle
+      			cnxDonnées..Serveur										= sServeurPort+["/"]+sInstance
+      			cnxDonnées..Utilisateur									= sUtilisateur
+      			cnxDonnées..MotDePasse	    							= sMotDePasse
+      			cnxDonnées..BaseDeDonnées								= sSchema
+      			cnxDonnées..Accès										= hOLectureEcriture
+      			cnxDonnées..Cryptage									= hCryptageNon
+      			cnxDonnées..InfosEtendues								= sInfosÉtendues
+      		fin
+      		SI HOuvreConnexion(cnxDonnées) _ET_ ChangeConnexion() ALORS
+      			cBaseDeDonnées.ConnexionAjoute(sClé)
+      			si m_nIndiceDeConnexion<1 alors
+      				stUneConnexion.sNomUnique							= Minuscule(cnxDonnées..Serveur+cGénérique._Sep+sSchema)
+      				stUneConnexion.cnxDonnées							= cnxDonnées
+      				stUneConnexion.sMotDePasse							= sMotDePasse
+      				stUneConnexion.bConnecté							= Vrai
+      				stUneConnexion.sClé									= sClé
+      				stUneConnexion.eAccès								= eAccès
+      				stUneConnexion.sRépertoireCache						= ComplèteRep(sRépertoireCache)
+      				stUneConnexion.sEmplacementDesMémos					= ComplèteRep(sEmplacementDesMémos)
+      				stUneConnexion.bResterConnecté						= bResterConnecté
+      				stUneConnexion.sSchémaOuDC							= sSchema
+      				m_nIndiceDeConnexion=TableauAjoute(cBaseDeDonnées.mg_tabConnexion,stUneConnexion)	//ne pas faire TableauAjouteTrié car il peut prendre un indice déjà utilisé par une autre connexion
+      				ServeurVersion()
+      				SI sTables>"" ALORS TableColonnes(sTables);TableIndexes(sTables)
+      			SINON
+      				cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté	= Vrai
+      			fin
+      			renvoyer m_nIndiceDeConnexion
+      		SINON 
+      			m_pclErreur.AjouteErreurHF(ChaîneConstruit(<§$0000§>,"Oracle",sServeurPort))
+      		FIN
+      	CAS cBaseDeDonnées.ODBC
+      		
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64>
+      	
+      			SI cBaseDeDonnées.p_bConnexionODBC=Faux ALORS
+      				nConnexion est un entier = SQLConnecte(sConnexionODBC,sUtilisateur,sMotDePasse,sSchema,(sUtilisateur+sMotDePasse+sSchema="" ? "ODBC" SINON "OraOLEDB.Oracle"))
+      				SI nConnexion<>0 ALORS
+      					cnxDonnées..Provider						= hOledbOracle	//constante pour distinguer les connexions, pas de gestion OleDB car réputée obsolète et lente (OleDB via ODBC)
+      					cnxDonnées..Serveur							= sServeurPort+"/"+sInstance
+      					cnxDonnées..Utilisateur						= sUtilisateur
+      					cnxDonnées..MotDePasse	    				= sMotDePasse
+      					cnxDonnées..BaseDeDonnées					= sSchema
+      					stUneConnexion.cnxDonnées					= cnxDonnées
+      					stUneConnexion.bConnecté					= Vrai
+      					stUneConnexion.sMotDePasse					= sMotDePasse
+      					stUneConnexion.sClé							= sClé
+      					stUneConnexion.eAccès						= eAccès
+      					stUneConnexion.sRépertoireCache				= cApplication._Application.p_sRépertoireCacheMémo
+      					stUneConnexion.sEmplacementDesMémos			= sEmplacementDesMémos
+      					cBaseDeDonnées.ConnexionAjoute(sClé)
+      					m_nIndiceDeConnexion=TableauAjoute(cBaseDeDonnées.mg_tabConnexion,stUneConnexion)	//ne pas faire TableauAjouteTrié car il peut prendre un indice déjà utilisé par une autre connexion
+      					ServeurVersion()
+      					cBaseDeDonnées.p_bConnexionODBC				= Vrai
+      					RENVOYER m_nIndiceDeConnexion
+      				SINON
+      					SQLDéconnecte()		//La fonction SQLDéconnecte doit être appelée systématiquement pour fermer la connexion, même si cette connexion a échoué.
+      					m_pclErreur.AjouteErreur(ChaîneConstruit("La connexion à la source ODBC %1 a échoué",sServeurPort))
+      				FIN
+      			SINON
+      				m_pclErreur.AjouteErreur(<§$0008§>)
+      			FIN
+      	
+      <fin>
+      
+      		
+      fin		
+      RENVOYER 0
+      
+      	PROCÉDURE INTERNE ChangeConnexion()
+      	SI sGroupeOuTypeOuNomDeFichiers="*" ALORS
+      		RENVOYER HChangeConnexion("*",cnxDonnées)
+      	SINON SI sGroupeOuTypeOuNomDeFichiers=hFichierOracle ALORS
+      		POUR TOUTE CHAÎNE sTable de capplication.mg_sTablesAnalyse separee par rc
+      			SI {sTable,indFichier}..Type=hFichierOracle _ET_ PAS HChangeConnexion(sTable,cnxDonnées) ALORS RENVOYER Faux SINON sTables+=[TAB]+sTable
+      		FIN
+      	SINON si sGroupeOuTypeOuNomDeFichiers>"" ALORS
+      		POUR TOUTE CHAÎNE sTable de sGroupeOuTypeOuNomDeFichiers separee par [rc," ",",",";",tab]
+      			SI PAS HChangeConnexion(sTable,cnxDonnées) ALORS RENVOYER Faux SINON sTables+=[TAB]+sTable
+      		FIN
+      	FIN	
+      	RENVOYER Vrai
+      	FIN
+      
+      	procédure interne ServeurVersion()
+      	SI mg_taServeurVersion[Minuscule(sServeurPort)]="" ALORS
+      		sdVersion est une source de données
+      		SI HExécuteRequêteSQL(sdVersion,cnxDonnées,hRequêteSansCorrection,"SELECT PRODUCT,VERSION FROM PRODUCT_COMPONENT_VERSION") ALORS
+      			POUR TOUT sdVersion
+      				SI sdVersion.PRODUCT[="Oracle Database" ALORS mg_taServeurVersion[Minuscule(sServeurPort)]=sdVersion.VERSION;SORTIR
+      			FIN
+      		FIN
+      	FIN
+      	FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : Connecte_
+     procedure_id : 2035452261645869987
+     type_code : 12
+     code : |1-
+      // Résumé : Même fonction que Connecte() mais en passant en paramètre le nom de la section des paramètres de l'application (pour spécifier une valeur autre que "Oracle")
+      // Syntaxe : [ <Résultat> = ] Connecte_ ( [<sSectionParamètres> est chaîne])
+      // Paramètres :
+      // 	sSectionParamètres (chaîne UNICODE) : Nom de la section des paramètres de l'application dans laquelle aller récupérer les autres paramètres de connexion, par défaut="Oracle".
+      // Valeur de retour : entier : L'indice de la connexion si elle est établie.
+      // Exemple :
+      //
+      PROCEDURE Connecte_(sSectionParamètres est une chaîne = "Oracle") : entier	
+      RENVOYER Connecte(EnumérationDepuisNom(cBaseDeDonnées.ETypeAccès,cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Access",faux,"RequêteSQL")),	//ETypeAccès.RequêteSQL..Nom affiche une erreur en Android et Java
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Address")+[":"]+cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Port"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"User"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Password",Vrai),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Instance"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Schema"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Group",Faux,"*"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"PathMemos"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"CacheMemos",Faux,cApplication._Application.p_sRépertoireCacheMémo),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"ExtInfos"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"StayConnected",Faux,Vrai))
+     type : 458752
+   -
+     name : Tables
+     procedure_id : 2035453790661071094
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie l'ensemble des noms de table.
+      // Syntaxe : [ <Résultat> = ] Tables ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Retourne la liste des tables sous forme de chaine séparée par des RC.
+      // Exemple :
+      //
+      PROCÉDURE Tables(sCondition est une chaine = "") : chaînes
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$000d§>);renvoyer ""
+      SI sCondition="" _ET_ cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sToutesLesTables>"" ALORS RENVOYER cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sToutesLesTables
+      
+      sRes  est une chaine
+      clSQL est un csql(m_nIndiceDeConnexion)
+      
+      SI clSQL.Requête("SELECT table_name FROM user_tables ORDER BY table_name") ALORS
+      	SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès=cBaseDeDonnées.ODBC ALORS
+      		TANTQUE clSQL.SQLAvance()=0
+      			sRes+=[RC]+clSQL.SQLLitCol(1)
+      		FIN
+      	SINON	
+      		POUR TOUT clSQL.m_sd
+      			sRes+=[RC]+clSQL.m_sd.TABLE_NAME
+      		FIN
+      	FIN
+      	SI sCondition="" ALORS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sToutesLesTables=sRes
+      	RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(clSQL.p_sErreur)
+      FIN
+      RENVOYER ""
+     type : 458752
+   -
+     name : TableExiste
+     procedure_id : 2035467959390086899
+     type_code : 12
+     code : |1-
+      // Résumé : Vérifie l'existence d'une colonne dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] ColonneExiste (<sNomTableEtColonne> est chaîne)
+      // Paramètres :
+      //	sNomTableEtColonne (chaîne UNICODE) : Nom de la table dont on souhaite vérifier l'existence.
+      // Valeur de retour : booléen : Retourne Vrai si la table existe dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCÉDURE TableExiste(sNomTable est une chaîne) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTable)
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$000d§>);renvoyer faux
+      SI cApplication.mg_taInfo[cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sNomTable)]<>Null ALORS RENVOYER Vrai
+      
+      clSQL est un csql(m_nIndiceDeConnexion)
+      SI clSQL.Requête("SELECT table_name FROM user_tables WHERE table_name='"+sNomTable+"'") ALORS
+      	SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès=cBaseDeDonnées.ODBC ALORS
+      		RENVOYER (clSQL.SQLAvance()=0)
+      	SINON
+      		RENVOYER HLitPremier(clSQL.m_sd)
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(clSQL.p_sErreur)
+      FIN
+      renvoyer faux
+     type : 458752
+   -
+     name : TableColonneExiste
+     procedure_id : 2035469385322116826
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] TableColonneExiste (<sNomTableEtColonne> est chaîne)
+      //
+      // Paramètres :
+      //	sNomTableEtColonne (chaîne UNICODE) : <indiquez ici le rôle de sNomTableEtColonne>
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE TableColonneExiste(sNomTableEtColonne est une chaîne) : booléen
+      //à compléter
+      renvoyer faux
+     type : 458752
+   -
+     name : TableColonnes
+     procedure_id : 2035469393912118920
+     type_code : 12
+     code : |1+
+      // Résumé : Charge les colonnes d'une table passée en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableColonnes (<sNomTableUnique> est chaîne [, <bDescriptionComplète> est booléen [, <bForceRechargement> est booléen]])
+      // Paramètres :
+      //	sNomTableUnique (chaîne UNICODE) : Le nom unique de la table pour laquelle les informations sur les colonnes doivent être récupérées.
+      // 	bDescriptionComplète (booléen optionnel) : N'influence pas le résultat
+      // 	bForceRechargement (booléen optionnel) : Force le rechargement de la description même si celle-ci est déjà en mémoire
+      // Valeur de retour : booléen : Vrai si les informations de la table ont été mémorisées dans cApplication.mg_taInfo[sNomTableUnique].p_tabColonnes, Faux en cas d'erreur.
+      // Exemple :
+      //
+      PROCÉDURE TableColonnes(local sNomTableUnique est une chaine,bDescriptionComplète est un booleen = faux,bForceRechargement est un booleen = faux) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTableUnique,bDescriptionComplète,bForceRechargement)
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$000d§>);renvoyer faux
+      
+      clObjetBD	est un cBaseDeDonnées(m_nIndiceDeConnexion)
+      sNomTable 	est une chaine
+      
+      SI Position(sNomTableUnique,cGénérique._Sep)>0 ALORS
+      	sNomTable = cApplication.mg_taInfo[sNomTableUnique].m_sNomOriginal
+      	SI PAS TableExiste(sNomTable) ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0010§>,sNomTable));renvoyer faux
+      	
+      	SI (cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailCompletChargé _OU_ (PAS bDescriptionComplète _ET_ cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailBasiqueChargé)) _ET_ PAS bForceRechargement ALORS RENVOYER PAS cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailNonChargé
+      	SI bForceRechargement ALORS cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailNonChargé
+      	cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=(bDescriptionComplète ? cTable.TableDétailCompletChargé SINON cTable.TableDétailBasiqueChargé)
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTableUnique,bDescriptionComplète,bForceRechargement)
+      SINON
+      	sTables est une chaine = tables()
+      	sTablesACharger est une chaine
+      	sNomTable=Remplace(sNomTableUnique,[RC,",",";"],TAB)	//on remplace tout séparateur pour être un tab standard	
+      	POUR TOUT CHAÎNE sTable de sNomTable
+      		sNomTableUnique = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sTable)	//refaire la variable au cas où on envoie plusieurs tables dans cette méthode
+      		SI cApplication.mg_taInfo[sNomTableUnique]=Null ALORS 
+      			pclTable est un cTable dynamique = allouer un ctable(m_nIndiceDeConnexion,sTable,null,"","",faux)
+      			cApplication.mg_taInfo[sNomTableUnique] = pclTable
+      		FIN
+      		SI (cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailCompletChargé _OU_ (PAS bDescriptionComplète _ET_ cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailBasiqueChargé)) _ET_ PAS bForceRechargement ALORS
+      			//la table est déjà chargée comme on l'a demandé
+      		SINON			
+      			SI bForceRechargement ALORS cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailNonChargé
+      			cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=(bDescriptionComplète ? cTable.TableDétailCompletChargé SINON cTable.TableDétailBasiqueChargé)
+      			SI Position(sTables,sTable,0,MotComplet+SansCasse)<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0010§>,sTable)) sinon sTablesACharger+=[tab]+sTable
+      		FIN
+      	FIN
+      	SI p_sErreur>"" ALORS 
+      		RENVOYER Faux 
+      	SINON SI sTablesACharger>"" ALORS
+      		sNomTable=Remplace(sTablesACharger,TAB,"','")	//ainsi prêt pour le IN plus bas
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sTablesACharger,bDescriptionComplète,bForceRechargement)
+      	SINON
+      		//rien à charger
+      		RENVOYER PAS cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailNonChargé
+      	FIN
+      FIN
+      
+      pclUneColonne			est un ccolonne dynamique
+      
+      clSQLLocal est un csql(m_nIndiceDeConnexion)
+      clSQLDefaut est un csql(m_nIndiceDeConnexion)
+      //comment récupérer la valeur par défaut des colonnes
+      sReqColonnes est une chaine = [
+      SELECT
+      	TABLE_NAME,
+      	COLUMN_NAME,
+      	COLUMN_ID, 
+      	NULLABLE,
+      	DATA_TYPE,
+      	DATA_DEFAULT,
+      	DATA_SCALE,
+      	DATA_LENGTH
+      FROM 
+      	USER_TAB_COLUMNS 
+      WHERE 
+      	TABLE_NAME IN ('%1')
+      ]
+      
+      sReqDefaut est une chaine = [
+      SELECT
+      	TABLE_NAME,
+      	COLUMN_NAME,
+      	virtual_column
+      FROM 
+      	sys.all_tab_cols
+      WHERE 
+      	virtual_column = 'YES' AND
+      	owner not in ('ANONYMOUS','CTXSYS','DBSNMP','EXFSYS', 'LBACSYS','MDSYS','MGMT_VIEW','OLAPSYS','OWBSYS','ORDPLUGINS','ORDSYS','OUTLN', 
+      	'SI_INFORMTN_SCHEMA','SYS','SYSMAN','SYSTEM','TSMSYS','WK_TEST','WKSYS','WKPROXY','WMSYS','XDB','APEX_040000','APEX_PUBLIC_USER',
+      	'DIP','FLOWS_30000','FLOWS_FILES','MDDATA','ORACLE_OCM','XS$NULL','SPATIAL_CSW_ADMIN_USR', 'SPATIAL_WFS_ADMIN_USR', 'PUBLIC')
+      	and TABLE_NAME IN ('%1')
+      ]
+      
+      SI clSQLLocal.Requête(ChaîneConstruit(sReqColonnes,majuscule(sNomTable))) ALORS
+      	SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès=cBaseDeDonnées.ODBC ALORS
+      		clSQLLocal.SQLPremier()
+      		TANTQUE PAS clSQLLocal.SQLEnDehors()
+      			si bDescriptionComplète alors
+      				TraiteColonne(clSQLLocal.SQLCol(1),clSQLLocal.SQLCol(2),val(clSQLLocal.SQLCol(3)),(clSQLLocal.SQLCol(4)="Y"),clSQLLocal.SQLCol(5),clSQLLocal.SQLCol(6),val(clSQLLocal.SQLCol(7)),val(clSQLLocal.SQLCol(8)))
+      			sinon
+      				TraiteColonne(clSQLLocal.SQLCol(1),clSQLLocal.SQLCol(2),val(clSQLLocal.SQLCol(3)),(clSQLLocal.SQLCol(4)="Y"),clSQLLocal.SQLCol(5))
+      			fin
+      			clSQLLocal.SQLSuivant()
+      		FIN	
+      	SINON
+      		POUR TOUT clSQLLocal.m_sd
+      			SI bDescriptionComplète ALORS
+      				TraiteColonne(AnsiVersUnicode(clSQLLocal.m_sd.TABLE_NAME),AnsiVersUnicode(clSQLLocal.m_sd.COLUMN_NAME),partieentiere(clSQLLocal.m_sd.COLUMN_ID),(clSQLLocal.m_sd.NULLABLE="Y"),...
+      				AnsiVersUnicode(clSQLLocal.m_sd.DATA_TYPE),AnsiVersUnicode(clSQLLocal.m_sd.DATA_DEFAULT),PartieEntière(clSQLLocal.m_sd.DATA_SCALE),PartieEntière(clSQLLocal.m_sd.DATA_LENGTH))
+      			SINON
+      				TraiteColonne(AnsiVersUnicode(clSQLLocal.m_sd.TABLE_NAME),AnsiVersUnicode(clSQLLocal.m_sd.COLUMN_NAME),PartieEntière(clSQLLocal.m_sd.COLUMN_ID),(clSQLLocal.m_sd.NULLABLE="Y"),...
+      				AnsiVersUnicode(clSQLLocal.m_sd.DATA_TYPE))
+      			FIN
+      		FIN
+      	FIN
+      	
+      	si bDescriptionComplète alors
+      		SI clSQLDefaut.Requête(ChaîneConstruit(sReqDefaut,Majuscule(sNomTable))) ALORS
+      			POUR TOUTE CHAÎNE sTable de sNomTable separee par "','"
+      				sNomTableUnique = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sTable)	//refaire la variable au cas où on envoie plusieurs tables dans cette méthode
+      				SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès=cBaseDeDonnées.ODBC ALORS
+      					clSQLDefaut.SQLPremier()
+      					TANTQUE PAS clSQLDefaut.SQLEnDehors()
+      						cApplication.mg_taInfo[sNomTableUnique].p_tabColonnes[sNomTableUnique+cGénérique._Sep+Minuscule(clSQLLocal.SQLCol(1))].m_bEstAutomatique=vrai
+      						clSQLDefaut.SQLSuivant()
+      					FIN	
+      				SINON
+      					POUR TOUT clSQLDefaut.m_sd
+      						cApplication.mg_taInfo[sNomTableUnique].p_tabColonnes[sNomTableUnique+cGénérique._Sep+Minuscule(clSQLLocal.m_sd.COLUMN_NAME)].m_bEstAutomatique=Vrai
+      					FIN
+      				FIN
+      			fin
+      		SINON
+      			m_pclErreur.AjouteErreurHF();renvoyer faux
+      		FIN
+      	fin
+      SINON
+      	m_pclErreur.AjouteErreurHF();renvoyer faux
+      FIN
+      
+      SI cApplication.mg_taInfo[sNomTableUnique].p_sToutesLesColonnesNonMémo="" ALORS m_pclErreur.AjouteAvertissement(<§$000f§>)
+      renvoyer vrai
+      
+      	PROCÉDURE INTERNE TraiteColonne(sTable est une chaine,sNomColonne est une chaine,nPosition est un entier,bNullable est un booleen,sType est une chaine,sValeurDéfaut est une chaine = "",nTailleDécimale est un entier = 0,nTaille est un entier = 0)
+      	sColonneMinus 	est une chaine = minuscule(sNomColonne)
+      	nType			est un entier
+      	bEstUnicode 	est un booleen
+      	(nType,nTaille,bEstUnicode)=TypeVersWD(sType,nTailleDécimale)
+      	SI nType>0 ALORS 
+      		sNomTableUnique = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sTable)	//refaire la variable au cas où on envoie plusieurs tables dans cette méthode
+      		pclUneColonne = allouer un cColonne(clObjetBD,sNomTableUnique,sNomColonne,nPosition,nType,sType,nTaille,bNullable,"",Faux,0,"","",SansEspace(sValeurDéfaut))
+      		cApplication.mg_taInfo[sNomTableUnique].p_tabColonnes=pclUneColonne
+      	FIN
+      	FIN
+     type : 458752
+   -
+     name : DateHeureUTC
+     procedure_id : 2035471803442417911
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] DateHeureUTC ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	dateheure : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE DateHeureUTC() : DateHeure
+      //à compléter
+      m_pclErreur.AjouteAvertissement(<§$0002§>)
+      RENVOYER ""
+     type : 458752
+   -
+     name : Déconnecte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035477687614125623
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui déconnecte la base de données. 
+      // Syntaxe : [ <Résultat> = ] Déconnecte ( [<bForce> est booléen])
+      // Paramètres :
+      // 	bForce (booléen) : Indique s'il faut forcer la déconnexion même si la connexion a été paramétré pour garder la connexion et que la base de données est utilisée.
+      // Valeur de retour : booléen : Renvoie vrai si la déconnexion s'est correctement déroulée, faux sinon
+      // Exemple :
+      //
+      PROCÉDURE Déconnecte(bForce est un booleen = faux) : booléen
+      m_pclErreur.Raz()
+      
+      si m_nIndiceDeConnexion>0 alors
+      	sClé 			est une chaine = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé
+      	nUtilisation 	est un entier = cBaseDeDonnées.mg_taUtilisationServeur[sClé]
+      	SI ((PAS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bResterConnecté _ET_ nUtilisation=1) OU bForce) ALORS	//nUtilisation=1 ALORS c'est la dernière connexion active sur ce serveur
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bForce)
+      		SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès=cBaseDeDonnées.ODBC ALORS
+      			cSQL.SQLDéconnecte()
+      			cBaseDeDonnées.p_bConnexionODBC=Faux
+      			cBaseDeDonnées.ConnexionSupprimeTout(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)
+      			cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté=Faux
+      			m_nIndiceDeConnexion=0;nUtilisation=0
+      		SINON
+      			SI HFermeConnexion(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées) ALORS 
+      				cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté=Faux
+      				cBaseDeDonnées.ConnexionSupprimeTout(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)
+      				m_nIndiceDeConnexion=0;nUtilisation=0
+      			SINON
+      				m_pclErreur.AjouteErreurHF(ChaîneConstruit(<§$0003§>,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..BaseDeDonnées))
+      				RENVOYER Faux
+      			FIN
+      		FIN
+      	FIN
+      	SI nUtilisation>1 ALORS cBaseDeDonnées.ConnexionSupprime(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)
+      SINON
+      	m_pclErreur.AjouteAvertissement(<§$0012§>)
+      FIN
+      RENVOYER Vrai
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Sauvegarde
+     procedure_id : 2035481175391509734
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] Sauvegarde ( [<bÉcraseSiExistant> est booléen [, <sNomTables> est chaîne [, <sRépertoireLocal> est chaîne [, <eSuffixe> est cBaseDeDonnées.ESauvegardeSuffixe]]]])
+      //
+      // Paramètres :
+      // 	bÉcraseSiExistant (booléen - valeur par défaut=1) : <indiquez ici le rôle de bÉcraseSiExistant>
+      //	sNomTables (chaîne UNICODE) : <indiquez ici le rôle de sNomTables>
+      //	sRépertoireLocal (chaîne UNICODE) : <indiquez ici le rôle de sRépertoireLocal>
+      //	eSuffixe (cBaseDeDonnées.ESauvegardeSuffixe) : <indiquez ici le rôle de eSuffixe>
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE Sauvegarde(bÉcraseSiExistant est un booléen = Vrai, LOCAL sNomTables est une chaîne = "", sRépertoireLocal est une chaîne = "",eSuffixe est un cBaseDeDonnées.ESauvegardeSuffixe = cBaseDeDonnées.ESauvegardeSuffixe.SuffixeAucun) : booléen	//les tables peuvent être séparées par des , ou RC
+      //à compléter
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bÉcraseSiExistant,sNomTables,sRépertoireLocal,eSuffixe)
+      m_pclErreur.Raz()
+      
+      sSuffixe est une chaine
+      SELON eSuffixe
+      	CAS cBaseDeDonnées.SuffixeDate 		: sSuffixe="_"+DateSys()
+      	CAS cBaseDeDonnées.SuffixeHeure 	: sSuffixe="_"+HeureSys()
+      	CAS cBaseDeDonnées.SuffixeDateHeure : sSuffixe="_"+DateSys()+"_"+HeureSys()
+      FIN
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : TransactionAnnule
+     procedure_id : 2035803469548592209
+     type_code : 12
+     code : |1-
+      // Résumé : Annule la transaction débutée par TransactionDébut.
+      // Syntaxe : [ <Résultat> = ] TransactionAnnule ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Retourne Vrai si la transaction a bien été annulée, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCÉDURE VIRTUELLE TransactionAnnule() : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$000d§>);renvoyer faux
+      
+      SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours ALORS	//au cas où on aurait la merveilleuse idée d'annuler une transaction qui n'a pas été ouverte
+      	SELON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès
+      		CAS cBaseDeDonnées.FonctionsH
+      			SI HTransactionAnnule(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées) ALORS 
+      				cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux 
+      			SINON 
+      				m_pclErreur.AjouteErreurHF()
+      			FIN
+      		CAS cBaseDeDonnées.RequêteSQL
+      			SI HExécuteRequêteSQL("REQ_FRAMEWORK",cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées,hRequêteSansCorrection,"ROLLBACK TRANSACTION") ALORS 
+      				cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux 
+      			SINON 
+      				m_pclErreur.AjouteErreurHF()	
+      			FIN
+      		CAS cBaseDeDonnées.ODBC
+      			clSQL est un cSQL(m_nIndiceDeConnexion)
+      			si clSQL.SQLTransactionAnnule() alors cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux
+      	fin
+      SINON
+      	m_pclErreur.AjouteAvertissement(<§$0004§>)
+      FIN
+      RENVOYER (cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux)
+     type : 458752
+   -
+     name : TransactionDébut
+     procedure_id : 2035803533973248524
+     type_code : 12
+     code : |1-
+      // Résumé : Débute une transaction sur toutes les tables ou certaines.
+      // Syntaxe : [ <Résultat> = ] TransactionDébut ( [<sNomTables> est chaîne])
+      // Paramètres :
+      //	sNomTables (chaîne UNICODE optionnel): Une chaîne contenant les noms des tables sur lesquelles appliquer la transaction, séparés par des virgules. Pour exclure des tables de la transaction, préfixer leur nom d'un tiret -. 
+      // Valeur de retour : booléen : Retourne Vrai si la transaction est débutée avec succès, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCÉDURE VIRTUELLE TransactionDébut(sNomTables est une chaîne = "") : booléen	//tables séparées par des , (pour enlever des tables, mettre - devant)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTables)
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$000d§>);renvoyer faux
+      
+      SI pas cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours ALORS
+      	SELON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès
+      		CAS cBaseDeDonnées.FonctionsH
+      			SI HTransactionDébut(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées,sNomTables) ALORS 
+      				cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Vrai
+      			SINON 
+      				m_pclErreur.AjouteErreurHF()
+      			FIN
+      		CAS cBaseDeDonnées.RequêteSQL
+      			SI HExécuteRequêteSQL("REQ_FRAMEWORK",cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées,hRequêteSansCorrection,"BEGIN TRANSACTION") ALORS 
+      				cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Vrai
+      			SINON 
+      				m_pclErreur.AjouteErreurHF()		//pas de table à passer ici	
+      			FIN
+      		CAS cBaseDeDonnées.ODBC
+      			clSQL est un cSQL(m_nIndiceDeConnexion)
+      			SI clSQL.SQLTransactiondebut() ALORS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=vrai
+      	FIN
+      sinon
+      	m_pclErreur.AjouteErreur(<§$0005§>)
+      fin
+      RENVOYER (cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux)
+     type : 458752
+   -
+     name : TransactionFin
+     procedure_id : 2035803581217964877
+     type_code : 12
+     code : |1-
+      // Résumé : Termine une transaction débutée par TransactionDébut.
+      // Syntaxe : [ <Résultat> = ] TransactionFin ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Retourne Vrai si la transaction a bien été annulée, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCÉDURE VIRTUELLE TransactionFin() : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$000d§>);renvoyer faux
+      
+      SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours ALORS	//au cas où on aurait la merveilleuse idée de terminer une transaction qui n'a pas été ouverte
+      	SELON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès
+      		CAS cBaseDeDonnées.FonctionsH
+      			SI HTransactionFin(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées) ALORS 
+      				cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux
+      			SINON 
+      				m_pclErreur.AjouteErreurHF()
+      			FIN
+      		CAS cBaseDeDonnées.RequêteSQL
+      			SI HExécuteRequêteSQL("REQ_FRAMEWORK",cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées,hRequêteSansCorrection,"COMMIT TRANSACTION") ALORS 
+      				cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux
+      			SINON 
+      				m_pclErreur.AjouteErreurHF()	
+      			FIN
+      		CAS cBaseDeDonnées.ODBC
+      			clSQL est un cSQL(m_nIndiceDeConnexion)
+      			SI clSQL.SQLTransactionAnnule() ALORS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux
+      	fin
+      sinon
+      	m_pclErreur.AjouteAvertissement(<§$0004§>)
+      fin
+      RENVOYER (cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux)
+     type : 458752
+   -
+     name : SQLColonneMémoVide
+     procedure_id : 2036158190598668183
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Renvoie du code SQL d'une colonne binaire vide. Permet de récupérer un binaire vide dans le résultat plutôt que de charger le binaire dès le départ.
+      // Syntaxe : [ <Résultat> = ] SQLColonneMémoVide (<sNomColonne> est chaîne)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Le nom de la colonne mémo pour laquelle la vérification sera faite.
+      // Valeur de retour : chaîne UNICODE : Code SQL d'une colonne binaire vide
+      // Exemple :
+      //
+      PROCEDURE SQLColonneMémoVide(sNomColonne est une chaine) : chaine
+      RENVOYER  " utl_raw.cast_to_raw('') AS "+sNomColonne
+     type : 458752
+   -
+     name : TableVersion
+     procedure_id : 2036158877801852918
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie la version d'une table passée en paramètre (n'est pas géré par Oracle, renvoie toujours 0).
+      // Syntaxe : [ <Résultat> = ] TableVersion (<sNomTable> est chaîne)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Le nom de la table pour laquelle l'on souhaite la version.
+      // Valeur de retour : entier : Numéro de version de la table
+      // Exemple :
+      //
+      PROCEDURE TableVersion(sNomTable est une chaine) : entier
+      renvoyer 0
+     type : 458752
+   -
+     name : SQLLimiteRequêteA
+     procedure_id : 2036167351862381067
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Génère les parties préliminaire et postliminaire d'une requête SQL destinés à limiter le nombre de résultats renvoyés.
+      // Syntaxe : [ <Résultat> = ] SQLLimiteRequêteA (<nNombre> est entier [, <bAvecWhere> est booléen])
+      // Paramètres :
+      //	nNombre (entier) : Le nombre maximum de résultats à renvoyer dans la requête.
+      // 	bAvecWhere (booléen optionnel) : N'influence pas le résultat
+      // Valeur de retour : multi-valeur : Renvoie le code SQL des parties à intégrer dans une requête SQL pour limiter le nombre de résultats.
+      // Exemple :
+      //
+      PROCEDURE SQLLimiteRequêteA(nNombre est un entier,bAvecWhere est un booleen) : (chaine,chaine)
+      sPréLimite,sPostLimite sont des chaines
+      sPostLimite	= (bAvecWhere ? "AND" SINON "WHERE")+" ROWNUM <= "+nNombre
+      RENVOYER (sPréLimite,sPostLimite)
+     type : 458752
+   -
+     name : DateVersSQL
+     procedure_id : 2038836622134257071
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Transforme une date dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] DateVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	xDate : La date à convertir. Le type de cette valeur peut être date ou une chaine équivalente
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne représentant la date converties au format SQL. En cas d'erreur, elle renvoie une chaîne vide.
+      // Exemple :
+      //
+      PROCEDURE DateVersSQL(xDate) : chaine		//ne pas typer, permet de passer une chaine ou une date
+      SI DateValide(xDate) ALORS RENVOYER " TO_DATE ('"+xDate+"','YYYYMMDD')" sinon renvoyer "''"
+     type : 458752
+   -
+     name : DateHeureVersSQL
+     procedure_id : 2038836832587703497
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui transforme une dateheure dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] DateHeureVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	xDateHeure : La date et l'heure à convertir. Le type de cette valeur peut être dateheure ou une chaine équivalente
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne représentant la date et l'heure converties au format SQL. En cas d'erreur, elle renvoie une chaîne vide.
+      // Exemple :
+      //
+      PROCEDURE DateHeureVersSQL(xDateHeure) : chaine			//ne pas typer, permet de passer une chaine ou une dateheure
+      SI DateHeureValide(xDateHeure) ALORS renvoyer " TO_TIMESTAMP ('"+xDateHeure+"','YYYYMMDDHH24MISS')" sinon renvoyer "''"
+     type : 458752
+   -
+     name : SQLUnicodePréfixe
+     procedure_id : 2107398718658464104
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui récupère le préfixe d'une chaine Unicode à utiliser dans une requête SQL.
+      // Syntaxe : [ <Résultat> = ] SQLUnicodePréfixe ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Préfixe à ajouter à une chaine Unicode pour exécuter une requête dans la BD.
+      // Exemple :
+      //
+      PROCEDURE SQLUnicodePréfixe() : chaine
+      RENVOYER " UNISTR("
+     type : 458752
+   -
+     name : SQLUnicodeSuffixe
+     procedure_id : 2107399362903643447
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui récupère le suffixe d'une chaine Unicode à utiliser dans une requête SQL.
+      // Syntaxe : [ <Résultat> = ] SQLUnicodeSuffixe ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Suffixe à ajouter à une chaine Unicode pour exécuter une requête dans la BD.
+      // Exemple :
+      //
+      PROCEDURE SQLUnicodeSuffixe() : chaine
+      renvoyer ")"
+     type : 458752
+   -
+     name : SQLAvantTable
+     procedure_id : 2200234252211249045
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui renvoi du SQL à mettre devant le nom d'une table (ex [ pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAvantTable ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre devant toute référence à une table lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAvantTable() : chaine
+      renvoyer cGénérique._Guillemet
+     type : 458752
+   -
+     name : SQLAprèsTable
+     procedure_id : 2200234359585456858
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui renvoi du SQL à mettre devant le nom d'une table (ex ] pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAprèsTable ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre après toute référence à une table lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAprèsTable() : chaine
+      renvoyer cGénérique._Guillemet
+     type : 458752
+   -
+     name : SQLAvantColonne
+     procedure_id : 2200234548564127956
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui renvoi du SQL à mettre devant le nom d'une colonne (ex [ pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAvantColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre devant toute référence à une colonne lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAvantColonne() : chaine
+      renvoyer cGénérique._Guillemet
+     type : 458752
+   -
+     name : SQLAprèsColonne
+     procedure_id : 2200234655938335082
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui renvoi du SQL à mettre devant le nom d'une colonne (ex ] pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAprèsColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre après toute référence à une colonne lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAprèsColonne() : chaine
+      renvoyer cGénérique._Guillemet
+     type : 458752
+   -
+     name : Liste
+     procedure_id : 2203128759684354020
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie la liste des schémas présents sur le serveur.
+      // Syntaxe : [ <Résultat> = ] Liste ( [<eAccès> est cBaseDeDonnées.ETypeAccès [, <sServeurPort> est chaîne [, <sUtilisateur> est chaîne [, <sMotDePasse> est chaîne [, <sInstance> est chaîne]]]]])
+      // Paramètres :
+      //	eAccès (cBaseDeDonnées.ETypeAccès) : Le type d'accès à la base de données, tel que FonctionsH, RequêteSQL ou ODBC.
+      //	sServeurPort (chaîne UNICODE) : L'adresse du serveur et le port à utiliser pour la connexion à la base de données Oracle.
+      //	sUtilisateur (chaîne UNICODE) : Le nom de l'utilisateur à utiliser pour la connexion à la base de données Oracle.
+      //	sMotDePasse (chaîne UNICODE) : Le mot de passe à utiliser pour la connexion à la base de données Oracle.
+      //	sInstance (chaîne UNICODE) : Le nom de l'instance Oracle à laquelle se connecter.
+      // Valeur de retour : chaîne UNICODE : Liste des bases de données présentes sur le serveur séparés par RC
+      // Exemple :
+      //
+      PROCEDURE Liste(LOCAL eAccès est un cBaseDeDonnées.ETypeAccès = EnumérationDepuisNom(cBaseDeDonnées.ETypeAccès,cApplication._Application.m_pclParamètres.Lit("Oracle","Access",faux,"RequêteSQL")),	//ETypeAccès.RequêteSQL..Nom affiche une erreur en Android et Java
+      				LOCAL sServeurPort est une chaine = cApplication._Application.m_pclParamètres.Lit("Oracle","Address")+[":"]+cApplication._Application.m_pclParamètres.Lit("Oracle","Port"),
+      				sUtilisateur est une chaine = cApplication._Application.m_pclParamètres.Lit("Oracle","User"),
+      				sMotDePasse est une chaîne = cApplication._Application.m_pclParamètres.Lit("Oracle","Password",Vrai),
+      				sInstance est une chaine = cApplication._Application.m_pclParamètres.Lit("Oracle","Instance"))
+      
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(eAccès,sServeurPort,sUtilisateur,Répète(_Sep,Taille(sMotDePasse)))
+      m_pclErreur.Raz()
+      
+      sListe est une chaine
+      
+      SELON eAccès
+      	CAS cBaseDeDonnées.FonctionsH,cBaseDeDonnées.RequêteSQL
+      		cnxListe est une Connexion 
+      		cnxListe..Utilisateur 	= sUtilisateur
+      		cnxListe..MotDePasse 	= sMotDePasse 
+      		cnxListe..Serveur 		= extraitchaine(sServeurPort,1,":")+"/"+sInstance
+      		cnxListe..BaseDeDonnées = ""
+      		cnxListe..Provider 		= hAccèsNatiforacle
+      		SI HOuvreConnexion(cnxListe) ALORS
+      			//			sListe=remplace(HListeBaseDeDonnées(cnxListe,hLstNormal),tab,rc)	//pas autorisé par l'accès natif
+      			sdBD est une source de données
+      			SI HExécuteRequêteSQL(sdBD,cnxListe,hRequêteSansCorrection,"select username as schema_name from sys.all_users order by username") ALORS
+      				POUR TOUT sdBD
+      					sListe+=[RC]+sdBD.schema_name
+      				FIN
+      			SINON
+      				m_pclErreur.AjouteErreurHF()
+      			FIN
+      			HFermeConnexion(cnxListe)
+      		SINON
+      			m_pclErreur.AjouteErreurHF()
+      		FIN
+      	CAS cBaseDeDonnées.ODBC
+      		m_pclErreur.AjouteErreur(<§$0011§>)
+      FIN
+      RENVOYER sListe
+     type : 458752
+   -
+     name : TableIndexes
+     procedure_id : 2203860132159131207
+     type_code : 12
+     code : |1+
+      // Résumé : Charge les index d'une table passée en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableIndexes (<sNomTableUnique> est chaîne)
+      // Paramètres :
+      //	sNomTableUnique (chaîne UNICODE) : Le nom unique de la table pour laquelle les informations sur les index doivent être récupérées.
+      // 	bDescriptionComplète (booléen optionnel) : N'influence pas le résultat
+      // 	bForceRechargement (booléen optionnel) : Force le rechargement de la description même si celle-ci est déjà en mémoire
+      // Valeur de retour : booleen : Vrai si les informations de la table ont été mémorisées dans cApplication.mg_taInfo[sNomTableUnique].p_tabIndexes, Faux en cas d'erreur.
+      // Exemple :
+      //
+      PROCEDURE TableIndexes(LOCAL sNomTableUnique est une chaine,bDescriptionComplète est un booleen = faux,bForceRechargement est un booleen = faux) : booleen
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$000d§>);renvoyer faux
+      
+      sNomTable est une chaine 
+      SI Position(sNomTableUnique,cGénérique._Sep)>0 ALORS
+      	sNomTable = cApplication.mg_taInfo[sNomTableUnique].m_sNomOriginal
+      	SI PAS TableExiste(sNomTable) ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0010§>,sNomTable));renvoyer faux
+      	
+      	SI (cApplication.mg_taInfo[sNomTableUnique].p_eIndexesChargées=cTable.TableDétailCompletChargé _OU_ (PAS bDescriptionComplète _ET_ cApplication.mg_taInfo[sNomTableUnique].p_eIndexesChargées=cTable.TableDétailBasiqueChargé)) _ET_ PAS bForceRechargement ALORS RENVOYER PAS cApplication.mg_taInfo[sNomTableUnique].p_eIndexesChargées=cTable.TableDétailNonChargé
+      	SI bForceRechargement ALORS cApplication.mg_taInfo[sNomTableUnique].p_eIndexesChargées=cTable.TableDétailNonChargé
+      	cApplication.mg_taInfo[sNomTableUnique].p_eIndexesChargées=(bDescriptionComplète ? cTable.TableDétailCompletChargé SINON cTable.TableDétailBasiqueChargé)
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTableUnique,bDescriptionComplète,bForceRechargement)
+      SINON
+      	sTables est une chaine = tables()
+      	sTablesACharger est une chaine
+      	sNomTable=majuscule(Remplace(sNomTableUnique,[RC," ",","],TAB))	//on remplace tout séparateur pour être un tab standard	
+      	POUR TOUT CHAÎNE sTable de sNomTable
+      		sNomTableUnique = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sTable)	//refaire la variable au cas où on envoie plusieurs tables dans cette méthode
+      		SI (cApplication.mg_taInfo[sNomTableUnique].p_eIndexesChargées=cTable.TableDétailCompletChargé _OU_ (PAS bDescriptionComplète _ET_ cApplication.mg_taInfo[sNomTableUnique].p_eIndexesChargées=cTable.TableDétailBasiqueChargé)) _ET_ PAS bForceRechargement ALORS
+      			//la table est déjà chargée comme on l'a demandé
+      		SINON			
+      			SI bForceRechargement ALORS cApplication.mg_taInfo[sNomTableUnique].p_eIndexesChargées=cTable.TableDétailNonChargé
+      			cApplication.mg_taInfo[sNomTableUnique].p_eIndexesChargées=(bDescriptionComplète ? cTable.TableDétailCompletChargé SINON cTable.TableDétailBasiqueChargé)
+      			SI Position(sTables,sTable,0,MotComplet+SansCasse)<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0010§>,sTable)) sinon sTablesACharger+=[tab]+sTable
+      		FIN
+      	FIN
+      	SI p_sErreur>"" ALORS 
+      		RENVOYER Faux 
+      	SINON SI sTablesACharger>"" ALORS
+      		sNomTable=Remplace(sTablesACharger,TAB,"','")	//ainsi prêt pour le IN plus bas
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sTablesACharger,bDescriptionComplète,bForceRechargement)
+      	SINON
+      		//rien à charger
+      		RENVOYER PAS cApplication.mg_taInfo[sNomTableUnique].p_eIndexesChargées=cTable.TableDétailNonChargé
+      	FIN
+      FIN
+      
+      sReqIndexes est une chaine = [
+      SELECT
+      	DBA_INDEXES.TABLE_NAME,
+      	DBA_INDEXES.INDEX_NAME,
+      	DBA_IND_COLUMNS.COLUMN_NAME, 
+      	DBA_INDEXES.UNIQUENESS,
+      	DBA_IND_COLUMNS.DESCEND
+      FROM 
+      	DBA_INDEXES
+      LEFT JOIN 
+      	DBA_IND_COLUMNS ON DBA_IND_COLUMNS.TABLE_NAME=DBA_INDEXES.TABLE_NAME AND DBA_IND_COLUMNS.INDEX_NAME=DBA_INDEXES.INDEX_NAME
+      WHERE 
+      	DBA_INDEXES.OWNER NOT IN ('SYS','SYSTEM','OUTLN','DBSNMP') AND DBA_INDEXES.TABLE_NAME IN ('%1') AND DBA_INDEXES.INDEX_TYPE = 'NORMAL'
+      ORDER BY
+      	DBA_INDEXES.TABLE_NAME,DBA_IND_COLUMNS.INDEX_NAME,DBA_IND_COLUMNS.COLUMN_POSITION		
+      ]
+      
+      sReqCléPrimaire est une chaine = [
+      SELECT 
+      	TABLE_NAME,
+      	constraint_name, 
+      	constraint_type, 
+      	status
+      FROM 
+      	DBA_CONSTRAINTS
+      WHERE 
+      	constraint_type = 'P'
+      	AND TABLE_NAME IN ('%1')
+      ORDER BY 
+      	table_name, 
+      	constraint_name 
+      ]
+      
+      clSQLLocal 	est un csql(m_nIndiceDeConnexion)
+      SI clSQLLocal.Requête(ChaîneConstruit(sReqIndexes,sNomTable)) ALORS
+      	SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès<>cBaseDeDonnées.ODBC ALORS
+      		POUR TOUT clSQLLocal.m_sd
+      			si bDescriptionComplète
+      				TraiteIndex(AnsiVersUnicode(clSQLLocal.m_sd.TABLE_NAME),AnsiVersUnicode(clSQLLocal.m_sd.INDEX_NAME),Minuscule(clSQLLocal.m_sd.COLUMN_NAME),clSQLLocal.m_sd.UNIQUENESS="UNIQUE",clSQLLocal.m_sd.DESCEND)
+      			sinon
+      				TraiteIndex(AnsiVersUnicode(clSQLLocal.m_sd.TABLE_NAME),AnsiVersUnicode(clSQLLocal.m_sd.INDEX_NAME),Minuscule(clSQLLocal.m_sd.COLUMN_NAME),clSQLLocal.m_sd.UNIQUENESS="UNIQUE")
+      			fin
+      		FIN
+      	SINON
+      		clSQLLocal.SQLPremier()
+      		TANTQUE PAS clSQLLocal.SQLEnDehors()
+      			SI bDescriptionComplète
+      				TraiteIndex(clSQLLocal.SQLCol(1),clSQLLocal.SQLCol(2),Minuscule(clSQLLocal.SQLCol(3)),clSQLLocal.SQLCol(4)="UNIQUE",clSQLLocal.SQLCol(5))
+      			SINON
+      				TraiteIndex(clSQLLocal.SQLCol(1),clSQLLocal.SQLCol(2),Minuscule(clSQLLocal.SQLCol(3)),clSQLLocal.SQLCol(4)="UNIQUE")
+      			fin
+      			clSQLLocal.SQLSuivant()
+      		FIN
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(clSQLLocal.p_sErreur);RENVOYER faux
+      FIN
+      
+      SI clSQLLocal.Requête(ChaîneConstruit(sReqCléPrimaire,sNomTable)) ALORS
+      	SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès<>cBaseDeDonnées.ODBC ALORS
+      		POUR TOUT clSQLLocal.m_sd
+      			TraiteCléPrimaire(AnsiVersUnicode(clSQLLocal.m_sd.TABLE_NAME),Minuscule(AnsiVersUnicode(clSQLLocal.m_sd.CONSTRAINT_NAME)))
+      		FIN
+      	SINON
+      		clSQLLocal.SQLPremier()
+      		TANTQUE PAS clSQLLocal.SQLEnDehors()
+      			TraiteCléPrimaire(clSQLLocal.SQLCol(1),Minuscule(clSQLLocal.SQLCol(2)))
+      			clSQLLocal.SQLSuivant()
+      		FIN
+      	FIN
+      	
+      	POUR TOUTE CHAÎNE sTable de sNomTable separee par "','"
+      		sNomTableUnique = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sTable)	//refaire la variable au cas où on envoie plusieurs tables dans cette méthode
+      		//trouver la clé unique si pas de primaire
+      		SI cApplication.mg_taInfo[sNomTableUnique].p_sCléPrimaire="" ALORS
+      			POUR TOUT pclUneClé de cApplication.mg_taInfo[sNomTableUnique].p_tabIndexes
+      				SI pclUneClé.m_bEstAutomatique ALORS 
+      					cApplication.mg_taInfo[sNomTableUnique].p_sCléPrimaire			= pclUneClé.m_sNom
+      					cApplication.mg_taInfo[sNomTableUnique].p_sColonnesCléPrimaire	= pclUneClé.p_sComposantes
+      					SORTIR
+      				FIN
+      			FIN
+      		FIN
+      		SI cApplication.mg_taInfo[sNomTableUnique].p_sCléPrimaire="" ALORS
+      			POUR TOUT pclUneClé de cApplication.mg_taInfo[sNomTableUnique].p_tabIndexes
+      				SI pclUneClé.m_bEstUnique ALORS 
+      					cApplication.mg_taInfo[sNomTableUnique].p_sCléPrimaire			= pclUneClé.m_sNom
+      					cApplication.mg_taInfo[sNomTableUnique].p_sColonnesCléPrimaire	= pclUneClé.p_sComposantes
+      				FIN
+      			FIN
+      		fin
+      	fin
+      	RENVOYER vrai
+      SINON
+      	m_pclErreur.AjouteErreur(clSQLLocal.p_sErreur);RENVOYER faux
+      FIN
+      
+      	PROCÉDURE INTERNE TraiteIndex(sTable est une chaine,sNomIndex est une chaine,sNomColonne est une chaine,bEstUnique est un booleen,sSens est une chaine = "")
+      	sNomTableUnique 	= cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sTable)	//refaire la variable au cas où on envoie plusieurs tables dans cette méthode
+      	sNomColonneMinus 	est une chaine = minuscule(sNomColonne)
+      	nIndice 			est un entier = tableaucherche(cApplication.mg_taInfo[sNomTableUnique].p_tabIndexes,tcLinéaire,"m_sNom",sNomColonneMinus)
+      	SI nIndice<1 ALORS 
+      		pclUneClé 	est un cIndex dynamique = allouer un cIndex(m_nIndiceDeConnexion,sNomTableUnique,sNomIndex,bEstUnique,vrai) 
+      		nIndice=TableauAjoute(cApplication.mg_taInfo[sNomTableUnique].p_tabIndexes,pclUneClé)
+      	FIN
+      	cApplication.mg_taInfo[sNomTableUnique].p_tabIndexes[nIndice].ComposanteAjoute(sNomColonneMinus,sSens="ASC")
+      	FIN
+      
+      	PROCÉDURE INTERNE TraiteCléPrimaire(sTable est une chaine,sNomCléPrimaire est une chaine)
+      	sNomTableUnique = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sTable)	//refaire la variable au cas où on envoie plusieurs tables dans cette méthode
+      	nIndice est un entier = tableaucherche(cApplication.mg_taInfo[sNomTableUnique].p_tabIndexes,tcLinéaire,"m_sNom",sNomCléPrimaire)
+      	si nIndice>0 alors 
+      		cApplication.mg_taInfo[sNomTableUnique].p_tabIndexes[nIndice].m_bEstPrimaire	= vrai
+      		cApplication.mg_taInfo[sNomTableUnique].p_sColonnesCléPrimaire 					= cApplication.mg_taInfo[sNomTableUnique].p_tabIndexes[nIndice].p_sComposantes
+      	FIN
+      	FIN
+     type : 458752
+   -
+     name : TypeVersWD
+     procedure_id : 2204043578911182066
+     type_code : 12
+     code : |1-
+      // Résumé : Convertit un type de données de base de données vers son équivalent dans l'environnement WinDev
+      // Syntaxe : [ <Résultat> = ] TypeVersWD (<sType> est chaîne, <nTailleDécimale> est entier)
+      // Paramètres :
+      //	sType (chaîne UNICODE) : Le type de données de base de données à convertir.
+      //	nTailleDécimale (entier) : Nombre de décimales pour un numérique
+      // Valeur de retour : entier : Représente le type de données équivalent dans l'environnement WinDev.
+      // Exemple :
+      //
+      PROCEDURE PRIVÉE TypeVersWD(sType est une chaine,nTailleDécimale est un entier)
+      nType,nTaille 	sont des entiers
+      bEstUnicode 	est un booleen
+      
+      SELON sType
+      	CAS "CHAR"					: nType=hRubTexte
+      	CAS "VARCHAR2","VARCHAR"	: nType=hRubMémoTexte
+      	CAS "NUMBER"				: nType=(nTailleDécimale<>0 ? hRubRéel8 SINON hRubEntier8);nTaille=8
+      	CAS "DATE"					: nType=hRubDate8;nTaille=8
+      	CAS "NCHAR","NVARCHAR2"		: nType=hRubMémoUnicode;bEstUnicode=Vrai
+      	CAS "CLOB","LONG"			: nType=hRubMémoTexte
+      	CAS "BLOB","RAW","LONG RAW"	: nType=hRubMémoBinaire
+      	CAS "NCLOB"					: nType=hRubMémoUnicode;bEstUnicode=Vrai
+      	CAS "BINARY_FLOAT"			: nType=hRubRéel4
+      	CAS "BINARY_DOUBLE"			: nType=hRubRéel8
+      	CAS "DATETIME"				: nType=hRubDateHeure;nTaille=8
+      	CAS "TIMESTAMP"				: nType=hRubDateHeure;nTaille=8
+      	CAS "ROWID"					: nType=hRubBinaire
+      	AUTRES CAS 					: m_pclErreur.AjouteErreur(ChaîneConstruit("Le type %1 n'est pas géré",sType));dbgAssertion(Faux,chaineconstruit("Le type %1 n'est pas géré",sType)) 
+      FIN
+      renvoyer (nType,nTaille,bEstUnicode)
+     type : 458752
+   -
+     name : BooléenVersSQL
+     procedure_id : 2301528091823972472
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Transforme un booléen dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] BooléenVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	nValeur : Valeur booléenne à transformer en SQL.
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne un booléen au format SQL.
+      // Exemple :
+      //
+      PROCEDURE BooléenVersSQL(nValeur) : chaine
+      renvoyer (nValeur="1" ? "1" sinon "0")
+     type : 458752
+   -
+     name : SQLBinaireÉcrit
+     procedure_id : 2301563035783743214
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Transforme une valeur hexadécimale en binaire dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] SQLBinaireÉcrit (<xValeur>)
+      // Paramètres :
+      // 	xValeur : Valeur à transformer en notation binaire
+      // Valeur de retour : chaîne UNICODE : Renvoie la valeur transformée en notation binaire.
+      // Exemple :
+      //
+      PROCEDURE SQLBinaireÉcrit(sValeur est une chaine) : chaine
+      renvoyer "0x"+sValeur
+     type : 458752
+   -
+     name : SQLImageVersBinaire
+     procedure_id : 2301591326742071125
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Renvoie le code SQL pour convertir une image en chaine hexa (utilisant les caractères de 0 à F).
+      // Syntaxe : [ <Résultat> = ] SQLImageVersBinaire (<sNomColonne> est chaîne)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Nom de la colonne dont on souhaite appliquer la conversion en binaire.
+      // Valeur de retour : chaîne UNICODE : Résultat de la conversion en binaire de l'image.
+      // Exemple :
+      //
+      PROCEDURE SQLImageVersBinaire(sNomColonne est une chaine) : chaine
+      renvoyer sNomColonne
+     type : 458752
+   -
+     name : SQLBinaireLit32
+     procedure_id : 2301591511425708378
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Renvoie le code SQL pour récupérer les 32 premiers bits d'un binaire (son hash)
+      // Syntaxe : [ <Résultat> = ] SQLBinaireLit32 (<sNomColonne> est chaîne [, <bEstBinaireImage> est booléen])
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Nom de la colonne depuis laquelle les 32 premiers bits seront récupérés.
+      // 	bEstBinaireImage (booléen optionnel) : n'est pas utilisé ici
+      // Exemple :
+      //
+      PROCEDURE SQLBinaireLit32(LOCAL sNomColonne est une chaine,bEstBinaireImage est un booleen = faux) : chaine
+      RENVOYER "CONVERT(VARCHAR(32),"+(bEstBinaireImage ? SQLImageVersBinaire(sNomColonne)+",0)" SINON sNomColonne)
+     type : 458752
+   -
+     name : SQLTableAvantColonne
+     procedure_id : 1156818787073368339
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Indique si il faut ajouter le nom de la table devant le nom de la colonne lors d'une requête SQL.
+      // Syntaxe : [ <Résultat> = ] SQLTableAvantColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Vrai s'il faut ajouter le nom de la table devant le nom de la colonne, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE SQLTableAvantColonne() : booleen
+      renvoyer vrai
+     type : 458752
+   -
+     name : ODBCInstalle
+     procedure_id : 1222428352157718370
+     type_code : 12
+     code : |1+
+      // Résumé : Installe une connexion ODBC dans Windows pour une base de données Oracle. Elle prend en charge différents types de drivers, notamment les drivers Microsoft et Oracle.
+      // Syntaxe : [ <Résultat> = ] ODBCInstalle (<sServeurPort> est chaîne, <sBaseDeDonnées> est chaîne, <vParamètres> est variant)
+      // Paramètres :
+      //	sServeurPort (chaîne UNICODE) : Le nom du serveur et le port à utiliser pour la connexion ODBC.
+      //	sBaseDeDonnées (chaîne UNICODE) : Le nom de la base de données Oracle.
+      //	vParamètres (variant) : Les paramètres de connexion, notamment le driver, le nom d'utilisateur, le mot de passe, etc.
+      // Valeur de retour : booléen : Indiquant si l'installation de la connexion ODBC a réussi (Vrai) ou échoué (Faux).
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE ODBCInstalle(sServeurPort est une chaîne,sBaseDeDonnées est une chaîne,vParamètres est un variant) : booleen
+      
+      SI sServeurPort~="" 	ALORS ErreurDéclenche(ErreurODBC,<§@1bdafbc821abb0ce0006§>);renvoyer faux
+      SI sBaseDeDonnées~="" 	ALORS ErreurDéclenche(ErreurODBC,<§$0013§>);renvoyer faux
+      SI vParamètres=null 	ALORS ErreurDéclenche(ErreurODBC,<§$0015§>);renvoyer faux
+      
+      vParamètres.Driver = ODBCChemin()
+      SI vParamètres.Driver="" ALORS ErreurDéclenche(ErreurODBC,<§@1bdafbc821abb0ce0008§>);renvoyer faux
+      
+      sConnexionODBC 	est une chaîne
+      sConnexionODBC = ODBCRechercheParMembre("Server"+TAB+"Database",sServeurPort,sBaseDeDonnées)
+      SI pas sConnexionODBC="" ALORS renvoyer vrai sinon sConnexionODBC = sServeurPort+"-"+sBaseDeDonnées
+      
+      //installer automatiquement l'ODBC
+      sErreur 	est une chaine
+      bODBCNatif	est un booleen
+      
+      SI fExtraitChemin(vParamètres.Driver,fFichier+fExtension)~=ODBCOracleMicrosoft ALORS	//Driver Microsoft
+      	SI vParamètres.Server=Null OU vParamètres.Server~="" ALORS vParamètres.Server=sServeurPort;bODBCNatif=faux
+      SINON																					//Driver Oracle
+      	SI vParamètres.ServerName=Null OU vParamètres.ServerName~="" ALORS vParamètres.ServerName=sServeurPort;bODBCNatif=vrai
+      FIN
+      
+      sClé 		est une chaîne 	= ODBCRegistreChemin+"\"+gauche(sConnexionODBC,32)			//32 est la limite du nombre de caractères de la source ODBC
+      
+      SI sErreur="" ALORS
+      	SI PAS RegistreCréeClé(sClé) _ET_ ErreurDétectée() alors ErreurClé(sClé);RENVOYER Faux
+      	SI bODBCNatif ALORS
+      		SI PAS RegistreEcrit(sClé,"Application Attributes","T",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"Attributes","W",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"BatchAutocommitMode","IfAllSuccessful",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"BindAsDATE","F",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"BindAsFLOAT","F",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"CacheBufferSize","20",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"CloseCursor","F",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"Description",(vParamètres.Description=Null ? "" SINON vParamètres.Description),RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"DisableDPM","F",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"DisableMTS","T",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"DisableRULEHint","T",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"Driver",vParamètres.Driver,RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"DSN",vParamètres.DSN,RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"EXECSchemaOpt","",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"EXECSyntax","F",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"Failover","T",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"FailoverDelay","10",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"FailoverRetryCount","10",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"FetchBufferSize","64000",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"ForceWCHAR","F",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"Lobs","T",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"MetadataIdDefault","F",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"NumericSetting","NLS",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"Password",(vParamètres.Password=Null ? "" SINON vParamètres.Password),RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"QueryTimeout","T",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"ResultSets","T",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"ServerName","",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"StatementCache","F",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"UserID",(vParamètres.UserID=Null ? "" SINON vParamètres.UserID),RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      	SINON
+      		SI PAS RegistreEcrit(sClé,"SERVER",vParamètres.Server,RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"Description",(vParamètres.Description=Null ? "" SINON vParamètres.Description),RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"Driver",vParamètres.Driver,RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"BufferSize","65535",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"DSN",(vParamètres.Description=Null ? "" SINON vParamètres.Description),RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"GuessTheColDef","0",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"PWD",(vParamètres.Password=Null ? "" SINON vParamètres.Password),RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"Remarks","",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"StdDayOfWeek","1",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"StripTrailingZero","0",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"SynonymColumns","1",RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      		SI PAS RegistreEcrit(sClé,"UID",(vParamètres.UID=Null ? "" SINON vParamètres.UID),RegistreTypeChaîne) ALORS ErreurClé(sClé);RENVOYER Faux
+      	FIN	
+      	SI PAS RegistreCréeClé(ODBCRegistreChemin+"\ODBC Data Sources") _ET_ ErreurDétectée() ALORS ErreurClé(sClé);RENVOYER Faux
+      	SI PAS RegistreEcrit(ODBCRegistreChemin+"\ODBC Data Sources",sConnexionODBC,"Oracle Native Client") ALORS ErreurClé(sClé);RENVOYER Faux
+      	
+      	RENVOYER Vrai
+      SINON
+      	ErreurDéclenche(ErreurODBC,sErreur)
+      FIN
+      RENVOYER Faux
+      	
+      	PROCÉDURE INTERNE ErreurClé(sLaClé)
+      	ErreurDéclenche(ErreurODBC,<§@1bdafbc821abb0ce0000§>+sLaClé+" : "+erreurinfo(errmessage))
+      	FIN
+     type : 458752
+   -
+     name : ODBCChemin
+     procedure_id : 1222428575496135433
+     type_code : 12
+     code : |1-
+      // Résumé : Retourne le chemin complet du répertoire contenant le driver ODBC Oracle. Elle recherche le driver Oracle dans les répertoires spécifiés par la variable d'environnement PATH de Windows.
+      // Syntaxe : [ <Résultat> = ] ODBCChemin ()
+      // Paramètres :	Aucun
+      // Valeur de retour : chaîne UNICODE : Une chaîne représentant le chemin complet du répertoire contenant le driver ODBC Oracle. Si le driver est trouvé dans le PATH, la fonction renvoie le chemin complet du répertoire. Sinon, elle renvoie une chaîne vide.
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE ODBCChemin() : chaîne
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	//le driver Instant Client a son répertoire dans le PATH de Windows
+      	sPath est une chaine = SysEnvironnement("PATH")
+      	POUR TOUTE CHAÎNE sChemin de sPath séparee par ";"
+      		SI fFichierExiste(sChemin+["\"]+ODBCOracleNatif) _ET_ fFichierExiste(sChemin+["\"]+"sqoras32.dll") _ET_ fFichierExiste(sChemin+["\"]+"sqresus.dll") ALORS
+      			RENVOYER sChemin+["\"]+ODBCOracleNatif
+      		FIN
+      	FIN
+      	POUR TOUTE CHAÎNE sChemin de sPath séparee par ";"
+      		SI fFichierExiste(sChemin+["\"]+ODBCOracleNatif) _ET_ fFichierExiste(sChemin+["\"]+"sqoras32.dll") _ET_ fFichierExiste(sChemin+["\"]+"sqresus.dll") ALORS
+      			RENVOYER sChemin+["\"]+ODBCOracleNatif
+      		FIN
+      	FIN
+      	
+      	sPath=SysRep(srSystème)+["\"]+ODBCOracleMicrosoft
+      	SI fFichierExiste(sPath) ALORS RENVOYER sPath
+      	
+      <fin>
+      
+      
+      RENVOYER ""
+     type : 458752
+  properties :
+   -
+     name : p_bEstConnecté
+     identifier : 0x1c5d993d0a2e74e2
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //
+         PROCEDURE PUBLIQUE p_bEstConnecté() : booleen
+         renvoyer m_nIndiceDeConnexion>0
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1c3e48338935bd92
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to open data connection (%1 - %2) : "
+      fr-CA : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-US : "Unable to open data connection (%1 - %2) : "
+     index : 0
+   -
+     text :
+      fr-FR : Pas de date pour cette base de données
+      en-GB : No date for this database
+      fr-CA : Pas de date pour cette base de données
+      en-US : No date for this database
+     index : 1
+   -
+     text :
+      fr-FR : Cette base de données n'est pas encore prise en charge
+      en-GB : This database is not yet supported
+      fr-CA : Cette base de données n'est pas encore prise en charge
+      en-US : This database is not yet supported
+     index : 2
+   -
+     text :
+      fr-FR : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to close data connection (%1 - %2) : "
+      fr-CA : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-US : "Unable to close data connection (%1 - %2) : "
+     index : 3
+   -
+     text :
+      fr-FR : Pas de transaction en cours
+      en-GB : No transaction in progress
+      fr-CA : Pas de transaction en cours
+      en-US : No transaction in progress
+     index : 4
+   -
+     text :
+      fr-FR : Une transaction est déjà en cours
+      en-GB : A transaction is already in progress
+      fr-CA : Une transaction est déjà en cours
+      en-US : A transaction is already in progress
+     index : 5
+   -
+     text :
+      fr-FR : La connexion à la source ODBC %1 a échoué
+      en-GB : The connection to ODBC source %1 failed
+      fr-CA : La connexion à la source ODBC %1 a échoué
+      en-US : The connection to ODBC source %1 failed
+     index : 6
+   -
+     text :
+      fr-FR : L'ODBC n'est pas disponible sur cette plateforme
+      en-GB : ODBC is not available on this platform
+      fr-CA : L'ODBC n'est pas disponible sur cette plateforme
+      en-US : ODBC is not available on this platform
+     index : 7
+   -
+     text :
+      fr-FR : Une autre connexion ODBC est déjà ouverte
+      en-GB : Another ODBC connection is already open
+      fr-CA : Une autre connexion ODBC est déjà ouverte
+      en-US : Another ODBC connection is already open
+     index : 8
+   -
+     text :
+      fr-FR : Les DLL de l'ODBC n'ont pas été trouvées
+      en-GB : ODBC DLLs not found
+      fr-CA : Les DLL de l'ODBC n'ont pas été trouvées
+      en-US : ODBC DLLs not found
+     index : 9
+   -
+     text :
+      fr-FR : Le nom serveur est obligatoire
+      en-GB : The name of the server is required
+      fr-CA : Le nom serveur est obligatoire
+      en-US : The name of the server is required
+     index : 10
+   -
+     text :
+      fr-FR : Le nom d'utilisateur est obligatoire
+      en-GB : Username is required
+      fr-CA : Le nom d'utilisateur est obligatoire
+      en-US : Username is required
+     index : 11
+   -
+     text :
+      fr-FR : Le nom de l'instance est obligatoire
+      en-GB : The name of the instance is required
+      fr-CA : Le nom de l'instance est obligatoire
+      en-US : The name of the instance is required
+     index : 12
+   -
+     text :
+      fr-FR : Aucune connexion
+      en-GB : No connection
+      fr-CA : Aucune connexion
+      en-US : No connection
+     index : 13
+   -
+     text :
+      fr-FR : Aucune clé unique
+      en-GB : No unique key
+      fr-CA : Aucune clé unique
+      en-US : No unique key
+     index : 14
+   -
+     text :
+      fr-FR : Aucune colonne
+      en-GB : No columns
+      fr-CA : Aucune colonne
+      en-US : No columns
+     index : 15
+   -
+     text :
+      fr-FR : La table %1 n'existe pas dans la base de données
+      en-GB : Table %1 does not exist in the database
+      fr-CA : La table %1 n'existe pas dans la base de données
+      en-US : Table %1 does not exist in the database
+     index : 16
+   -
+     text :
+      fr-FR : Impossible de se connecter en ODBC sans le nom de la base de données
+      en-GB : Unable to connect to ODBC without the name of the database
+      fr-CA : Impossible de se connecter en ODBC sans le nom de la base de données
+      en-US : Unable to connect to ODBC without the name of the database
+     index : 17
+   -
+     text :
+      fr-FR : La base de données n'était pas connectée
+      en-GB : The database was not connected
+      fr-CA : La base de données n'était pas connectée
+      en-US : The database was not connected
+     index : 18
+   -
+     text :
+      fr-FR : Le nom de la base de donné est obligatoire
+      en-GB : Database name is mandatory
+      fr-CA : Le nom de la base de donné est obligatoire
+      en-US : Database name is mandatory
+     index : 19
+   -
+     text :
+      fr-FR : Connexion à Oracle
+      en-GB : Connection to Oracle
+      fr-CA : Connexion à Oracle
+      en-US : Connection to Oracle
+     index : 20
+   -
+     text :
+      fr-FR : Les paramètres sont obligatoires
+      en-GB : Parameters are mandatory
+      fr-CA : Les paramètres sont obligatoires
+      en-US : Parameters are mandatory
+     index : 21
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

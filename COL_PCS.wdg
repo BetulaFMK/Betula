@@ -1,0 +1,1720 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_PCS
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1b845288210e7a8e
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette collection de procédure surcharge des fonctions PC SOFT qui ne fonctionnent pas sur toutes les plateformes ou pas de manière attendue.
+      //Les constantes ci-dessous sont mises pour éviter les warning. Le code cible les utilisent, ou pas, selon la plateforme
+      constante
+      	SansRegroupement 	= 0		//pour BufferVersHexa, pas disponible en Android
+      	SansLigne			= 1024	//pour BufferVersHexa, pas disponible en Android
+      
+      	wlVide				= 0		//pour les membres de variants, pas disponible en Android
+      	wlEnumération		= 135	//pour les membres de variants, pas disponible en Android
+      	wlCombinaison		= 136	//pour les membres de variants, pas disponible en Android
+      	wlVariantTableau	= 142	//pour les membres de variants, pas disponible en Android
+      	wlVariantObjet		= 143 	//pour les membres de variants, pas disponible en Android
+      	wlOnNeSaitPas		= 111	//NON DOCUMENTÉ (WD23)
+      
+      	hRubTexteUnicode	= 29	//pour cSQL, constante non disponible en Java
+      	hRubMémoUnicode		= 30	//pour cSQL, constante non disponible en Java
+      	hRubNumérique		= 31	//pour cSQL, constante non disponible en Java
+      	hRubEnumération		= 32	//pour cSQL, constante non disponible en Java
+      	hRubCombinaison		= 33	//pour cSQL, constante non disponible en Java
+      	hRubUUID128			= 34	//pour cSQL, constante non disponible en Java	
+      	hRubUUID128Auto		= 35	//pour cSQL, constante non disponible en Java	
+      	hRubUUID256			= 36	//pour cSQL, constante non disponible en Java	
+      	hRubUUID256Auto		= 37 	//pour cSQL, constante non disponible en Java
+      
+      	//valeurs de retour pour DateVersJour
+      	_Lundi					= 1
+      	_Mardi					= 2
+      	_Mercredi				= 3
+      	_Jeudi					= 4
+      	_Vendredi				= 5
+      	_Samedi					= 6
+      	_Dimanche				= 7
+      fin
+      
+      COSansEspace est une Combinaison
+      	sscGauche			= 1		//pour SansEspace, pas dispo sur plusieurs plateformes
+      	sscDroite			= 2		//pour SansEspace, pas dispo sur plusieurs plateformes
+      	sscExtérieur		= sscGauche+sscDroite
+      	sscIntérieur		= 4		//pour SansEspace, pas dispo sur plusieurs plateformes
+      	sscTout				= sscExtérieur+sscIntérieur
+      FIN
+      
+      ERegDétail est une énumération
+      	regLstNormal		= 0		//sans le type
+      	regLstAvecType		= 1		//avec le type général : N=numérique, T=chaine, B=binaire
+      	regLstAvecDétail	= 2		//avec le type précis : RegistreTypeEntier, RegistreTypeEntier_8, RegistreTypeEntierBigEndian, RegistreTypeChaîne, RegistreTypeChaîneEnv, RegistreTypeBinaire, RegistreTypeMultiChaîne
+      fin
+      
+      COChaineGraphique est une combinaison
+      	cgImage
+      	cgPolice
+      	cgPoliceGras
+      	cgPoliceItalique
+      	cgPoliceSouligné
+      	cgPoliceBarré
+      	cgPoliceTaille
+      	cgRécupérer
+      	cgLien
+      	cgHyperlien
+      	cgCoordonnées
+      	cgCardage
+      	cgLigne
+      	cgCercle
+      	cgRectangle
+      	cgDégradé
+      	cgFond
+      	cgStylo
+      fin
+      
+      privé
+      	gtaHTMLVersTexte	est un tableau associatif de chaines
+      	gtaTexteversHTML	est un tableau associatif de chaines
+      	gtabFichierTemp		est un tableau de chaines
+      	gnIndiceChrono		est un entier
+      constante
+      	ErreurPCS			= 230
+      fin
+     type : 720896
+   -
+     code : |1+
+      //
+     type : 720898
+  procedures :
+   -
+     name : HTMLVersTexte
+     procedure_id : 1982800712502955288
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction a pour but de transformer une chaîne de texte en format HTML en une chaîne de texte lisible en supprimant les caractères spéciaux et en effectuant des substitutions appropriées.
+      //	Contrairement à la fonction de PCSOFT, cette fonction permet de transformer plus de codes spéciaux dans leur représentation ASCII plus lisible.
+      // Syntaxe : [ <Résultat> = ] HTMLVersTexte (<sHTML> est chaîne ANSI)
+      // Paramètres :
+      //	sHTML (chaîne ANSI) : La chaîne de texte au format HTML à convertir en texte lisible.
+      // Valeur de retour : chaîne ANSI : La fonction retourne la chaîne de texte convertie au format ANSI.
+      // Exemple :
+      //	sHTML est une chaine ANSI = ""Bonjour, &lt;b&gt;comment &#xE7;a va ?&lt;/b&gt;""
+      //	sTexteLisible est une chaîne ANSI = HTMLVersTexte(sHTML)
+      //	sTexteLisible contiendra "Bonjour, <b>comment ça va ?</b>" tandis que la version standard (utilisez wl.HTMLVersTexte(sHTML)) va renvoyer "Bonjour, <b>comment"
+      //
+      PROCEDURE HTMLVersTexte(local sHTML est une chaine ANSI) : chaine ansi	//transforme les caractères spéciaux
+      COL_PCS.ChargeHTMLVsTexte(Vrai)	//charge un tableau de correspondance : gtaHTMLVersTexte
+      m,nCaract 	sont des entiers
+      sCaract 	est une chaine
+      n 			est un entier = Position(sHTML,"&")
+      TANTQUE n>0
+      	m=Position(sHTML,";",n+1)
+      	SI m>0 ALORS
+      		sCaract=Milieu(sHTML,n+1,m-n-1)
+      		SI sCaract[[1]]="#" ALORS 
+      			SI sCaract[[2]]="x" ALORS nCaract=Val(sCaract[[3 À ]],"x") SINON nCaract=Val(sCaract[[2 À ]])
+      			SI 31<nCaract<=255 ALORS sCaract=Caract(nCaract) SINON dbgAssertion(Vrai,"Caractère non ASCII "+sCaract+" ("+n+")")
+      		SINON SI gtaHTMLVersTexte[sCaract]..Existe ALORS
+      			sCaract=gtaHTMLVersTexte[sCaract]
+      		SINON
+      			sCaract="&"+sCaract+";"
+      		FIN
+      		sHTML=Gauche(sHTML,n-1)+sCaract+Milieu(sHTML,m+1)
+      	FIN
+      	n=Position(sHTML,"&",n+1);SI n=0 ALORS SORTIR
+      FIN
+      RENVOYER sHTML
+     type : 458752
+   -
+     name : TexteVersHTML
+     procedure_id : 1982800712503086547
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction a pour objectif de convertir une chaîne de texte en une version HTML en remplaçant les caractères spéciaux par leurs équivalents HTML. C'est l'inverse de la fonction HTMLVersTexte().
+      // Syntaxe : [ <Résultat> = ] TexteVersHTML (<sTexte> est chaîne)
+      // Paramètres :
+      //	sTexte (chaîne UNICODE) : La chaîne de texte à convertir en format HTML.
+      // Valeur de retour : chaîne UNICODE : La fonction retourne la chaîne de texte convertie en format HTML.
+      // Exemple :
+      //	sHTML = TexteVersHTML("Bonjour, <b>comment ça va ?</b>")
+      //	Résultat : "Bonjour, &lt;b&gt;comment &ccedil;a va ?&lt;/b&gt;"
+      //
+      PROCEDURE TexteVersHTML(sTexte est une chaine) : chaine
+      sRes est une chaine
+      pour n = 1 _a_ taille(sTexte)
+      	si gtaTexteversHTML[sTexte[[n]]]..existe alors sRes+="&"+gtaTexteversHTML[sTexte[[n]]]+";" sinon sRes+=sTexte[[n]]
+      FIN
+      RENVOYER sRes
+     type : 458752
+   -
+     name : Trace
+     procedure_id : 1982800884301949520
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction Trace a pour objectif de générer une trace contenant les valeurs des paramètres passés à la fonction. Cette trace peut être utilisée pour le débogage et la surveillance du programme.
+      //	Contrairement à la fonction standard Trace, Cette trace-ci va afficher tous les paramètres sur des lignes différentes plutôt qu'à la suite séparés par des TAB (pas toujours très lisible). De plus, le fonctionnement de cette Trace dépend des paramètres de cApplication et évite d'affiche la trace jaune en exécution toujours gênante pour l'utilisateur final (elle n’apparaît qu'en mode GO)
+      // Syntaxe : Trace ( [<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5> [, <xParam6> [, <xParam7> [, <xParam8> [, <xParam9> [, <xParam10>]]]]]]]]]])
+      // Paramètres :
+      // 	xParam1 (type indéfini) : contenu à afficher dans la trace
+      // 	xParam2 (type indéfini optionnel) : contenu à afficher dans la trace
+      // 	xParam3 (type indéfini optionnel) : contenu à afficher dans la trace
+      // 	xParam4 (type indéfini optionnel) : contenu à afficher dans la trace
+      // 	xParam5 (type indéfini optionnel) : contenu à afficher dans la trace
+      // 	xParam6 (type indéfini optionnel) : contenu à afficher dans la trace
+      // 	xParam7 (type indéfini optionnel) : contenu à afficher dans la trace
+      // 	xParam8 (type indéfini optionnel) : contenu à afficher dans la trace
+      // 	xParam9 (type indéfini optionnel) : contenu à afficher dans la trace
+      // 	xParam10 (type indéfini optionnel) : contenu à afficher dans la trace
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	Trace("Début de la fonction", nValeur, sNom, bFlag)
+      //
+      PROCEDURE Trace(xParam1<utile>=null,xParam2<utile>=null,xParam3<utile>=null,xParam4<utile>=null,xParam5<utile>=Null,xParam6<utile>=null,xParam7<utile>=null,xParam8<utile>=null,xParam9<utile>=null,xParam10<utile>=null)
+      si MesParamètres..NbReçus=0 alors retour
+      sMessage est une chaine
+      POUR i = 1 _a_ MesParamètres..NbReçus
+      	sMessage+=[RC]+{"xParam"+i,indVariable}
+      FIN
+      SI EnModeTest() ET cApplication._Application.m_pclTrace.m_bTraceJauneEnTest ALORS WL.Trace(sMessage)	//à l'écran pour le développeur (pas de , car pas accepté en Java)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteTexte(sMessage)
+     type : 458752
+   -
+     name : HexaVersBuffer
+     procedure_id : 1982801305215067809
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction HexaVersBuffer a pour objectif de convertir une chaîne hexadécimale en un objet Buffer.
+      //	Cette fonction a été surchargée car pas disponible sur toutes les plateforme
+      // Syntaxe : [ <Résultat> = ] HexaVersBuffer (<sChaineHexa> est chaîne)
+      // Paramètres : sChaineHexa (chaîne UNICODE) : La chaîne hexadécimale que vous souhaitez convertir en Buffer.
+      // Valeur de retour : buffer : renvoie un objet Buffer contenant les octets correspondant à la chaîne hexadécimale.
+      // Exemple :
+      //	sHexa est une chaîne = "48656C6C6F20576F726C64"
+      //	bufResultat est un buffer = HexaVersBuffer(sHexa)
+      //
+      PROCEDURE HexaVersBuffer(sChaineHexa est une chaine) : buffer
+      bufRésultat est un buffer
+      SI PAS sChaineHexa~="" ALORS 
+      	POUR n = 1 _a_ taille(sChaineHexa) pas 2
+      		bufRésultat+=Caract(Val(sChaineHexa[[n]]+sChaineHexa[[n+1]],"x"))	//un buffer est codé en 2 octets par caractères 
+      	FIN
+      FIN
+      RENVOYER bufRésultat
+     type : 458752
+   -
+     name : RéseauNomDomaineDNS
+     procedure_id : 1982806931637888314
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction RéseauNomDomaineDNS a pour objectif de récupérer le nom du domaine DNS associé à la machine en cours d'exécution. C'est une fonction qui donne directement le nom de domaine DNS de la machine sans se préoccuper de l'option à mettre dans cette fonction.
+      // Syntaxe : [ <Résultat> = ] RéseauNomDomaine ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : chaîne UNICODE : renvoie le nom du domaine DNS sous forme d'une chaîne de caractères. Si le nom du domaine DNS n'est pas disponible, une chaîne vide ("") est renvoyée.
+      // Exemple :
+      //	sNomDomaineDNS = RéseauNomDomaineDNS()
+      //
+      PROCEDURE RéseauNomDomaineDNS() : chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	RENVOYER wl.RéseauNomDomaine(resDomaineDNS)
+      	
+      <fin>
+      
+      
+      renvoyer ""
+     type : 458752
+   -
+     name : fFichierTemp
+     procedure_id : 1982807193631740752
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction fFichierTemp génère un nom de fichier temporaire unique en utilisant un trigramme fourni, un répertoire temporaire spécifié (ou le répertoire temporaire par défaut) et une extension de fichier (par défaut, ".tmp").
+      //	Avantages par rapport à la fonction fFichierTemp standard : vous pouvez régler le nombre et le type de caractères après le trigramme et aussi l'extension du fichier (ex : pour une image temporaire, gardez ".jpg" !). Il ajoute aussi le nom du fichier à un tableau. Utilisez fFichierTempSupprimeTout avant de terminer l'application pour nettoyer ces fichiers temporaires de votre disque !
+      // Syntaxe :
+      // [ <Résultat> = ] fFichierTemp (<sTrigramme> est chaîne [, <sRépertoireTemporaire> est chaîne])
+      // Paramètres :
+      //	sTrigramme (chaîne UNICODE) : Un trigramme utilisé comme base pour le nom de fichier temporaire.
+      //	sRépertoireTemporaire (chaîne UNICODE) : Le répertoire temporaire dans lequel le fichier temporaire sera créé. Par défaut, il utilise le répertoire 
+      //	sExtension (chaîne): L'extension du fichier temporaire. Par défaut, l'extension est ".tmp".
+      // Valeur de retour : chaîne UNICODE : renvoie le chemin complet du fichier temporaire nouvellement créé.
+      // Exemple :
+      //	sFichierTemp est une chaîne = fFichierTemp("ABC", "C:\Temp", ".txt")
+      //
+      PROCEDURE fFichierTemp(sTrigramme est une chaine,sRépertoireTemporaire est une chaine = fRépertoireTemp(),sExtension est une chaine = ".tmp") : chaine
+      sNom est une chaine
+      si fRepExiste(sRépertoireTemporaire) _ou_ frepcree(sRépertoireTemporaire) alors
+      	BOUCLE
+      		sNom=sRépertoireTemporaire+[fSep()]+sTrigramme+ChaineHasard(Hasard(3,4),COChaineHasard.Majuscules+COChaineHasard.Chiffres)+fExtraitChemin(sExtension,fExtension)
+      		SI PAS fFichierExiste(sNom) ALORS TableauAjoute(gtabFichierTemp,sNom);SORTIR
+      	FIN
+      	RENVOYER sNom
+      sinon
+      	ErreurDéclenche(Erreurpcs,erreurinfo());renvoyer ""
+      fin
+     type : 458752
+   -
+     name : BufferVersHexa
+     procedure_id : 1983158895155072313
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction convertit le contenu d'un buffer en représentation hexadécimale sous forme de chaîne de caractères. Cette fonction utilise une méthode définie dans la bibliothèque de fonctions globales.
+      //	Cette fonction a été surchargée car les options n'existent pas en PHP
+      // Syntaxe : [ <Résultat> = ] BufferVersHexa (<bufAConvertir> est buffer [, <nOctetsParMot> est entier [, <nOctetsParLigne> est entier]])
+      // Paramètres :
+      //	bufAConvertir (buffer) : Le buffer dont le contenu sera converti en représentation hexadécimale.
+      // 	nOctetsParMot (entier optionnel) : Le nombre d'octets par groupe dans la représentation hexadécimale. Par défaut, chaque octet est affiché individuellement.
+      // 	nOctetsParLigne (entier optionnel) : Le nombre d'octets par ligne dans la représentation hexadécimale. Par défaut, les octets sont affichés en groupes de 16 par ligne.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne de caractères représentant la version hexadécimale du contenu du buffer.
+      // Exemple :
+      //	bufDonnées est un Buffer
+      //	sHexaDonnées est une chaîne = BufferVersHexa(bufDonnées, 2, 8)
+      //
+      PROCEDURE BufferVersHexa(bufAConvertir est un buffer,nOctetsParMot est un entier = 1, nOctetsParLigne est un entier = 16) : chaine
+      sRes est une chaine = wl.BufferVersHexa(bufAConvertir,nOctetsParMot,nOctetsParLigne)
+      si nOctetsParMot=SansRegroupement 	alors sRes=remplacE(sRes," ","")	//SansRegroupement pas disponible en PHP
+      si nOctetsParLigne=sansligne 		alors sRes=remplace(sRes,rc,"")		//SansLigne pas disponible en PHP
+      renvoyer sRes
+     type : 458752
+   -
+     name : fCrée
+     procedure_id : 1984250469612771923
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction crée un fichier avec les options spécifiées et renvoie un identifiant de fichier. Cette fonction est une encapsulation de la fonction correspondante de la bibliothèque de fonctions globales.
+      //	Cette surcharge permet de choisir explicitement le codage Unicode ou ANSI
+      // Syntaxe : [ <Résultat> = ] fCrée (<sCheminFichier> est chaîne, <nOptions> est entier, <bContientUnicode> est booléen)
+      // Paramètres :
+      //	sCheminFichier (chaîne UNICODE) : Le chemin complet du fichier à créer.
+      //	nOptions (entier) : Les options de création du fichier. Ces options sont spécifiées en utilisant des constantes prédéfinies.
+      //	bContientUnicode (booléen) : Un booléen indiquant si le fichier contiendra des caractères Unicode. Si Vrai, l'option foUnicode est activée ; sinon, l'option foAnsi est activée.
+      // Valeur de retour : entier : renvoie un identifiant de fichier. Cet identifiant est utilisé pour faire référence au fichier dans d'autres opérations de fichier ultérieures.
+      // Exemple :
+      //	nFichier est un entier = fCrée("C:\Chemin\vers\fichier.txt", foCreation + foEcriture, Vrai)
+      //	SI nFichier <> -1 ALORS
+      //		// Traitement du fichier créé	
+      //		fFerme(nFichier)
+      //	FIN
+      //
+      PROCEDURE fCrée(sCheminFichier est une chaine,nOptions est un entier,bContientUnicode est un booleen) : entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	renvoyer wl.fcreé(sCheminFichier,nOptions+(bContientUnicode ? foUnicode sinon foansi))
+      	
+      <sinon si CibleExécution=SitePHP>
+      	RENVOYER WL.fCrée(sCheminFichier,nOptions)
+      	
+      <sinon si CibleExécution=Java ou CibleExécution=Android>
+      	RENVOYER WL.fCrée(sCheminFichier)
+      	
+      <fin>
+      
+      	
+     type : 458752
+   -
+     name : fOuvre
+     procedure_id : 1984252196193041570
+     type_code : 15
+     code : |1+
+      // Résumé : La fonction ouvre un fichier avec les options spécifiées et renvoie un identifiant de fichier. Cette fonction est une encapsulation de la fonction correspondante de la bibliothèque de fonctions globales.
+      //	Cette surcharge permet de choisir explicitement le codage Unicode ou ANSI
+      // Syntaxe : [ <Résultat> = ] fOuvre (<sCheminFichier> est chaîne, <nOptions> est entier, <bContientUnicode> est booléen)
+      // Paramètres :
+      //	sCheminFichier (chaîne UNICODE) : Le chemin complet du fichier à ouvrir.
+      //	nOptions (entier) : Les options d'ouverture du fichier. Ces options sont spécifiées en utilisant des constantes prédéfinies.
+      //	bContientUnicode (booléen) : Un booléen indiquant si le fichier contient des caractères Unicode. Si Vrai, l'option foUnicode est activée ; sinon, l'option foAnsi est activée.
+      // Valeur de retour : entier : renvoie un identifiant de fichier. Cet identifiant est utilisé pour faire référence au fichier dans d'autres opérations de fichier ultérieures. En cas d'erreur lors de l'ouverture du fichier, la fonction renvoie -1.
+      // Exemple :
+      //	nFichier est un entier = fOuvre("C:\Chemin\vers\fichier.txt", foLecture, Vrai)
+      //	SI nFichier <> -1 ALORS
+      //		// Traitement du fichier ouvert en lecture
+      //		fFerme(nFichier)
+      //	FIN
+      PROCEDURE fOuvre(sCheminFichier est une chaine,nOptions est un entier,bContientUnicode est un booleen) : entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	renvoyer wl.fouvre(sCheminFichier,nOptions+(bContientUnicode ? foUnicode sinon foansi))
+      	
+      <sinon si CibleExécution=SitePHP ou CibleExécution=Java>
+      	RENVOYER WL.fOuvre(sCheminFichier,nOptions)
+      	
+      <sinon si CibleExécution=Android>
+      	si etbinaire(nOptions,foCréationSiInexistant)=foCréationSiInexistant _et_ pas fFichierExiste(sCheminFichier) alors
+      		si pas WL.fCrée(sCheminFichier) alors renvoyer faux
+      	FIN
+      	SI ETBinaire(nOptions,foAjout)=foAjout alors 
+      		nID est un entier = WL.fOuvre(sCheminFichier)
+      		si nID<>-1 alors fPositionne(nID,0,fpFin)
+      		renvoyer nID
+      	sinon
+      		RENVOYER WL.fOuvre(sCheminFichier)
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : JSONVersVariant
+     procedure_id : 1989023256803594253
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction JSONVersVariant analyse une chaîne JSON et la convertit en une structure de données Variant en respectant la syntaxe JSON. La fonction renvoie le Variant résultant.
+      //	Fonction surchargée pour prendre en compte les tableaux associatifs
+      // Syntaxe : [ <Résultat> = ] JSONVersVariant (<sChaineJSON> est chaîne)
+      // Paramètres :
+      //	sChaineJSON (chaîne UNICODE) : La chaîne JSON à convertir en structure de données Variant.
+      // Valeur de retour : variant : renvoie un Variant représentant la structure de données JSON. Si la chaîne JSON est vide, la fonction renvoie Null. En cas d'erreur lors de l'analyse de la chaîne JSON, la fonction peut également renvoyer Null.
+      // Exemple :
+      //	sChaineJSON est une chaîne = [
+      // 	{"nom": "John", "age": 30, "ville": "Paris"}
+      //	]
+      //	vObjetJSON est un variant = JSONVersVariant(sChaineJSON)
+      //
+      PROCEDURE JSONVersVariant(LOCAL sChaineJSON est une chaine) // : variant (interdit en WD23 !)
+      SI sChaineJSON~="" ALORS RENVOYER Null
+      sChaineJSON = Remplace(sChaineJSON,"\"+cGénérique._Guillemet,Caract(5))
+      vRésultat est un variant = (sChaineJSON[[1]]="{" ? JSONVersValeurs(sChaineJSON,1) sinon JSONVersTableau(sChaineJSON,1))
+      RENVOYER vRésultat
+     type : 458752
+   -
+     name : VariantVersJSON
+     procedure_id : 1989023256803659945
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction VariantVersJSON permet de convertir une structure de données Variant en une chaîne JSON, respectant la syntaxe JSON.
+      // Syntaxe :[ <Résultat> = ] VariantVersJSON (<vRéférence>)
+      // Paramètres :
+      //	vRéférence : Un Variant représentant la structure de données à convertir en JSON.
+      // Valeur de retour : chaîne ANSI : Le variant transformé en chaîne
+      // Exemple :
+      //	vDonnées est un Variant
+      //	vDonnées.nom = "John"
+      //	vDonnées.âge = 30
+      //	vDonnées.actif = Vrai
+      //	vDonnées.amis = ["Alice", "Bob"]
+      //	sJSON est une chaîne = VariantVersJSON(vDonnées)
+      //	sJSON contiendra : { "nom":"John", "\u00e2ge":30, "actif":true, "amis":[ "Alice", "Bob" ] }
+      //
+      PROCEDURE VariantVersJSON(vRéférence) : chaine ANSI
+      sTemp est une chaine
+      sBufferAnsi,sRes est une chaine ansi
+      quand exception dans
+      	si typevar(vRéférence)=wlVariantTableau alors	//par exemple une liste d'erreurs
+      		sRes+=[RC]+tabVersTexte(vRéférence)
+      	sinon si vRéférence<>null alors	
+      		POUR TOUT mMembre DE vRéférence..Membre
+      			SELON mMembre..Type
+      				CAS wlVariant,wlVariantObjet : 
+      					sTemp=VariantVersJSON(mMembre)
+      					sRes+=[", "]+cGénérique._Guillemet+JSONEncode(mMembre..Nom)+cGénérique._Guillemet+":"+["{"]+sTemp+(droite(sTemp,1)="}" ? "" sinon "}")
+      				CAS wlVariantTableau,108
+      					sRes+=[", "]+cGénérique._Guillemet+JSONEncode(mMembre..Nom)+cGénérique._Guillemet+":"+"[ "+tabVersTexte(mMembre)+" ]"
+      				CAS wlEntier,wlEntier_1,wlEntier_2,wlEntier_4,wlEntier_8,wlEntierSansSigne_1,wlEntierSansSigne_2,wlEntierSansSigne_4,wlEntierSansSigne_8,wlRéel_4,wlRéel_8,wlRéel,wlNumérique,wlMonétaire,wlHandle
+      					sRes+=[", "]+cGénérique._Guillemet+JSONEncode(mMembre..Nom)+cGénérique._Guillemet+":"+mMembre..valeur
+      				cas wlvide
+      					sRes+=[", "]+cGénérique._Guillemet+JSONEncode(mMembre..Nom)+cGénérique._Guillemet+":"+"null"
+      				CAS wlBooléen
+      					sRes+=[", "]+cGénérique._Guillemet+JSONEncode(mMembre..Nom)+cGénérique._Guillemet+":"+(mMembre..Valeur ? "true" SINON "false")
+      				AUTRE CAS
+      					sBufferAnsi=mMembre..Valeur
+      					sRes+=[", "]+cGénérique._Guillemet+JSONEncode(mMembre..Nom)+cGénérique._Guillemet+":"+cGénérique._Guillemet+JSONEncode(sBufferAnsi)+cGénérique._Guillemet
+      			FIN
+      		FIN
+      	sinon
+      		sRes = "?:?"
+      	FIN
+      faire
+      	sRes = "?:?"
+      fin
+      renvoyer "{ "+sRes+" }"
+      
+      	procédure interne tabVersTexte(xTableau) : chaine
+      	sResTab est une chaine
+      	POUR n = 1 _a_ xTableau..Occurrence
+      		SELON xTableau[n]..Type
+      			CAS wlVariantTableau	: sResTab+=[", "]+"[ "+VariantVersJSON(xTableau[n])+" ]"
+      			cas wlVariantObjet		: sResTab+=[", "]+VariantVersJSON(xTableau[n])
+      			CAS wlBooléen			: sResTab+=[", "]+(xTableau[n] ? "true" SINON "false")
+      			CAS wlEntier,wlEntier_1,wlEntier_2,wlEntier_4,wlEntier_8,wlEntierSansSigne_1,wlEntierSansSigne_2,wlEntierSansSigne_4,wlEntierSansSigne_8,wlRéel_4,wlRéel_8,wlRéel,wlNumérique,wlMonétaire,wlHandle
+      				sResTab+=[", "]+JSONEncode(xTableau[n])
+      			AUTRE CAS				: sResTab+=[", "]+cgenerique._Guillemet+JSONEncode(xTableau[n])+cGénérique._Guillemet
+      		FIN
+      	FIN
+      	renvoyer sResTab
+      	FIN
+      	
+     type : 458752
+   -
+     name : DateHeureSys
+     procedure_id : 1993461220317250616
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction DateHeureSys retourne la date et l'heure système actuelles sous forme d'une valeur de type DateHeure.
+      //	Cette fonction a été surchargée car DateHeureSys ne fonctionne pas en AppleWatch et Windows Mobile 
+      // Syntaxe : [ <Résultat> = ] DateHeureSys ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : dateheure : renvoie une valeur de type DateHeure qui représente la date et l'heure système actuelles.
+      // Exemple :
+      //	dhSysteme est une DateHeure = DateHeureSys()
+      //
+      PROCEDURE DateHeureSys() : dateheure
+      dhTemp est une dateheure = DateSys()+HeureSys()
+      renvoyer dhTemp
+     type : 458752
+   -
+     name : fRépertoireTemp
+     procedure_id : 1982802563649364581
+     type_code : 15
+     code : |1+
+      // Résumé : La fonction fRépertoireTemp permet d'obtenir le chemin du répertoire temporaire du système.
+      //	Cette fonction est surchargée pour demander un chemin court ou long et aussi que cela donne le répertoire de l'exécutable quand exécuté sur mobile
+      // Syntaxe : [ <Résultat> = ] fRépertoireTemp ( [<bCheminLong> est booléen])
+      // Paramètres :
+      // 	bCheminLong (booléen optionnel): Un booléen indiquant si le chemin retourné doit être au format long. Par défaut, il est à Faux, ce qui signifie que le chemin est au format court.
+      // Valeur de retour : chaîne UNICODE : retourne le chemin du répertoire temporaire du système. Le chemin peut être au format court ou long en fonction de la valeur du paramètre optionnel bCheminLong.
+      // Exemple :
+      //	sRepTempCourt est une chaîne = fRépertoireTemp(faux)
+      //
+      PROCEDURE fRépertoireTemp(bCheminLong est un booleen = vrai) : chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	renvoyer (bCheminLong ? fCheminLong(wl.frepertoiretemp()) sinon fCheminCourt(WL.fRépertoireTemp()))
+      	
+      <sinon si CibleExécution=Android ou CibleExécution=iOS>
+      	renvoyer fRepexe()
+      	
+      <sinon si CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	RENVOYER WL.fRépertoireTemp()
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : RegistreListeClé
+     procedure_id : 2007237882462643751
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction RegistreListeClé permet d'obtenir une liste des sous-clés d'une clé de registre spécifiée.
+      //	Cette fonction n'existe pas en WD, c'est l'équivalent de fListeFichier pour le registre.
+      // Syntaxe : [ <Résultat> = ] RegistreListeClé (<sCléDeDépart> est chaîne)
+      // Paramètres :
+      //	sCléDeDépart (chaîne UNICODE) : Une chaîne représentant la clé de registre à partir de laquelle récupérer la liste des sous-clés.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne contenant la liste des sous-clés de la clé de registre spécifiée.
+      // Exemple :
+      //	sListeSousClés est une chaîne = RegistreListeClé("HKEY_CURRENT_USER\Software")
+      //
+      PROCEDURE RegistreListeClé(sCléDeDépart est une chaine) : chaine
+      sRes 		est une chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows ou CibleExécution=WindowsMobile>
+      	sSousClé 	est une chaine = RegistrePremièreSousClé(sCléDeDépart)
+      	TANTQUE sSousClé>"" 
+      		sRes+=[RC]+ExtraitChaîne(sSousClé,1,"\",DepuisFin)
+      		sSousClé = RegistreCléSuivante(sSousClé)
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer sRes
+     type : 458752
+   -
+     name : RegistreListeValeur
+     procedure_id : 2007204446109948494
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction permet de récupérer une liste des valeurs associées à une clé de registre spécifiée.
+      //	Cette fonction n'existe pas en WD, elle est complémentaire à RegistreListeClé
+      // Syntaxe : [ <Résultat> = ] RegistreListeValeur (<sCheminDeLaClé> est chaîne [, <nDétail> est COL_PCS.ERegDétail])
+      // Paramètres :
+      //	sCheminDeLaClé (chaîne UNICODE) : Une chaîne représentant le chemin de la clé de registre à partir de laquelle récupérer la liste des valeurs.
+      //	nDétail (COL_PCS.ERegDétail optionnel) : Un paramètre spécifiant le niveau de détail pour chaque valeur de la liste (par défaut, regLstNormal).
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne contenant la liste des valeurs associées à la clé de registre spécifiée.
+      // Exemple :
+      //	sListeValeurs est une chaîne = RegistreListeValeur("HKEY_CURRENT_USER\Software\Exemple")
+      //
+      PROCEDURE RegistreListeValeur(sCheminDeLaClé est une chaîne,eDétail est un ERegDétail = regLstNormal) : chaine
+      sRes 			est une chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows ou CibleExécution=WindowsMobile>
+      	sListeValeurs 	est une chaine = ""+tab+wl.RegistreListeValeur(sCheminDeLaClé,faux)	//le "" au début pour la valeur par défaut
+      	sType			est une chaine
+      	SI eDétail<>regLstnormal ALORS
+      		POUR TOUTE CHAÎNE sValeur de sListeValeurs separee par rc
+      			sType=RegistreTypeValeur(sCheminDeLaClé,sValeur)
+      			sRes+=[RC]+sValeur+TAB+DétailVersType(sType)+tab+(eDétail=regLstAvecDétail ? sType sinon "")
+      		FIN
+      	SINON
+      		sRes=sListeValeurs
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer sRes
+      
+      	Procédure interne DétailVersType(sLeType est une chaine) : chaine
+      	selon sLeType
+      		cas RegistreTypeEntier,RegistreTypeEntier_8,RegistreTypeEntierBigEndian	: renvoyer "N"				
+      		cas RegistreTypeChaîne,RegistreTypeChaîneEnv 							: renvoyer "T"
+      		cas RegistreTypeBinaire 												: renvoyer "B"
+      		autres cas																: renvoyer sLeType
+      	fin		
+      	FIN
+     type : 458752
+   -
+     name : fEstUneImage
+     procedure_id : 2014695187611993727
+     type_code : 15
+     code : |1+
+      // Résumé : La fonction fEstUneImage permet de déterminer si le fichier spécifié par son chemin est une image.
+      //	Cette fonction a été surchargé car non disponible sur plusieurs plateforme. Dans ce cas, on vérifie que l'extension donnée est une extension qui correspond à une image.
+      // Syntaxe : [ <Résultat> = ] fEstUneImage (<sCheminDuFichier> est chaîne)
+      // Paramètres :
+      //	sCheminDuFichier (chaîne UNICODE) : Une chaîne représentant le chemin complet du fichier à vérifier.
+      // Valeur de retour : booléen : renvoie Vrai si le fichier spécifié par le chemin est une image, Faux sinon.
+      // Exemple :
+      //	bEstUneImage est un booléen = fEstUneImage("C:\Images\photo.jpg")
+      //
+      PROCEDURE fEstUneImage(sCheminDuFichier est une chaine) : booleen
+      si sCheminDuFichier~="" _ou_ pas ffichierexiste(sCheminDuFichier) alors renvoyer faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	renvoyer wl.fEstUneImage(sCheminDuFichier)
+      	
+      <sinon si CibleExécution=SitePHP ou CibleExécution=Java ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	renvoyer position(cgenerique.p_sExtensionImage,majuscule(fExtraitChemin(sCheminDuFichier,fExtension)))
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : SansEspace
+     procedure_id : 2014695342230984021
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction permet de supprimer les espaces d'une chaîne de caractères en fonction des paramètres spécifiés dans la constante énumérée COSansEspace.
+      //	Fonction surchargée car certaines options ne sont pas reconnues sur toutes les plateformes
+      // Syntaxe : [ <Résultat> = ] SansEspace (<sChaine> est chaîne, <COSansEspace> est COL_PCS.COSansEspace)
+      // Paramètres :
+      //	sChaine (chaîne UNICODE) : Une chaîne de caractères à laquelle les espaces seront éventuellement supprimés.
+      //	COSansEspace (COL_PCS.COSansEspace) : Une constante énumérée COSansEspace indiquant quels espaces doivent être supprimés.
+      // Valeur de retour : chaîne UNICODE : renvoie la chaîne résultante après avoir appliqué les transformations de suppression d'espaces.
+      // Exemple :
+      //	sResultat est une chaîne = SansEspace("   Bonjour   ", sscGauche + sscDroite)
+      //
+      PROCEDURE SansEspace(local sChaine est une chaine, coOptions est un COSansEspace) : chaine
+      si sChaine="" alors renvoyer ""
+      
+      si coOptions[sscTout] alors renvoyer remplace(sChaine," ","")
+      
+      //enlever les espaces à gauche
+      si coOptions[sscGauche] _ou_ coOptions[sscExtérieur] alors
+      	pour n = 1 _a_ taille(sChaine)
+      		si sChaine[n]<>" " alors sChaine=milieu(sChaine,n);sortir
+      	FIN
+      fin
+      //enlever les espaces à droite
+      SI coOptions[sscdroite] _OU_ coOptions[sscExtérieur] ALORS
+      	sChaine=chaineinverse(sChaine)
+      	POUR n = 1 _a_ taille(sChaine)
+      		SI sChaine[n]<>" " ALORS sChaine=ChaîneInverse(Milieu(sChaine,n));SORTIR
+      	FIN
+      FIN
+      //enlever les espaces au milieu
+      si coOptions[sscIntérieur] alors
+      	sRes est une chaine
+      	POUR n = 1 _a_ taille(sChaine)
+      		SI sChaine[n]<>" " ALORS sRes+=sChaine[[n]]
+      	FIN
+      	sChaine=sRes
+      FIN
+      renvoyer sChaine
+     type : 458752
+   -
+     name : HTMLVersRVB
+     procedure_id : 2017316413675743826
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction convertit une couleur spécifiée en format HTML (hexadécimal ou nom de couleur) en une valeur RVB (Rouge, Vert, Bleu) sous forme d'entier.
+      //	Cette fonction a été surchargée car elle n'existe pas sur toutes les plateformes
+      // Syntaxe : [ <Résultat> = ] HTMLVersRVB (<sCouleur> est chaîne)
+      // Paramètres :
+      //	sCouleur (chaîne UNICODE) : Une chaîne spécifiant la couleur en format HTML (hexadécimal ou nom de couleur).
+      // Valeur de retour : entier : renvoie un entier représentant la couleur en format RVB.
+      // Exemple :
+      //	nCouleurRVB est un entier = HTMLVersRVB("#FFA500")
+      //	nCouleurRVB est un entier = HTMLVersRVB("green")
+      //
+      PROCEDURE HTMLVersRVB(local sCouleur est une chaine) : entier	//ne fonctionne pas sur toutes les plateformes
+      si sCouleur="" alors renvoyer 0
+      si sCouleur[[1]]="#" _ou_ EstNombre(sCouleur,"x") alors
+      	SI sCouleur[[1]]="#" alors sCouleur=milieu(sCouleur,2)
+      	si taille(sCouleur)=3 alors
+      		renvoyer val(sCouleur[[3]]+sCouleur[[3]]+sCouleur[[2]]+sCouleur[[2]]+sCouleur[[1]]+sCouleur[[1]],"x")
+      	sinon si taille(sCouleur)=6 alors
+      		RENVOYER Val(sCouleur[[5]]+sCouleur[[6]]+sCouleur[[3]]+sCouleur[[4]]+sCouleur[[1]]+sCouleur[[2]],"x")
+      	sinon
+      		renvoyer 0		
+      	FIN
+      SINON	//c'est une couleur web
+      	//ref : https://fr.wikipedia.org/wiki/Couleur_du_Web
+      	selon minuscule(sCouleur)
+      		cas "indianred"							: renvoyer chttp._CouleurIndianRed				
+      		cas "lightcoral"						: renvoyer cHTTP._CouleurLightCoral				
+      		cas "salmon"							: renvoyer cHTTP._CouleurSalmon					
+      		cas "darksalmon"						: renvoyer cHTTP._CouleurDarkSalmon				
+      		cas "lightsalmon"						: renvoyer cHTTP._CouleurLightSalmon				
+      		cas "crimson"							: renvoyer cHTTP._CouleurCrimson					
+      		cas "red"								: renvoyer cHTTP._CouleurRed						
+      		cas "firebrick"							: renvoyer cHTTP._CouleurFireBrick				
+      		cas "darkred"							: renvoyer cHTTP._CouleurDarkRed					
+      		cas "maroon"							: renvoyer cHTTP._CouleurMaroon					
+      		cas "pink"								: renvoyer cHTTP._CouleurPink					
+      		cas "lightpink"							: renvoyer cHTTP._CouleurLightPink				
+      		cas "hotpink"							: renvoyer cHTTP._CouleurHotPink					
+      		cas "deeppink"							: renvoyer cHTTP._CouleurDeepPink				
+      		cas "mediumvioletred"					: renvoyer cHTTP._CouleurMediumVioletRed			
+      		cas "palevioletred"						: renvoyer cHTTP._CouleurPaleVioletRed			
+      		cas "coral"								: renvoyer cHTTP._CouleurCoral					
+      		cas "tomato"							: renvoyer cHTTP._CouleurTomato					
+      		cas "orangered"							: renvoyer cHTTP._CouleurOrangeRed				
+      		cas "darkorange"						: renvoyer cHTTP._CouleurDarkOrange				
+      		cas "orange"							: renvoyer cHTTP._CouleurOrange					
+      		cas "gold"								: renvoyer cHTTP._CouleurGold					
+      		cas "yellow"							: renvoyer cHTTP._CouleurYellow					
+      		cas "lightyellow"						: renvoyer cHTTP._CouleurLightYellow				
+      		cas "lemonchiffon"						: renvoyer cHTTP._CouleurLemonChiffon			
+      		cas "lightgoldenrodyellow"				: renvoyer cHTTP._CouleurLightGoldenrodYellow	
+      		cas "papayawhip"						: renvoyer cHTTP._CouleurPapayaWhip				
+      		cas "moccasin"							: renvoyer cHTTP._CouleurMoccasin				
+      		cas "peachpuff"							: renvoyer cHTTP._CouleurPeachPuff				
+      		cas "palegoldenrod"						: renvoyer cHTTP._CouleurPaleGoldenrod			
+      		cas "khaki"								: renvoyer cHTTP._CouleurKhaki					
+      		cas "darkkhaki"							: renvoyer cHTTP._CouleurDarkKhaki							
+      		cas "lavender"							: renvoyer cHTTP._CouleurLavender				
+      		cas "thistle"							: renvoyer cHTTP._CouleurThistle					
+      		cas "plum"								: renvoyer cHTTP._CouleurPlum					
+      		cas "violet"							: renvoyer cHTTP._CouleurViolet					
+      		cas "orchid"							: renvoyer cHTTP._CouleurOrchid					
+      		cas "fuchsia"							: renvoyer cHTTP._CouleurFuchsia					
+      		cas "magenta"							: renvoyer cHTTP._CouleurMagenta					
+      		cas "mediumorchid"						: renvoyer cHTTP._CouleurMediumOrchid			
+      		cas "mediumpurple"						: renvoyer cHTTP._CouleurMediumPurple			
+      		cas "blueviolet"						: renvoyer cHTTP._CouleurBlueViolet				
+      		cas "darkviolet"						: renvoyer cHTTP._CouleurDarkViolet				
+      		cas "darkorchid"						: renvoyer cHTTP._CouleurDarkOrchid				
+      		cas "darkmagenta"						: renvoyer cHTTP._CouleurDarkMagenta				
+      		cas "purple"							: renvoyer cHTTP._CouleurPurple					
+      		cas "indigo"							: renvoyer cHTTP._CouleurIndigo					
+      		cas "slateblue"							: renvoyer cHTTP._CouleurSlateBlue				
+      		cas "darkslateblue"						: renvoyer cHTTP._CouleurDarkSlateBlue			
+      		cas "rosybrown"							: renvoyer cHTTP._CouleurRosyBrown				
+      		cas "mediumslateblue"					: renvoyer cHTTP._CouleurMediumSlateBlue			
+      		cas "greenyellow"						: renvoyer cHTTP._CouleurGreenYellow				
+      		cas "chartreuse"						: renvoyer cHTTP._CouleurChartreuse				
+      		cas "lawngreen"							: renvoyer cHTTP._CouleurLawnGreen				
+      		cas "lime"								: renvoyer cHTTP._CouleurLime					
+      		cas "limegreen"							: renvoyer cHTTP._CouleurLimeGreen				
+      		cas "palegreen"							: renvoyer cHTTP._CouleurPaleGreen				
+      		cas "lightgreen"						: renvoyer cHTTP._CouleurLightGreen				
+      		cas "mediumspringgreen"					: renvoyer cHTTP._CouleurMediumSpringGreen		
+      		cas "springgreen"						: renvoyer cHTTP._CouleurSpringGreen				
+      		cas "mediumseagreen"					: renvoyer cHTTP._CouleurMediumSeaGreen			
+      		cas "seagreen"							: renvoyer cHTTP._CouleurSeaGreen				
+      		cas "forestgreen"						: renvoyer cHTTP._CouleurForestGreen				
+      		cas "green"								: renvoyer cHTTP._CouleurGreen					
+      		cas "darkgreen"							: renvoyer cHTTP._CouleurDarkGreen				
+      		cas "yellowgreen"						: renvoyer cHTTP._CouleurYellowGreen				
+      		cas "olivedrab"							: renvoyer cHTTP._CouleurOliveDrab				
+      		cas "olive"								: renvoyer cHTTP._CouleurOlive					
+      		cas "darkolivegreen"					: renvoyer cHTTP._CouleurDarkOliveGreen			
+      		cas "mediumaquamarine"					: renvoyer cHTTP._CouleurMediumAquamarine		
+      		cas "darkseagreen"						: renvoyer cHTTP._CouleurDarkSeaGreen			
+      		cas "lightseagreen"						: renvoyer cHTTP._CouleurLightSeaGreen			
+      		cas "darkcyan"							: renvoyer cHTTP._CouleurDarkCyan				
+      		cas "teal"								: renvoyer cHTTP._CouleurTeal					
+      		cas "aqua"								: renvoyer cHTTP._CouleurAqua					
+      		cas "cyan"								: renvoyer cHTTP._CouleurCyan					
+      		cas "lightcyan"							: renvoyer cHTTP._CouleurLightCyan				
+      		cas "paleturquoise"						: renvoyer cHTTP._CouleurPaleTurquoise			
+      		cas "aquamarine"						: renvoyer cHTTP._CouleurAquamarine				
+      		cas "turquoise"							: renvoyer cHTTP._CouleurTurquoise				
+      		cas "mediumturquoise"					: renvoyer cHTTP._CouleurMediumTurquoise			
+      		cas "darkturquoise"						: renvoyer cHTTP._CouleurDarkTurquoise			
+      		cas "cadetblue"							: renvoyer cHTTP._CouleurCadetBlue				
+      		cas "steelblue"							: renvoyer cHTTP._CouleurSteelBlue				
+      		cas "lightsteelblue"					: renvoyer cHTTP._CouleurLightSteelBlue			
+      		cas "powderblue"						: renvoyer cHTTP._CouleurPowderBlue				
+      		cas "lightblue"							: renvoyer cHTTP._CouleurLightBlue				
+      		cas "skyblue"							: renvoyer cHTTP._CouleurSkyBlue					
+      		cas "lightskyblue"						: renvoyer cHTTP._CouleurLightSkyBlue			
+      		cas "deepskyblue"						: renvoyer cHTTP._CouleurDeepSkyBlue				
+      		cas "dodgerblue"						: renvoyer cHTTP._CouleurDodgerBlue				
+      		cas "cornflowerblue"					: renvoyer cHTTP._CouleurCornflowerBlue			
+      		cas "royalblue"							: renvoyer cHTTP._CouleurRoyalBlue				
+      		cas "blue"								: renvoyer cHTTP._CouleurBlue					
+      		cas "mediumblue"						: renvoyer cHTTP._CouleurMediumBlue				
+      		cas "darkblue"							: renvoyer cHTTP._CouleurDarkBlue				
+      		cas "navy"								: renvoyer cHTTP._CouleurNavy					
+      		cas "midnightblue"						: renvoyer cHTTP._CouleurMidnightBlue			
+      		cas "cornsilk"							: renvoyer cHTTP._CouleurCornsilk				
+      		cas "blanchedalmond"					: renvoyer cHTTP._CouleurBlanchedAlmond			
+      		cas "bisque"							: renvoyer cHTTP._CouleurBisque					
+      		cas "navajowhite"						: renvoyer cHTTP._CouleurNavajoWhite				
+      		cas "wheat"								: renvoyer cHTTP._CouleurWheat					
+      		cas "burlywood"							: renvoyer cHTTP._CouleurBurlyWood				
+      		cas "tan"								: renvoyer cHTTP._CouleurTan						
+      		cas "sandybrown"						: renvoyer cHTTP._CouleurSandyBrown				
+      		cas "goldenrod"							: renvoyer cHTTP._CouleurGoldenrod				
+      		cas "darkgoldenrod"						: renvoyer cHTTP._CouleurDarkGoldenrod			
+      		cas "peru"								: renvoyer cHTTP._CouleurPeru					
+      		cas "chocolate"							: renvoyer cHTTP._CouleurChocolate				
+      		cas "saddlebrown"						: renvoyer cHTTP._CouleurSaddleBrown				
+      		cas "sienna"							: renvoyer cHTTP._CouleurSienna					
+      		cas "brown"								: renvoyer cHTTP._CouleurBrown					
+      		cas "white"								: renvoyer cHTTP._CouleurWhite					
+      		cas "snow"								: renvoyer cHTTP._CouleurSnow					
+      		cas "honeydew"							: renvoyer cHTTP._CouleurHoneydew				
+      		cas "mintcream"							: renvoyer cHTTP._CouleurMintCream				
+      		cas "azure"								: renvoyer cHTTP._CouleurAzure					
+      		cas "aliceblue"							: renvoyer cHTTP._CouleurAliceBlue				
+      		cas "ghostwhite"						: renvoyer cHTTP._CouleurGhostWhite				
+      		cas "whitesmoke"						: renvoyer cHTTP._CouleurWhiteSmoke				
+      		cas "seashell"							: renvoyer cHTTP._CouleurSeashell				
+      		cas "beige"								: renvoyer cHTTP._CouleurBeige					
+      		cas "oldlace"							: renvoyer cHTTP._CouleurOldLace					
+      		cas "floralwhite"						: renvoyer cHTTP._CouleurFloralWhite				
+      		cas "ivory"								: renvoyer cHTTP._CouleurIvory					
+      		cas "antiquewhite"						: renvoyer cHTTP._CouleurAntiqueWhite			
+      		cas "linen"								: renvoyer cHTTP._CouleurLinen					
+      		cas "lavenderblush"						: renvoyer cHTTP._CouleurLavenderBlush			
+      		cas "mistyrose"							: renvoyer cHTTP._CouleurMistyRose				
+      		cas "gainsboro"							: renvoyer cHTTP._CouleurGainsboro				
+      		cas "lightgrey"							: renvoyer cHTTP._CouleurLightGrey				
+      		cas "silver"							: renvoyer cHTTP._CouleurSilver					
+      		cas "darkgray"							: renvoyer cHTTP._CouleurDarkGray				
+      		cas "gray"								: renvoyer cHTTP._CouleurGray					
+      		cas "dimgray"							: renvoyer cHTTP._CouleurDimGray					
+      		cas "lightslategray"					: renvoyer cHTTP._CouleurLightSlateGray			
+      		cas "slategray"							: renvoyer cHTTP._CouleurSlateGray				
+      		cas "darkslategray"						: renvoyer cHTTP._CouleurDarkSlateGray			
+      		cas "black"								: renvoyer cHTTP._CouleurBlack					
+      	fin
+      FIN
+     type : 458752
+   -
+     name : RVBVersHTML
+     procedure_id : 2017667291148923114
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction convertit une valeur RVB (Rouge, Vert, Bleu) spécifiée en tant qu'entier en une représentation de couleur au format HTML (hexadécimal).
+      //	Cette fonction a été surchargée car elle n'existe pas sur toutes les plateformes
+      // Syntaxe : [ <Résultat> = ] RVBVersHTML (<nCouleurRVB> est entier)
+      // Paramètres :
+      //	nCouleurRVB (entier) : Un entier représentant la couleur en format RVB.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne de caractères représentant la couleur en format HTML.
+      // Exemple :
+      //	sCouleurHTML est une chaîne = RVBVersHTML(16753920)
+      //
+      PROCEDURE RVBVersHTML(nCouleurRVB est un entier) : chaine
+      SI nCouleurRVB=-1 ALORS
+      	RENVOYER ""
+      SINON
+      	nRouge est un entier 	= ETBinaire(nCouleurRVB,255)
+      	nVert est un entier 	= ETBinaire(nCouleurRVB,65280)/256
+      	nBleu est un entier 	= ETBinaire(nCouleurRVB,16711680)/65536
+      	
+      	RENVOYER "#"+NumériqueVersChaîne(nRouge,"02X")+NumériqueVersChaîne(nVert,"02X")+NumériqueVersChaîne(nBleu,"02X")
+      fin
+     type : 458752
+   -
+     name : ChargeHTMLVsTexte
+     procedure_id : 2024366181474881201
+     type_code : 15
+     code : |1-
+      // Résumé : Met dans des tableaux associatifs toutes les correspondances de caractères spéciaux et leur code HTML
+      //	Cette procédure privée est utilisée pour améliorer la rapidité de la fonction HTMLVersTexte()
+      PROCEDURE privé ChargeHTMLVsTexte(bHTMLVersTexte est un booleen)
+      si bHTMLVersTexte _Et_ gtaHTMLVersTexte..occurrence=0 alors
+      	gtaHTMLVersTexte["quot"]=""""
+      	gtaHTMLVersTexte["nbsp"]=Caract(160)
+      	gtaHTMLVersTexte["amp"]="&"
+      	gtaHTMLVersTexte["#39"]="'"
+      	gtaHTMLVersTexte["lt"]="<"
+      	gtaHTMLVersTexte["gt"]=">"
+      	gtaHTMLVersTexte["tilde"]="~"
+      	gtaHTMLVersTexte["euro"]="€"
+      	gtaHTMLVersTexte["sbquo"]="‚"
+      	gtaHTMLVersTexte["fnof"]="ƒ"
+      	gtaHTMLVersTexte["bdquo"]="„"
+      	gtaHTMLVersTexte["hellip"]="…"
+      	gtaHTMLVersTexte["dagger"]="†"
+      	gtaHTMLVersTexte["Dagger"]="‡"
+      	gtaHTMLVersTexte["circ"]="ˆ"
+      	gtaHTMLVersTexte["permil"]="‰"
+      	gtaHTMLVersTexte["Scaron"]="Š"
+      	gtaHTMLVersTexte["lsaquo"]="‹"
+      	gtaHTMLVersTexte["OElig"]="Œ"
+      	gtaHTMLVersTexte["lsquo"]="‘"
+      	gtaHTMLVersTexte["rsquo"]="’"
+      	gtaHTMLVersTexte["ldquo"]="“"
+      	gtaHTMLVersTexte["rdquo"]="”"
+      	gtaHTMLVersTexte["bull"]="•"
+      	gtaHTMLVersTexte["ndash"]="–"
+      	gtaHTMLVersTexte["mdash"]="—"
+      	gtaHTMLVersTexte["tilde"]="˜"
+      	gtaHTMLVersTexte["trade"]="™"
+      	gtaHTMLVersTexte["scaron"]="š"
+      	gtaHTMLVersTexte["rsaquo"]="›"
+      	gtaHTMLVersTexte["oelig"]="œ"
+      	gtaHTMLVersTexte["Yuml"]="Ÿ"
+      	gtaHTMLVersTexte["iexcl"]="¡"
+      	gtaHTMLVersTexte["cent"]="¢"
+      	gtaHTMLVersTexte["pound"]="£"
+      	gtaHTMLVersTexte["curren"]="¤"
+      	gtaHTMLVersTexte["yen"]="¥"
+      	gtaHTMLVersTexte["brvbar"]="¦"
+      	gtaHTMLVersTexte["sect"]="§"
+      	gtaHTMLVersTexte["uml"]="¨"
+      	gtaHTMLVersTexte["copy"]="©"
+      	gtaHTMLVersTexte["ordf"]="ª"
+      	gtaHTMLVersTexte["laquo"]="«"
+      	gtaHTMLVersTexte["not"]="¬"
+      	gtaHTMLVersTexte["shy"]="­"
+      	gtaHTMLVersTexte["reg"]="®"
+      	gtaHTMLVersTexte["macr"]="¯"
+      	gtaHTMLVersTexte["deg"]="°"
+      	gtaHTMLVersTexte["plusmn"]="±"
+      	gtaHTMLVersTexte["sup2"]="²"
+      	gtaHTMLVersTexte["sup3"]="³"
+      	gtaHTMLVersTexte["acute"]="´"
+      	gtaHTMLVersTexte["micro"]="µ"
+      	gtaHTMLVersTexte["para"]="¶"
+      	gtaHTMLVersTexte["middot"]="·"
+      	gtaHTMLVersTexte["cedil"]="¸"
+      	gtaHTMLVersTexte["sup1"]="¹"
+      	gtaHTMLVersTexte["ordm"]="º"
+      	gtaHTMLVersTexte["raquo"]="»"
+      	gtaHTMLVersTexte["frac14"]="¼"
+      	gtaHTMLVersTexte["frac12"]="½"
+      	gtaHTMLVersTexte["frac34"]="¾"
+      	gtaHTMLVersTexte["iquest"]="¿"
+      	gtaHTMLVersTexte["Agrave"]="À"
+      	gtaHTMLVersTexte["Aacute"]="Á"
+      	gtaHTMLVersTexte["Acirc"]="Â"
+      	gtaHTMLVersTexte["Atilde"]="Ã"
+      	gtaHTMLVersTexte["Auml"]="Ä"
+      	gtaHTMLVersTexte["Aring"]="Å"
+      	gtaHTMLVersTexte["AElig"]="Æ"
+      	gtaHTMLVersTexte["Ccedil"]="Ç"
+      	gtaHTMLVersTexte["Egrave"]="È"
+      	gtaHTMLVersTexte["Eacute"]="É"
+      	gtaHTMLVersTexte["Ecirc"]="Ê"
+      	gtaHTMLVersTexte["Euml"]="Ë"
+      	gtaHTMLVersTexte["Igrave"]="Ì"
+      	gtaHTMLVersTexte["Iacute"]="Í"
+      	gtaHTMLVersTexte["Icirc"]="Î"
+      	gtaHTMLVersTexte["Iuml"]="Ï"
+      	gtaHTMLVersTexte["ETH"]="Ð"
+      	gtaHTMLVersTexte["Ntilde"]="Ñ"
+      	gtaHTMLVersTexte["Ograve"]="Ò"
+      	gtaHTMLVersTexte["Oacute"]="Ó"
+      	gtaHTMLVersTexte["Ocirc"]="Ô"
+      	gtaHTMLVersTexte["Otilde"]="Õ"
+      	gtaHTMLVersTexte["Ouml"]="Ö"
+      	gtaHTMLVersTexte["times"]="×"
+      	gtaHTMLVersTexte["Oslash"]="Ø"
+      	gtaHTMLVersTexte["Ugrave"]="Ù"
+      	gtaHTMLVersTexte["Uacute"]="Ú"
+      	gtaHTMLVersTexte["Ucirc"]="Û"
+      	gtaHTMLVersTexte["Uuml"]="Ü"
+      	gtaHTMLVersTexte["Yacute"]="Ý"
+      	gtaHTMLVersTexte["THORN"]="Þ"
+      	gtaHTMLVersTexte["szlig"]="ß"
+      	gtaHTMLVersTexte["agrave"]="à"
+      	gtaHTMLVersTexte["aacute"]="á"
+      	gtaHTMLVersTexte["acirc"]="â"
+      	gtaHTMLVersTexte["atilde"]="ã"
+      	gtaHTMLVersTexte["auml"]="ä"
+      	gtaHTMLVersTexte["aring"]="å"
+      	gtaHTMLVersTexte["aelig"]="æ"
+      	gtaHTMLVersTexte["ccedil"]="ç"
+      	gtaHTMLVersTexte["egrave"]="è"
+      	gtaHTMLVersTexte["eacute"]="é"
+      	gtaHTMLVersTexte["ecirc"]="ê"
+      	gtaHTMLVersTexte["euml"]="ë"
+      	gtaHTMLVersTexte["igrave"]="ì"
+      	gtaHTMLVersTexte["iacute"]="í"
+      	gtaHTMLVersTexte["icirc"]="î"
+      	gtaHTMLVersTexte["iuml"]="ï"
+      	gtaHTMLVersTexte["eth"]="ð"
+      	gtaHTMLVersTexte["ntilde"]="ñ"
+      	gtaHTMLVersTexte["ograve"]="ò"
+      	gtaHTMLVersTexte["oacute"]="ó"
+      	gtaHTMLVersTexte["ocirc"]="ô"
+      	gtaHTMLVersTexte["otilde"]="õ"
+      	gtaHTMLVersTexte["ouml"]="ö"
+      	gtaHTMLVersTexte["divide"]="÷"
+      	gtaHTMLVersTexte["oslash"]="ø"
+      	gtaHTMLVersTexte["ugrave"]="ù"
+      	gtaHTMLVersTexte["uacute"]="ú"
+      	gtaHTMLVersTexte["ucirc"]="û"
+      	gtaHTMLVersTexte["uuml"]="ü"
+      	gtaHTMLVersTexte["yacute"]="ý"
+      	gtaHTMLVersTexte["thorn"]="þ"
+      	gtaHTMLVersTexte["yuml"]="ÿ"
+      sinon si pas bHTMLVersTexte _Et_ gtaTexteversHTML..occurrence=0 alors
+      	gtaTexteversHTML[""""]="quot"
+      	gtaTexteversHTML[caract(160)]="nbsp"
+      	gtaTexteversHTML["&"]="amp"
+      	gtaTexteversHTML["'"]="#39"
+      	gtaTexteversHTML["<"]="lt";gtaTexteversHTML[">"]="gt"
+      	gtaTexteversHTML["^"]="circ"
+      	gtaTexteversHTML["~"]="tilde"
+      	gtaTexteversHTML["€"]="euro"
+      	gtaTexteversHTML["‚"]="sbquo"
+      	gtaTexteversHTML["ƒ"]="fnof"
+      	gtaTexteversHTML["„"]="bdquo"
+      	gtaTexteversHTML["…"]="hellip"
+      	gtaTexteversHTML["†"]="dagger";gtaTexteversHTML["‡"]="Dagger"
+      	gtaTexteversHTML["‰"]="permil"
+      	gtaTexteversHTML["Š"]="Scaron"
+      	gtaTexteversHTML["‹"]="lsaquo"
+      	gtaTexteversHTML["Œ"]="OElig"
+      	gtaTexteversHTML["‘"]="lsquo"
+      	gtaTexteversHTML["’"]="rsquo"
+      	gtaTexteversHTML["“"]="ldquo"
+      	gtaTexteversHTML["”"]="rdquo"
+      	gtaTexteversHTML["•"]="bull"
+      	gtaTexteversHTML["–"]="ndash"
+      	gtaTexteversHTML["—"]="mdash"
+      	gtaTexteversHTML["˜"]="tilde"
+      	gtaTexteversHTML["™"]="trade"
+      	gtaTexteversHTML["š"]="scaron"
+      	gtaTexteversHTML["›"]="rsaquo"
+      	gtaTexteversHTML["œ"]="oelig"
+      	gtaTexteversHTML["Ÿ"]="Yuml"
+      	gtaTexteversHTML["¡"]="iexcl"
+      	gtaTexteversHTML["¢"]="cent"
+      	gtaTexteversHTML["£"]="pound"
+      	gtaTexteversHTML["¤"]="curren"
+      	gtaTexteversHTML["¥"]="yen"
+      	gtaTexteversHTML["¦"]="brvbar"
+      	gtaTexteversHTML["§"]="sect"
+      	gtaTexteversHTML["¨"]="uml"
+      	gtaTexteversHTML["©"]="copy"
+      	gtaTexteversHTML["ª"]="ordf"
+      	gtaTexteversHTML["«"]="laquo"
+      	gtaTexteversHTML["¬"]="not"
+      	gtaTexteversHTML["­"]="shy"
+      	gtaTexteversHTML["®"]="reg"
+      	gtaTexteversHTML["¯"]="macr"
+      	gtaTexteversHTML["°"]="deg"
+      	gtaTexteversHTML["±"]="plusmn"
+      	gtaTexteversHTML["²"]="sup2"
+      	gtaTexteversHTML["³"]="sup3"
+      	gtaTexteversHTML["´"]="acute"
+      	gtaTexteversHTML["µ"]="micro"
+      	gtaTexteversHTML["¶"]="para"
+      	gtaTexteversHTML["·"]="middot"
+      	gtaTexteversHTML["¸"]="cedil"
+      	gtaTexteversHTML["¹"]="sup1"
+      	gtaTexteversHTML["º"]="ordm"
+      	gtaTexteversHTML["»"]="raquo"
+      	gtaTexteversHTML["¼"]="frac14"
+      	gtaTexteversHTML["½"]="frac12"
+      	gtaTexteversHTML["¾"]="frac34"
+      	gtaTexteversHTML["¿"]="iquest"
+      	gtaTexteversHTML["À"]="Agrave"
+      	gtaTexteversHTML["Á"]="Aacute"
+      	gtaTexteversHTML["Â"]="Acirc"
+      	gtaTexteversHTML["Ã"]="Atilde"
+      	gtaTexteversHTML["Ä"]="Auml"
+      	gtaTexteversHTML["Å"]="Aring"
+      	gtaTexteversHTML["Æ"]="AElig"
+      	gtaTexteversHTML["Ç"]="Ccedil"
+      	gtaTexteversHTML["È"]="Egrave"
+      	gtaTexteversHTML["É"]="Eacute"
+      	gtaTexteversHTML["Ê"]="Ecirc"
+      	gtaTexteversHTML["Ë"]="Euml"
+      	gtaTexteversHTML["Ì"]="Igrave"
+      	gtaTexteversHTML["Í"]="Iacute"
+      	gtaTexteversHTML["Î"]="Icirc"
+      	gtaTexteversHTML["Ï"]="Iuml"
+      	gtaTexteversHTML["Ð"]="ETH"
+      	gtaTexteversHTML["Ñ"]="Ntilde"
+      	gtaTexteversHTML["Ò"]="Ograve"
+      	gtaTexteversHTML["Ó"]="Oacute"
+      	gtaTexteversHTML["Ô"]="Ocirc"
+      	gtaTexteversHTML["Õ"]="Otilde"
+      	gtaTexteversHTML["Ö"]="Ouml"
+      	gtaTexteversHTML["×"]="times"
+      	gtaTexteversHTML["Ø"]="Oslash"
+      	gtaTexteversHTML["Ù"]="Ugrave"
+      	gtaTexteversHTML["Ú"]="Uacute"
+      	gtaTexteversHTML["Û"]="Ucirc"
+      	gtaTexteversHTML["Ü"]="Uuml"
+      	gtaTexteversHTML["Ý"]="Yacute"
+      	gtaTexteversHTML["Þ"]="THORN"
+      	gtaTexteversHTML["ß"]="szlig"
+      	gtaTexteversHTML["à"]="agrave"
+      	gtaTexteversHTML["á"]="aacute"
+      	gtaTexteversHTML["â"]="acirc"
+      	gtaTexteversHTML["ã"]="atilde"
+      	gtaTexteversHTML["ä"]="auml"
+      	gtaTexteversHTML["å"]="aring"
+      	gtaTexteversHTML["æ"]="aelig"
+      	gtaTexteversHTML["ç"]="ccedil"
+      	gtaTexteversHTML["è"]="egrave"
+      	gtaTexteversHTML["é"]="eacute"
+      	gtaTexteversHTML["ê"]="ecirc"
+      	gtaTexteversHTML["ë"]="euml"
+      	gtaTexteversHTML["ì"]="igrave"
+      	gtaTexteversHTML["í"]="iacute"
+      	gtaTexteversHTML["î"]="icirc"
+      	gtaTexteversHTML["ï"]="iuml"
+      	gtaTexteversHTML["ð"]="eth"
+      	gtaTexteversHTML["ñ"]="ntilde"
+      	gtaTexteversHTML["ò"]="ograve"
+      	gtaTexteversHTML["ó"]="oacute"
+      	gtaTexteversHTML["ô"]="ocirc"
+      	gtaTexteversHTML["õ"]="otilde"
+      	gtaTexteversHTML["ö"]="ouml"
+      	gtaTexteversHTML["÷"]="divide"
+      	gtaTexteversHTML["ø"]="oslash"
+      	gtaTexteversHTML["ù"]="ugrave"
+      	gtaTexteversHTML["ú"]="uacute"
+      	gtaTexteversHTML["û"]="ucirc"
+      	gtaTexteversHTML["ü"]="uuml"
+      	gtaTexteversHTML["ý"]="yacute"
+      	gtaTexteversHTML["þ"]="thorn"
+      	gtaTexteversHTML["ÿ"]="yuml"
+      FIN
+     type : 458752
+   -
+     name : fFichierTempSupprimeTout
+     procedure_id : 2189557706198688730
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure a pour objectif de supprimer tous les fichiers temporaires référencés dans une table globale gtabFichierTemp. Elle parcourt la table globale, vérifie l'existence de chaque fichier temporaire, et le supprime s'il existe.
+      // Syntaxe : fFichierTempSupprimeTout ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	fFichierTempSupprimeTout()
+      //
+      PROCEDURE fFichierTempSupprimeTout()
+      POUR TOUTE sFichierTemp de gtabFichierTemp
+      	SI fFichierExiste(sFichierTemp) ALORS fSupprime(sFichierTemp)
+      FIN
+     type : 458752
+   -
+     name : Arrondi
+     procedure_id : 2200267856071705542
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure permet d'arrondir une valeur monétaire (moValeur) à un nombre spécifié de décimales (nNbDécimales). Cette fonction est surchargée car elle n'existe pas sous iOS !
+      // Syntaxe : [ <Résultat> = ] Arrondi (<xValeur> [, <nNbDécimales> est entier])
+      // Paramètres :
+      //	xValeur : La valeur (monétaire ou réel) à arrondir.
+      //	nNbDécimales (entier - valeur par défaut=0) : Le nombre de décimales auquel la valeur doit être arrondie. Par défaut, il est égal à 0.
+      // Valeur de retour : entier ou réel selon le nombre de décimales choisies
+      // Exemple :
+      //	moMontant est un monétaire = Arrondi(123.456789,2)
+      //	moMontant contiendra 12.345
+      //
+      PROCEDURE Arrondi(xValeur, nNbDécimales est un entier = 0)
+      renvoyer partieentiere(xValeur*puissance(10,nNbDécimales))/Puissance(10,nNbDécimales)
+     type : 458752
+   -
+     name : gVersTexte
+     procedure_id : 2233741941535359983
+     type_code : 15
+     code : |1+
+      // Résumé : La procédure est conçue pour convertir une chaîne de caractères formatée selon des balises spécifiques en une version textuelle épurée. Elle prend en compte différentes options pour exclure certains éléments graphiques de la chaîne.
+      //	Cette fonction est surchargée pour permettre d'éliminer des éléments graphiques et pas d'autres (la fonction standard supprime tous les éléments graphiques)
+      // Syntaxe : [ <Résultat> = ] gVersTexte (<sChaine> est chaîne [, <coEnlever> est COL_PCS.COChaineGraphique])
+      // Paramètres :
+      //	sChaine (chaîne UNICODE) : La chaîne de caractères à traiter, contenant des balises spécifiques.
+      //	coEnlever (COL_PCS.COChaineGraphique optionnel) : Un ensemble d'options (COChaineGraphique) déterminant quels éléments graphiques doivent être exclus de la chaîne résultante. Par défaut, elle inclut plusieurs catégories telles que le cardage, les cercles, les coordonnées, etc.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne de caractères où les éléments spécifiés par les options coEnlever ont été éliminés.
+      //
+      // Exemple :
+      //	sChaineOriginale est une chaîne = gPolice("Arial")+"Texte"+gRectangle(0,0,100,50,CyanClair,noir)+"Rectangle"
+      //	sChaineTraitee est une chaîne = gVersTexte(sChaineOriginale)
+      //	La valeur de sChaineTraitee sera "TexteRectangle"
+      //
+      PROCEDURE gVersTexte(local sChaine est une chaine,coEnlever est un COChaineGraphique = cgCardage+cgCercle+cgCoordonnées+cgFond+cgStylo+cgDégradé+cgHyperlien+cgImage+cgLien+cgLigne+cgPolice+cgRectangle+cgPoliceTaille+cgRécupérer+cgPoliceGras+cgPoliceItalique+cgPoliceSouligné+cgPoliceBarré) : chaîne
+      nFin,nPosition sont des entiers
+      SI coEnlever[cgPoliceGras] 		ALORS sChaine=Remplace(sChaine,[ESC+"PG+",ESC+"PG-"],"")
+      SI coEnlever[cgPoliceItalique]	ALORS sChaine=Remplace(sChaine,[ESC+"PI+",ESC+"PI-"],"")
+      SI coEnlever[cgPoliceSouligné] 	ALORS sChaine=Remplace(sChaine,[ESC+"PS+",ESC+"PS-"],"")
+      SI coEnlever[cgPoliceBarré] 	ALORS sChaine=Remplace(sChaine,[ESC+"PB+",ESC+"PB-"],"")
+      SI coEnlever[cgLien] 			ALORS sChaine=SupprimeTag(sChaine,ESC+"V",ESC+"V")			//<ESC>VBateau<ESC>VTest
+      SI coEnlever[cgLien] 			ALORS sChaine=SupprimeTag(sChaine,ESC+"K",ESC+"K")			//"Monsieur<ESC>K1<ESC>K"
+      SI coEnlever[cgPoliceTaille] 	ALORS sChaine=SupprimeTag(sChaine,ESC+"PT",ESC+"PT")		//<ESC>PT12.000000TTest<ESC>PT8.000000T
+      SI coEnlever[cgCercle] 			ALORS sChaine=SupprimeTag(sChaine,ESC+"E(",")")				//<ESC>E(0,0,25,18,V,J)Test
+      SI coEnlever[cgDégradé] 		ALORS sChaine=SupprimeTag(sChaine,ESC+"A(",")")				//<ESC>A(255,65280,0,2)Jaune
+      SI coEnlever[cgLigne] 			ALORS sChaine=SupprimeTag(sChaine,ESC+"D(",")")				//<ESC>D(0,0,25,18,V)
+      SI coEnlever[cgPolice] 			ALORS sChaine=SupprimeTag(sChaine,ESC+"P(",")")				//"<ESC>P(Arial)Poussin"
+      SI coEnlever[cgRectangle] 		ALORS sChaine=SupprimeTag(sChaine,ESC+"R(",")")				//un <ESC>R(0,0,25,18,V,J)tutu
+      SI coEnlever[cgImage] 			ALORS sChaine=SupprimeTag(sChaine,ESC+"BN","]")				//<ESC>BNC:\Temp\play_24_1.png[]Image
+      SI coEnlever[cgFond] 			ALORS sChaine=SupprimeCouleur(sChaine,ESC+"F")				//<ESC>FJJaune
+      SI coEnlever[cgStylo] 			ALORS sChaine=SupprimeCouleur(sChaine,ESC+"T")				//<ESC>TJJaune
+      SI coEnlever[cgCardage] ALORS	//<ESC>CGB(<30>toto<30>,4390939,,4325447)Test
+      	nPosition = Position(sChaine,ESC+"C")	
+      	TANTQUE nPosition>0
+      		SI sChaine[nPosition+2] DANS ("D","C","G","X","H","V","B","Y") _ET_ Position(sChaine,"("+Caract(30),nPosition+3)>0 ALORS
+      			nFin=Position(sChaine,Caract(30),nPosition+2);nFin=Position(sChaine,")",nFin+1)
+      			SI nFin>0 ALORS sChaine=ChaîneSupprime(sChaine,nPosition,nFin)
+      			nPosition = Position(sChaine,ESC+"C")	
+      		SINON
+      			nPosition = Position(sChaine,ESC+"C",nPosition+2)	
+      		FIN
+      	FIN
+      FIN
+      SI coEnlever[cgCoordonnées] ALORS	//<ESC>X2<ESC>Y0002Relief18<ESC>X1<ESC>Y0001Test
+      	nPosition = Position(sChaine,ESC+"X")	
+      	TANTQUE nPosition>0
+      		nFin=Position(sChaine,ESC+"Y",nPosition+2)
+      		SI nFin>0 ALORS sChaine=ChaîneSupprime(sChaine,nPosition,nFin+5)
+      		nPosition = Position(sChaine,ESC+"X")
+      	FIN
+      FIN
+      RENVOYER sChaine
+      
+      	PROCÉDURE INTERNE SupprimeCouleur(LOCAL sLaChaine est une chaine,sTag est une chaine) : chaîne
+      	nPosition = Position(sLaChaine,sTag)	
+      	TANTQUE nPosition>0
+      		SI sLaChaine[nPosition+2 À nPosition+5]="RVB(" ALORS
+      			nFin=Position(sLaChaine,")",nPosition+6)
+      			SI nFin>0 ALORS sLaChaine=ChaîneSupprime(sLaChaine,nPosition,nFin-nPosition+1)
+      		SINON SI sLaChaine[nPosition+2] DANS ("W","b","B","C","c","G","g","S","J","j","M","m","N","R","r","T","V","v") ALORS 
+      			sLaChaine=ChaîneSupprime(sLaChaine,nPosition,3)
+      			nPosition = Position(sLaChaine,sTag)
+      		SINON
+      			nPosition = Position(sLaChaine,sTag,nPosition+2)
+      		FIN
+      	FIN
+      	RENVOYER sLaChaine
+      	FIN
+      
+      	PROCÉDURE INTERNE SupprimeTag(LOCAL sLaChaine est une chaine,sDébut est une chaine,sFin est une chaine) : chaine
+      	nPosition = Position(sLaChaine,sDébut)	
+      	TANTQUE nPosition>0
+      		nFin=Position(sLaChaine,sFin,nPosition+Taille(sDébut))
+      		SI nFin>0 ALORS sLaChaine=ChaîneSupprime(sLaChaine,nPosition,nFin-nPosition+Taille(sFin))
+      		nPosition = Position(sLaChaine,sDébut)
+      	FIN
+      	RENVOYER sLaChaine
+      	FIN
+     type : 458752
+   -
+     name : AnnéeEnCours
+     procedure_id : 2264417384109084130
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction permet de récupérer l'année en cours sous la forme d'un entier à quatre chiffres.
+      //	Cette fonction a été surchargée car elle n'est pas disponible sur toutes les plateformes
+      // Syntaxe : [ <Résultat> = ] AnnéeEnCours ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : entier : renvoie un entier représentant l'année actuelle du système.
+      // Exemple :
+      //	nAnnee est un entier = AnnéeEnCours()
+      //
+      //
+      //créée car pas dispo en PHP, WearOS et Windows Mobile !
+      PROCEDURE AnnéeEnCours() : entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp>
+      	renvoyer wl.anneeencours()
+      	
+      <sinon si CibleExécution=SitePHP ou CibleExécution=WindowsMobile>
+      	RENVOYER Val(Gauche(DateSys(),4))
+      	
+      <fin>
+      
+      
+      renvoyer 0
+     type : 458752
+   -
+     name : TableauVersCSV
+     procedure_id : 2295606341373350304
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction TableauVersCSV convertit un tableau en une chaîne de caractères au format CSV (Comma-Separated Values). Elle prend en charge un tableau d'éléments et génère une chaîne de texte où les éléments du tableau sont séparés par un séparateur spécifié. Si nElement est passé en paramètre, il est pris en priorité.
+      //	Cette fonction a été surchargée pour permettre de limiter le nombre d'éléments mais cette version est limitée aux tableaux à une dimension
+      // [ <Résultat> = ] TableauVersCSV (<xTableau> [, sSep est chaîne] [,nElements est entier]])
+      // Paramètres :
+      //	xTableau : Le tableau d'éléments à convertir en format CSV.
+      //	sSep (chaîne optionnel) : Le séparateur à utiliser entre les éléments du tableau. La valeur par défaut est le point-virgule ;.
+      //	nElements (entier optionnel) : Le nombre d'éléments à considérer dans le tableau. Si non spécifié (0 par défaut), tous les éléments du tableau seront pris en compte.	
+      // Valeur de retour : chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      // Exemple :
+      //	tabMonTableau est un tableau de chaînes = ["Apple", "Orange", "Banana", "Grapes"]
+      //	sResultat est une chaîne = TableauVersCSV(tabMonTableau)
+      //
+      
+      //
+      //cette fonction a été refaite pour pourvoir sérialiser les destinataires, les cc et cci de la variable Email
+      PROCEDURE TableauVersCSV(xTableau,sSep est une chaine = ";",nElements est un entier = 0)
+      sRes est une chaine
+      SI nElements<=1 ALORS nElements=xTableau..Occurrence
+      si nElements=0 alors renvoyer ""
+      POUR nElement = 1 _a_ nElements sRes+=[sSep]+xTableau[nElement]
+      RENVOYER sRes
+     type : 458752
+   -
+     name : SysRepAppData
+     procedure_id : 2295623048670260832
+     type_code : 15
+     code : |1-
+      // Résumé : Est utilisée pour renvoyer le répertoire d'application système associé à une application WinDev. Ce répertoire est souvent utilisé pour stocker des données spécifiques à l'application, telles que les fichiers de configuration, les fichiers de données ou d'autres ressources nécessaires au fonctionnement de l'application.
+      //	Cette fonction donne directement le répertoire de données qui est, en Java, le répertoire d'exécution
+      // Syntaxe : [ <Résultat> = ] SysRepAppData ()
+      // Paramètres :	Aucun
+      // Valeur de retour : chaîne UNICODE : renvoie le chemin du répertoire d'application système associé à l'application. Cette valeur peut être utilisée pour accéder et manipuler des fichiers et des ressources spécifiques à l'application.
+      // Exemple :
+      //	sCheminAppData est une chaîne = SysRepAppData()
+      //
+      PROCEDURE SysRepAppData() : chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	RENVOYER SysRep(srAppData)
+      	
+      <sinon si CibleExécution=Java>
+      	RENVOYER fRepExe()
+      	
+      <fin>
+      
+      
+      renvoyer ""
+     type : 458752
+   -
+     name : TableColonnesTriées
+     procedure_id : 1222414157247784644
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction est utilisée pour obtenir une chaîne représentant les colonnes triées d'une table.
+      //	Cette fonction a été surchargée pour ajouter le nom de la table avant la colonne pour éviter des confusion (plusieurs tables qui ont le même nom de colonne dans la même fenêtre)
+      // Syntaxe : [ <Résultat> = ] TableColonnesTriées (<xTable>)
+      // Paramètres :
+      // 	xTable : Table à partir de laquelle les colonnes triées doivent être extraites.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne représentant les colonnes triées de la table spécifiée. Chaque colonne est précédée du nom complet de la table à laquelle elle appartient, suivi du nom de la colonne. Si la colonne est triée par ordre croissant, un "+" est ajouté devant le nom de la colonne. Si elle est triée par ordre décroissant, un "-" est ajouté.
+      // Exemple :
+      //	sColonnesTriées est une chaîne = TableColonnesTriées(MaTable)
+      //
+      PROCEDURE TableColonnesTriées(xTable) : chaîne
+      sRes		est une chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	sNomTable 	est une chaîne = NomComplet(xTable)
+      	sTri 		est une chaîne = WL.TableColonnesTriées(xTable)
+      	sColonne	est une chaine
+      	POUR TOUTE CHAÎNE sColonne DE sTri
+      		sColonne=SansEspace(sColonne)
+      		sRes+=[TAB]+(sColonne[1] DANS ("+","-") ? sColonne[1]+sNomTable+"."+sColonne[2 À] SINON sNomTable+"."+sColonne)
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER sRes
+     type : 458752
+   -
+     name : ChronoDébut
+     procedure_id : 1296751800521240065
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction est utilisée pour mesurer le temps écoulé entre deux points dans le code. Elle commence la mesure du temps et renvoie un indice unique associé à cette mesure. Cette fonction est utile pour évaluer la durée d'exécution d'une portion spécifique du code.
+      //	Cette fonction a été surchargée pour gérer facilement les numéro de chrono
+      // Syntaxe : [ <Résultat> = ] ChronoDébut ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : entier : renvoie un entier, représentant l'indice unique associé à la mesure du temps qui vient de commencer. Cet indice doit être utilisé ultérieurement avec la fonction WL.ChronoFin pour arrêter la mesure du temps.
+      // Exemple :
+      //	nIndiceChrono est un entier = ChronoDébut()
+      //	...
+      //	WL.ChronoFin(nIndiceChrono)
+      //
+      PROCEDURE ChronoDébut() : entier
+      gnIndiceChrono++;wl.ChronoDébut(gnIndiceChrono);renvoyer gnIndiceChrono
+     type : 458752
+   -
+     name : JourEnCours
+     procedure_id : 1420968781735608472
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction JourEnCours est utilisée pour obtenir le jour actuel à partir de la date système.
+      //	Cette fonction a été ajoutée car annéeEnCours() et MoisEnCours() existe mais pas JourEnCours() !
+      // Syntaxe : [ <Résultat> = ] JourEnCours ()
+      // Paramètres :
+      //	aucun
+      // Valeur de retour : entier : renvoie un entier représentant le jour en cours à partir de la date système.
+      // Exemple :
+      //	nJour est un entier = JourEnCours()
+      //
+      PROCEDURE JourEnCours() : entier
+      dDate est une date = DateSys()
+      RENVOYER dDate..Jour
+     type : 458752
+   -
+     name : PageHTMLVersTexte
+     procedure_id : 1487044300887378993
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction est utilisée pour extraire le contenu textuel d'une page HTML en éliminant les balises HTML, les scripts et en transformant les balises de saut de ligne en retours chariot.
+      // Syntaxe : [ <Résultat> = ] PageHTMLVersTexte (<sContenu> est chaîne ANSI)
+      // Paramètres :
+      //	sContenu (chaîne ANSI) : La chaîne de caractères représentant le contenu HTML de la page à traiter.
+      // Valeur de retour : chaîne ANSI : renvoie une chaîne ANSI contenant le texte extrait de la page HTML.
+      // Exemple :
+      //	sContenuHTML est une chaîne ANSI = "<html><body><p>Contenu de la page.</p></body></html>"
+      //	sTexte est une chaîne ANSI = PageHTMLVersTexte(sContenuHTML)
+      //
+      PROCEDURE PageHTMLVersTexte(sContenu est une chaine ansi) : chaine ansi	
+      sCaract,sRes 	sont des chaines
+      bBalise			est un booleen
+      n,m				sont des entiers
+      //ne prendre que ce qui a dans le body
+      n  = Position(sContenu,"<body ",0,SansCasse+DepuisDébut)
+      SI n>0 ALORS 
+      	m=Position(sContenu,"</body>",0,SansCasse+DepuisDébut)
+      	SI m>n ALORS sContenu=Gauche(sContenu,m-1);sContenu=Milieu(sContenu,Position(sContenu,">",n+1)+1)
+      FIN
+      //on enlève les scripts dans le body
+      n  = Position(sContenu,"<script",0,SansCasse+DepuisDébut)
+      TANTQUE n>0
+      	m=Position(sContenu,"</script>",n+8,SansCasse+DepuisDébut)
+      	SI m>n ALORS sContenu=Gauche(sContenu,n-1)+Milieu(sContenu,m+9)
+      	n  = Position(sContenu,"<script",0,SansCasse+DepuisDébut)
+      FIN
+      //transforme les retour chariot
+      sContenu=Remplace(sContenu,["<br>","</br>"],RC,SansCasse)
+      //on enlève toutes les balises
+      POUR n = 1 _À_ Taille(sContenu)
+      	sCaract=sContenu[[n]]
+      	SI sCaract="<" ALORS
+      		bBalise=Vrai
+      	SINON SI sCaract=">" ALORS
+      		bBalise=Faux
+      	SINON
+      		SI PAS bBalise ALORS sRes+=sCaract
+      	FIN
+      FIN
+      sContenu=sRes
+      
+      RENVOYER HTMLVersTexte(sContenu)
+     type : 458752
+   -
+     name : HASPVersion
+     procedure_id : 1516793750219436312
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction est utilisée pour récupérer la version du pilote HASP WinDev/WebDev/WinDev Mobile installés sur le système en interrogeant la base de registres.
+      // Syntaxe : [ <Résultat> = ] HASPVersion ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne représentant la version du pilote HASP installé.
+      // Exemple :
+      //	sVersionHASP est une chaîne = HASPVersion()
+      //
+      PROCEDURE HASPVersion() : chaine
+      sPCS est une chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	bExécute est un booleen
+      	sPCS = Registrelit("HKEY_LOCAL_MACHINE\SOFTWARE\Aladdin Knowledge Systems\HASP\Driver\Installer", "DrvPkgVersion", bExécute)
+      	si pas bExécute alors ErreurDéclenche(erreurpcs,<§@1b845284210c698d0005§>)
+      	
+      <fin>
+      
+      
+      renvoyer sPCS
+     type : 458752
+   -
+     name : JSONVersTableau
+     procedure_id : 1561996181143070846
+     type_code : 15
+     code : |1-
+      // Résumé : Procédure privée utilisée par JSONVersVariant()
+      PROCEDURE privé JSONVersTableau(sJSON est une chaine,nPosition est un entier)
+      vValeur est un Variant
+      nValeur est un entier
+      t est un entier = Taille(sJSON)
+      bGuillemetsOuverts est un booléen
+      sBuffer est une chaîne
+      POUR nPosition = nPosition+1 _a_ t
+      	SELON sJSON[[nPosition]]
+      		CAS "{"	: 
+      			sBuffer="";nValeur++;{"vValeur["+nValeur+"]",indVariable}=JSONVersValeurs(sJSON,nPosition)
+      		CAS "["	: 
+      			sBuffer="";nValeur++;{"vValeur["+nValeur+"]",indVariable}=JSONVersTableau(sJSON,nPosition)
+      		CAS "]"	:
+      			RENVOYER vValeur	//fin du tableau
+      		CAS "," : 
+      			SI sBuffer>"" ALORS
+      				SI PAS bGuillemetsOuverts ALORS
+      					SI sBuffer~="true" ALORS
+      						nValeur++;{"vValeur["+nValeur+"]",indVariable}=Vrai
+      					SINON SI sBuffer~="false" ALORS
+      						nValeur++;{"vValeur["+nValeur+"]",indVariable}=Faux
+      					SINON SI sBuffer~="null" ALORS
+      						nValeur++;{"vValeur["+nValeur+"]",indVariable}=Null
+      					SINON	
+      						nValeur++;{"vValeur["+nValeur+"]",indVariable}=Val(sBuffer)
+      					FIN
+      					sBuffer=""	//fin de la valeur
+      				SINON
+      					sBuffer+=sJSON[[nPosition]]
+      				FIN
+      			FIN
+      		CAS cGénérique._Guillemet	: 
+      			SI PAS bGuillemetsOuverts ALORS 
+      				sBuffer="";bGuillemetsOuverts=Vrai
+      			SINON
+      				nValeur++;{"vValeur["+nValeur+"]",indVariable}=Remplace(JSONdecode(sBuffer),Caract(5),cGénérique._Guillemet)
+      				sBuffer="";bGuillemetsOuverts=Faux
+      			FIN
+      		AUTRE CAS	: 
+      			sBuffer+=sJSON[[nPosition]]	//sinon ce sont des espaces inutiles entre les [ ou {
+      	FIN
+      FIN
+      RENVOYER vValeur
+     type : 458752
+   -
+     name : JSONVersValeurs
+     procedure_id : 1561996185438104147
+     type_code : 15
+     code : |1-
+      // Résumé : Procédure privée utilisée par JSONVersVariant()
+      PROCEDURE privé JSONVersValeurs(sJSON est une chaîne,nPosition est un entier)
+      sBuffer,sNom,sValeur 		sont des chaînes
+      vValeur 					est un Variant
+      t 							est un entier = Taille(sJSON)
+      bGuillemetsOuverts,bValeur 	sont des booleen
+      
+      POUR nPosition = nPosition+1 _À_ t
+      	SELON sJSON[[nPosition]]
+      		CAS "{" : 
+      			SI PAS bGuillemetsOuverts ALORS
+      				sBuffer=""
+      				SI sNom="" ALORS
+      					vValeur=JSONVersValeurs(sJSON,nPosition)
+      				SINON
+      					{"vValeur."+JSONDécode(sNom),indVariable}=JSONVersValeurs(sJSON,nPosition);sNom="";bValeur=Faux	//commencement d'autres valeurs
+      				FIN
+      			SINON
+      				sBuffer+=sJSON[[nPosition]] 
+      			FIN
+      		CAS "[" : 
+      			SI PAS bGuillemetsOuverts ALORS
+      				sBuffer=""
+      				SI sJSON[[nPosition+1]] ~= "]" ALORS //si tableau vide
+      					taTabTemp est un tableau de Variants
+      					{"vValeur."+JSONDécode(sNom),indVariable} = taTabTemp
+      				SINON
+      					{"vValeur."+JSONDécode(sNom),indVariable} = JSONVerstableau(sJSON,nPosition)
+      				FIN
+      				sNom="";bValeur=Faux
+      			SINON
+      				sBuffer+=sJSON[[nPosition]] 
+      			FIN
+      		CAS ":"	: 
+      			SI PAS bGuillemetsOuverts ALORS 
+      				bValeur=Vrai;sBuffer="" 
+      			SINON 
+      				sBuffer+=sJSON[[nPosition]] 
+      			FIN
+      		CAS ",","}" : 
+      			SI sBuffer>"" _ET_ bValeur ALORS
+      				SI PAS bGuillemetsOuverts ALORS
+      					SI sBuffer~="true" ALORS
+      						{"vValeur."+JSONDécode(sNom),indVariable}=Vrai
+      					SINON SI sBuffer~="false" ALORS
+      						{"vValeur."+JSONDécode(sNom),indVariable}=Faux
+      					SINON SI sBuffer~="null" ALORS
+      						{"vValeur."+JSONDécode(sNom),indVariable}=Null
+      					SINON	
+      						{"vValeur."+JSONDécode(sNom),indVariable}=Val(sBuffer)
+      					FIN
+      					sBuffer="";bValeur=Faux;sNom="";sValeur=""	//fin de la valeur
+      				SINON
+      					sBuffer+=sJSON[[nPosition]]
+      				FIN
+      			FIN
+      			SI sJSON[[nPosition]]="}" ALORS RENVOYER vValeur	//fin des valeurs
+      		CAS cGénérique._Guillemet	: 
+      			SI PAS bGuillemetsOuverts ALORS 
+      				sBuffer="";bGuillemetsOuverts=Vrai
+      			SINON
+      				SI sNom="" ALORS 
+      					sNom=sBuffer 
+      				SINON 
+      					{"vValeur."+JSONDécode(sNom),indVariable}=Remplace(JSONDécode(sBuffer),Caract(5),cGénérique._Guillemet)
+      					bValeur=Faux;sNom="";sValeur=""
+      				FIN
+      				sBuffer="";bGuillemetsOuverts=Faux
+      			FIN
+      		AUTRE CAS	: 
+      			sBuffer+=sJSON[[nPosition]]	//sinon ce sont des espaces inutiles entre les [ ou {
+      	FIN
+      FIN
+      RENVOYER vValeur	//il y a sans doute un espace qui traînait derrière la dernière }
+     type : 458752
+   -
+     name : TableauUnionTout
+     procedure_id : 1600937216303696539
+     type_code : 15
+     code : |1-
+      // Résumé : Réalise l'union de deux tableaux dynamiques en éliminant les doublons. Ils doivent être à une dimension et posséder les données de type identique. Les tableaux passés en paramètres ne sont pas modifiés. Cette fonction est disponible en WD26+.
+      // Syntaxe : [ <Résultat> = ] TableauUnionTout (<tab1> est tableau, <tab2> est tableau)
+      // Paramètres :
+      //	tab1 (tableau) : Premier tableau dynamique
+      //	tab2 (tableau) : Second tableau dynamique
+      // Valeur de retour : tableau : un nouveau tableau dynamique qui est l'union de tab1 et tab2, sans doublons.
+      // Exemple :
+      //	tab1 est un tableau dynamique = [1, 2, 3, 4, 5]
+      //	tab2 est un tableau dynamique = [3, 4, 5, 6, 7]
+      //	tabRes est un tableau dynamique = TableauUnionTout(tab1, tab2)
+      //	le contenu de tabRes sera [1, 2, 3, 4, 5, 6, 7]
+      //
+      PROCEDURE TableauUnionTout(tab1 est un tableau dynamique,tab2 est un tableau dynamique)
+      tabRes est un tableau dynamique = tab1
+      pour tout xValeur de tab2
+      	si tab1.Cherche(tcLinéaire,xValeur)<1 alors tabRes.ajoute(xValeur)
+      FIN
+      renvoyer tabRes
+     type : 458752
+   -
+     name : TableauUnion
+     procedure_id : 1600945551158258717
+     type_code : 15
+     code : |1-
+      // Résumé : Réalise l'union de deux tableaux dynamiques. Ils doivent être à une dimension et posséder les données de type identique. Les tableaux passés en paramètres ne sont pas modifiés. Cette fonction est disponible en WD26+.
+      // Syntaxe : [ <Résultat> = ] TableauUnion (<tab1> est tableau, <tab2> est tableau, <tab3> est tableau, <tab4> est tableau, <tab5> est tableau)
+      // Paramètres :
+      //	tab1 (tableau) : Premier tableau dynamique
+      //	tab2 (tableau) : Second tableau dynamique
+      //	tab3 (tableau) : Troisième tableau dynamique
+      //	tab4 (tableau) : Quatrième tableau dynamique
+      //	tab5 (tableau) : Cinquième tableau dynamique
+      // Valeur de retour : tableau : un nouveau tableau dynamique qui est l'union de tab1 et tab2 (et des autres tableaux si ils ne sont pas vides)
+      // Exemple :
+      //	tab1 est un tableau dynamique = [1, 2, 3, 4, 5]
+      //	tab2 est un tableau dynamique = [3, 4, 5, 6, 7]
+      //	tabRes est un tableau dynamique = TableauUnionTout(tab1, tab2)
+      //	le contenu de tabRes sera [1, 2, 3, 4, 5, 3, 4, 5, 6, 7]
+      //
+      PROCEDURE TableauUnion(tab1 est un tableau dynamique,tab2 est un tableau dynamique,tab3 est un tableau dynamique,tab4 est un tableau dynamique,tab5 est un tableau dynamique)
+      tabRes est un tableau dynamique = tab1
+      si tab2..occurrence>0 alors
+      	pour tout xValeur de tab2
+      		tabRes.ajoute(xValeur)
+      	FIN
+      FIN
+      si tab3..occurrence>0 alors
+      	POUR TOUT xValeur de tab3
+      		tabRes.Ajoute(xValeur)
+      	FIN
+      FIN
+      si tab4..occurrence>0 alors
+      	POUR TOUT xValeur de tab4
+      		tabRes.Ajoute(xValeur)
+      	FIN
+      FIN
+      si tab5..occurrence>0 alors
+      	POUR TOUT xValeur de tab5
+      		tabRes.Ajoute(xValeur)
+      	FIN
+      FIN
+      renvoyer tabRes
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1b845284210c698d
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text : {}
+     index : 0
+   -
+     text :
+      fr-FR : UUID sur 128 bits
+      en-GB : 128-bit UUID
+     index : 1
+   -
+     text :
+      fr-FR : UUID automatique sur 128 bits
+      en-GB : 128-bit automatic UUID
+     index : 2
+   -
+     text :
+      fr-FR : UUID sur 256 bits
+      en-GB : 256-bit UUID
+     index : 3
+   -
+     text :
+      fr-FR : UUID automatique sur 256 bits
+      en-GB : 256-bit automatic UUID
+     index : 4
+   -
+     text :
+      fr-FR : Le pilote HASP n'est pas installé
+      en-GB : HASP driver is not installed
+      fr-CA : Le pilote HASP n'est pas installé
+      en-US : HASP driver is not installed
+     index : 5
+   -
+     text :
+      fr-FR : Le nombre doit comporter max. 9 chiffres
+      en-GB : The number must include max. 9 digits
+      fr-CA : Le nombre doit comporter max. 9 chiffres
+      en-US : The number must include max. 9 digits
+     index : 6
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

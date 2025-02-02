@@ -1,0 +1,238 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cAPIAWS_Textract
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x157bab6f02e142ca
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet d'accéder aux service Textract de AWS (extraction de texte d'une image ou d'un document). Elle est basée sur cAPIAWS, elle-même héritant de cHTTPAPI (qui contient l'authentification à AWS)
+      
+      //https://docs.aws.amazon.com/textract/latest/dg/sync-calling.html
+      STAWSTextractPolygon est une structure
+      	x				est un reel
+      	y				est un reel
+      fin
+      STAWSTextractBoundingBox est une structure
+      	Height			est un réél
+      	Left			est un réél
+      	Top				est un réél
+      	Width			est un réel
+      fin
+      STAWSTextractRelationship est une structure
+      	Ids 			est un tableau de chaines
+      	Type			est une chaine
+      fin
+      STAWSTextractGeometry est une structure
+      	BoundingBox		est un STAWSTextractBoundingBox
+      	Polygon 		est un tableau de STAWSTextractPolygon
+      fin
+      STAWSTextractBlock est une structure
+      	BlockType		est une chaine
+      	Confidence		est un reel
+      	Geometry 		est	un STAWSTextractGeometry	
+      	Id 				est une chaine
+      	Relationships	est un tableau de STAWSTextractRelationship
+      	Text			est une chaine
+      	TextType		est une chaine
+      fin
+      STAWSTextract est une structure
+      	AnalyzeDocumentModelVersion	est une chaine
+      	Blocks						est un tableau de STAWSTextractBlock
+      fin
+      cAPIAWS_Textract est une Classe
+      	hérite de cAPIAWS
+      	m_stDocument	est un STAWSTextract				//Structure contenant toutes les informations du document analysé
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1548019390209999562
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe cAPIAWS_Textract
+      // Syntaxe : Constructeur (<eRégion> est cAPIAWS.EAWSRégion, <sAccessKey> est chaîne, <sAccessSecret> est chaîne)
+      // Paramètres :
+      //	eRégion (cAPIAWS.EAWSRégion) : Région AWS pour l'authentification.
+      //	sAccessKey (chaîne UNICODE) : Clé d'accès AWS.
+      //	sAccessSecret (chaîne UNICODE) : Secret d'accès AWS.
+      // Valeur de retour : Aucune
+      //
+      PROCEDURE Constructeur(eRégion est un capiaws.EAWSRégion,sAccessKey est une chaine,sAccessSecret est une chaine)
+      cAPIAWS.Constructeur(cAPIAWS.EAWSService.textract,eRégion,sAccessKey,sAccessSecret)
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1548019390210065098
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : AnalyseFichierS3
+     procedure_id : 1548019888426322616
+     type_code : 12
+     code : |1-
+      // Résumé : Analyse un fichier stocké dans un bucket S3 à l'aide du service Amazon Textract.
+      // Syntaxe : [ <Résultat> = ] AnalyseFichierS3 (<sBucket> est chaîne, <sNomDuFichier> est chaîne)
+      // Paramètres :
+      //	sBucket (chaîne UNICODE) : Nom du bucket S3.
+      //	sNomDuFichier (chaîne UNICODE) : Nom du fichier dans le bucket S3.
+      // Valeur de retour : booléen : indique le succès de l'analyse.
+      // Exemple :
+      //	clTextract est un cAPIAWS_Textract(cAPIAWS.CanadaCentre,VotresAccessKey,VotreAccessSecret)
+      //	clTextract.AnalyseFichierS3("MonBucket","test_Textract.png")
+      //
+      PROCEDURE AnalyseFichierS3(sBucket est une chaîne, sNomDuFichier est une chaine) : booléen
+      m_pclErreur.Raz()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	ancetre.raz()
+      	m_stRequêteHTTPAPI.eMéthode					= cHTTP.HTTP_post
+      	m_stRequêteHTTPAPI.taEntête["Content-Type"]	= "application/x-amz-json-1.1"
+      	m_stRequêteHTTPAPI.taEntête["X-Amz-Target"]	= "Textract.AnalyzeDocument"
+      	
+      	// Payload                                  
+      	json est un variant
+      	json.Document.S3Object.Bucket	= sBucket
+      	json.Document.S3Object.Name		= sNomDuFichier
+      	json.FeatureTypes[1]			= "FORMS"
+      	m_stRequêteHTTPAPI.sContenu 	= VariantVersJSON(json)
+      	
+      	SI AWSRestExécute(Vrai) ALORS	//Appel ajoute l'authentification AWS à la requête avant d'être exécutée
+      		Désérialise(m_stDocument,m_stReponseHTTPAPI.bufContenu,psdJSON)
+      		RENVOYER Vrai
+      	SINON
+      		//erreur déjà géré par cAPI
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER Faux	
+     type : 458752
+   -
+     name : AnalyseImage
+     internal_properties : CQAAAAkAAAD45KqTN+gfCSfXjFXqLDBCrZzMIUqH3rvttjQee3kHn9+MxAR4pyOb75m5rZhBeqyPP0A1QZ1Ab2KcW/pf7dAL8UjFlhOA4neuWozDjK3FGnXBGrGW0GUzUVJWjlYLLcIgjFIMXhtERSVYj4FPM0lYSb68JvpNwzy3IZCX7hNmFeeEswN0qLGL4IG4ekhhRl7b+nKe1NLRuhfqmOWuuePINMb/Jy6eX80Jn2RFgty2ewRPvMTO8MFuV6qyaDa2NSXJj7GvWASdAkG9XKkr49KY5w1W09TWHV43HJhID+8pBTtJynxaIOrChSkdv2/4YGQM+DncjTdO0R3rpN0RWYfUftF5z5Kftga+oea3uVCES+UE6/Z/1oREDGVcZ7DUOLmA6ejtEozb
+     procedure_id : 1548019914196197850
+     type_code : 12
+     code : |1-
+      // Résumé : Analyse une image à l'aide du service Amazon Textract.
+      // Syntaxe : [ <Résultat> = ] AnalyseImage (<imgImage> est Image)
+      // Paramètres :
+      //	imgImage (Image) : Image à analyser (peut venir d'un champ image).
+      // Valeur de retour : booléen : indique le succès de l'analyse.
+      // Exemple :
+      //	clTextract est un cAPIAWS_Textract(cAPIAWS.CanadaCentre,VotresAccessKey,VotreAccessSecret)
+      //	clTextract.AnalyseImage(IMG_Photo)
+      //
+      PROCEDURE AnalyseImage(imgImage est une image) : booléen
+      m_pclErreur.Raz()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	Ancêtre.RAZ()
+      	m_stRequêteHTTPAPI.eMéthode					= cHTTP.HTTP_post
+      	m_stRequêteHTTPAPI.taEntête["Content-Type"]	= "application/x-amz-json-1.1"
+      	m_stRequêteHTTPAPI.taEntête["X-Amz-Target"]	= "Textract.AnalyzeDocument"
+      	VariableRAZ(m_stDocument)
+      	
+      	// Payload                                  
+      	json est un variant
+      	json.Document.Bytes			= Remplace(Encode(dSauveImagePNG(imgImage, enMémoire), encodeBASE64), RC, "")
+      	json.FeatureTypes[1]		= "FORMS"
+      	m_stRequêteHTTPAPI.sContenu = VariantVersJSON(json)
+      	
+      	SI AWSRestExécute(Vrai) ALORS	//Appel ajoute l'authentification AWS à la requête avant d'être exécutée
+      		Désérialise(m_stDocument,m_stReponseHTTPAPI.bufContenu,psdJSON)
+      		RENVOYER Vrai
+      	SINON
+      		//erreur déjà géré par cAPI
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer faux	
+     type : 458752
+   -
+     name : AnalyseImageLocale
+     procedure_id : 1548190557542506270
+     type_code : 12
+     code : |1-
+      // Résumé : Analyse un fichier image local à l'aide du service Amazon Textract.
+      // Syntaxe : [ <Résultat> = ] AnalyseImageLocale (<sNomDuFichier> est chaîne)
+      // Paramètres : 
+      //	sNomDuFichier (chaîne UNICODE) : Chemin de l'image locale.
+      // Valeur de retour : booléen : indique le succès de l'analyse.
+      // Exemple :
+      //	clTextract est un cAPIAWS_Textract(cAPIAWS.CanadaCentre,VotresAccessKey,VotreAccessSecret)
+      //	clTextract.AnalyseImageLocale("C:\Temp\test_Textract.png")
+      //
+      PROCEDURE AnalyseImageLocale(sCheminDuFichier est une chaine) : booléen
+      m_pclErreur.Raz()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	SI fFichierExiste(sCheminDuFichier) ALORS
+      		imgImage est une image = fChargeBuffer(sCheminDuFichier)
+      		RENVOYER AnalyseImage(imgImage)
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0000§>)
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x157bab5b02dbf536
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le fichier n'existe pas
+      en-GB : The file does not exist
+      fr-CA : Le fichier n'existe pas
+      en-US : The file does not exist
+     index : 0
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

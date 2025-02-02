@@ -1,0 +1,1187 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cSourceDeDonnéesLDAP
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f55c4a12c81cc5
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      COStatutEnregistrement est une Combinaison
+      	EstInchangé
+      	EstAjouté
+      	EstModifié
+      	EstSupprimé
+      FIN
+      COTri est une combinaison 
+      	Aucun						= 0	
+      	tccOrdreLexicographique		= tccOrdreLexicographique
+      	tccRespecteNumérique		= tccRespecteNumérique
+      	tccSansAccent				= tccSansAccent
+      	tccSansCasse				= tccSansCasse
+      	tccSansEspace				= tccSansEspace
+      	tccSansEspaceIntérieur		= tccSansEspaceIntérieur
+      	tccSansPonctuationNiEspace	= tccSansPonctuationNiEspace
+      FIN
+      COADType est un combinaison
+      	_ADTypeUnknown				= "unknown"
+      	_ADTypeOrganizationalUnit	= "ou"				//géré par ceLDAPGroup
+      	_ADTypeUser					= "user"
+      	_ADTypeComputer				= "computer"
+      	_ADTypeContact				= "contact"
+      	_ADTypeGroup				= "group"
+      	_ADTypePrinter				= "printer"
+      	_ADTypeSharedFolder			= "folder"
+      FIN
+      cSourceDeDonnéesLDAP est une Classe
+      	hérite de cGénérique
+      	m_bLectureAnnulée			est un booleen						<serialise = faux>						//Permet d'interrompre le parcours du résultat débuté par Liste().
+      	m_bTraceAjout				est un booleen						<serialise = faux>						//mettre à faux après l'allocation pour éviter l'écriture de tous les enregistrements lus dans la trace (si celle-ci est active)
+      PUBLIC CONSTANT
+      	m_nIndiceDeConnexion		est un entier						<serialise = faux>						//Indice de la connexion au serveur LDAP
+      	m_nIndiceParcours			est un entier 						<Sérialise = Faux>						//Indice de parcours dans le tableau d'enregistrement (utilisé par Premier, Suivant, Précédent et Dernier)
+      	m_sSessionAD 				est une chaine						<serialise = faux>						//Nom de la session sur l'Active Directory
+      	m_sAttributsALire			est une chaine						<serialise = faux>						//Nom des attributs à lire lors d'une lecture d'un enregistrement
+      	m_eType						est un cEnregistrementLDAP.EADType 	<Sérialise = Faux>						//Type de l'enregistrement (voir l'énumération dans cEnregistrementLDAP)
+      PROTÉGÉ
+      	m_tabEnregistrement			est un tableau 						<Sérialise = Faux> d'objets dynamique	//Tableau de cEnregistrement contenant le résultat de Liste() ou ListeRequête()
+      	m_clJauge					est un cjauge 						<Sérialise = Faux>						//Objet jauge qui peut être visualisée dans une fenêtre durant le parcours du résultat de Liste(). La valeur de la jauge change a chaque ajout d'un cEnregistrement dans le tableau.
+      	m_vNomObjetFiche			est un variant						<serialise = faux>						//Classe de type cEnregistrement qui a été associée à cette classe pour absorber le résultat de Liste() ou ListeRequête()
+      	m_sOUouGroupe				est une chaine ansi					<serialise = faux>						//OU ou Groupe lié à l'enregistrement en cours
+      PRIVÉ                                               				
+      	m_bLectureSeule				est un booleen 						<Sérialise = Faux>						//Indique que les enregistrements sont en lecture seule (soit imposé par la BD soit par le constructeur). Si mis à Vrai avant la récupération d'une Liste(), imposera ce statut à tous les éléments cEnregistrement contenu dans le tableau de résultats.
+      	m_tabSupprimé				est un tableau 						<Sérialise = Faux> d'objets dynamique	//Tableau des éléments supprimés (ils sont déplacés du tableau principal pour ne pas les voir lors du parcours de ce dernier)
+      	m_bGèreUTF8					est un booleen						<serialise = faux>						//Indique que le serveur support UTF8
+      	m_vDernièreRequête			est un variant 						<Sérialise = Faux>						//Variant contenant tous les éléments passés en paramètre de Liste() ou ListeRafraichi() afin de pouvoir ré-exécuter Liste() sans devoir lui repasser tous les paramètres
+      	m_sServeur					est une chaine 						<Sérialise = Faux>						//Nom du serveur associé à la connexion. Sera nécessaire dans Liste()
+      	m_sDNMembres				est une chaine ansi					<serialise = faux>						//Mémorise les DN lors d'un "Liste" (pour distinguer ensuite les nouveaux dans m_tabEnregistrement)
+      GLOBAL PRIVÉ
+      	mg_taObjets					est un tableau associatif <serialise = faux> de cenregistrementldap.EADType	//optimisation pour ne faire qu'une seule lecture des éléments d'un groupe
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1294041941151390917
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise les propriétés de la classe et prépare l'objet pour l'utilisation. 
+      // Syntaxe : Constructeur (<nIndiceDeConnexion> est entier, <eType> est cEnregistrementLDAP.EADType, <xNomObjetFiche> [, <sOUouGroupe> est chaîne ANSI [, <bLectureSeule> est booléen [, <sAttributsALire> est chaîne]]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indice de la connexion LDAP à utiliser.
+      //	eType (cEnregistrementLDAP.EADType) : Type d'objet LDAP.
+      // 	xNomObjetFiche : <indiquez ici le rôle de xNomObjetFiche>
+      //	sOUouGroupe (chaîne ANSI optionnelle) : Nom de l'unité organisationnelle ou du groupe LDAP. Par défaut, une chaîne vide est utilisée.
+      // 	bLectureSeule (booléen optionnel) : Indique si l'enregistrement est en mode lecture seule. Par défaut, la valeur Faux est utilisée.
+      //	sAttributsALire (chaîne UNICODE optionnel) : Attributs LDAP à lire pour cet enregistrement. Si la chaîne est vide, tous les attributs seront lus. Par défaut, une chaîne vide est utilisée.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexion EST UN ENTIER,eType est un cEnregistrementLDAP.EADType,xNomObjetFiche <utile>,sOUouGroupe est une chaine ansi = "",bLectureSeule est un booléen = Faux,sAttributsALire est une chaîne = "")
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIndiceDeConnexion,eType..Valeur,xNomObjetFiche,sOUouGroupe,bLectureSeule,sAttributsALire)
+      m_sOUouGroupe 			= sOUouGroupe
+      SI nIndiceDeConnexion>0 ALORS 
+      	p_nIndiceDeConnexion= nIndiceDeConnexion
+      	SI PAS Droite(m_sOUouGroupe,Taille(cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].sSchémaOuDC))~=cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC ALORS m_sOUouGroupe+=[","]+cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC
+      FIN
+      m_sAttributsALire		= sAttributsALire
+      m_bLectureSeule			= bLectureSeule
+      m_vNomObjetFiche 		= xNomObjetFiche
+      m_eType					= eType
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1294041941151456453
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Ajoute
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1294227415020473328
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute un nouvel enregistrement au tableau d'enregistrements de la source de données. Utilisé dans Liste(), ListeRequête et les envois dans la poubelle.
+      // Syntaxe : [ <Résultat> = ] Ajoute (<pclEnregistrement> est objet dynamique [, <eStatutEnregistrement> est cEnregistrement.EEnregistrementStatut])
+      // Paramètres :
+      //	pclEnregistrement (objet dynamique) : Objet à ajouter dans le tableau.
+      //	eStatutEnregistrement (cEnregistrement.EEnregistrementStatut) : Statut initial de l'enregistrement ajouté. Par défaut, il est défini à cSourceDeDonnées.EstAjouté.
+      // Valeur de retour : entier : Indice de l'enregistrement ajouté dans le tableau. Si une erreur survient pendant l'ajout, elle renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE Ajoute(pclEnregistrement est un objet dynamique,eStatutEnregistrement est un cEnregistrement.EEnregistrementStatut = cEnregistrement.EstAjouté) : entier
+      SI m_bTraceAjout _et_ cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(pclEnregistrement,eStatutEnregistrement)
+      m_pclErreur.Raz()
+      
+      SI pclEnregistrement=Null ALORS
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      SINON
+      	n est un entier = RechercheParMembre("dn",pclEnregistrement.p_sDN)	//on vérifie qu'on ajoute pas un enregistrement qui sera en doublon
+      	SI n<1 ALORS
+      		pclEnregistrement.m_eStatutEnregistrement	= eStatutEnregistrement
+      		n = TableauAjoute(m_tabEnregistrement,pclEnregistrement)
+      		SI ErreurDétectée ALORS m_pclErreur.AjouteErreurWx() SINON RENVOYER n
+      	SINON
+      		m_pclErreur.AjouteAvertissement(<§$0001§>)
+      		RENVOYER n
+      	FIN
+      FIN
+      RENVOYER 0
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : Dernier
+     procedure_id : 1294227655538763897
+     type_code : 12
+     code : |1-
+      // Résumé : Positionne le curseur de parcours sur le dernier enregistrement du tableau d'enregistrements et renvoie l'objet cEnregistrement correspondant.
+      // Syntaxe : [ <Résultat> = ] Dernier ()
+      // Paramètres : Aucun
+      // Valeur de retour : Type indéterminé : Objet cEnregistrement correspondant au dernier enregistrement.
+      // Exemple :
+      //
+      PROCEDURE Dernier()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      SI m_tabEnregistrement..Occurrence=0 ALORS RENVOYER Null SINON m_nIndiceParcours=m_tabEnregistrement..Occurrence;RENVOYER m_tabEnregistrement[m_nIndiceParcours]
+     type : 458752
+   -
+     name : ÉcritTout
+     procedure_id : 1294227780092843920
+     type_code : 12
+     code : |1-
+      // Résumé : Effectue l'écriture en base de données de tous les enregistrements contenus dans le tableau d'enregistrements associé à la source de données. Cette méthode traite les enregistrements à supprimer en premier, puis écrit les enregistrements actuels. 
+      // Syntaxe : [ <Résultat> = ] ÉcritTout ( [<bContinueQuandErreur> est booléen])
+      // Paramètres :
+      //	bContinueQuandErreur (booléen optionnel) : Indique s'il faut continuer l'opération d'écriture même en cas d'erreur. Par défaut : Faux.
+      // Valeur de retour : booléen : Indique si l'opération d'écriture a été réussie (Vrai) ou non (Faux).
+      // Exemple :
+      //
+      PROCEDURE ÉcritTout(bContinueQuandErreur est un booléen = Faux) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bContinueQuandErreur)
+      m_pclErreur.Raz()
+      
+      //A FAIRE : comment faire une transaction sur LDAP ?
+      
+      //d'abord supprimer car les enregistrements de m_tabEnregistrement pourraient les récréer par le traitement suivant
+      POUR TOUT pclObjet de m_tabSupprimé
+      	SI PAS pclObjet.Supprime() ALORS 
+      		m_pclErreur.AjouteErreur(pclObjet.p_sErreur)
+      		SI PAS bContinueQuandErreur ALORS RENVOYER Faux
+      	FIN
+      FIN
+      
+      POUR TOUT pclObjet DE m_tabEnregistrement
+      	SI PAS pclObjet.Ecrit() ALORS 
+      		m_pclErreur.AjouteErreur(pclObjet.p_sErreur)
+      		SI PAS bContinueQuandErreur ALORS RENVOYER Faux 
+      	FIN
+      FIN
+      
+      TableauSupprimeTout(m_tabSupprimé)	
+      RENVOYER Vrai
+     type : 458752
+   -
+     name : EcritToutMembre
+     procedure_id : 1294228046380878829
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute ou supprime les membres d'un groupe LDAP spécifié par l'objet pclPère
+      // Syntaxe : [ <Résultat> = ] EcritToutMembre (<pclPère> est objet dynamique [, <bContinueQuandErreur> est booléen])
+      // Paramètres :
+      //	pclPère (objet dynamique) : Groupe LDAP auquel les membres seront ajoutés ou supprimés.
+      // 	bContinueQuandErreur (booléen optionnel): Indique s'il faut continuer à exécuter la procédure même en cas d'erreur, par défaut = Faux.
+      // Valeur de retour : booléen : Vrai si toutes les opérations ont réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE EcritToutMembre(pclPère est un objet dynamique,bContinueQuandErreur est un booléen = Faux) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(pclPère,bContinueQuandErreur)
+      m_pclErreur.Raz()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	//ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/57200-ldap-ajouter-membre-groupe/read.awp
+      	LDAPDébutModification(m_sSessionAD)
+      	POUR TOUT pclObjet de m_tabSupprimé
+      		//on ne supprime pas ici l'élément du LDAP mais uniquement son lien avec le groupe père
+      		SI PAS LDAPSupprimeValeurAttribut(m_sSessionAD, "member", "cn="+pclObjet.cn+",OU=Utilisateurs,"+cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC) ALORS
+      			m_pclErreur.AjouteErreurWx()
+      			SI PAS bContinueQuandErreur ALORS RENVOYER Faux
+      		FIN
+      	FIN
+      	
+      	POUR TOUT pclObjet DE m_tabEnregistrement
+      		SI PAS LDAPAjouteAttribut(m_sSessionAD,"member","cn="+pclObjet.cn+",OU=Utilisateurs,"+cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC) ALORS
+      			m_pclErreur.AjouteErreurWx()
+      			SI PAS bContinueQuandErreur ALORS RENVOYER Faux
+      		FIN
+      	FIN
+      	
+      	SI LDAPValideModification(m_sSessionAD, pclPère.p_sDN) ALORS RENVOYER Vrai SINON m_pclErreur.AjouteErreurWx()
+      	
+      <fin>
+      
+      
+      RENVOYER Faux
+     type : 458752
+   -
+     name : Insère
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1294228497352614778
+     type_code : 12
+     code : |1-
+      // Résumé : Insère un objet à un indice spécifié dans la liste des enregistrements.
+      // Syntaxe : [ <Résultat> = ] Insère (<nIndice> est entier, <pclEnregistrement> est objet dynamique [, <eStatutEnregistrement> est cEnregistrement.EEnregistrementStatut])
+      // Paramètres :
+      //	nIndice (entier) : Indice auquel l'objet sera inséré dans la liste.
+      //	pclEnregistrement (objet dynamique) : Objet à insérer dans le tableau.
+      //	eStatutEnregistrement (cEnregistrement.EEnregistrementStatut) : Statut initial de l'enregistrement inséré. Par défaut, il est défini à cSourceDeDonnées.EstAjouté.
+      // Valeur de retour : entier : Indice de l'enregistrement inséré dans le tableau. Si une erreur survient pendant l'ajout, elle renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE Insère(nIndice est un entier,pclEnregistrement est un objet dynamique,eStatutEnregistrement est un cEnregistrement.EEnregistrementStatut = cEnregistrement.EstAjouté) : entier
+      SI m_bTraceAjout _et_ cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIndice,pclEnregistrement,eStatutEnregistrement)
+      m_pclErreur.Raz()
+      
+      SI pclEnregistrement=Null ALORS
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      SINON
+      	pclEnregistrement.m_eStatutEnregistrement	= eStatutEnregistrement
+      	TableauInsère(m_tabEnregistrement,nIndice,pclEnregistrement)
+      	SI ErreurDétectée ALORS m_pclErreur.AjouteErreurWx() SINON RENVOYER nIndice
+      FIN
+      RENVOYER 0
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : Liste
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1294228617611727942
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère des enregistrements fils à partir d'un objet père. Pour un Groupe, récupère les membres, pour un OU, exécute LDAPListeFils()
+      // Syntaxe : [ <Résultat> = ] Liste ( [<pclPère> est objet dynamique [, <sFiltres> [, <nLimiteMax> est entier [, <bLectureSeule> est booléen [, <sJaugeOuCallBack> est chaîne [, <duRafraichiJauge> est durée [, <sChampLibelléJauge> est chaîne [, <sContenuLibelléJauge> est chaîne]]]]]]]])
+      // Paramètres :
+      // 	pclPère (objet dynamique - valeur par défaut=0) : <indiquez ici le rôle de pclPère>
+      //	sFiltre (chaîne UNICODE optionnelle) :  La condition de filtre à appliquer lors de la requête au format SQL sans le WHERE (ex : "Client.Adresse IS NULL").
+      // 	nLimiteMax (entier optionnel) : Limite le nombre maximum d'enregistrements à récupérer, par défaut : récupère tous les enregistrements (quand ce paramètre est à 0).
+      // 	bLectureSeule (booléen optionnel) : Indique si les enregistrements récupérés doivent être en lecture seule.
+      //	sJaugeOuCallBack (chaîne UNICODE optionnelle) : Le nom de la jauge ou de la méthode de rappel pour indiquer la progression.
+      // 	duRafraichiJauge (durée optionnelle) : La fréquence de rafraîchissement de la jauge, par défaut toutes les 100ms (10x par seconde).
+      //	sChampLibelléJauge (chaîne UNICODE optionnelle) : Le champ "libellé" de la jauge à mettre à jour.
+      //	sContenuLibelléJauge (chaîne UNICODE optionnelle) : Le contenu du champ libellé associé à la jauge à mettre à jour (voir cJauge pour le détail des balises reconnues).
+      // Valeur de retour : booléen : Indique si l'opération s'est déroulée avec succès.
+      // Exemple :
+      //
+      PROCEDURE Liste(pclPère est un objet dynamique = null,sFiltres = "",nLimiteMax est un entier = 0,LOCAL bLectureSeule est un booléen = m_bLectureSeule,sJaugeOuCallBack est une chaîne = "",duRafraichiJauge est une Durée = 100ms,sChampLibelléJauge est une chaîne = "",sContenuLibelléJauge est une chaîne = "") : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode((pclPère=Null ? "" SINON pclPère.dn),sFiltres,nLimiteMax,bLectureSeule,sJaugeOuCallBack,duRafraichiJauge,sChampLibelléJauge,sContenuLibelléJauge)
+      m_pclErreur.Raz()
+      
+      Raz()
+      m_sDNMembres=""
+      
+      SI m_sSessionAD~="" ALORS m_pclErreur.AjouteErreur(<§$0003§>)
+      SI pclPère=Null ALORS //par défaut : l'objet de base de la connexion
+      	SI cEnregistrementLDAP.TypeDétecteDansDN(m_nIndiceDeConnexion,m_sOUouGroupe)=cEnregistrementLDAP.EADType._ADTypeGroup ALORS
+      		m_vDernièreRequête.type=cEnregistrementLDAP.EADType._ADTypeGroup..nom
+      		pclPère = allouer un ceLDAPGroup(m_nIndiceDeConnexion,m_sOUouGroupe,bLectureSeule)
+      	SINON
+      		m_vDernièreRequête.type=cEnregistrementLDAP.EADType._ADTypeOrganizationalUnit..nom
+      		pclPère = allouer un ceLDAPOrganizationalUnit(m_nIndiceDeConnexion,m_sOUouGroupe,bLectureSeule)
+      	FIN
+      	pclPère.dn	= m_sOUouGroupe
+      SINON
+      	SI PAS pclPère.m_eType DANS (cEnregistrementLDAP._ADTypeOrganizationalUnit,cEnregistrementLDAP._ADTypeGroup) ALORS m_pclErreur.AjouteErreur(<§$0002§>)
+      FIN
+      SI p_sErreur>"" ALORS RENVOYER Faux
+      
+      m_vDernièreRequête.DN=pclPère.p_sDN;m_vDernièreRequête.OUouGroupe=m_sOUouGroupe;m_vDernièreRequête.LimiteMax=nLimiteMax;m_vDernièreRequête.filtre=sFiltres
+      m_vDernièreRequête.LectureSeule=bLectureSeule;m_vDernièreRequête.JaugeOuCallBack=sJaugeOuCallBack;m_vDernièreRequête.RafraichiJauge=duRafraichiJauge
+      m_vDernièreRequête.LibelléJauge=sChampLibelléJauge;m_vDernièreRequête.TextePersoLibelléJauge=sContenuLibelléJauge
+      
+      m_bLectureSeule		= bLectureSeule
+      m_bLectureAnnulée	= Faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	sCN,sClé,sFiltresGroupe	sont des chaines
+      	nEnreg,nMaxEnreg 		sont des entiers
+      	pclMembre 				est un objet dynamique
+      	sDN						est une chaine ansi
+      	
+      	SI pclPère.m_eType=cEnregistrementLDAP._ADTypeGroup	ALORS
+      		nMaxEnreg 		= pclPère.AttributNbValeurs("member")
+      		SI nMaxEnreg>0 ALORS
+      			POUR n = 1 _a_ nMaxEnreg
+      				m_sDNMembres+=[RC]+pclPère.AttributValeur("member",n)
+      			FIN
+      		FIN
+      	SINON	//d'office une OU
+      		m_sDNMembres	= LDAPListeFils(m_sSessionAD,pclPère.p_sDN)
+      		SI ErreurDétectée() ALORS m_pclErreur.AjouteErreurWx() SINON nMaxEnreg = (m_sDNMembres="" ? 0 SINON ChaîneOccurrence(m_sDNMembres,RC))
+      	FIN
+      	
+      	cApplication._Application.m_pclTrace.AjouteTexte(nMaxEnreg+" résultat"+(nMaxEnreg<2 ? "" SINON "s")+" ("+m_eType..Valeur+" demandés)")
+      	//pas de condition si nMaxEnreg>0 car on doit parfois faire de la récurrence
+      	SI sJaugeOuCallBack>"" _ET_ nMaxEnreg>0 ALORS m_clJauge.Démarre(sJaugeOuCallBack,Max(nLimiteMax,nMaxEnreg),&nEnreg,duRafraichiJauge,sChampLibelléJauge,sContenuLibelléJauge)
+      	POUR TOUTE CHAÎNE sDN DE m_sDNMembres SEPAREE PAR RC
+      		SI sDN>"" ALORS
+      			SI m_bLectureAnnulée ALORS 
+      				SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      				m_pclErreur.AjouteAvertissement(<§$0004§>);renvoyer faux
+      			FIN
+      			nEnreg++
+      			sCN = Milieu(ExtraitChaîne(sDN,1,","),4)
+      			sClé=m_sServeur+cGénérique._Sep+sDN
+      			
+      			SI PAS mg_taObjets[sClé]..Existe ALORS mg_taObjets[sClé]=cEnregistrementLDAP.TypeDétecteDansDN(m_nIndiceDeConnexion,sDN)
+      			Classes(sClé)	//lire le type s'il n'est pas détecté dans le DN
+      			
+      			SELON m_eType
+      				CAS cEnregistrementLDAP._ADTypeUnknown
+      					
+      				CAS cEnregistrementLDAP._ADTypeUser
+      					SI mg_taObjets[sClé]..Existe _ET_ mg_taObjets[sClé]<>cEnregistrementLDAP._ADTypeUnknown ALORS
+      						SI mg_taObjets[sClé]=cEnregistrementLDAP._ADTypeUser ALORS	
+      							pclMembre 		= allouer un m_vNomObjetFiche (m_nIndiceDeConnexion,m_sOUouGroupe,m_bLectureSeule,m_sAttributsALire)
+      							pclMembre.dn	= sDN	//juste le DN car plus rapide, si on veut toutes les infos, faire un relit()
+      							SI sFiltres>"" _ET_ EstNumérique(ExtraitChaîne(sFiltres,1,cGénérique._Sep)) ALORS pclMembre.attributValeur("userAccountControl")
+      							SI sFiltres="" _OU_ (ETBinaire(Val(sFiltres),csdLDAPUser._ADUserFiltreStatutActifsSeulement)=csdLDAPUser._ADUserFiltreStatutActifsSeulement _ET_ pclMembre.p_bCompteActif) _OU_ ...
+      								(ETBinaire(Val(sFiltres),csdLDAPUser._ADUserFiltreStatutInactifsSeulement)=csdLDAPUser._ADUserFiltreStatutInactifsSeulement _ET_ PAS pclMembre.p_bCompteActif) _OU_ ...
+      								ETBinaire(Val(sFiltres),csdLDAPUser._ADUserFiltreRécursif)=csdLDAPUser._ADUserFiltreRécursif ALORS
+      								SI FiltreCorrespond(pclMembre,sFiltres) ALORS
+      									SI Ajoute(pclMembre,cEnregistrement.EstInchangé)=0 ALORS
+      										SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      										RENVOYER Faux
+      									FIN
+      								FIN
+      							FIN
+      						SINON SI mg_taObjets[sClé]=cEnregistrementLDAP._ADTypeGroup _ET_ ETBinaire(Val(sFiltres),csdLDAPUser._ADUserFiltreRécursif)=csdLDAPUser._ADUserFiltreRécursif ALORS
+      							pclGroupe est un objet dynamique = SousGroupeAssigne(sDN,sFiltres)
+      							SI pclGroupe<>Null ALORS
+      								SI sFiltres>"" _ET_ EstNumérique(ExtraitChaîne(sFiltres,1,cGénérique._Sep)) ALORS pclGroupe.attributValeur("groupType")
+      								SI EstNumérique(ExtraitChaîne(sFiltres,1,cGénérique._Sep)) ALORS
+      									//enlever le filtre des users pour faire le filtre groupe
+      									sFiltresGroupe=ETBinaire(NONBinaire(Val(ExtraitChaîne(sFiltres,1,cGénérique._Sep))),csdLDAPUser._ADUserFiltreStatutActifsSeulement+...
+      									csdLDAPUser._ADUserFiltreStatutInactifsSeulement+csdLDAPUser._ADUserFiltreRécursif)
+      									SI sFiltresGroupe="0" ALORS sFiltresGroupe=""
+      									SI Position(sFiltres,cGénérique._Sep)>0 ALORS sFiltresGroupe+=[cGénérique._Sep]+Milieu(sFiltres,Position(sFiltres,cGénérique._Sep)+1)
+      								FIN
+      								SI sFiltresGroupe="" _OU_ ETBinaire(Val(sFiltresGroupe),csdLDAPUser._ADUserFiltreRécursif)=csdLDAPUser._ADUserFiltreRécursif _OU_ ...
+      									(ETBinaire(Val(sFiltresGroupe),csdLDAPGroup._ADGroupFiltreTypeGlobal)=csdLDAPGroup._ADGroupFiltreTypeGlobal _ET_ pclMembre.groupType="") _OU_ ...
+      									(ETBinaire(Val(sFiltresGroupe),csdLDAPGroup._ADGroupFiltreTypeDomaineLocal)=csdLDAPGroup._ADGroupFiltreTypeDomaineLocal _ET_ pclMembre.groupType=ceLDAPGroup.GROUP_TYPE_BUILTIN_LOCAL_GROUP) _OU_ ...
+      									(ETBinaire(Val(sFiltresGroupe),csdLDAPGroup._ADGroupFiltreTypeUniversel)=csdLDAPGroup._ADGroupFiltreTypeUniversel _ET_ pclMembre.groupType=ceLDAPGroup.GROUP_TYPE_UNIVERSAL_GROUP)  _OU_ ...
+      									FiltreCorrespond(pclGroupe,sFiltresGroupe) ALORS 
+      									SI pclGroupe.UsersCharge(objet..Classe,m_vNomObjetFiche,sFiltres,nLimiteMax,m_sAttributsALire,bLectureSeule) ALORS
+      										POUR TOUT pclUser de pclGroupe.m_pclUsers.m_tabEnregistrement
+      											SI Ajoute(pclUser,cEnregistrement.EstInchangé)=0 ALORS
+      												SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      												RENVOYER Faux
+      											FIN
+      										FIN
+      									FIN
+      								FIN
+      							FIN
+      						SINON SI mg_taObjets[sClé]=cEnregistrementLDAP._ADTypeOrganizationalUnit ALORS
+      							pclOU est un objet dynamique = OUAssigne(sDN,sFiltres)
+      							SI pclOU<>Null ALORS
+      								SI pclOU.UsersCharge(objet..Classe,m_vNomObjetFiche,sFiltres,nLimiteMax,m_sAttributsALire,bLectureSeule) ALORS
+      									POUR TOUT pclUser de pclOU.m_pclUsers.m_tabEnregistrement
+      										SI Ajoute(pclUser,cEnregistrement.EstInchangé)=0 ALORS
+      											SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      											RENVOYER Faux
+      										FIN
+      									FIN
+      								FIN
+      							FIN
+      						FIN				
+      					FIN
+      				CAS cEnregistrementLDAP._ADTypeComputer
+      					
+      				CAS cEnregistrementLDAP._ADTypeContact
+      					SI mg_taObjets[sClé]..Existe _ET_ mg_taObjets[sClé]<>cEnregistrementLDAP._ADTypeUnknown ALORS
+      						SI mg_taObjets[sClé]=cEnregistrementLDAP._ADTypeContact ALORS	
+      							pclMembre 		= allouer un m_vNomObjetFiche (m_nIndiceDeConnexion,m_sOUouGroupe,m_bLectureSeule,m_sAttributsALire)
+      							pclMembre.dn	= sDN	//juste le DN car plus rapide, si on veut toutes les infos, faire un relit()
+      							SI sFiltres="" _OU_ FiltreCorrespond(pclMembre,sFiltres) ALORS
+      								SI Ajoute(pclMembre,cEnregistrement.EstInchangé)=0 ALORS
+      									SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      									RENVOYER Faux
+      								FIN
+      							FIN
+      						SINON SI mg_taObjets[sClé]=cEnregistrementLDAP._ADTypeGroup _ET_ ETBinaire(Val(sFiltres),csdLDAPUser._ADUserFiltreRécursif)=csdLDAPUser._ADUserFiltreRécursif ALORS
+      							pclGroupe est un objet dynamique = SousGroupeAssigne(sDN,sFiltres)
+      							SI pclGroupe<>Null ALORS
+      								SI sFiltres>"" _ET_ EstNumérique(ExtraitChaîne(sFiltres,1,cGénérique._Sep)) ALORS pclGroupe.attributValeur("groupType")
+      								SI sFiltres="" _OU_ (ETBinaire(Val(sFiltres),csdLDAPGroup._ADGroupFiltreTypeGlobal)=csdLDAPGroup._ADGroupFiltreTypeGlobal _ET_ pclMembre.groupType="") _OU_ ...
+      									(ETBinaire(Val(sFiltres),csdLDAPGroup._ADGroupFiltreTypeDomaineLocal)=csdLDAPGroup._ADGroupFiltreTypeDomaineLocal _ET_ pclMembre.groupType=ceLDAPGroup.GROUP_TYPE_BUILTIN_LOCAL_GROUP) _OU_ ...
+      									(ETBinaire(Val(sFiltres),csdLDAPGroup._ADGroupFiltreTypeUniversel)=csdLDAPGroup._ADGroupFiltreTypeUniversel _ET_ pclMembre.groupType=ceLDAPGroup.GROUP_TYPE_UNIVERSAL_GROUP)  _OU_ ...
+      									FiltreCorrespond(pclGroupe,sFiltres) ALORS 
+      									SI pclGroupe.ContactsCharge(objet..Classe,m_vNomObjetFiche,sFiltres,nLimiteMax,m_sAttributsALire,bLectureSeule) ALORS
+      										POUR TOUT pclContact de pclGroupe.m_pclContacts.m_tabEnregistrement
+      											SI Ajoute(pclContact,cEnregistrement.EstInchangé)=0 ALORS
+      												SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      												RENVOYER Faux
+      											FIN
+      										FIN
+      									FIN
+      								FIN
+      							FIN
+      						FIN
+      					FIN
+      					
+      				CAS cEnregistrementLDAP._ADTypeGroup,cEnregistrementLDAP._ADTypeOrganizationalUnit
+      					SI mg_taObjets[sClé]..Existe _ET_ mg_taObjets[sClé]=cEnregistrementLDAP._ADTypeGroup ALORS
+      						pclMembre 		= allouer un m_vNomObjetFiche (m_nIndiceDeConnexion,m_sOUouGroupe,m_bLectureSeule,m_sAttributsALire)
+      						pclMembre.dn	= sDN	//juste le DN car plus rapide, si on veut toutes les infos, faire un relit()
+      						SI sFiltres>"" _ET_ EstNumérique(ExtraitChaîne(sFiltres,1,cGénérique._Sep)) ALORS pclMembre.attributValeur("groupType")
+      						SI sFiltres="" _OU_ (ETBinaire(Val(sFiltres),csdLDAPGroup._ADGroupFiltreTypeGlobal)=csdLDAPGroup._ADGroupFiltreTypeGlobal _ET_ pclMembre.groupType="") _OU_ ...
+      							(ETBinaire(Val(sFiltres),csdLDAPGroup._ADGroupFiltreTypeDomaineLocal)=csdLDAPGroup._ADGroupFiltreTypeDomaineLocal _ET_ pclMembre.groupType=ceLDAPGroup.GROUP_TYPE_BUILTIN_LOCAL_GROUP) _OU_ ...
+      							(ETBinaire(Val(sFiltres),csdLDAPGroup._ADGroupFiltreTypeUniversel)=csdLDAPGroup._ADGroupFiltreTypeUniversel _ET_ pclMembre.groupType=ceLDAPGroup.GROUP_TYPE_UNIVERSAL_GROUP)  _OU_ ...
+      							FiltreCorrespond(pclMembre,sFiltres) ALORS 
+      							SI Ajoute(pclMembre,cEnregistrement.EstInchangé)=0 ALORS
+      								SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      								RENVOYER Faux
+      							SINON SI mg_taObjets[sClé]=cEnregistrementLDAP._ADTypeGroup _ET_ ETBinaire(Val(sFiltres),csdLDAPUser._ADUserFiltreRécursif)=csdLDAPUser._ADUserFiltreRécursif ALORS
+      								pclGroupe est un objet dynamique = SousGroupeAssigne(sDN,sFiltres)                 
+      								SI pclGroupe<>Null ALORS
+      									SI sFiltres>"" _ET_ EstNumérique(ExtraitChaîne(sFiltres,1,cGénérique._Sep)) ALORS pclGroupe.attributValeur("groupType")
+      									SI sFiltres="" _OU_ (ETBinaire(Val(sFiltres),csdLDAPGroup._ADGroupFiltreTypeGlobal)=csdLDAPGroup._ADGroupFiltreTypeGlobal _ET_ pclMembre.groupType="") _OU_ ...
+      										(ETBinaire(Val(sFiltres),csdLDAPGroup._ADGroupFiltreTypeDomaineLocal)=csdLDAPGroup._ADGroupFiltreTypeDomaineLocal _ET_ pclMembre.groupType=ceLDAPGroup.GROUP_TYPE_BUILTIN_LOCAL_GROUP) _OU_ ...
+      										(ETBinaire(Val(sFiltres),csdLDAPGroup._ADGroupFiltreTypeUniversel)=csdLDAPGroup._ADGroupFiltreTypeUniversel _ET_ pclMembre.groupType=ceLDAPGroup.GROUP_TYPE_UNIVERSAL_GROUP)  _OU_ ...
+      										FiltreCorrespond(pclMembre,sFiltres) ALORS 
+      										
+      										SI pclGroupe.SubGroupsCharge(objet..Classe,m_vNomObjetFiche,sFiltres,nLimiteMax,m_sAttributsALire,bLectureSeule) ALORS
+      											POUR TOUT pclGroup de pclGroupe.m_pclGroups.m_tabEnregistrement
+      												SI Ajoute(pclGroup,cEnregistrement.EstInchangé)=0 ALORS
+      													SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      													RENVOYER Faux
+      												FIN
+      											FIN
+      										FIN
+      									FIN
+      								FIN
+      							FIN
+      						FIN
+      					FIN
+      				CAS cEnregistrementLDAP._ADTypePrinter
+      				//à faire
+      				CAS cEnregistrementLDAP._ADTypeSharedFolder
+      					//à faire
+      			FIN
+      		FIN
+      		SI nLimiteMax>0 _ET_ m_tabEnregistrement..Occurrence>=nLimiteMax ALORS SORTIR
+      	FIN
+      	SI sJaugeOuCallBack>"" _ET_ nMaxEnreg>0 ALORS m_clJauge.Arrête()
+      	
+      		PROCÉDURE INTERNE Classes(sLaClé est une chaine) : cEnregistrementLDAP.EADType
+      		SI PAS mg_taObjets[sLaClé]..Existe _OU_ mg_taObjets[sLaClé]=cEnregistrementLDAP._ADTypeUnknown ALORS
+      			SELON LDAPValeur(m_sSessionAD,sDN,"objectClass",LDAPNbValeur(m_sSessionAD,sDN,"objectClass"))	//le dernier élément est significatif
+      				CAS cEnregistrementLDAP._ADTypeContact..Valeur 				: RENVOYER cEnregistrementLDAP._ADTypeContact
+      				CAS cEnregistrementLDAP._ADTypeUser..Valeur 				: RENVOYER cEnregistrementLDAP._ADTypeUser
+      				CAS cEnregistrementLDAP._ADTypeOrganizationalUnit..Valeur	: RENVOYER cEnregistrementLDAP._ADTypeOrganizationalUnit
+      				CAS cEnregistrementLDAP._ADTypeGroup..Valeur				: RENVOYER cEnregistrementLDAP._ADTypeGroup
+      				CAS cEnregistrementLDAP._ADTypeComputer..Valeur				: RENVOYER cEnregistrementLDAP._ADTypeComputer
+      				CAS cEnregistrementLDAP._ADTypePrinter..Valeur				: RENVOYER cEnregistrementLDAP._ADTypePrinter
+      				CAS cEnregistrementLDAP._ADTypeSharedFolder..Valeur			: RENVOYER cEnregistrementLDAP._ADTypeSharedFolder
+      			FIN
+      			RENVOYER cEnregistrementLDAP._ADTypeUnknown
+      		FIN
+      		FIN
+      	
+      		PROCÉDURE INTERNE SousGroupeAssigne(sDNGroupe est une chaine ansi,xFiltre)
+      		pclGroupe est un objet dynamique
+      		SELON cBaseDeDonnéesLDAP.mg_taServeurVersion[cBaseDeDonnées.mg_tabConnexion[p_nIndiceDeConnexion].sNomUnique]
+      			CAS cBaseDeDonnées.EVersionServeur.WindowsServer2000..Valeur 	
+      				pclGroupe = allouer un ceLDAP2000Group(p_nIndiceDeConnexion,"",m_bLectureSeule,"")
+      				SI pclGroupe<>Null ALORS pclGroupe.dn=sDNGroupe
+      			CAS cBaseDeDonnées.EVersionServeur.WindowsServer2003..Valeur 	
+      				pclGroupe = allouer un ceLDAP2003Group(p_nIndiceDeConnexion,"",m_bLectureSeule,"")
+      				SI pclGroupe<>Null ALORS pclGroupe.dn=sDNGroupe
+      			CAS cBaseDeDonnées.EVersionServeur.WindowsServer2003R2..Valeur 	
+      				pclGroupe = allouer un ceLDAP2003R2Group(p_nIndiceDeConnexion,"",m_bLectureSeule,"")
+      				SI pclGroupe<>Null ALORS pclGroupe.dn=sDNGroupe
+      			CAS cBaseDeDonnées.EVersionServeur.WindowsServer2008..Valeur 	
+      				pclGroupe = allouer un ceLDAP2008Group(p_nIndiceDeConnexion,"",m_bLectureSeule,"")
+      				SI pclGroupe<>Null ALORS pclGroupe.dn=sDNGroupe
+      			CAS cBaseDeDonnées.EVersionServeur.WindowsServer2008R2..Valeur 	
+      				pclGroupe = allouer un ceLDAP2008R2Group(p_nIndiceDeConnexion,"",m_bLectureSeule,"")
+      				SI pclGroupe<>Null ALORS pclGroupe.dn=sDNGroupe
+      			CAS cBaseDeDonnées.EVersionServeur.WindowsServer2012..Valeur
+      				pclGroupe = allouer un ceLDAP2012Group(p_nIndiceDeConnexion,"",m_bLectureSeule,"")
+      				SI pclGroupe<>Null ALORS pclGroupe.dn=sDNGroupe
+      		FIN
+      		RENVOYER pclGroupe
+      		FIN
+      	
+      		PROCÉDURE INTERNE OUAssigne(sDNOU est une chaine ansi,xFiltre)
+      		pclOU est un objet dynamique
+      		SELON cBaseDeDonnéesLDAP.mg_taServeurVersion[cBaseDeDonnées.mg_tabConnexion[p_nIndiceDeConnexion].sNomUnique]
+      			CAS cBaseDeDonnées.EVersionServeur.WindowsServer2000..Valeur 	
+      				pclOU = allouer un ceLDAP2000OrganizationalUnit(p_nIndiceDeConnexion,"",m_bLectureSeule,"")
+      				SI pclOU<>Null ALORS pclOU.dn=sDNOU
+      			CAS cBaseDeDonnées.EVersionServeur.WindowsServer2003..Valeur 	
+      				pclOU = allouer un ceLDAP2003OrganizationalUnit(p_nIndiceDeConnexion,"",m_bLectureSeule,"")
+      				SI pclOU<>Null ALORS pclOU.dn=sDNOU
+      			CAS cBaseDeDonnées.EVersionServeur.WindowsServer2003R2..Valeur 	
+      				pclOU = allouer un ceLDAP2003R2OrganizationalUnit(p_nIndiceDeConnexion,"",m_bLectureSeule,"")
+      				SI pclOU<>Null ALORS pclOU.dn=sDNOU
+      			CAS cBaseDeDonnées.EVersionServeur.WindowsServer2008..Valeur 	
+      				pclOU = allouer un ceLDAP2008OrganizationalUnit(p_nIndiceDeConnexion,"",m_bLectureSeule,"")
+      				SI pclOU<>Null ALORS pclOU.dn=sDNOU
+      			CAS cBaseDeDonnées.EVersionServeur.WindowsServer2008R2..Valeur 	
+      				pclOU = allouer un ceLDAP2008R2OrganizationalUnit(p_nIndiceDeConnexion,"",m_bLectureSeule,"")
+      				SI pclOU<>Null ALORS pclOU.dn=sDNOU
+      			CAS cBaseDeDonnées.EVersionServeur.WindowsServer2012..Valeur
+      				pclOU = allouer un ceLDAP2012OrganizationalUnit(p_nIndiceDeConnexion,"",m_bLectureSeule,"")
+      				SI pclOU<>Null ALORS pclOU.dn=sDNOU
+      		FIN
+      		RENVOYER pclOU	
+      		FIN
+      	
+      		PROCÉDURE INTERNE FiltreCorrespond(pclUnObjet est un objet dynamique,sLesFiltres) : booléen	//ne pas type sLesFiltres
+      		SI sLesFiltres~="" ALORS RENVOYER Vrai
+      		sFiltreAttribut,sFiltreValeur,sFiltreType,sSepar,sAtt sont des chaines
+      		nOK,nMax est un entier
+      		bChaine,bNum est un booleen
+      		POUR TOUTE CHAÎNE sLeFiltre de sLesFiltres separee par cgenerique._Sep
+      			SI PAS EstNumérique(sLeFiltre) ALORS
+      				sSepar=""
+      				SI Position(sLeFiltre,"<>")>0 ALORS sSepar="<>"						//différent
+      				SI sSepar="" _ET_ Position(sLeFiltre,">=")>0 	ALORS sSepar=">="	//plus grand egal
+      				SI sSepar="" _ET_ Position(sLeFiltre,"<=")>0 	ALORS sSepar="<="	//plus petit egal
+      				SI sSepar="" _ET_ Position(sLeFiltre,">")>0 	ALORS sSepar=">"	//plus grand
+      				SI sSepar="" _ET_ Position(sLeFiltre,"<")>0 	ALORS sSepar="<"	//plus petit
+      				SI sSepar="" _ET_ Position(sLeFiltre,"[=]")>0 	ALORS sSepar="[=]"	//contient
+      				SI sSepar="" _ET_ Position(sLeFiltre,"]=[")>0 	ALORS sSepar="]=["	//ne contient pas
+      				SI sSepar="" _ET_ Position(sLeFiltre,"~=")>0 	ALORS sSepar="~="	//égal souple
+      				SI sSepar="" _ET_ Position(sLeFiltre,"=")>0 	ALORS sSepar="="	//égal
+      				
+      				SI sSepar="" ALORS CONTINUER
+      				nMax++
+      				sFiltreAttribut = ExtraitChaîne(sLeFiltre,1,sSepar);sFiltreValeur = ExtraitChaîne(sLeFiltre,2,sSepar)			
+      				SI Position(sFiltreAttribut,".")>0 ALORS 
+      					sFiltreType=ExtraitChaîne(sFiltreAttribut,1,".");sFiltreAttribut=ExtraitChaîne(sFiltreAttribut,2,".")
+      					SI PAS sFiltreType~=pclUnObjet.m_eType..Valeur ALORS CONTINUE
+      				FIN
+      				
+      				sAtt			= "pclUnObjet."+sFiltreAttribut
+      				bChaine			= TypeVar({"pclUnObjet."+sFiltreAttribut,indVariable}) DANS (wlChaîneAnsi,wlChaîne,wlChaîneUnicode)
+      				
+      				SI Position(pclUnObjet.m_sAttributsLus,sFiltreAttribut,0,MotComplet+SansCasse)<1 ALORS pclUnObjet.AttributValeur(sFiltreAttribut)
+      				SI Gauche(sFiltreValeur,1)="(" _ET_ Droite(sFiltreValeur,1)=")" ALORS
+      					//plusieurs valeurs
+      					sFiltreValeur	= Milieu(sFiltreValeur,2,Taille(sFiltreValeur)-2)
+      					POUR TOUTE CHAÎNE sValeur de sFiltreValeur separee par "||"	//  || est un "ou" . si une valeur convient, on incrémente nOK et on sort
+      						bNum=(EstNumérique({sAtt,indVariable}) ET EstNumérique(sValeur))
+      						SELON sSepar
+      							CAS "<>"	: SI PAS (bChaine ET PAS bNum ? {sAtt,indVariable}=sValeur SINON Val({sAtt,indVariable})=Val(sValeur)) ALORS nOK++;SORTIR
+      							CAS "<~>"	: SI PAS {sAtt,indVariable}~=sValeur ALORS nOK++;SORTIR
+      							CAS ">"		: SI (bChaine ET PAS bNum ? {sAtt,indVariable}>sValeur SINON Val({sAtt,indVariable})>Val(sValeur)) ALORS nOK++;SORTIR
+      							CAS ">="	: SI (bChaine ET PAS bNum ? {sAtt,indVariable}>=sValeur SINON Val({sAtt,indVariable})>=Val(sValeur)) ALORS nOK++;SORTIR
+      							CAS "<"		: SI (bChaine ET PAS bNum ? {sAtt,indVariable}<sValeur SINON Val({sAtt,indVariable})<Val(sValeur)) ALORS nOK++;SORTIR
+      							CAS "<="	: SI (bChaine ET PAS bNum ? {sAtt,indVariable}<=sValeur SINON Val({sAtt,indVariable})<=Val(sValeur)) ALORS nOK++;SORTIR
+      							CAS "[=]"	: SI {"pclUnObjet."+sFiltreAttribut,indVariable}[~]sValeur ALORS nOK++;SORTIR
+      							CAS "]=["	: SI PAS {"pclUnObjet."+sFiltreAttribut,indVariable}[~]sValeur ALORS nOK++;SORTIR
+      							CAS "~="	: SI {"pclUnObjet."+sFiltreAttribut,indVariable}~=sValeur ALORS nOK++;SORTIR
+      							CAS "="		: SI {sAtt,indVariable}=sValeur ALORS nOK++;SORTIR
+      							AUTRE CAS	: m_pclErreur.AjouteErreur("Opération du filtre sur LDAP non reconnue : "+sSepar)
+      						FIN
+      					FIN
+      				SINON
+      					bNum=(EstNumérique({sAtt,indVariable}) ET EstNumérique(sFiltreValeur))
+      					SELON sSepar
+      						CAS "<>"	: SI PAS (bChaine ET PAS bNum ? {sAtt,indVariable}=sFiltreValeur SINON Val({sAtt,indVariable})=Val(sFiltreValeur)) ALORS nOK++
+      						CAS "<~>"	: SI PAS {sAtt,indVariable}~=sFiltreValeur ALORS nOK++
+      						CAS ">"		: SI (bChaine ET PAS bNum ? {sAtt,indVariable}>sFiltreValeur SINON Val({sAtt,indVariable})>Val(sFiltreValeur)) ALORS nOK++
+      						CAS ">="	: SI (bChaine ET PAS bNum ? {sAtt,indVariable}>=sFiltreValeur SINON Val({sAtt,indVariable})>=Val(sFiltreValeur)) ALORS nOK++
+      						CAS "<"		: SI (bChaine ET PAS bNum ? {sAtt,indVariable}<sFiltreValeur SINON Val({sAtt,indVariable})<Val(sFiltreValeur)) ALORS nOK++
+      						CAS "<="	: SI (bChaine ET PAS bNum ? {sAtt,indVariable}<=sFiltreValeur SINON Val({sAtt,indVariable})<=Val(sFiltreValeur)) ALORS nOK++
+      						CAS "[=]"	: SI {"pclUnObjet."+sFiltreAttribut,indVariable}[~]sFiltreValeur ALORS nOK++
+      						CAS "]=["	: SI PAS {"pclUnObjet."+sFiltreAttribut,indVariable}[~]sFiltreValeur ALORS nOK++
+      						CAS "~="	: SI {"pclUnObjet."+sFiltreAttribut,indVariable}~=sFiltreValeur ALORS nOK++
+      						CAS "="		: SI {sAtt,indVariable}=sFiltreValeur ALORS nOK++
+      						AUTRE CAS	: m_pclErreur.AjouteErreur("Opération du filtre sur LDAP non reconnue : "+sSepar)
+      					FIN
+      				FIN
+      			FIN
+      		FIN
+      		RENVOYER (nOK=nMax)
+      		FIN
+      	
+      <fin>
+      
+      
+      RENVOYER Vrai
+      
+      CAS ERREUR:
+      SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Lit
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1294231147347595484
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère un objet du tableau des résultats en fonction de l'indice fourni en paramètre. Elle prend en compte deux types d'indices : les indices numériques et les clés uniques (représentées par des chaînes, par exemple, des GUID).
+      // Syntaxe : [ <Résultat> = ] Lit (<xIndice>)
+      // Paramètres :
+      // 	xIndice : Indice de l'objet à récupérer. Il peut s'agir soit d'un entier représentant l'ID Unique de l'enregistrement, soit d'une chaîne GUID.
+      // Valeur de retour : Type indéterminé : Objet correspondant à l'indice fourni. Si l'indice n'est pas trouvée, elle renvoie Null et ajoute une erreur à la liste d'erreurs.
+      // Exemple :
+      //
+      PROCEDURE Lit(xIndice)	//ne pas typer¸xIndice
+      nIndice est un entier
+      SI TypeVar(xIndice)=wlChaîne ALORS
+      	nIndice=Recherche(xIndice)
+      	SI nIndice>0 ALORS RENVOYER m_tabEnregistrement[nIndice] sINON m_pclErreur.AjouteErreur(<§$0006§>)
+      SINON SI TypeVar(xIndice) DANS (wlEntier,wlEntier_1,wlEntier_4,wlEntier_8,wlEntierSansSigne_1,wlEntierSansSigne_2,wlEntierSansSigne_4,wlEntierSansSigne_8) ALORS	//un indice numérique
+      	SI 0<xIndice<=m_tabEnregistrement..Occurrence ALORS RENVOYER m_tabEnregistrement[xIndice] SINON m_pclErreur.AjouteErreur(<§$0005§>+m_tabEnregistrement..Occurrence)
+      FIN
+      renvoyer null
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Null
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Null
+     type : 458752
+   -
+     name : LitDansPoubelle
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1294231649858819957
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère un enregistrement mis à la poubelle à partir de son indice ou de sa clé primaire (GUID).
+      // Syntaxe : [ <Résultat> = ] LitDansPoubelle (<xIndice>)
+      // Paramètres :
+      //	xIndice : ID automatique ou GUID de l'enregistrement à récupérer.
+      // Valeur de retour : Type indéterminé : Objet supprimé correspondant à l'indice ou à la clé primaire spécifiée. Si l'enregistrement n'est pas trouvé, elle renvoie Null.
+      // Exemple :
+      //
+      PROCEDURE LitDansPoubelle(xIndice)	//ne pas typer xIndice
+      SI m_tabSupprimé..Occurrence<=0 ALORS RENVOYER 0 
+      nIndice est un entier
+      SI TypeVar(xIndice)=wlChaîne ALORS
+      	si gauche(xIndice,3)~="dc=" alors
+      		nIndice=TableauCherche(m_tabSupprimé,tcLinéaire,"dn",xIndice)
+      	sinon	
+      		nIndice=TableauCherche(m_tabSupprimé,tcLinéaire,"m_sGUIDEnregistrement",xIndice)
+      	FIN
+      	SI nIndice>0 ALORS RENVOYER m_tabSupprimé[nIndice] SINON m_pclErreur.AjouteErreur(<§$0006§>)
+      FIN
+      renvoyer null
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Null
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Null
+     type : 458752
+   -
+     name : MetDansPoubelle
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1294231843132459007
+     type_code : 12
+     code : |1-
+      // Résumé : Déplace un enregistrement vers la poubelle (tableau des éléments supprimés). Elle prend en compte deux types d'indices : les ID numériques et les GUID.
+      // Syntaxe : [ <Résultat> = ] MetDansPoubelle (<xIndice>)
+      // Paramètres :
+      // 	xIndice : Indice de l'objet à chercher. Il peut s'agir soit d'un entier représentant l'ID Unique de l'enregistrement, soit d'une chaîne GUID.
+      // Valeur de retour : booléen : Renvoie Vrai si l'opération a été effectuée avec succès et Faux en cas d'échec.
+      // Exemple :
+      //
+      PROCEDURE MetDansPoubelle(xIndice) : booléen	//ne pas typer xIndice
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(xIndice)
+      m_pclErreur.Raz()
+      
+      nIndice est un entier
+      SI TypeVar(xIndice)=wlChaîne ALORS	//un GUID
+      	nIndice=Recherche(xIndice)
+      	SI nIndice>0 ALORS
+      		//ceux ajoutés sont juste supprimés du tableau principal car ils ne seront de toute façon pas traité dans le tableau des supprimés (ces dernies seront supprimés de la BD)
+      		SI m_tabEnregistrement[nIndice].p_eStatutEnregistrement<>cEnregistrement.EstAjouté ALORS TableauAjoute(m_tabSupprimé,m_tabEnregistrement[nIndice])
+      		TableauSupprime(m_tabEnregistrement,nIndice)
+      		RENVOYER Vrai
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0006§>)
+      	FIN
+      SINON SI TypeVar(xIndice) DANS (wlEntier,wlEntier_1,wlEntier_4,wlEntier_8,wlEntierSansSigne_1,wlEntierSansSigne_2,wlEntierSansSigne_4,wlEntierSansSigne_8) ALORS	//un indice numérique
+      	SI 0<xIndice<=m_tabEnregistrement..Occurrence ALORS
+      		//ceux ajoutés sont juste supprimés du tableau principal car ils ne seront de toute façon pas traité dans le tableau des supprimés (ces dernies seront supprimés de la BD)
+      		SI m_tabEnregistrement[xIndice].p_eStatutEnregistrement<>cEnregistrement.EstAjouté ALORS TableauAjoute(m_tabSupprimé,m_tabEnregistrement[xIndice])
+      		TableauSupprime(m_tabEnregistrement,xIndice)
+      		RENVOYER Vrai
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0005§>+m_tabEnregistrement..Occurrence)	
+      	FIN
+      FIN
+      RENVOYER Faux
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : MetToutDansPoubelle
+     procedure_id : 1294232049290936982
+     type_code : 12
+     code : |1-
+      // Résumé : Déplacer les enregistrements actuels vers la poubelle (tableau des éléments supprimés).
+      // Syntaxe : [ <Résultat> = ] MetToutDansPoubelle ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Renvoie toujours Vrai
+      // Exemple :
+      //
+      PROCEDURE MetToutDansPoubelle() : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      POUR TOUT pclObjet DE m_tabEnregistrement
+      	TableauAjoute(m_tabSupprimé,pclObjet)
+      FIN
+      TableauSupprimeTout(m_tabEnregistrement)
+      RENVOYER Vrai
+     type : 458752
+   -
+     name : Modifie
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1294232148075273414
+     type_code : 12
+     code : |1-
+      // Résumé : Remplace un enregistrement existant dans la source de données par un nouvel enregistrement fourni en paramètre. Elle prend en compte l'indice de l'enregistrement à modifier.
+      // Syntaxe : [ <Résultat> = ] Modifie (<xIndice>, <pclObjet> est cEnregistrement dynamique)
+      // Paramètres :
+      // 	xIndice : Indice de l'enregistrement à modifier. Il peut s'agir soit d'un entier représentant l'indice de l'enregistrement, soit d'une chaîne permettant d'identifier l'enregistrement selon son GUID.
+      //	pclObjet (cEnregistrement dynamique) : Nouvel enregistrement de type cEnregistrement qui remplacera l'enregistrement existant.
+      // Valeur de retour : booléen : Renvoie un booléen indiquant si l'opération de modification a été effectuée avec succès. Elle renvoie Vrai en cas de succès, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Modifie(xIndice, pclObjet est un objet dynamique) : booléen	//ne pas typer¸xIndice
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(xIndice,pclObjet)
+      m_pclErreur.Raz()
+      
+      nIndice est un entier
+      SI TypeVar(xIndice)=wlChaîne ALORS
+      	SI Gauche(xIndice,3)~="dc=" ALORS
+      		nIndice=TableauCherche(m_tabSupprimé,tcLinéaire,"dn",xIndice)
+      	SINON	
+      		nIndice=TableauCherche(m_tabSupprimé,tcLinéaire,"m_sGUIDEnregistrement",xIndice)
+      	FIN
+      	SI 0<nIndice<=m_tabEnregistrement..Occurrence ALORS
+      		pclObjet.p_eStatutEnregistrement = cEnregistrement.EstModifié
+      		m_tabEnregistrement[nIndice] 	 = pclObjet
+      		RENVOYER Vrai
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0005§>+m_tabEnregistrement..Occurrence)
+      	FIN
+      FIN
+      RENVOYER Faux	
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Occurrence
+     procedure_id : 1294232568982101261
+     type_code : 12
+     code : |1-
+      // Résumé : Récupérer le nombre d'occurrences dans le tableau d'enregistrement
+      // Syntaxe : [ <Résultat> = ] Occurrence ()
+      // Paramètres : Aucun
+      // Valeur de retour : entier : Nombre d'occurrences dans le tableau d'enregistrements.
+      // Exemple :
+      //
+      PROCEDURE Occurrence() : entier
+      RENVOYER m_tabEnregistrement..Occurrence
+     type : 458752
+   -
+     name : OccurrenceSelonStatut
+     procedure_id : 1294232659176500496
+     type_code : 12
+     code : |1-
+      // Résumé : Compte le nombre d'enregistrements du tableau d'objets en fonction des différents statuts spécifiés. Les statuts pris en compte sont ceux définis dans la combinaison COStatutEnregistrement.
+      // Syntaxe : [ <Résultat> = ] OccurrenceSelonStatut ( [<coStatutEnregistrement> est cSourceDeDonnées.COStatutEnregistrement])
+      // Paramètres : 
+      //	coStatutEnregistrement (cSourceDeDonnées.COStatutEnregistrement) : Combinaison des types à compter 
+      // Valeur de retour : entier : Nombre d'enregistrements correspondant aux statuts spécifiés.
+      // Exemple :
+      //
+      PROCEDURE OccurrenceSelonStatut(coStatutEnregistrement est un COStatutEnregistrement = EstAjouté + EstInchangé + EstModifié) : entier
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI coStatutEnregistrement = EstAjouté + EstInchangé + EstModifié ALORS RENVOYER m_tabEnregistrement.Occurrence()
+      SI coStatutEnregistrement = EstAjouté + EstInchangé + EstModifié + EstSupprimé ALORS RENVOYER m_tabEnregistrement.Occurrence() + m_tabSupprimé.Occurrence()
+      nTot est un entier 
+      SI coStatutEnregistrement[EstSupprimé] ALORS nTot += m_tabSupprimé..Occurrence  
+      
+      POUR TOUT pclObjet de m_tabEnregistrement
+      	SELON pclObjet.p_eStatutEnregistrement
+      		CAS cEnregistrement.EstAjouté 		: SI coStatutEnregistrement[EstAjouté] 		ALORS nTot++
+      		CAS cEnregistrement.EstModifié 		: SI coStatutEnregistrement[EstModifié] 	ALORS nTot++
+      		CAS cEnregistrement.EstInchangé 	: SI coStatutEnregistrement[EstInchangé] 	ALORS nTot++
+      	FIN
+      FIN
+      RENVOYER nTot
+     type : 458752
+   -
+     name : Précédent
+     procedure_id : 1294232813795359188
+     type_code : 12
+     code : |1-
+      // Résumé : Passe à l'objet précédent dans le tableau d'enregistrement résultant d'une opération de Liste.
+      // Syntaxe : [ <Résultat> = ] Précédent ()
+      // Paramètres : Aucun
+      // Valeur de retour :
+      // 	Type indéterminé : Renvoie l'objet précédent dans le tableau. Si aucun enregistrement n'est disponible ou que le premier enregistrement est déjà atteint, elle renvoie Null.
+      // Exemple :
+      //
+      PROCEDURE Précédent()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI m_tabEnregistrement..Occurrence>0 _ET_ m_nIndiceParcours>1 ALORS 
+      	m_nIndiceParcours--;RENVOYER m_tabEnregistrement[m_nIndiceParcours]
+      SINON
+      	RENVOYER Null
+      FIN
+     type : 458752
+   -
+     name : Premier
+     procedure_id : 1294232912579695745
+     type_code : 12
+     code : |1-
+      // Résumé : Positionne le curseur de parcours sur le premier enregistrement du tableau d'enregistrements et renvoie l'objet cEnregistrement correspondant.
+      // Syntaxe : [ <Résultat> = ] Premier ()
+      // Paramètres : Aucun
+      // Valeur de retour : Type indéterminé : Objet cEnregistrement correspondant au premier enregistrement.
+      // Exemple :
+      //
+      PROCEDURE Premier()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI m_tabEnregistrement..Occurrence=0 ALORS RENVOYER Null SINON m_nIndiceParcours=1;RENVOYER m_tabEnregistrement[m_nIndiceParcours]
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 1294233002774095916
+     type_code : 12
+     code : |1-
+      // Résumé : Réinitialise l'état interne de la source de données en supprimant tous les enregistrements du tableau d'enregistrements actuel et du tableau des enregistrements supprimés. De plus, l'indice de parcours est réinitialisé à zéro.
+      // Syntaxe : Raz ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Raz()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      TableauSupprimeTout(m_tabEnregistrement)
+      TableauSupprimeTout(m_tabSupprimé)
+     type : 458752
+   -
+     name : Recherche
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1294233118738239100
+     type_code : 12
+     code : |1-
+      // Résumé : Retrouve l'indice, dans le tableau de résultats, de l'objet avec son GUID.
+      // Syntaxe : [ <Résultat> = ] Recherche (<sGUID> est chaîne)
+      // Paramètres :
+      //	sGUID (chaîne UNICODE) : La chaîne représentant le GUID de l'enregistrement à rechercher.
+      // Valeur de retour : entier : Indice de l'enregistrement correspondant au GUID spécifié. Si l'enregistrement n'est pas trouvé, elle renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE Recherche(sGUID est une chaîne) : entier
+      SI m_tabEnregistrement..Occurrence=0 ALORS RENVOYER 0 sINON RENVOYER RechercheParMembre("m_sGUIDEnregistrement",sGUID)
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : RechercheParMembre
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1294233238997417831
+     type_code : 12
+     code : |1-
+      // Résumé : Effectue une recherche linéaire dans le tableau d'enregistrements pour trouver un enregistrement qui correspond aux valeurs spécifiées pour les membres donnés.
+      // Syntaxe : [ <Résultat> = ] RechercheParMembre (<sMembres> est chaîne, <xValMembre1> [, <xValMembre2> [, <xValMembre3> [, <xValMembre4> [, <xValMembre5>]]]])
+      // Paramètres :
+      //	sMembres (chaîne UNICODE) : Noms des membres (colonnes) à rechercher, séparés par des virgules ou points-virgules.
+      // 	xValMembre1 : Valeur à rechercher pour le premier membre spécifié
+      // 	xValMembre2 (valeur optionnelle) : Valeur à rechercher pour le second membre spécifié
+      // 	xValMembre3 (valeur optionnelle) : Valeur à rechercher pour le troisième membre spécifié
+      // 	xValMembre4 (valeur optionnelle) : Valeur à rechercher pour le quatrième membre spécifié
+      // 	xValMembre5 (valeur optionnelle) : Valeur à rechercher pour le cinquième membre spécifié
+      // Valeur de retour : entier : Indice du premier enregistrement trouvé qui correspond aux valeurs spécifiées pour les membres donnés. Si aucun enregistrement n'est trouvé, elle renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE RechercheParMembre(sMembres est une chaîne,xValMembre1<utile>,xValMembre2<utile>=Null,xValMembre3<utile>=Null,xValMembre4<utile>=Null,xValMembre5<utile>=Null) : entier
+      tabIndicevaleur est un tableau d'entier = [2,3,4,5,6]
+      bOK est un booleen
+      
+      POUR nObjet = 1 _a_ m_tabEnregistrement..occurrence
+      	bOK=Vrai
+      	POUR i = 1 _À_ 5
+      		SI PAS {"xValMembre"+i,indVariable}..Défaut ALORS
+      			//RENVOYER TableauCherche(m_tabEnregistrement,tcLinéaire,sMembres,MesParamètres[2 À tabIndicevaleur[i]])		//WD23 20211103 : Les fonctions TableauTrie et TableauCherche ne sont pas disponibles sur les tableaux d'objets dynamiques non typés.	
+      			POUR TOUTE CHAÎNE sMembre de sMembres separee par ","
+      				SI {"m_tabEnregistrement["+nObjet+"]."+sMembre,indVariable}<>{"xValMembre"+i,indVariable} ALORS bOK=Faux;SORTIR
+      			FIN
+      		FIN
+      		SI PAS bOK ALORS SORTIR
+      	FIN
+      	SI bOK ALORS RENVOYER nObjet
+      FIN
+      RENVOYER 0
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : ListeRafraîchi
+     procedure_id : 1294233393616276258
+     type_code : 12
+     code : |1-
+      // Résumé : Rafraîchi la liste des enregistrements en ré-exécutant la dernière requête effectuée. Tous les paramètres de la dernières requête avaient été conservés dans m_vDernièreRequête.
+      // Syntaxe : [ <Résultat> = ] ListeRafraichi ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Vrai si le rafraîchissement de la liste est effectué avec succès, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE ListeRafraîchi() : booléen                   
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI m_vDernièreRequête<>Null ALORS
+      	pclPère 				est un objet dynamique
+      	bLectureSeule			est un booleen 	= m_vDernièreRequête.LectureSeule
+      	sJaugeOuCallBack		est une chaine 	= m_vDernièreRequête.JaugeOuCallBack
+      	duRafraichiJauge 		est une durée 	= m_vDernièreRequête.RafraichiJauge
+      	sLibelléJauge 			est une chaine 	= m_vDernièreRequête.LibelléJauge
+      	sTextePersoLibelléJauge est une chaine 	= m_vDernièreRequête.TextePersoLibelléJauge
+      	nLimiteMax				est un entier	= m_vDernièreRequête.LimiteMax
+      	si m_vDernièreRequête.type=cEnregistrementLDAP.EADType._ADTypeGroup..Nom
+      		pclPère = allouer un ceLDAPGroup(m_nIndiceDeConnexion,m_vDernièreRequête.OUouGroupe,m_vDernièreRequête.LectureSeule)
+      	sinon si m_vDernièreRequête.typeEnregistrementLDAP.EADType._ADTypeOrganizationalUnit..Nom
+      		pclPère = allouer un ceLDAPOrganizationalUnit(m_nIndiceDeConnexion,m_vDernièreRequête.OUouGroupe,m_vDernièreRequête.LectureSeule)
+      	fin
+      	pclPère.p_sDN			= m_vDernièreRequête.DN
+      	sFiltre 				est une chaine 	= m_vDernièreRequête.filtre
+      	RENVOYER Liste(pclPère,sFiltre,nLimiteMax,bLectureSeule,sJaugeOuCallBack,duRafraichiJauge,sLibelléJauge,sTextePersoLibelléJauge)
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0007§>)
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : Suivant
+     procedure_id : 1294233543940231521
+     type_code : 12
+     code : |1-
+      // Résumé : Passe à l'objet suivant dans le tableau d'enregistrement résultant d'une opération de Liste.
+      // Syntaxe : [ <Résultat> = ] Suivant ()
+      // Paramètres : Aucun
+      // Valeur de retour :
+      // 	Type indéterminé : Renvoie l'objet suivant dans le tableau. Si aucun enregistrement n'est disponible ou que le dernier enregistrement est déjà atteint, elle renvoie Null.
+      // Exemple :
+      //
+      PROCEDURE Suivant()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI m_tabEnregistrement..Occurrence>0 _ET_ m_nIndiceParcours<m_tabEnregistrement..Occurrence ALORS 
+      	m_nIndiceParcours++;RENVOYER m_tabEnregistrement[m_nIndiceParcours]
+      SINON
+      	RENVOYER Null
+      FIN
+     type : 458752
+   -
+     name : Trie
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1294233651314439178
+     type_code : 12
+     code : |1-
+      // Résumé : Trie le tableau d'enregistrements selon la valeur d'un membre spécifié. Différentes options de tri, telles que l'ordre lexicographique, le respect des valeurs numériques, l'absence d'accent, etc., peuvent être spécifiées.
+      // Syntaxe : Trie (<sNomMembre> est chaîne [, <COOption> est cSourceDeDonnées.COTri])
+      // Paramètres :
+      //	sNomMembre (chaîne UNICODE) : Le nom du membre selon lequel effectuer le tri.
+      //	COOption (cSourceDeDonnées.COTri optionnel) : Options de tri spécifiées sous forme de combinaison de valeurs prédéfinies, par défaut : aucun tri.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Trie(sNomMembre est une chaîne,COOption est une COTri = COTri.Aucun)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomMembre,COOption)
+      m_pclErreur.Raz()
+      
+      nOption est un entier
+      SI COOption[tccOrdreLexicographique] 		ALORS nOption+=COTri.tccOrdreLexicographique
+      SI COOption[tccRespecteNumérique] 			ALORS nOption+=COTri.tccRespecteNumérique
+      SI COOption[tccSansAccent] 					ALORS nOption+=COTri.tccSansAccent
+      SI COOption[tccSansCasse] 					ALORS nOption+=COTri.tccSansCasse
+      SI COOption[tccSansEspace] 					ALORS nOption+=COTri.tccSansEspace
+      SI COOption[tccSansEspaceIntérieur] 		ALORS nOption+=COTri.tccSansEspaceIntérieur
+      SI COOption[tccSansPonctuationNiEspace] 	ALORS nOption+=COTri.tccSansPonctuationNiEspace
+      TableauTrie(m_tabEnregistrement,ttMembre+nOption,sNomMembre)
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 458752
+  properties :
+   -
+     name : p_nIndiceDeConnexion
+     identifier : 0x11f604a512dcc051
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indice de connexion courant
+         PROCEDURE PUBLIQUE p_nIndiceDeConnexion() : entier
+         RENVOYER m_nIndiceDeConnexion
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie l'indice de connexion
+         PROCEDURE PUBLIQUE p_nIndiceDeConnexion(Valeur)
+         m_nIndiceDeConnexion = Valeur
+         SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé>"" ALORS
+         	m_sServeur		= ExtraitChaîne(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé,1)
+         	m_sSessionAD 	= ExtraitChaîne(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé,3)
+         	m_bGèreUTF8 	= cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bGèreUTF8
+         SINON 
+         	m_sServeur		= ""
+         	m_sSessionAD	= ""
+         	m_bGèreUTF8		= Faux
+         FIN
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sDNBase
+     identifier : 0x11f604c912dd4c79
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le DN de base
+         PROCEDURE PUBLIQUE p_sDNBase() : chaîne
+         RENVOYER cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f55c4812c213a1
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : L'objet est vide
+      en-GB : The object is empty
+      fr-CA : L'objet est vide
+      en-US : The object is empty
+     index : 0
+   -
+     text :
+      fr-FR : Cet enregistrement est déjà dans la source de données
+      en-GB : This record is already in the data source
+      fr-CA : Cet enregistrement est déjà dans la source de données
+      en-US : This record is already in the data source
+     index : 1
+   -
+     text :
+      fr-FR : Le père n'est ni un groupe ni une unité d'organisation (OU)
+      en-GB : The father is neither a group nor an organizational unit (OU)
+      fr-CA : Le père n'est ni un groupe ni une unité d'organisation (OU)
+      en-US : The father is neither a group nor an organizational unit (OU)
+     index : 2
+   -
+     text :
+      fr-FR : Pas de session ouverte
+      en-GB : No open session
+      fr-CA : Pas de session ouverte
+      en-US : No open session
+     index : 3
+   -
+     text :
+      fr-FR : Parcours des données annulé
+      en-GB : Data browsing canceled
+      fr-CA : Parcours des données annulé
+      en-US : Data browsing canceled
+     index : 4
+   -
+     text :
+      fr-FR : "L'indice n'est pas dans les limites : 1 à "
+      en-GB : "The index is not within the limits: 1 to "
+      fr-CA : "L'indice n'est pas dans les limites : 1 à "
+      en-US : "The index is not within the limits: 1 to "
+     index : 5
+   -
+     text :
+      fr-FR : L'enregistrement n'a pas été trouvé
+      en-GB : The record was not found
+      fr-CA : L'enregistrement n'a pas été trouvé
+      en-US : The record was not found
+     index : 6
+   -
+     text :
+      fr-FR : Aucune liste n'a été appelée avant
+      en-GB : No list was called up before
+      fr-CA : Aucune liste n'a été appelée avant
+      en-US : No list was called up before
+     index : 7
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

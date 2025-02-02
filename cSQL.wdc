@@ -1,0 +1,1106 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cSQL
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1c3f52e60c609ca4
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe est d'importance puisqu'elle permet d'exécuter une requête SQL et contient la source de données pour recevoir son résultat.
+      
+      CONSTANTE hLstAvecGUID				= 0x80000
+      
+      cSQL est une Classe
+      	hérite de cgenerique
+      privé
+      public                                                              
+      	m_sd							est une source de données 		<Sérialise = Faux>	
+      public constant                 	                                
+      	m_sTableReliée					est une chaine					<Sérialise = Faux>
+      	m_nIndiceDeConnexion			est un entier 					<Sérialise = Faux>	
+      	m_pclBaseDeDonnées				est un cBaseDeDonnées dynamique	<serialise = faux>
+      	m_sAlias						est une chaine 					<Sérialise = Faux>
+      	m_tabColonnes					est un tableau 					<serialise = faux> de ccolonne dynamique
+      	m_sToutesLesColonnesNonMémo		est une chaine 					<Sérialise = Faux>
+      	m_sToutesLesColonnesMémoBinaire	est une chaine 					<Sérialise = Faux>
+      	m_sToutesLesColonnesMémoTexte	est une chaine 					<Sérialise = Faux>
+      	m_sToutesLesColonnes			est une chaine					<Sérialise = Faux>
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2035436704598432932
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise les propriétés de la classe en fonction des paramètres fournis lors de sa création. Cette méthode établit une connexion à la base de données, configure l'alias de la source de données, et effectue d'autres opérations nécessaires à l'utilisation de la classe pour interagir avec une table.
+      // Syntaxe : Constructeur (<nIndiceDeConnexion> est entier [, <xNomTableOuObjetSourceDonnées> [, <xChaineCryptage> [, <sAnalyse55> est chaîne [, <sMDPAnalyse55> est chaîne]]]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indice de connexion à la base de données.
+      // 	xNomTableOuObjetSourceDonnées (valeur optionnelle) : Le nom de la table ou de l'objet source de données. Si omis, un alias unique sera généré.
+      // 	xChaineCryptage (valeur optionnelle) : La chaîne de cryptage pour la connexion à la base de données (non typée car peut être une chaine ou un buffer). Par défaut : pas de cryptage.
+      //	sAnalyse55 (chaîne UNICODE) : Chemin vers le fichier d'analyse pour les accès HyperFile 5. Obligatoire quant il s'agit d'une analyse V5. Laisser à vide pour toutes les autres bases de données.
+      //	sMDPAnalyse55 (chaîne UNICODE) : Mot de passe pour ouvrir le fichier d'analyse pour les accès HyperFile 5. Obligatoire quant il s'agit d'une analyse V5. Laisser à vide pour toutes les autres bases de données.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexion est un entier,xNomTableOuObjetSourceDonnées=NULL,xChaineCryptage = null,local sAnalyse55 est une chaine = "",local sMDPAnalyse55 est une chaine = "")
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIndiceDeConnexion,(TypeVar(xNomTableOuObjetSourceDonnées)=wlInstance ? xNomTableOuObjetSourceDonnées..Classe SINON xNomTableOuObjetSourceDonnées),xChaineCryptage,sAnalyse55,sMDPAnalyse55)
+      m_nIndiceDeConnexion= nIndiceDeConnexion
+      m_pclBaseDeDonnées	= allouer un cBaseDeDonnées(nIndiceDeConnexion)
+      
+      si m_nIndiceDeConnexion>0 alors
+      	m_sd			= cBaseDeDonnées.AliasUnique((xNomTableOuObjetSourceDonnées=NULL? "" sinon (TypeVar(xNomTableOuObjetSourceDonnées)=wlInstance ? xNomTableOuObjetSourceDonnées..Classe SINON xNomTableOuObjetSourceDonnées)),cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].cnxDonnées..Provider=cBaseDeDonnéesHyperFile.hAccèsHF5)	//pour assurer l'unicité du nom de source de données
+      	si xNomTableOuObjetSourceDonnées=NULL alors
+      		m_sAlias 	= cBaseDeDonnées.AliasUnique("",cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].cnxDonnées..Provider=cBaseDeDonnéesHyperFile.hAccèsHF5)
+      	sinon si TypeVar(xNomTableOuObjetSourceDonnées)=wlInstance alors
+      		m_sAlias 	= xNomTableOuObjetSourceDonnées.m_sAlias	//l'alias de la source de données
+      	sinon
+      		sNomTableUnique,sMDP sont des chaines
+      
+      		m_sTableReliée	= minuscule(xNomTableOuObjetSourceDonnées)
+      		si pas capplication.mg_taInfo[cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].sNomUnique+cGénérique._Sep+m_sTableReliée]..existe alors
+      			clTable est un ctable(nIndiceDeConnexion,xNomTableOuObjetSourceDonnées,xChaineCryptage,sAnalyse55,sMDPAnalyse55)
+      			si clTable.p_serreur>"" alors m_pclErreur.ajouteerreur(clTable.p_serreur,clTable.p_sErreurCode);retour
+      			sNomTableUnique = clTable.m_sNomUnique
+      		sinon
+      			sNomTableUnique = cApplication.mg_taInfo[cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].sNomUnique+cGénérique._Sep+m_sTableReliée].m_sNomUnique
+      		fin	
+      	
+      		//créer un alias pour avoir un contexte indépendant si on est en accès direct
+      		si cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].eAccès<>cBaseDeDonnées.FonctionsH alors retour
+      		m_sAlias = cBaseDeDonnées.AliasUnique(m_sTableReliée,cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].cnxDonnées..Provider=cBaseDeDonnéesHyperFile.hAccèsHF5)	//$ ne peut pas exister dans un nom de table, il sera facile de le détecter par la suite
+      		SELON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+      			CAS cBaseDeDonnéesHyperFile.hAccèsHF5
+      				SI sAnalyse55="" 		ALORS sAnalyse55	= (cApplication.mg_taInfo[sNomTableUnique].m_sAnalyse>"" ? cApplication.mg_taInfo[sNomTableUnique].m_sAnalyse sinon cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sAnalyse)
+      				SI sMDPAnalyse55="" 	ALORS sMDPAnalyse55	= (cApplication.mg_taInfo[sNomTableUnique].m_sMotDePasseAnalyse>"" ? cApplication.mg_taInfo[sNomTableUnique].m_sMotDePasseAnalyse SINON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sMotDePasseAnalyse)
+      				SI fFichierExiste(sAnalyse55) ALORS
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      						SI PAS HDéclare(cApplication.mg_taInfo[sNomTableUnique].m_sNomlogique,sAnalyse55,sMDPAnalyse55,m_sAlias) _OU_ PAS HChangeNom(m_sAlias,cApplication.mg_taInfo[sNomTableUnique].m_sNomOriginal) _OU_ PAS HChangeRep(m_sAlias,cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].cnxDonnées..Serveur) ALORS 
+      							m_pclErreur.AjouteErreurHF()
+      						FIN
+      	
+      <fin>
+      
+      
+      				SINON
+      					m_pclErreur.AjouteErreur(<§$0029§>)
+      				FIN
+      			CAS hAccèsHF7
+      				sMDP=(xChaineCryptage=Null ? (cApplication.mg_taInfo[sNomTableUnique].m_sMotDePasse>"" ? cApplication.mg_taInfo[sNomTableUnique].m_sMotDePasse SINON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sMotDePasseFichier) SINON xChaineCryptage)
+      				HPasse(m_sAlias,sMDP)
+      				SI PAS HDéclareExterne(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Serveur+[fSep()]+cApplication.mg_taInfo[sNomTableUnique].m_sNomOriginal+".fic",m_sAlias,cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].cnxDonnées) ALORS //le fichier doit déjà exister
+      					m_pclErreur.AjouteErreurHF()
+      				sinon si cApplication.mg_taInfo[sNomTableUnique].p_sToutesLesColonnesMémoBinaire>"" alors
+      					pour toute chaine sRubriqueMémo de cApplication.mg_taInfo[sNomTableUnique].p_sToutesLesColonnesMémoBinaire
+      						HGèreMémo(m_sAlias,sRubriqueMémo,hMémoOui)	//on désactive les mémos binaires
+      					fin
+      				FIN
+      			CAS hAccèsHFClientServeur
+      				sMDP=(xChaineCryptage=Null ? (cApplication.mg_taInfo[sNomTableUnique].m_sMotDePasse>"" ? cApplication.mg_taInfo[sNomTableUnique].m_sMotDePasse SINON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sMotDePasseFichier) SINON xChaineCryptage)
+      				HPasse(m_sAlias,sMDP)
+      				SI PAS HDéclareExterne(".\"+cApplication.mg_taInfo[sNomTableUnique].m_sNomOriginal+".fic",m_sAlias,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées) ALORS
+      					m_pclErreur.AjouteErreurHF()
+      				SINON SI cApplication.mg_taInfo[sNomTableUnique].p_sToutesLesColonnesMémoBinaire>"" ALORS
+      					POUR TOUTE CHAÎNE sRubriqueMémo de cApplication.mg_taInfo[sNomTableUnique].p_sToutesLesColonnesMémoBinaire
+      						HGèreMémo(m_sAlias,sRubriqueMémo,hMémoOui)	//on désactive les mémos binaires
+      					FIN
+      				FIN
+      			cas cBaseDeDonnéesExcel.haccèsnatifExcel
+      		FIN
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(<§$002a§>)
+      FIN
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2035436704598498468
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      //SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(m_salias)	//ne fonctionne pas
+     type : 655360
+   -
+     name : Requête
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035437061123596485
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute des requêtes SQL sur la base de données. Elle prend en charge la gestion des erreurs et retourne un booléen indiquant le succès ou l'échec de l'exécution de la requête. Cette méthode peut également être utilisée pour récupérer l'ID automatique généré lors de l'insertion d'une nouvelle entrée dans la base de données.
+      // Syntaxe : [ <Résultat> = ] Requête (<sRequête> est chaîne [, <bRécupèreIDAutomatique> est booléen])
+      // Paramètres :
+      //	sRequête (chaîne UNICODE) : La requête SQL à exécuter sur la base de données.
+      // 	bRécupèreIDAutomatique (booléen optionnel): Indique si la méthode doit tenter de récupérer l'ID automatique généré lors d'une insertion. Par défaut, cette option est à Faux.
+      // Valeur de retour : Type indéterminé : Retourne soit Vrai si la requête SQL a été exécutée avec succès, Faux sinon; soit l'identifiant récupéré de la dernière insertion.
+      // Exemple :
+      //
+      PROCEDURE virtuelle Requête(local sRequête est une chaine,bRécupèreIDAutomatique est un booleen = faux)	//ne pas mettre ": booléen" car renvoie parfois l'ID automatique
+      m_pclErreur.Raz()
+      
+      si cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès=cBaseDeDonnées.ODBC alors
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      		
+      		QUAND EXCEPTION DANS
+      			SI HFichierExiste(m_sd) ALORS HSupprimeTout(m_sd)
+      		FAIRE
+      			//rien
+      		FIN
+      		
+      		si SQLReqExiste(m_sAlias) alors SQLFerme(m_sAlias)
+      		SI SQLExec(sRequête,m_sAlias) ALORS 
+      			renvoyer vrai 
+      		SINON 
+      			SQLInfoGene(m_sAlias)
+      			m_pclErreur.AjouteErreurODBC(m_sAlias)
+      			RENVOYER Faux
+      		FIN
+      	
+      <fin>
+      
+      	
+      sinon
+      	sReq 		est une chaine
+      	sProvider	est un chaine = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+      	
+      	SI sProvider=hAccèsNatifOracle ALORS sRequête=Majuscule(sRequête)
+      
+      	SI m_sTableReliée~="" _OU_ cApplication.mg_taInfo[m_pclBaseDeDonnées.p_sNomUnique+cGénérique._Sep+m_sTableReliée].m_eSource<>cTable.ETableSource.ProcédureStockée ALORS
+      		//quand update ou delete, on donne un nom de requête bidon pour ne pas affecter la source de données courante
+      		si position(gauche(sRequête,7),"select",0,SansCasse+MotComplet+DepuisDébut)<1 alors 
+      			sReq="REQ_FRAMEWORK" 
+      			SI sProvider DANS (hAccèsHF7,hAccèsHFClientServeur,cBaseDeDonnéesHyperFile.hAccèsHF5) alors 
+      				//la ligne suivante car ne sauve que \ si on fait UPDATE Favoris SET paramètres='{ "icon":"dossier", "dir":"C:\\Users\\WILBUR\\Documents" }' WHERE idfavoris=3 
+      				sRequête=remplace(sRequête,"\\","\\\")
+      			FIN
+      		sinon 
+      			si pas sProvider = hAccèsHF7 alors HAnnuleDéclaration(m_sd) 
+      		FIN
+      	fin
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(sRequête)	//mis ici pour avoir la chaine exacte de sRequête
+      	
+      	SELON sProvider
+      		CAS cBaseDeDonnéesHyperFile.hAccèsHF5
+      			sRequête55 est chaine ansi = UnicodeVersAnsi(sRequête)	//astuce sinon la requête sur HF5.5 ne fonctionne pas !
+      			SI HExécuteRequêteSQL(m_sd,sRequête55) ALORS 
+      				SI Gauche(sRequête,7)~="insert " ALORS 
+      					SI bRécupèreIDAutomatique ALORS
+      						sdID est une Source de Données
+      						SI HExécuteRequêteSQL(sdID,hRequêteDéfaut,"SELECT LAST_INSERT_ID() AS IdAuto FROM "+m_sAlias+" LIMIT 1") ALORS RENVOYER sdID.idauto
+      					SINON
+      						RENVOYER Vrai
+      					FIN
+      				SINON 
+      					RENVOYER Vrai
+      				FIN
+      			sinon
+      				m_pclErreur.AjouteErreurHF();RENVOYER Faux
+      			FIN
+      		cas hAccèsHF7,hAccèsHFClientServeur
+      			si HExécuteRequêteSQL((sReq="" ? m_sd sinon sReq),cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées,hSansSablier+hVérifieDoublon+hVérifieIntégrité,sRequête) alors 
+      				si Gauche(sRequête,7)~="insert " alors 
+      					si bRécupèreIDAutomatique alors
+      						sdID est une Source de Données
+      						si HExécuteRequêteSQL(sdID,hRequêteDéfaut,"SELECT LAST_INSERT_ID() AS IdAuto FROM "+m_sTableReliée+" LIMIT 1") alors renvoyer sdID.idauto
+      					sinon
+      						RENVOYER Vrai
+      					FIN
+      				sinon 
+      					RENVOYER Vrai
+      				FIN
+      			sinon
+      				m_pclErreur.AjouteErreurHF();renvoyer faux
+      			FIN
+      		autres cas
+      			SI HExécuteRequêteSQL((sReq="" ? m_sd SINON sReq),cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées,hSansSablier+hRequêteSansCorrection,sRequête) ALORS 
+      				SI Gauche(sRequête,7)~="insert " ALORS 
+      					SI bRécupèreIDAutomatique ALORS
+      						SI HLitPremier((sReq="" ? m_sd SINON sReq)) ALORS RENVOYER HRécupèreRubrique((sReq="" ? m_sd SINON sReq),1) SINON RENVOYER 0
+      					SINON
+      						RENVOYER Vrai
+      					FIN
+      				SINON 
+      					RENVOYER Vrai
+      				FIN
+      			SINON
+      				m_pclErreur.AjouteErreurHF();RENVOYER Faux
+      			FIN
+      	fin
+      FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : SQLAvance
+     procedure_id : 2035437065418696257
+     type_code : 12
+     code : |1-
+      // Résumé : Avance le pointeur de résultat d'une requête SQL. Ne doit pas être utilisé nécessairement avec SQLPremier.
+      // Syntaxe : [ <Résultat> = ] SQLAvance ( [<sNomRequête> est chaîne])
+      // Paramètres :
+      //	sNomRequête (chaîne UNICODE optionnel): Nom de la requête récupéré de SQLExec. Par défaut, il utilise l'alias de la source de données (m_sAlias).
+      // Valeur de retour : entier : Retourne 0 dans le cas ou le curseur a pu être déplacé.
+      // Exemple :
+      //
+      PROCEDURE SQLAvance(sNomRequête est une chaine = m_salias) : entier	//pour éviter de devoir toujours faire du code cible dans le code
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	renvoyer wl.SQLavance(sNomRequête)
+      	
+      <fin>
+      
+      
+      renvoyer -1
+     type : 458752
+   -
+     name : SQLCol
+     procedure_id : 2035437074008763450
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère le contenu de la colonne spécifiée dans le résultat de la requête, pour la ligne en cours.
+      // Syntaxe : [ <Résultat> = ] SQLCol (<nNumColonne> est entier [, <sNomRequête> est chaîne])
+      // Paramètres :
+      //	nNumColonne (entier) : Numéro de la colonne à récupérer. Cette colonne correspond à une colonne de la requête (et non pas à une colonne de la table). L'ordre des numéros de colonne à récupérer n'a aucune importance. 
+      //	sNomRequête (chaîne UNICODE optionnel): Nom de la requête récupéré de SQLExec. Par défaut, il utilise l'alias de la source de données (m_sAlias).
+      // Valeur de retour : chaîne UNICODE : Valeur de la colonne.
+      // Exemple :
+      //
+      PROCEDURE SQLCol(nNumColonne est un entier,sNomRequête est une chaine = m_sAlias) : chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	renvoyer wl.sqlcol(sNomRequête,nNumColonne)
+      	
+      <fin>
+      
+      
+      renvoyer ""
+     type : 458752
+   -
+     name : SQLColonne
+     procedure_id : 2035437074008894631
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie les caractéristiques de toutes les colonnes.
+      // Syntaxe : [ <Résultat> = ] SQLColonne ( [<sNomRequête> est chaîne [, <bDétails> est booléen]])
+      // Paramètres :
+      //	sNomRequête (chaîne UNICODE optionnel): Nom de la requête récupéré de SQLExec. Par défaut, il utilise l'alias de la source de données (m_sAlias).
+      //	bDétails (booléen optionnel) : Mettre à Vrai si l'on veut récupérer le détail (voir doc PCSOFT). Par défaut : Faux.
+      // Valeur de retour : chaîne UNICODE : Contient le nom de chaque colonne de la table séparé par des RC ou ces noms avec diverses informations sur la colonne (nom, type, taille) si bDétails est à Vrai.
+      // Exemple :
+      //
+      PROCEDURE SQLColonne(sNomRequête est une chaine = m_sAlias,bDétails est un booleen = faux) : chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	renvoyer wl.sqlcolonne(sNomRequête,bDétails)
+      	
+      <fin>
+      
+      
+      renvoyer ""
+     type : 458752
+   -
+     name : SQLEnDehors
+     procedure_id : 2035437074009025812
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie le contenu de SQL.EnDehors (veillez à faire un SQLInfoGene avant)
+      // Syntaxe : [ <Résultat> = ] SQLEnDehors ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Permet de savoir si il reste des enregistrements à lire.
+      // Exemple :
+      //
+      PROCEDURE SQLEnDehors() : booleen
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	renvoyer wl.sql.endehors
+      	
+      <fin>
+      
+      
+      renvoyer vrai
+     type : 458752
+   -
+     name : SQLLitCol
+     procedure_id : 2035437074009156993
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère le contenu de la colonne spécifiée dans le résultat de la requête, pour la ligne en cours.
+      // Syntaxe :
+      //[ <Résultat> = ] SQLLitCol (<nNumColonne> est entier [, <sNomRequête> est chaîne])
+      // Paramètres :
+      //	nNumColonne (entier) : Numéro de la colonne à récupérer. Cette colonne correspond à une colonne de la requête (et non pas à une colonne de la table). Si plusieurs colonnes doivent être récupérées, l'indice des colonnes doit être donné dans l'ordre croissant. Par exemple, il faut faire SQLCol("REQ1", 1) puis SQLCol("REQ1", 2).
+      //	sNomRequête (chaîne UNICODE) : Nom de la requête récupéré de SQLExec. Par défaut, il utilise l'alias de la source de données (m_sAlias).
+      // Valeur de retour : chaîne UNICODE : Valeur de la colonne.
+      // Exemple :
+      //
+      PROCEDURE SQLLitCol(nNumColonne est un entier,sNomRequête est une chaine = m_sAlias) : chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	renvoyer wl.SQLLitCol(sNomRequête,nNumColonne)
+      	
+      <fin>
+      
+      
+      renvoyer ""
+     type : 458752
+   -
+     name : SQLLitMemo
+     procedure_id : 2035437074009288190
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère le contenu d'une colonne de type Mémo binaire dans le résultat de la requête, pour la ligne en cours.
+      // Syntaxe : [ <Résultat> = ] SQLLitMemo (<nNumColonne> est entier [, <sNomRequête> est chaîne])
+      // Paramètres :
+      //	nNumColonne (entier) : Numéro de la colonne de type mémo à récupérer. Cette colonne correspond à une colonne de la requête (et non pas à une colonne de la table). 
+      //	sNomRequête (chaîne UNICODE optionnel): Nom de la requête récupéré de SQLExec. Par défaut, il utilise l'alias de la source de données (m_sAlias).
+      // Valeur de retour : chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      // Exemple :
+      //
+      PROCEDURE SQLLitMemo(nNumColonne est un entier,sNomRequête est une chaine = m_sAlias) : chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	renvoyer WL.SQLLitMémo(sNomRequête,nNumColonne)
+      	
+      <fin>
+      
+      
+      renvoyer ""
+     type : 458752
+   -
+     name : SQLLitMémoTexte
+     procedure_id : 2035437074009419403
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère le contenu d'une colonne de type Mémo texte présente dans le résultat de la requête, pour la ligne en cours. Tout le contenu du mémo texte est récupéré, quelle que soit sa taille.
+      // Syntaxe : [ <Résultat> = ] SQLLitMémoTexte (<nNumColonne> est entier [, <sNomRequête> est chaîne])
+      // Paramètres :
+      //	nNumColonne (entier) : Numéro de la colonne de type mémo texte à récupérer. Cette colonne correspond à une colonne de la requête (et non pas à une colonne de la table). 
+      //	sNomRequête (chaîne UNICODE optionnel): Nom de la requête récupéré de SQLExec. Par défaut, il utilise l'alias de la source de données (m_sAlias).
+      // Valeur de retour : chaîne UNICODE : Mémo texte.
+      // Exemple :
+      //
+      PROCEDURE SQLLitMémoTexte(nNumColonne est un entier,sNomRequête est une chaine = m_sAlias) : chaine
+                                  
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	renvoyer wl.SQLLitMémoTexte(sNomRequête,nNumColonne)
+      	
+      <fin>
+      
+      
+      renvoyer ""
+     type : 458752
+   -
+     name : SQLNbLig
+     procedure_id : 2035437074009550599
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie le contenu de SQL.SQLNbLig (veillez à faire un SQLInfoGene avant)
+      // Syntaxe : [ <Résultat> = ] SQLNbLig ()
+      // Paramètres : Aucun
+      // Valeur de retour : entier : Nombre de lignes du résultat.
+      // Exemple :
+      //
+      PROCEDURE SQLNbLig() : entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	renvoyer SQL.NbLig
+      	
+      <fin>
+      
+      
+      renvoyer 0
+     type : 458752
+   -
+     name : SQLPremier
+     procedure_id : 2035437074009681827
+     type_code : 12
+     code : |1+
+      // Résumé : Positionne sur la première ligne du résultat de la requête. Cette ligne devient la ligne en cours.
+      // Syntaxe : SQLPremier ( [<sNomRequête> est chaîne])
+      // Paramètres :
+      //	sNomRequête (chaîne UNICODE optionnel): Nom de la requête récupéré de SQLExec. Par défaut, il utilise l'alias de la source de données (m_sAlias).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE SQLPremier(sNomRequête est une chaine = m_sAlias)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	wl.SQLPremier(sNomRequête)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : SQLSuivant
+     procedure_id : 2035437078304780336
+     type_code : 12
+     code : |1+
+      // Résumé : Positionne sur la ligne suivante du résultat de la requête. Cette ligne devient la ligne en cours.
+      // Syntaxe : SQLSuivant ( [<sNomRequête> est chaîne])
+      // Paramètres :
+      //	sNomRequête (chaîne UNICODE optionnel): Nom de la requête récupéré de SQLExec. Par défaut, il utilise l'alias de la source de données (m_sAlias).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE SQLSuivant(sNomRequête est une chaine = m_sAlias)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	wl.sqlsuivant(sNomRequête)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : SQLTransactionDébut
+     procedure_id : 2035799861775551854
+     type_code : 12
+     code : |1-
+      // Résumé : Débute une transaction sur la base de données ouverte par SQLConnecte (voir les méthodes Connecte() dans cBaseDeDonnéesSQLServer et cBaseDeDonnéesOracle).
+      // Syntaxe : [ <Résultat> = ] SQLTransactionDébut ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Vrai si l'opération a été effectuée, Faux dans le cas contraire. 
+      // Exemple :
+      //
+      PROCEDURE SQLTransactionDébut() : booléen
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	RENVOYER WL.SQLTransaction(sqlDébut,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées)
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : SQLTransactionAnnule
+     procedure_id : 2035800725064113728
+     type_code : 12
+     code : |1-
+      // Résumé : Annule une transaction sur la base de données ouverte par SQLConnecte (voir les méthodes Connecte() dans cBaseDeDonnéesSQLServer et cBaseDeDonnéesOracle).
+      // Syntaxe : [ <Résultat> = ] SQLTransactionAnnule ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Vrai si l'opération a été effectuée, Faux dans le cas contraire. 
+      // Exemple :
+      //
+      PROCEDURE SQLTransactionAnnule() : booléen
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	RENVOYER WL.SQLTransaction(sqlAnnule,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées)
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : SQLTransactionFin
+     procedure_id : 2035800999942150324
+     type_code : 12
+     code : |1-
+      // Résumé : Termine une transaction sur la base de données ouverte par SQLConnecte (voir les méthodes Connecte() dans cBaseDeDonnéesSQLServer et cBaseDeDonnéesOracle).
+      // Syntaxe : [ <Résultat> = ] SQLTransactionDébut ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Vrai si l'opération a été effectuée, Faux dans le cas contraire. 
+      // Exemple :
+      //
+      PROCEDURE SQLTransactionFin() : booleen
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	RENVOYER WL.SQLTransaction(sqlfin,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées)
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : SQLLimiteRêqueteA
+     procedure_id : 2036161953038802724
+     type_code : 12
+     code : |1-
+      // Résumé : Génère les parties préliminaire et postliminaire d'une requête SQL destinés à limiter le nombre de résultats renvoyés.
+      // Syntaxe : [ <Résultat> = ] SQLLimiteRequêteA (<nNombre> est entier [, <bAvecWhere> est booléen])
+      // Paramètres :
+      //	nNombre (entier) : Le nombre maximum de résultats à renvoyer dans la requête.
+      // 	bAvecWhere (booléen optionnel) : N'influence pas le résultat
+      // Valeur de retour : multi-valeur : Renvoie le code SQL des parties à intégrer dans une requête SQL pour limiter le nombre de résultats.
+      // Exemple :
+      //
+      PROCEDURE SQLLimiteRêqueteA(nNombre est un entier,bAvecWhere est un booleen)	// : (chaine,chaine) //WD23 20180118 : bug Windev : quand on mets (chaine,chaine) il affiche une erreur sur renvoyer car il ne sait pas que la fonction pclBD.SQLLimiteRequêteA existe et renvoie 2 chaines                                      
+      pclBD est un objet dynamique = cBaseDeDonnées.ObjetBaseDeDonnées(m_nIndiceDeConnexion)
+      RENVOYER pclBD.SQLLimiteRequêteA(nNombre,bAvecWhere)
+     type : 458752
+   -
+     name : SQLDéconnecte
+     procedure_id : 2049136194240118234
+     type_code : 12
+     code : |1+
+      // Résumé : Ferme la connexion en cours et libère l'espace mémoire utilisé par la connexion. Globale car il ne peut n'y avoir qu'une connexion ODBC en cours.
+      // Syntaxe : SQLDéconnecte ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE global SQLDéconnecte()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	wl.sqldeconnecte()
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : Occurrence
+     procedure_id : 2064721681738745234
+     type_code : 12
+     code : |1-
+      // Résumé : Récupérer le nombre d'occurrences (lignes) dans la source de données associée à la classe
+      // Syntaxe : [ <Résultat> = ] Occurrence ()
+      // Paramètres : Aucun
+      // Valeur de retour : entier : Nombre d'occurrences (lignes) dans la table associée à la classe.
+      // Exemple :
+      //
+      PROCEDURE Occurrence() : entier
+      SI m_pclBaseDeDonnées.m_stConnexion.eAccès=cBaseDeDonnées.FonctionsH ALORS RENVOYER HNbEnr(m_sAlias) SINON RENVOYER HNbEnr(m_sd)
+     type : 458752
+   -
+     name : Colonnes
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2207190058593419168
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les colonnes (rubriques) d'une table depuis la base de données. Elle met à jour la liste des colonnes de la classe en utilisant les informations récupérées de la base de données.
+      // Syntaxe : [ <Résultat> = ] Colonnes ( [<bDescriptionComplète> est booléen [, <bForceRechargement> est booléen]])
+      // Paramètres :
+      // 	bDescriptionComplète (booléen optionnel): Indique si une description complète des colonnes doit être chargée. Par défaut, cette option est définie sur Faux.
+      // 	bForceRechargement (booléen optionnel): Indique si le rechargement des colonnes doit être forcé même si elles ont déjà été chargées. Par défaut, cette option est définie sur Faux.
+      // Valeur de retour : booléen : Retourne Vrai si le chargement des colonnes s'est déroulé avec succès, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Colonnes(bDescriptionComplète est un booleen = faux,bForceRechargement est un booleen = faux) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bDescriptionComplète,bForceRechargement)
+      m_pclErreur.Raz()
+      
+      sColonnes,sNomTableUnique,sAlias sont des chaines
+      
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sNomTableUnique	= m_pclBaseDeDonnées.p_sNomUnique+cGénérique._Sep+(m_sAlias>"" _et_ Contient(m_sAlias,"$") ? extraitchaine(m_sAlias,1,"$") SINON m_sTableReliée)
+      	sAlias 			= (m_sAlias>"" _et_ PAS Contient(m_sAlias,"$") ? m_sAlias SINON cApplication.mg_taInfo[sNomTableUnique].m_sPremierAlias)
+      	SI (cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailCompletChargé _OU_ (PAS bDescriptionComplète _ET_ cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailBasiqueChargé)) _ET_ PAS bForceRechargement ALORS RENVOYER PAS cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailNonChargé
+      	SI bForceRechargement ALORS cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailNonChargé
+      	cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=(bDescriptionComplète ? cTable.TableDétailCompletChargé SINON cTable.TableDétailBasiqueChargé)
+      	
+      	m_tabColonnes.SupprimeTout()
+      	pclUneColonne										est un cColonne dynamique
+      	sNom,sFormule,sTaille,sTypeOriginal,sDescType		sont des chaines
+      	sLangue,sLibellé,sGUID								sont des chaines
+      	bEstNullable,bFormulePersiste,bTimeStamp,bVisible 	sont des booleens
+      	nType,nNbIndices,nTimeStamp,nOrdreLogique			sont des entiers
+      	nPartieDécimale,nPartieEntière,nVignettes			sont des entiers
+      	stUneVignette										est un ccolonne.STHFVignette
+      	tabVignette											est un tableau de ccolonne.STHFVignette
+      	
+      	SI m_pclBaseDeDonnées.m_stConnexion.eAccès=cBaseDeDonnées.FonctionsH _ou_ m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider DANS (hAccèsNatifSQLite,hAccèsHF7,cBaseDeDonnéesHyperFile.hAccèsHF5,hAccèsHFClientServeur) ALORS
+      		sColonnes 		= HListeRubrique(cApplication.mg_taInfo[sNomTableUnique].m_sPremierAlias,hLstAvecGUID+hLstDétailPlus+hLstNormal+hLstOrdreLogique)	//WD23 20190405 : hLstNormal au lieu de hLstRubrique+hLstMémo car même avec hLstRubrique, le fait de mettre hLstMémo ne récupère que les mémos !
+      	SINON si cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès=cBaseDeDonnées.ODBC alors
+      		sColonnes 		= SQLColonne(m_sAlias,vrai)
+      	sinon
+      		sColonnes 		= HListeRubrique(m_sd,hLstDétailPlus+hLstNormal)
+      	FIN
+      	
+      	POUR TOUTE CHAÎNE sColonne,nPosition,nIndice de sColonnes separee par rc
+      		nOrdreLogique=0;sFormule="";bFormulePersiste=Faux;sLangue="";bEstNullable=Faux;VariableRAZ(tabVignette)
+      		sDescType="";nTimeStamp=htsAucun;bTimeStamp=Faux;bVisible=Faux;nVignettes=0
+      		
+      		SI m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider=hAccèsNatifSQLite _ET_ sNom="ROWID" ALORS CONTINUER	//on ne prend pas en compte cette rubrique (inutile puisque le standard nous oblige à créer des ID auto si nécessaire)
+      		sNom			= ExtraitChaîne(sColonne,1)
+      		nType			= Val(ExtraitChaîne(sColonne,3))
+      		sTypeOriginal	= TypeWDVersTexte(nType)
+      		sTaille			= ExtraitChaîne(sColonne,4)
+      		nNbIndices		= Val(ExtraitChaîne(sColonne,5))
+      		sLibellé		= ExtraitChaîne(sColonne,6)	
+      		nPartieEntière	= Val(ExtraitChaîne(sColonne,7))		
+      		nPartieDécimale	= Val(ExtraitChaîne(sColonne,8))
+      		sGUID			= ExtraitChaîne(sColonne,9)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      			SI m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider<>cBaseDeDonnéesHyperFile.hAccèsHF5 alors
+      				bEstNullable 	= {sAlias,indFichier}..NullSupporté _ET_ {sAlias+"."+sNom,indRubrique}..NullAutorisé
+      				sFormule		= {sAlias+"."+sNom,indRubrique}..FormuleRubriqueCalculée
+      			fin
+      	
+      <fin>
+      
+      
+      		SI m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider DANS (hAccèsHF7,hAccèsHFClientServeur) ALORS
+      			si bDescriptionComplète alors
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      					nOrdreLogique	= {sAlias+"."+sNom,indRubrique}..indice
+      					bFormulePersiste= {sAlias+"."+sNom,indRubrique}..PersistanceRubriqueCalculée
+      					sLangue			= {sAlias+"."+sNom,indRubrique}..langue
+      					SI nType DANS (hRubDate6,hRubDate8,hRubDateHeure) ALORS
+      						nTimeStamp	= {sAlias+"."+sNom,indRubrique}..TimestampType
+      						bTimeStamp	= {sAlias+"."+sNom,indRubrique}..TimestampUTC 
+      					FIN
+      	
+      <fin>
+      
+      
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      					nVignettes={sAlias+"."+sNom,indRubrique}..NbVignetteDécrit
+      					SELON nType
+      						CAS hRubMémoBinaire,hRubMémoBinaire4,hRubImage
+      							POUR nVignette = 1 _a_ nVignettes
+      								VariableRAZ(stUneVignette)
+      								stUneVignette.nIndice	= nVignette
+      								stUneVignette.nHauteur	= {sAlias+"."+sNom,indRubrique}..HauteurMaxVignette
+      								stUneVignette.nLargeur	= {sAlias+"."+sNom,indRubrique}..LargeurMaxVignette
+      								stUneVignette.sErreur	= {sAlias+"."+sNom,indRubrique}..InfoGénérationVignette
+      								TableauAjoute(tabVignette,stUneVignette)
+      							FIN
+      						CAS hRubEnumération,hRubCombinaison
+      							sDescType		= {sAlias+"."+sNom,indRubrique}..DescriptionType
+      					FIN
+      	
+      <fin>
+      
+      
+      				pclUneColonne = allouer un cColonne(m_pclBaseDeDonnées,sNomTableUnique,sNom,nIndice,nType,sTypeOriginal,...
+      					val(sTaille),bEstNullable,sFormule,bFormulePersiste,nNbIndices,sLibellé,{sAlias+"."+sNom,indRubrique}..ValeurParDéfaut,sGUID,...
+      					bVisible,nVignettes,tabVignette,sDescType,sLangue,nTimeStamp,bTimeStamp,nOrdreLogique)
+      			sinon
+      				pclUneColonne = allouer un cColonne(m_pclBaseDeDonnées,sNomTableUnique,sNom,nIndice,nType,sTypeOriginal,
+      					Val(sTaille),bEstNullable,sFormule,bFormulePersiste,nNbIndices,sLibellé,{sAlias+"."+sNom,indRubrique}..ValeurParDéfaut,sGUID)
+      			fin
+      		sinon
+      			pclUneColonne = allouer un cColonne(m_pclBaseDeDonnées,sNomTableUnique,sNom,nIndice,nType,sTypeOriginal,...
+      				Val(sTaille),bEstNullable,sFormule,bFormulePersiste,nNbIndices,sLibellé)
+      		fin
+      
+      		cApplication.mg_taInfo[sNomTableUnique].p_tabColonnes=pclUneColonne
+      	FIN
+      	renvoyer vrai
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0001§>);RENVOYER faux
+      FIN
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER faux		
+     type : 458752
+   -
+     name : TypeWDVersTexte
+     procedure_id : 2216270208305471163
+     type_code : 12
+     code : |1-
+      // Résumé : Convertit le code numérique d'un type de rubrique WinDev en une chaîne de texte décrivant le type correspondant.
+      // Syntaxe : [ <Résultat> = ] TypeWDVersTexte (<nType> est entier)
+      // Paramètres :
+      //	nType (entier) : Constante hRubxxx du WLangage
+      // Valeur de retour : chaîne UNICODE : Description du type de rubrique correspondant au code numérique spécifié.
+      // Exemple :
+      //
+      PROCEDURE global TypeWDVersTexte(nType est un entier) : chaine
+      SELON nType
+      	CAS hRubIdAuto			: RENVOYER <§$0003§>
+      	CAS hRubTexte			: RENVOYER <§$0004§>
+      	CAS hRubEntier2			: RENVOYER <§$0005§>
+      	CAS hRubEntier1			: RENVOYER <§$0006§>
+      	CAS hRubEntier4			: RENVOYER <§$0007§>
+      	CAS hRubRéel4			: RENVOYER <§$0008§>
+      	CAS hRubRéel8			: RENVOYER <§$0009§>
+      	CAS hRubNumEnr			: RENVOYER <§$000a§>	//à quoi ça sert ça ???
+      	CAS hRubEntierNonSigné2	: RENVOYER <§$000b§>
+      	CAS hRubDate6			: RENVOYER <§$000c§>
+      	CAS hRubHeure			: RENVOYER <§$000d§>
+      	CAS hRubEntierNonSigné1	: RENVOYER <§$000e§>
+      	CAS hRubRéelTurbo		: RENVOYER <§$000f§>
+      	CAS hRubDate8			: RENVOYER <§$0010§>
+      	CAS hRubMémoTexte		: RENVOYER <§$0011§>
+      	CAS hRubMémoBinaire4	: RENVOYER <§$0012§>
+      	CAS hRubMonétaire		: RENVOYER <§$0013§>
+      	CAS hRubMémoBinaire		: RENVOYER <§$0014§>
+      	CAS hRubEntier8			: RENVOYER <§$0015§>
+      	CAS hRubEntierNonSigné8	: RENVOYER <§$0016§>
+      	CAS hRubImage			: RENVOYER <§$0017§>
+      	CAS hRubEntierNonSigné4	: RENVOYER <§$0018§>
+      	CAS hRubBinaire			: RENVOYER <§$0019§>
+      	CAS hRubDateHeure		: RENVOYER <§$001a§>
+      	CAS hRubDurée			: RENVOYER <§$001b§>
+      	CAS hRubCaractère		: RENVOYER <§$001c§>
+      	CAS hRubBooléen			: RENVOYER <§$001d§>
+      	CAS hRubIdAuto4			: RENVOYER <§$001e§>
+      	CAS hRubTexteUnicode	: RENVOYER <§$001f§>
+      	CAS hRubMémoUnicode		: RENVOYER <§$0020§>
+      	CAS hRubNumérique		: RENVOYER <§$0021§>
+      	CAS hRubEnumération		: RENVOYER <§$0022§>
+      	CAS hRubCombinaison		: RENVOYER <§$0023§>
+      	CAS hRubUUID128			: RENVOYER <§$0024§>
+      	CAS hRubUUID128Auto		: RENVOYER <§$0025§>
+      	CAS hRubUUID256			: RENVOYER <§$0026§>
+      	CAS hRubUUID256Auto		: RENVOYER <§$0027§>
+      	AUTRES CAS 				: RENVOYER <§$0028§>	//hRubInvalide
+      FIN
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1c3f52e10c5a8b56
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text : {}
+     index : 0
+   -
+     text :
+      fr-FR : Aucune connexion
+      en-GB : No connection
+      fr-CA : Aucune connexion
+      en-US : No connection
+     index : 1
+   -
+     text :
+      fr-FR : La méthode n'est pas disponible
+      en-GB : The method is not available
+      fr-CA : La méthode n'est pas disponible
+      en-US : The method is not available
+     index : 2
+   -
+     text :
+      fr-FR : identifiant automatique sur 8 octets
+      en-GB : automatic identifier on 8 bytes
+      fr-CA : identifiant automatique sur 8 octets
+      en-US : automatic identifier on 8 bytes
+     index : 3
+   -
+     text :
+      fr-FR : texte
+      en-GB : text
+      fr-CA : texte
+      en-US : text
+     index : 4
+   -
+     text :
+      fr-FR : entier signé sur 2 octets
+      en-GB : signed integer on 2 bytes
+      fr-CA : entier signé sur 2 octets
+      en-US : signed integer on 2 bytes
+     index : 5
+   -
+     text :
+      fr-FR : entier signé sur 1 octet
+      en-GB : signed integer on 1 byte
+      fr-CA : entier signé sur 1 octet
+      en-US : signed integer on 1 byte
+     index : 6
+   -
+     text :
+      fr-FR : entier signé sur 4 octets
+      en-GB : signed integer on 4 bytes
+      fr-CA : entier signé sur 4 octets
+      en-US : signed integer on 4 bytes
+     index : 7
+   -
+     text :
+      fr-FR : réel simple sur 4 octets
+      en-GB : simple real on 4 bytes
+      fr-CA : réel simple sur 4 octets
+      en-US : simple real on 4 bytes
+     index : 8
+   -
+     text :
+      fr-FR : réel double sur 8 octets
+      en-GB : simple real on 8 bytes
+      fr-CA : réel double sur 8 octets
+      en-US : simple real on 8 bytes
+     index : 9
+   -
+     text :
+      fr-FR : numéro d'enregistrement (entier non signé)
+      en-GB : record number (unsigned integer)
+      fr-CA : numéro d'enregistrement (entier non signé)
+      en-US : record number (unsigned integer)
+     index : 10
+   -
+     text :
+      fr-FR : entier non signé sur 2 octets
+      en-GB : unsigned integer on 2 bytes
+      fr-CA : entier non signé sur 2 octets
+      en-US : unsigned integer on 2 bytes
+     index : 11
+   -
+     text :
+      fr-FR : date sur 6 octets
+      en-GB : date on 6 bytes
+      fr-CA : date sur 6 octets
+      en-US : date on 6 bytes
+     index : 12
+   -
+     text :
+      fr-FR : heure
+      en-GB : time
+      fr-CA : heure
+      en-US : time
+     index : 13
+   -
+     text :
+      fr-FR : entier non signé sur 1 octet
+      en-GB : unsigned integer on 1 byte
+      fr-CA : entier non signé sur 1 octet
+      en-US : unsigned integer on 1 byte
+     index : 14
+   -
+     text :
+      fr-FR : réel turbo
+      en-GB : turbo real
+      fr-CA : réel turbo
+      en-US : turbo real
+     index : 15
+   -
+     text :
+      fr-FR : date sur 8 octets
+      en-GB : date on 8 bytes
+      fr-CA : date sur 8 octets
+      en-US : date on 8 bytes
+     index : 16
+   -
+     text :
+      fr-FR : mémo texte
+      en-GB : text memo
+      fr-CA : mémo texte
+      en-US : text memo
+     index : 17
+   -
+     text :
+      fr-FR : mémo binaire 4.0
+      en-GB : binary memo 4.0
+      fr-CA : mémo binaire 4.0
+      en-US : binary memo 4.0
+     index : 18
+   -
+     text :
+      fr-FR : monétaire
+      en-GB : currency
+      fr-CA : monétaire
+      en-US : currency
+     index : 19
+   -
+     text :
+      fr-FR : mémo binaire
+      en-GB : binary memo
+      fr-CA : mémo binaire
+      en-US : binary memo
+     index : 20
+   -
+     text :
+      fr-FR : entier signé sur 8 octets
+      en-GB : signed integer on 8 bytes
+      fr-CA : entier signé sur 8 octets
+      en-US : signed integer on 8 bytes
+     index : 21
+   -
+     text :
+      fr-FR : entier non signé sur 8 octets
+      en-GB : unsigned integer on 8 bytes
+      fr-CA : entier non signé sur 8 octets
+      en-US : unsigned integer on 8 bytes
+     index : 22
+   -
+     text :
+      fr-FR : image
+      en-GB : image
+      fr-CA : image
+      en-US : image
+     index : 23
+   -
+     text :
+      fr-FR : entier non signé sur 4 octets
+      en-GB : unsigned integer on 4 bytes
+      fr-CA : entier non signé sur 4 octets
+      en-US : unsigned integer on 4 bytes
+     index : 24
+   -
+     text :
+      fr-FR : chaîne binaire
+      en-GB : character string
+      fr-CA : chaîne binaire
+      en-US : character string
+     index : 25
+   -
+     text :
+      fr-FR : date heure
+      en-GB : date time
+      fr-CA : date heure
+      en-US : date time
+     index : 26
+   -
+     text :
+      fr-FR : durée
+      en-GB : duration
+      fr-CA : durée
+      en-US : duration
+     index : 27
+   -
+     text :
+      fr-FR : caractère
+      en-GB : character
+      fr-CA : caractère
+      en-US : character
+     index : 28
+   -
+     text :
+      fr-FR : booléen
+      en-GB : boolean
+      fr-CA : booléen
+      en-US : boolean
+     index : 29
+   -
+     text :
+      fr-FR : identifiant automatique sur 4 octets
+      en-GB : automatic identifier on 4 bytes
+      fr-CA : identifiant automatique sur 4 octets
+      en-US : automatic identifier on 4 bytes
+     index : 30
+   -
+     text :
+      fr-FR : texte unicode
+      en-GB : unicode text
+      fr-CA : texte unicode
+      en-US : unicode text
+     index : 31
+   -
+     text :
+      fr-FR : mémo texte unicode
+      en-GB : unicode text memo
+      fr-CA : mémo texte unicode
+      en-US : unicode text memo
+     index : 32
+   -
+     text :
+      fr-FR : numérique
+      en-GB : numeric
+      fr-CA : numérique
+      en-US : numeric
+     index : 33
+   -
+     text :
+      fr-FR : énumération
+      en-GB : enumeration
+      fr-CA : énumération
+      en-US : enumeration
+     index : 34
+   -
+     text :
+      fr-FR : combinaison
+      en-GB : combination
+      fr-CA : combinaison
+      en-US : combination
+     index : 35
+   -
+     text :
+      fr-FR : UUID sur 128 bits
+      en-GB : 128-bit UUID
+      fr-CA : UUID sur 128 bits
+      en-US : 128-bit UUID
+     index : 36
+   -
+     text :
+      fr-FR : UUID automatique sur 128 bits
+      en-GB : 128-bit automatic UUID
+      fr-CA : UUID automatique sur 128 bits
+      en-US : 128-bit automatic UUID
+     index : 37
+   -
+     text :
+      fr-FR : UUID sur 256 bits
+      en-GB : 256-bit UUID
+      fr-CA : UUID sur 256 bits
+      en-US : 256-bit UUID
+     index : 38
+   -
+     text :
+      fr-FR : UUID automatique sur 256 bits
+      en-GB : 256-bit automatic UUID
+      fr-CA : UUID automatique sur 256 bits
+      en-US : 256-bit automatic UUID
+     index : 39
+   -
+     text :
+      fr-FR : inconnu
+      en-GB : unknown
+      fr-CA : inconnu
+      en-US : unknown
+     index : 40
+   -
+     text :
+      fr-FR : Le fichier d'analyse n'existe pas
+      en-GB : Analysis file does not exist
+      fr-CA : Le fichier d'analyse n'existe pas
+      en-US : Analysis file does not exist
+     index : 41
+   -
+     text :
+      fr-FR : L'indice de connexion doit être supérieur à 0
+      en-GB : The connection index must be greater than 0
+      fr-CA : L'indice de connexion doit être supérieur à 0
+      en-US : The connection index must be greater than 0
+     index : 42
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

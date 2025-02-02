@@ -1,0 +1,659 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cUtilisateur
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1c6716c050fa1dc4
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe ne fait que lire les infos de l'utilisateur en cours, aucune écriture (donc pas de fonction AvantÉcriture() ni Vérifie()). Pour aller plus loin, utiliser les classes LDAP.
+      //Les informations de l'utilisateur sont prises prioritairement dans le LDAP, ensuite l'ADFS le cas échéant
+      
+      cUtilisateur est une Classe
+      	CONSTANTE 
+      		_NomToken				= "tokenADFS.bin"		                        	    		
+      	FIN
+      	hérite de cGénérique
+      
+      LOCAL PRIVÉ 
+      	m_bufToken 					est un buffer			<Sérialise = Faux>		//Contenu du toker lors d'un login ADFS
+      	m_sNomFichierToken 			est une chaîne			<Sérialise = Faux>		//Chemin du fichier token sauvegardé (pour ne pas devoir faire de login successifs)
+      
+      protege
+      	m_sCompteWindows			est une chaine			<Sérialise = Faux>		//Compte Windows envoyé dans le constructeur de la classe
+      
+      public constant
+      	m_pclLDAP					est un objet dynamique	<Sérialise = Faux>		//Objet LDAP qui récupère toutes les informations de l'utilisateur logué
+      	m_vADFSInfo					est un variant			<Sérialise = Faux>		//Variant contenant toutes les informations de l'utilisateur logué
+      	m_sRepertoirePerso			est une chaine			<Sérialise = Faux>		//Répertoire où stocker les données propres à l'utilisateur
+      	
+      Global public constant
+      	mg_sRépertoireUtilisateur	est une chaine			<sérialise = faux>		//Répertoire de base des données utilisateur
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2046629570912263620
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise des membres de la classe lors de sa création. Elle permet de spécifier le compte Windows associé à l'utilisateur et de gérer des informations telles que le token ADFS utilisé pour l'authentification.
+      // Syntaxe : Constructeur ( [<sLogin> est chaîne [, <pclLDAP> est ceLDAP2012User dynamique]])
+      // Paramètres :
+      //	sLogin (chaîne UNICODE optionnelle) : utilisé pour identifier le compte Windows. Par défaut, il est vide.
+      // 	pclLDAP (ceLDAP2012User dynamique) : Un objet dynamique hérité de ceLDAP2012User. Par défaut, un objet dynamique ceLDAP2012User.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(sLogin est une chaine = "",pclLDAP est un ceLDAP2012User dynamique = null)
+      m_pclLDAP <- pclLDAP
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sLogin,pclLDAP..classe)
+      si mg_sRépertoireUtilisateur = "" alors mg_sRépertoireUtilisateur=sysrep(srUserProfiles)
+      m_sCompteWindows	= "?"
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ServiceWindows>
+      	
+      	m_sCompteWindows 	= (sLogin="" ? Minuscule(RéseauUtilisateur()) SINON sLogin)
+      	
+      <fin>
+      
+      
+      p_sRepertoirePerso = mg_sRépertoireUtilisateur+[fsep()]+m_sCompteWindows+[fsep()]+"AppData"+fsep+"Local"+fSep+milieu(cApplication._Application.m_sRépertoireDonnées,taille(cApplication._Application.m_sRépertoireSystème)+1)
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2046629570912329156
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : LoginLDAP
+     procedure_id : 2046629570912394692
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisé pour établir une session LDAP et authentifier un utilisateur à l'aide du protocole LDAP. Elle permet également de récupérer des informations à partir du service Active Directory.
+      // Syntaxe : [ <Résultat> = ] LoginLDAP (<sSessionLDAP> est chaîne [, <sLogin> est chaîne [, <sMotDePasse> est chaîne [, <sDNObjetBase> est chaîne [, <bAvecGPU> est booléen]]]])
+      // Paramètres :
+      //	sSessionLDAP (chaîne UNICODE) : Le nom de la session LDAP à établir.
+      //	sLogin (chaîne UNICODE optionnelle) : Le nom d'utilisateur pour l'authentification. Par défaut, il est égal à m_sCompteWindows.
+      //	sMotDePasse (chaîne UNICODE optionnelle) : Le mot de passe associé à l'utilisateur pour l'authentification. Par défaut, il est vide.
+      //	sDNObjetBase (chaîne UNICODE optionnelle) : Le Distinguished Name (DN) de l'objet de base dans lequel effectuer la recherche. Par défaut, il est lu à partir des paramètres de l'application.
+      // 	bAvecGPU (booléen  optionnel) : Un indicateur pour spécifier si la connexion doit être établie avec le Groupware Utilisateur (GPU). Par défaut, il est à Faux.
+      // Valeur de retour : booléen : renvoie un booléen indiquant le succès ou l'échec de l'opération d'authentification LDAP.
+      // Exemple :
+      //
+      PROCEDURE LoginLDAP(sSessionLDAP est une chaine,sLogin est une chaine = m_sCompteWindows,sMotDePasse = "",sDNObjetBase est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","DNObjetBase"),bAvecGPU est un booléen = Faux) : booleen	//ne pas typer le mot de passe afin qu'il soit compatible avec le passage d'une chaîne indétectable
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sLogin,sDNObjetBase)
+      m_pclErreur.Raz()
+      
+      SI sLogin="" ALORS
+      	SI m_sCompteWindows>"" ALORS sLogin=m_sCompteWindows SINON m_pclErreur.AjouteErreur(<§$0001§>);renvoyer faux
+      FIN
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	SI sSessionLDAP>"" ALORS
+      		SI sLogin<>m_sCompteWindows ALORS
+      			gpwOuvreSessionLDAP(LDAPSession.Hôte,LDAPSession.Port,LDAPSession.Version,bAvecGPU,sDNObjetBase)
+      			nRes est un entier = gpwLogin(sLogin,sMotDePasse)
+      			SELON nRes 
+      				CAS gpwOk					//les données seront récupérées du LDAP ci-dessous
+      				CAS gpwErreur 				: m_pclErreur.AjouteErreur(<§$0002§>)
+      				CAS gpwUtilisateurInconnu 	: m_pclErreur.AjouteErreur(<§$0003§>)
+      				CAS gpwMotPasseInvalide 	: m_pclErreur.AjouteErreur(<§$0004§>)
+      				CAS gpwAnnulation			: m_pclErreur.AjouteErreur(<§$0008§>)
+      				AUTRES CAS					: m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0002§>,nRes))
+      			FIN
+      		FIN	
+      		
+      		m_pclLDAP.p_sSessionLDAP = sSessionLDAP
+      		SI m_pclLDAP.RechercheCompteAD(sLogin)>"" ALORS 
+      			AprèsLecture()
+      			RENVOYER Vrai
+      		SINON	
+      			m_pclErreur.AjouteErreur(<§$0006§>)	
+      		FIN	
+      	SINON	
+      		m_pclErreur.AjouteErreur(<§$0007§>)
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER Faux
+     type : 458752
+   -
+     name : LoginADFS
+     internal_properties : CQAAAAkAAABQA+A1An4giXXDcnK/qh8YjhOCLrjsrBDE0nPtyUTScPXGTcHE+YD4zHsocEszgOUqIyvG9CwNsDziiEWPHUlowNtxli7QpWEB/ghcUeK6KNXblwUVGtblifn3q3bxNAGbheMQVjE3zfz+EweHLgD0dnZ4htahNMPJDY5X3TLaI3dZ0Q==
+     procedure_id : 2046629570912460228
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisé pour effectuer l'authentification via le protocole ADFS (Active Directory Federation Services) en utilisant le flux OAuth2. Elle récupère un token d'authentification, le sérialise et le sauvegarde pour des connexions ultérieures.
+      // Syntaxe : [ <Résultat> = ] LoginADFS ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Renvoie un booléen indiquant le succès ou l'échec de l'opération d'authentification ADFS.
+      // Exemple :
+      //
+      PROCEDURE LoginADFS() : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	OAuth2Paramètres		est un OAuth2Paramètres	// Paramètres OAuth
+      	AuthToken				est un AuthToken		// Token OAuth
+      	
+      	OAuth2Paramètres..ClientID					= cApplication._Application.m_pclParamètres.Lit("ADFS","ClientID")
+      	OAuth2Paramètres..URLAuth 					= cApplication._Application.m_pclParamètres.Lit("ADFS","URLAuth")
+      	OAuth2Paramètres..URLToken					= cApplication._Application.m_pclParamètres.Lit("ADFS","URLToken")
+      	OAuth2Paramètres..ParamètresSupplémentaires = cApplication._Application.m_pclParamètres.Lit("ADFS","ParamètresSupplémentaires")
+      	OAuth2Paramètres..URLRedirection 			= cApplication._Application.m_pclParamètres.Lit("ADFS","URLRedirection")
+      	
+      	SI OAuth2Paramètres..ClientID = "" //_OU_ m_OAuth2Paramètres..ClientSecret = "" ALORS	//pas de ClientSecret
+      		m_pclErreur.AjouteErreur(<§$0009§>)
+      	SINON
+      		//20180801 WD23 : Demandé à PCSoft comment fermer la page du navigateur qui s'ouvre à ce moment, réponse : pas possible
+      		//sauvegarde du Token la première connexion afin de ne pas devoir refaire une authentification la prochaine fois
+      		SI fFichierExiste(m_sNomFichierToken) ALORS
+      			QUAND EXCEPTION DANS
+      				Désérialise(AuthToken,fChargeBuffer(m_sNomFichierToken),psdBinaire)
+      			FAIRE
+      				fSupprime(m_sNomFichierToken)
+      			FIN
+      		FIN
+      		//s'il n'est pas valide refaire l'authentification
+      		SI PAS AuthToken..Valide ALORS
+      			AuthToken = AuthIdentifie(OAuth2Paramètres)		
+      			Sérialise(AuthToken,m_bufToken,psdBinaire)
+      			fSauveBuffer(m_sNomFichierToken,m_bufToken)
+      		FIN
+      		
+      		SI (AuthToken = Null ? Faux SINON AuthToken..Valide) ALORS
+      			sJsonInfoUser 		est une chaîne ANSI	= AuthToken..Valeur
+      			sJsonInfoUserANSI 	est une chaîne ANSI	= Décrypte(ExtraitChaîne(ExtraitChaîne(sJsonInfoUser,2,"."),1,".",DepuisDébut),"",crypteAucun,encodeBASE64)
+      			m_vADFSInfo = JSONVersVariant(sJsonInfoUserANSI)
+      			AprèsLecture()
+      			RENVOYER Vrai
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER Faux
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+     type : 458752
+   -
+     name : Lit
+     procedure_id : 2046629570912591300
+     type_code : 12
+     code : |1-
+      // Résumé : uUtilisé pour récupérer les informations d'un compte utilisateur à partir d'un serveur LDAP (Lightweight Directory Access Protocol) en fonction du compte Windows spécifié. Elle effectue une recherche dans l'annuaire LDAP et récupère les informations associées au compte utilisateur.
+      // Syntaxe : [ <Résultat> = ] Lit ( [<sLoginWindows> est chaîne [, <sOU> est chaîne ANSI]])
+      // Paramètres :
+      //	sLoginWindows (chaîne UNICODE) : Une chaîne spécifiant le compte Windows pour lequel récupérer les informations. Par défaut, il utilise le compte Windows passé dans le constructeur de la classe.
+      //	sOU (chaîne ANSI) : Une chaîne ANSI spécifiant l'Unité d'Organisation (OU) dans laquelle effectuer la recherche. Par défaut, la recherche s'effectue dans toute l'arborescence LDAP.
+      // 	sRépertoirePerso (chaîne UNICODE) : Répertoire dans lequel pourraient être écrite les données de l'utilisateur (log, trace, ini, ...), valeur par défaut=mg_sRépertoireUtilisateur\m_sCompteWindows\AppData\Local
+      // Valeur de retour : booléen : Renvoie un booléen indiquant le succès ou l'échec de l'opération de recherche LDAP.
+      // Exemple :
+      //
+      PROCEDURE Lit(sLoginWindows est une chaine = m_sCompteWindows,sOU est une chaine ansi = "", sRépertoirePerso est une chaine = "") : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sLoginWindows,sOU)
+      clLDAP est un cBaseDeDonnéesLDAP()
+      nIndiceLDAP est un entier = clLDAP.connecte()
+      SI nIndiceLDAP>0 ALORS
+      	m_pclLDAP.p_nIndiceDeConnexion = nIndiceLDAP
+      	SI m_pclLDAP.RechercheSelonCompteSAM(sLoginWindows,sOU) ALORS
+      		si sRépertoirePerso="" alors p_sRepertoirePerso = mg_sRépertoireUtilisateur+[fSep()]+m_sCompteWindows+[fSep()]+"AppData"+fSep+"Local" sinon p_sRepertoirePerso=sRépertoirePerso
+      		AprèsLecture()
+      		clLDAP.deconnecte()
+      		RENVOYER Vrai
+      	SINON
+      		m_pclErreur.AjouteAvertissement(<§$0010§>+[" : "]+m_pclLDAP.p_sErreur)
+      		clLDAP.Déconnecte()
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(clLDAP.p_sErreur)
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : AprèsLecture
+     procedure_id : 1341482973044708627
+     type_code : 12
+     code : |1+
+      // Résumé : Méthode virtuelle permettant, dans une classe héritée, de faire un traitement après la lecture des informations utilisateur
+      PROCEDURE virtuelle AprèsLecture()
+     type : 458752
+  properties :
+   -
+     name : p_sNomComplet
+     identifier : 0x1c6716c050fb1dc4
+     type_code : 103
+     p_codes :
+      -
+        internal_properties : CQAAAAkAAACiyCFtGEN9JwOhSk11QNgOOOvzgqpfoMp6CTVKhwhXZfD+7l30PptoCXTRBNUCtoZKT/c9zE1wYm41ZqQRbjgaDkQlOTocne+znVP2xnnwqZl13dVbRA==
+        code : |1-
+         // Résumé : Renvoie le nom complet (prénom + espace + nom de famille) de l'utilisateur connecté. 
+         PROCEDURE PUBLIQUE p_sNomComplet() : chaine
+         m_pclErreur.Raz()
+         
+         //hiérarchie dans les infos qu'on possède depuis la plus fiable vers la moins fiable/complète
+         SI m_pclLDAP<>Null _ET_ m_pclLDAP.givenname+[" "]+m_pclLDAP.sn<>""					ALORS RENVOYER m_pclLDAP.givenname+[" "]+m_pclLDAP.sn
+         SI m_vADFSInfo<>Null _ET_ m_vADFSInfo.given_name+[" "]+m_vADFSInfo.family_name<>""	ALORS RENVOYER m_vADFSInfo.given_name+[" "]+m_vADFSInfo.family_name
+         RENVOYER ""
+         
+         CAS ERREUR:
+         m_pclErreur.AjouteErreurWx();RENVOYER ""
+         CAS EXCEPTION:
+         //m_pclErreur.AjouteErreur(m_pclErreur.AjouteException())	//car risque de bouclage car p_sLogin est appelé dans la gestion des erreurs
+         RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sLogin
+     identifier : 0x1c6716c050fc1dc4
+     type_code : 103
+     p_codes :
+      -
+        internal_properties : CQAAAAkAAACiyCFtGEN9JwOhSk11QNgOOOvzgqpfoMp6CTVKhwhXZfD+7l30PptoCXTRBNUCtoZKT/c9zE1wYm41ZqQRbjgaDkQlOTocne+znVP2xnnwqZl13dVbRA==
+        code : |1-
+         // Résumé : Renvoie le nom du compte utilisateur connecté. 
+         PROCEDURE PUBLIQUE p_sLogin() : chaîne
+         m_pclErreur.RAZ()
+         
+         //hiérarchie dans les infos qu'on possède depuis la plus fiable vers la moins fiable/complète
+         SI m_pclLDAP<>Null _ET_ m_pclLDAP.sAMAccountName<>""	ALORS RENVOYER m_pclLDAP.sAMAccountName
+         SI m_sCompteWindows>"" 									ALORS RENVOYER m_sCompteWindows
+         RENVOYER ""
+         
+         CAS ERREUR:
+         m_pclErreur.AjouteErreurWx();RENVOYER ""
+         CAS EXCEPTION:
+         //m_pclErreur.AjouteErreur(m_pclErreur.AjouteException());		//car risque de bouclage car p_sLogin est appelé dans la gestion des erreurs
+         RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sNom
+     identifier : 0x1c6716c051001dc4
+     type_code : 103
+     p_codes :
+      -
+        internal_properties : CQAAAAkAAACiyCFtGEN9JwOhSk11QNgOOOvzgqpfoMp6CTVKhwhXZfD+7l30PptoCXTRBNUCtoZKT/c9zE1wYm41ZqQRbjgaDkQlOTocne+znVP2xnnwqZl13dVbRA==
+        code : |1-
+         // Résumé : Renvoie le nom de famille de l'utilisateur connecté. 
+         PROCEDURE PUBLIQUE p_sNom() : chaine
+         m_pclErreur.RAZ()
+         
+         //hiérarchie dans les infos qu'on possède depuis la plus fiable vers la moins fiable/complète
+         SI m_pclLDAP<>Null _ET_ m_pclLDAP.sn<>""				ALORS RENVOYER m_pclLDAP.sn
+         SI m_vADFSInfo<>Null _ET_ m_vADFSInfo.family_name<>Null	ALORS RENVOYER m_vADFSInfo.family_name
+         RENVOYER ""
+         
+         CAS ERREUR:
+         m_pclErreur.AjouteErreurWx();RENVOYER ""
+         CAS EXCEPTION:
+         m_pclErreur.AjouteException();RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sPrénom
+     identifier : 0x1c6716c051011dc4
+     type_code : 103
+     p_codes :
+      -
+        internal_properties : CQAAAAkAAACiyCFtGEN9JwOhSk11QNgOOOvzgqpfoMp6CTVKhwhXZfD+7l30PptoCXTRBNUCtoZKT/c9zE1wYm41ZqQRbjgaDkQlOTocne+znVP2xnnwqZl13dVbRA==
+        code : |1-
+         // Résumé : Renvoie le prénom de l'utilisateur connecté. 
+         PROCEDURE PUBLIQUE p_sPrénom() : chaîne
+         m_pclErreur.RAZ()
+         
+         //hiérarchie dans les infos qu'on possède depuis la plus fiable vers la moins fiable/complète
+         SI m_pclLDAP<>Null _ET_ m_pclLDAP.givenname<>""			ALORS RENVOYER m_pclLDAP.givenname
+         SI m_vADFSInfo<>Null _ET_ m_vADFSInfo.given_name<>Null	ALORS RENVOYER m_vADFSInfo.given_name
+         RENVOYER ""
+         
+         CAS ERREUR:
+         m_pclErreur.AjouteErreurWx();RENVOYER ""
+         CAS EXCEPTION:
+         m_pclErreur.AjouteException();RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sExtensionTel
+     identifier : 0x1c6716c051031dc4
+     type_code : 103
+     p_codes :
+      -
+        internal_properties : CQAAAAkAAACiyCFtGEN9JwOhSk11QNgOOOvzgqpfoMp6CTVKhwhXZfD+7l30PptoCXTRBNUCtoZKT/c9zE1wYm41ZqQRbjgaDkQlOTocne+znVP2xnnwqZl13dVbRA==
+        code : |1-
+         // Résumé : Renvoie l'extension du téléphone de l'utilisateur connecté. 
+         PROCEDURE PUBLIQUE p_sExtensionTel() : chaîne
+         m_pclErreur.RAZ()
+         
+         //hiérarchie dans les infos qu'on possède depuis la plus fiable vers la moins fiable/complète
+         SI m_pclLDAP<>Null ALORS RENVOYER m_pclLDAP.telephoneNumber
+         RENVOYER ""
+         
+         CAS ERREUR:
+         m_pclErreur.AjouteErreurWx();RENVOYER ""
+         CAS EXCEPTION:
+         m_pclErreur.AjouteException();RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sDépartement
+     identifier : 0x1c6716c051041dc4
+     type_code : 103
+     p_codes :
+      -
+        internal_properties : CQAAAAkAAACiyCFtGEN9JwOhSk11QNgOOOvzgqpfoMp6CTVKhwhXZfD+7l30PptoCXTRBNUCtoZKT/c9zE1wYm41ZqQRbjgaDkQlOTocne+znVP2xnnwqZl13dVbRA==
+        code : |1-
+         // Résumé : Renvoie le département de l'utilisateur connecté. 
+         PROCEDURE PUBLIQUE p_sDépartement() : chaîne
+         m_pclErreur.rAZ()
+         
+         //hiérarchie dans les infos qu'on possède depuis la plus fiable vers la moins fiable/complète
+         SI m_pclLDAP<>Null ALORS RENVOYER m_pclLDAP.department
+         RENVOYER ""
+         
+         CAS ERREUR:
+         m_pclErreur.AjouteErreurWx();RENVOYER ""
+         CAS EXCEPTION:
+         m_pclErreur.AjouteException();RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sCompagnie
+     identifier : 0x1c6716c051051dc4
+     type_code : 103
+     p_codes :
+      -
+        internal_properties : CQAAAAkAAACiyCFtGEN9JwOhSk11QNgOOOvzgqpfoMp6CTVKhwhXZfD+7l30PptoCXTRBNUCtoZKT/c9zE1wYm41ZqQRbjgaDkQlOTocne+znVP2xnnwqZl13dVbRA==
+        code : |1-
+         // Résumé : Renvoie le nom de la société de l'utilisateur connecté. 
+         PROCEDURE PUBLIQUE p_sCompagnie() : chaîne
+         m_pclErreur.RAZ()
+         
+         //hiérarchie dans les infos qu'on possède depuis la plus fiable vers la moins fiable/complète
+         SI m_pclLDAP<>Null ALORS RENVOYER m_pclLDAP.company
+         RENVOYER ""
+         
+         CAS ERREUR:
+         m_pclErreur.AjouteErreurWx();RENVOYER ""
+         CAS EXCEPTION:
+         m_pclErreur.AjouteException();RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sAdresseCourriel
+     identifier : 0x1c6716c051061dc4
+     type_code : 103
+     p_codes :
+      -
+        internal_properties : CQAAAAkAAACiyCFtGEN9JwOhSk11QNgOOOvzgqpfoMp6CTVKhwhXZfD+7l30PptoCXTRBNUCtoZKT/c9zE1wYm41ZqQRbjgaDkQlOTocne+znVP2xnnwqZl13dVbRA==
+        code : |1-
+         // Résumé : Renvoie l'adresse courriel de l'utilisateur connecté. 
+         PROCEDURE PUBLIQUE p_sAdresseCourriel() : chaîne
+         m_pclErreur.RAZ()
+         
+         //hiérarchie dans les infos qu'on possède depuis la plus fiable vers la moins fiable/complète
+         SI m_pclLDAP<>Null _ET_ m_pclLDAP.mail<>Null		ALORS RENVOYER m_pclLDAP.mail
+         SI m_vADFSInfo<>Null _ET_ m_vADFSInfo.email<>Null	ALORS RENVOYER m_vADFSInfo.email
+         RENVOYER ""
+         
+         CAS ERREUR:
+         m_pclErreur.AjouteErreurWx();RENVOYER ""
+         CAS EXCEPTION:
+         m_pclErreur.AjouteException();RENVOYER ""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nIDEmployé
+     identifier : 0x1c6716c051071dc4
+     type_code : 103
+     p_codes :
+      -
+        internal_properties : CQAAAAkAAACiyCFtGEN9JwOhSk11QNgOOOvzgqpfoMp6CTVKhwhXZfD+7l30PptoCXTRBNUCtoZKT/c9zE1wYm41ZqQRbjgaDkQlOTocne+znVP2xnnwqZl13dVbRA==
+        code : |1-
+         // Résumé : Renvoie l'ID employé de l'utilisateur connecté. 
+         PROCEDURE PUBLIQUE p_nIDEmployé() : entier
+         m_pclErreur.RAZ()
+         
+         //hiérarchie dans les infos qu'on possède depuis la plus fiable vers la moins fiable/complète
+         SI m_pclLDAP<>Null _ET_ m_pclLDAP.employeeID<>Null			ALORS RENVOYER m_pclLDAP.employeeID
+         SI m_vADFSInfo<>Null _ET_ m_vADFSInfo."Employee-ID"<>Null	ALORS RENVOYER m_vADFSInfo."Employee-ID"
+         RENVOYER 0
+         
+         CAS ERREUR:
+         m_pclErreur.AjouteErreurWx();RENVOYER 0
+         CAS EXCEPTION:
+         m_pclErreur.AjouteException();RENVOYER 0
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bCompteActif
+     identifier : 0x1c6716c051081dc4
+     type_code : 103
+     p_codes :
+      -
+        internal_properties : CQAAAAkAAACiyCFtGEN9JwOhSk11QNgOOOvzgqpfoMp6CTVKhwhXZfD+7l30PptoCXTRBNUCtoZKT/c9zE1wYm41ZqQRbjgaDkQlOTocne+znVP2xnnwqZl13dVbRA==
+        code : |1-
+         // Résumé : Renvoie l'indicateur de compte actif de l'utilisateur connecté. 
+         PROCEDURE PUBLIQUE p_bCompteActif() : booléen
+         m_pclErreur.Raz()
+         
+         SI m_pclLDAP<>Null _ET_ m_pclLDAP.userAccountControl<>Null ALORS RENVOYER (PAS m_pclLDAP.userAccountControl DANS (cLDAP2000User._ADUserAccountDisabled,cLDAP2000User._ADUserAccountDisabledPasswordNotExpire) _ET_ PAS m_pclLDAP.isDeleted="1")
+         SI m_vADFSInfo<>Null _ET_ m_vADFSInfo.userAccountControl<>Null ALORS RENVOYER (PAS m_vADFSInfo.userAccountControl DANS (cLDAP2000User._ADUserAccountDisabled,cLDAP2000User._ADUserAccountDisabledPasswordNotExpire) _ET_ PAS m_vADFSInfo.isDeleted="1")
+         //dans le Groupware Betula, un actif a un mot de passe, un inactif n'en a pas
+         RENVOYER Faux
+         
+         CAS ERREUR:
+         m_pclErreur.AjouteErreurWx();RENVOYER Faux
+         CAS EXCEPTION:
+         m_pclErreur.AjouteException();RENVOYER Faux
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sRepertoirePerso
+     identifier : 0x173b47a8111236e9
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le répertoire de données de l'utilisateur en cours
+         PROCEDURE PUBLIQUE p_sRepertoirePerso() : chaîne
+         RENVOYER m_sRépertoireperso
+        type : 1966080
+      -
+        code : |1+
+         PROCEDURE PUBLIQUE p_sRepertoirePerso(sRépertoire est une chaine)
+         m_sRepertoirePerso = sRépertoire
+         SI m_sRepertoirePerso~="" ALORS m_sRepertoirePerso=mg_sRépertoireUtilisateur
+         
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+         	SI Gauche(m_sRepertoirePerso,2)<>"\\" _ET_ m_sRepertoirePerso[[2 À 3]]<>":\" ALORS 
+         		//c'est un chemin relatif Windows, on le transforme en chemin absolu
+         		SI m_sRepertoirePerso[[1 À 2]]=".\" ALORS m_sRepertoirePerso=Milieu(m_sRepertoirePerso,3)
+         		SI m_sRepertoirePerso[[1]]="\"		ALORS m_sRepertoirePerso=Milieu(m_sRepertoirePerso,2)
+         		m_sRepertoirePerso					= ComplèteRep(mg_sRépertoireUtilisateur+["\"]+m_sRepertoirePerso)
+         	FIN
+         	
+         <fin>
+         
+         
+         SI PAS fRépertoireExiste(mg_sRépertoireUtilisateur) ALORS //celui-là on le crée d'office (assez rare qu'on a pas de données, ex : un fichier ini)
+         	SI PAS fRepCrée(mg_sRépertoireUtilisateur) ALORS m_pclErreur.AjouteErreurWx();RETOUR
+         FIN
+         
+         cLog.p_sRépertoireDonnées	= m_sRepertoirePerso	//les logs sont ajoutés dans le répertoire personnel
+         ctrace.p_sRépertoireDonnées	= m_sRepertoirePerso	//les traces seront ajoutées dans le répertoire personnel
+         m_sNomFichierToken 			= m_sRepertoirePerso+_NomToken
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1c67074a041bbb49
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : MonAppareil
+      en-GB : MyDevice
+      fr-CA : MonAppareil
+      en-US : MyDevice
+     index : 0
+   -
+     text :
+      fr-FR : Le nom d'utilisateur est obligatoire
+      en-GB : Username is required
+      fr-CA : Le nom d'utilisateur est obligatoire
+      en-US : Username is required
+     index : 1
+   -
+     text :
+      fr-FR : Erreur d'initialisation de la sécurité
+      en-GB : Security Initialisation Error
+      fr-CA : Erreur d'initialisation de la sécurité
+      en-US : Security Initialisation Error
+     index : 2
+   -
+     text :
+      fr-FR : Utilisateur inconnu dans la sécurité
+      en-GB : Unknown User in Security
+      fr-CA : Utilisateur inconnu dans la sécurité
+      en-US : Unknown User in Security
+     index : 3
+   -
+     text :
+      fr-FR : Mot de passe invalide pour la sécurité
+      en-GB : Invalid Password for Security
+      fr-CA : Mot de passe invalide pour la sécurité
+      en-US : Invalid Password for Security
+     index : 4
+   -
+     text :
+      fr-FR : Compte inconnu dans l'Active Directory
+      en-GB : Unknown account in the Active Directory
+      fr-CA : Compte inconnu dans l'Active Directory
+      en-US : Unknown account in the Active Directory
+     index : 6
+   -
+     text :
+      fr-FR : Le nom de session LDAP est obligatoire
+      en-GB : The LDAP session name is required
+      fr-CA : Le nom de session LDAP est obligatoire
+      en-US : The LDAP session name is required
+     index : 7
+   -
+     text :
+      fr-FR : Annulé par l'utilisateur
+      en-GB : Canceled by the user
+      fr-CA : Annulé par l'utilisateur
+      en-US : Canceled by the user
+     index : 8
+   -
+     text :
+      fr-FR : Le ClientID n'a pas été renseigné
+      en-GB : The ClientID has not been filled
+      fr-CA : Le ClientID n'a pas été renseigné
+      en-US : The ClientID has not been filled
+     index : 9
+   -
+     text :
+      fr-FR : Cette base de données ne peut pas accueillir un groupware utilisateur
+      en-GB : This database can not accommodate a user groupware
+      fr-CA : Cette base de données ne peut pas accueillir un groupware utilisateur
+      en-US : This database can not accommodate a user groupware
+     index : 10
+   -
+     text :
+      fr-FR : "L'indice de connexion doit être compris entre 1 et "
+      en-GB : "The connection index must be between 1 and "
+      fr-CA : "L'indice de connexion doit être compris entre 1 et "
+      en-US : "The connection index must be between 1 and "
+     index : 11
+   -
+     text :
+      fr-FR : Aucune connexion
+      en-GB : No connection
+      fr-CA : Aucune connexion
+      en-US : No connection
+     index : 12
+   -
+     text :
+      fr-FR : Erreur inconnue dans la sécurité (%1)
+      en-GB : Unknown error for Security (%1)
+      fr-CA : Erreur inconnue dans la sécurité (%1)
+      en-US : Unknown error for Security (%1)
+     index : 13
+   -
+     text :
+      fr-FR : Pas de connexion à la sécurité
+      en-GB : No connection to Security
+      fr-CA : Pas de connexion à la sécurité
+      en-US : No connection to Security
+     index : 14
+   -
+     text :
+      fr-FR : Le compte utilisateur n'a pas été trouvé dans le LDAP
+      en-GB : The user account was not found in the LDAP
+     index : 15
+   -
+     text :
+      fr-FR : Le compte utilisateur n'a pas été trouvé dans le LDAP
+      en-GB : The user account was not found in the LDAP
+      fr-CA : Le compte utilisateur n'a pas été trouvé dans le LDAP
+      en-US : The user account was not found in the LDAP
+     index : 16
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

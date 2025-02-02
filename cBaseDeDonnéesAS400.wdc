@@ -1,0 +1,1128 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cBaseDeDonnéesAS400
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1bf8bb9521690cb5
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet d'accéder à la base DB2 de l'AS400, de travailler avec les DataArea, etc... Pour cela, il est nécessaire d'installer Easycom.
+      //ref sur le site de EasyCom : http://easycomstore.com/Data/WebHelp/Easycom_Windev/23/FR/index.html#page=asappelrtv-et-asresultatrtv.html
+      
+      EBibliothèqueOrdre est une énumération
+      	AjoutePremier	= "*FIRST"
+      	AjouteDernier	= "*LAST"
+      	AjouteAprès		= "*AFTER"
+      	AjouteAvant		= "*BEFORE"
+      	AjouteRemplace	= "*REPLACE"
+      fin
+      cBaseDeDonnéesAS400 est une Classe
+      	hérite de cGénérique
+      	m_bTraceColonnesModifiées	est un booleen		<sérialise = faux>				//Renvoi ou permet de modifier le statut permettant la trace des colonnes modifiés lors de l'utilisation de la fonction cEnregistrement.Écrit() 
+      public constant local
+      	m_nIndiceDeConnexion 		est un entier 		<serialise = faux>				//Indice de connexion en cours
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2015567082433416373
+     type_code : 27
+     code : |1-
+      // Résumé : Permet d'initialiser la classe. Si un indice de connexion est passé en paramètre, récupère toutes les informations d'une précédente connexion qui avait renvoyé ledit indice.
+      // Syntaxe : Constructeur ( [<nIndiceDeConnexionExistant> est entier])
+      // Paramètres :
+      // 	nIndiceDeConnexionExistant (entier optionnel): L'indice de connexion existant à associer à l'instance de la classe. Par défaut, il est initialisé à zéro.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexionExistant est un entier = 0)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIndiceDeConnexionExistant)
+      m_nIndiceDeConnexion=nIndiceDeConnexionExistant
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2015567082433481909
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      SI p_bEstConnecté ALORS Déconnecte()
+     type : 655360
+   -
+     name : DataAreaLit
+     procedure_id : 2015567082433547445
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de lire la valeur d'une Data Area (zone de données) sur un serveur AS400 en indiquant sa bibliothèque et le nom de la Data Area.
+      // Syntaxe : [ <Résultat> = ] DataAreaLit (<sBibliothèqueDataArea> est chaîne, <sNomDataArea> est chaîne)
+      // Paramètres :
+      //	sBibliothèqueDataArea (chaîne UNICODE) : Le nom de la bibliothèque où se trouve la Data Area.
+      //	sNomDataArea (chaîne UNICODE) : Le nom de la Data Area à lire.
+      // Valeur de retour : chaîne UNICODE : La valeur de la Data Area lue.
+      // Exemple :
+      //
+      PROCEDURE DataAreaLit(sBibliothèqueDataArea est une chaine,sNomDataArea est une chaine) : chaine
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sBibliothèqueDataArea,sNomDataArea)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer ""
+      
+      sLigneCmd est une chaine = chaineconstruit("rtvdtaara dtaara(%1/%2) rtnvar(&DATAAREAVAL)",sBibliothèqueDataArea,sNomDataArea)
+      SI ASAppelRtv(sLigneCmd) _Et_ ASResultatRtv("RC")="0" ALORS renvoyer ASResultatRtv("DATAAREAVAL")	
+      RENVOYER ""
+     type : 458752
+   -
+     name : DataAreaModifie
+     procedure_id : 2015567082433612981
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de modifier la valeur d'une Data Area (zone de données) sur un serveur AS400.
+      // Syntaxe : [ <Résultat> = ] DataAreaModifie (<sBibliothèqueDataArea> est chaîne, <sNomDataArea> est chaîne, <sNouvelleValeur> est chaîne)
+      // Paramètres :
+      //	sBibliothèqueDataArea (chaîne UNICODE) : Le nom de la bibliothèque où se trouve la Data Area.
+      //	sNomDataArea (chaîne UNICODE) : Le nom de la Data Area à modifier.
+      //	sNouvelleValeur (chaîne UNICODE) : La nouvelle valeur à assigner à la Data Area.
+      // Valeur de retour : booléen : Indique si la modification de la Data Area a été effectuée avec succès (Vrai) ou s'il y a eu une erreur (Faux).
+      // Exemple :
+      //
+      PROCEDURE DataAreaModifie(sBibliothèqueDataArea est une chaine,sNomDataArea est une chaine,sNouvelleValeur est une chaine) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sBibliothèqueDataArea,sNomDataArea,sNouvelleValeur)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      sLigneCmd est une chaine = ChaîneConstruit("chgdtaara dtaara(%1/%2) value(%3)",sBibliothèqueDataArea,sNomDataArea,sNouvelleValeur)
+      renvoyer ASExec(sLigneCmd)
+     type : 458752
+   -
+     name : BibliothèqueAjoute
+     procedure_id : 2015567082433678517
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter une bibliothèque à la liste des bibliothèques auxquelles la connexion peut accéder.
+      // Syntaxe : [ <Résultat> = ] BibliothèqueAjoute (<sNomBibliothèque> est chaîne [, <eOrdre> est cBaseDeDonnéesAS400.EBibliothèqueOrdre])
+      // Paramètres :
+      //	sNomBibliothèque (chaîne UNICODE) : Le nom de la bibliothèque à ajouter.
+      //	eOrdre (cBaseDeDonnéesAS400.EBibliothèqueOrdre) : L'ordre dans lequel la bibliothèque doit être ajoutée. Les valeurs possibles sont AjoutePremier, AjouteDernier, AjouteAprès, AjouteAvant, AjouteRemplace.
+      // Valeur de retour : booléen : Indique si l'ajout de la bibliothèque a été effectué avec succès (Vrai) ou s'il y a eu une erreur (Faux).
+      // Exemple :
+      //
+      PROCEDURE BibliothèqueAjoute(sNomBibliothèque est une chaine,eOrdre est un EBibliothèqueOrdre = EBibliothèqueOrdre.AjoutePremier) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomBibliothèque,eOrdre..nom)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      RENVOYER ASExec("ADDLIBLE "+sNomBibliothèque+" POSITION("+eOrdre..nom+")")
+     type : 458752
+   -
+     name : BibliothèqueSupprime
+     procedure_id : 2015567082433744053
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de supprimer une bibliothèque à la liste des bibliothèques auxquelles la connexion peut accéder.
+      // Syntaxe : [ <Résultat> = ] BibliothèqueSupprime (<sNomBibliothèque> est chaîne)
+      // Paramètres :
+      //	sNomBibliothèque (chaîne UNICODE) : Le nom de la bibliothèque à supprimer.
+      // Valeur de retour : booléen : Indique si la suppression de la bibliothèque a été effectuée avec succès (Vrai) ou s'il y a eu une erreur (Faux).
+      // Exemple :
+      //
+      PROCEDURE BibliothèqueSupprime(sNomBibliothèque est une chaine) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomBibliothèque)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      RENVOYER ASExec("RMVLIBLE "+sNomBibliothèque)
+     type : 458752
+   -
+     name : OverrideAjoute
+     procedure_id : 2015567082433809589
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter un override de fichier sur un serveur AS400. Cela permet de spécifier un nouveau nom de fichier à utiliser temporairement à la place d'un fichier existant.
+      // Syntaxe : [ <Résultat> = ] OverrideAjoute (<sFichierCourant> est chaîne, <sFichierAOverrider> est chaîne, <sNouveauFichier> est chaîne, <eOrdre> est cBaseDeDonnéesAS400.EBibliothèqueOrdre)
+      // Paramètres :
+      //	sFichierCourant (chaîne UNICODE) : Le nom du fichier existant.
+      //	sFichierAOverrider (chaîne UNICODE) : Le nom du fichier que vous souhaitez utiliser temporairement.
+      //	sNouveauFichier (chaîne UNICODE) : Le nom du fichier à utiliser temporairement (éventuellement différent de sFichierAOverrider).
+      //	eOrdre (cBaseDeDonnéesAS400.EBibliothèqueOrdre) : L'ordre dans lequel la bibliothèque doit être ajoutée. Les valeurs possibles sont AjoutePremier, AjouteDernier, AjouteAprès, AjouteAvant, AjouteRemplace.
+      // Valeur de retour : booléen : Indique si l'ajout de l'override a été effectué avec succès (Vrai) ou s'il y a eu une erreur (Faux).
+      // Exemple :
+      //
+      PROCEDURE OverrideAjoute(sFichierCourant est une chaine,sFichierAOverrider est une chaîne,sNouveauFichier est une chaine,eOrdre est une EBibliothèqueOrdre) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sFichierCourant,sFichierAOverrider,sNouveauFichier,eOrdre..nom)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      sLigneCmd est une chaine = chaineconstruit("ovrdbf file(%1) tofile(%1/%2) mbr(%4) ovrscope(*job)",sFichierCourant,sFichierAOverrider,sNouveauFichier,eOrdre..valeur)
+      renvoyer ASExec(sLigneCmd)
+     type : 458752
+   -
+     name : OverrideSupprime
+     procedure_id : 2015567082433875125
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de supprimer un override de fichier sur un serveur AS400. Cela annule l'effet de l'override ajouté précédemment, permettant au fichier d'utiliser à nouveau sa définition originale.
+      // Syntaxe : [ <Résultat> = ] OverrideSupprime (<sFichierAEnlever> est chaîne)
+      // Paramètres :
+      //	sFichierAEnlever (chaîne UNICODE) : Le nom du fichier pour lequel l'override doit être supprimé.
+      // Valeur de retour : booléen : Indique si la suppression de l'override a été effectuée avec succès (Vrai) ou s'il y a eu une erreur (Faux).
+      // Exemple :
+      //
+      PROCEDURE OverrideSupprime(sFichierAEnlever est une chaine) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sFichierAEnlever)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      sLigneCmd est une chaine = chaineconstruit("dltovr file(%1) lvl(*job)",sFichierAEnlever)                   
+      RENVOYER ASExec(sLigneCmd)
+     type : 458752
+   -
+     name : BibliothèqueListeChange
+     procedure_id : 2015567082434071733
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de modifier la liste des bibliothèques de travail actives sur un serveur AS400. Cela permet de spécifier les bibliothèques dans lesquelles le serveur doit rechercher les objets.
+      // Syntaxe : [ <Résultat> = ] BibliothèqueListeChange (<sBibliothèqueListe> est chaîne, <sBibliothèqueCourante> est chaîne)
+      // Paramètres :
+      //	sBibliothèqueListe (chaîne UNICODE) : La liste des bibliothèques à définir comme nouvelles bibliothèques actives.
+      //	sBibliothèqueCourante (chaîne UNICODE) : La bibliothèque à définir comme bibliothèque courante. Si elle est vide, aucune bibliothèque n'est définie comme courante.
+      // Valeur de retour : booléen : Indique si la modification de la liste des bibliothèques de travail a été effectuée avec succès (Vrai) ou s'il y a eu une erreur (Faux).
+      // Exemple :
+      //
+      PROCEDURE BibliothèqueListeChange(sBibliothèqueListe est une chaîne,sBibliothèqueCourante est une chaine) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sBibliothèqueListe,sBibliothèqueCourante)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      sLigneCmd est une chaîne
+      SI SansEspace(sBibliothèqueCourante) = "" ALORS
+      	sLigneCmd = ChaîneConstruit("CHGLIBL LIBL(%1)",SansEspace(sBibliothèqueListe))
+      SINON		
+      	sLigneCmd = ChaîneConstruit("CHGLIBL LIBL(%1) CURLIB(%2)",SansEspace(sBibliothèqueListe),SansEspace(sBibliothèqueCourante))
+      FIN
+      renvoyer ASExec(sLigneCmd)
+     type : 458752
+   -
+     name : BibliothèqueListeAjoute
+     procedure_id : 2015567082434137269
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter une bibliothèque à la liste des bibliothèques de travail actives sur un serveur AS400 à une position spécifiée.
+      // Syntaxe : [ <Résultat> = ] BibliothèqueListeAjoute (<sBibliothèque> est chaîne, <ePosition> est cBaseDeDonnéesAS400.EBibliothèqueOrdre, <sBibliothèqueRéférence> est chaîne)
+      // Paramètres :
+      //	sBibliothèque (chaîne UNICODE) : La bibliothèque à ajouter à la liste.
+      //	eOrdre (cBaseDeDonnéesAS400.EBibliothèqueOrdre) : L'ordre dans lequel la bibliothèque doit être ajoutée. Les valeurs possibles sont AjoutePremier, AjouteDernier, AjouteAprès, AjouteAvant, AjouteRemplace.
+      //	sBibliothèqueRéférence (chaîne UNICODE) : La bibliothèque de référence par rapport à laquelle la position est définie.
+      // Valeur de retour : booléen : Indique si l'ajout de la bibliothèque à la liste des bibliothèques de travail a été effectué avec succès (Vrai) ou s'il y a eu une erreur (Faux).
+      // Exemple :
+      //
+      PROCEDURE BibliothèqueListeAjoute(sBibliothèque est une chaîne,ePosition est un EBibliothèqueOrdre,sBibliothèqueRéférence est une chaine) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sBibliothèque,ePosition..nom,sBibliothèqueRéférence)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      sLigneCmd est une chaîne = ChaîneConstruit("ADDLIBLE LIB(%1) POSITION(%2 %3)",SansEspace(sBibliothèque),SansEspace(ePosition..valeur),SansEspace(sBibliothèqueRéférence))
+      si pas ASExec(sLigneCmd) _et_ position(m_pclErreur.p_sErreur,rc+"CPF2103"+rc)<1 alors renvoyer faux	
+      renvoyer vrai 
+     type : 458752
+   -
+     name : JobID
+     procedure_id : 2015567082434202805
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de récupérer des informations sur le travail (job) AS400 actuel, telles que le nom du job, le nom de l'utilisateur et le numéro de job.
+      // Syntaxe : [ <Résultat> = ] JobID ()
+      // Paramètres : Aucun
+      // Valeur de retour : multi-valeur : Nom du job, nom de l'utilisateur du job, numéro du job. Si une erreur survient ou si aucune connexion n'est active, les chaînes sont vides.
+      // Exemple :
+      //
+      PROCEDURE JobID() : (chaine,chaine,chaine)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer ("","","")
+      
+      sLigneCmd est une chaîne = "RTVJOBA JOB(&JOBNAME) USER(&JOBUSER) NBR(&JOBNBR)"
+      ASAppelRtv(sLigneCmd)
+      si ASResultatRtv("RC")="0" alors renvoyer (ASResultatRtv("JOBNAME"),ASResultatRtv("JOBUSER"),ASResultatRtv("JOBNBR"))
+      renvoyer ("","","")
+     type : 458752
+   -
+     name : FichierPhysiqueVide
+     procedure_id : 2015567082434268341
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de vider un fichier physique AS400 en supprimant tous les enregistrements de son membre spécifié.
+      // Syntaxe : [ <Résultat> = ] FichierPhysiqueVide (<sNomFichier> est chaîne, <sBibliothèque> est chaîne, <eMembre> est cBaseDeDonnéesAS400.EBibliothèqueOrdre)
+      // Paramètres :
+      //	sNomFichier (chaîne UNICODE) : Nom du fichier physique à vider.
+      //	sBibliothèque (chaîne UNICODE) : Bibliothèque du fichier. Si la bibliothèque est vide, la bibliothèque courante est utilisée.
+      //	eMembre (cBaseDeDonnéesAS400.EBibliothèqueOrdre) :  Ordre d'opération pour le membre du fichier physique.
+      // Valeur de retour : chaîne UNICODE : Une chaîne vide si l'opération est réussie. Sinon, la chaîne contient un message d'erreur.
+      // Exemple :
+      //
+      PROCEDURE FichierPhysiqueVide(sNomFichier est une chaine,local sBibliothèque est une chaîne,eMembre est un EBibliothèqueOrdre) : chaine
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomFichier,sBibliothèque,eMembre..nom)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer "No connection"
+      
+      si sBibliothèque~="" alors sBibliothèque="*LIBL"
+      sLigneCmd est une chaîne = ChaîneConstruit("CLRPFM FILE(%1/%2) MBR(%3)",SansEspace(sBibliothèque),SansEspace(sNomFichier),SansEspace(eMembre..valeur))
+      renvoyer ASExec(sLigneCmd)
+     type : 458752
+   -
+     name : BibliothèqueCouranteChange
+     procedure_id : 2015567082434333877
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de changer la bibliothèque courante de la connexion AS400.
+      // Syntaxe : [ <Résultat> = ] BibliothèqueCouranteChange (<sBibliothèque> est chaîne)
+      // Paramètres :
+      //	sBibliothèque (chaîne UNICODE) : Nom de la bibliothèque à définir comme bibliothèque courante.
+      // Valeur de retour : booléen : Retourne Vrai si le changement de bibliothèque courante est réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE BibliothèqueCouranteChange(sBibliothèque est une chaine) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sBibliothèque)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      RENVOYER ASExec("CHGCURLIB CURLIB(" + sBibliothèque + ")")
+     type : 458752
+   -
+     name : OverrideFichierImprimante
+     procedure_id : 2015567082434399413
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de rediriger la sortie d'un fichier vers une imprimante spécifiée sur un système AS400.
+      // Syntaxe : [ <Résultat> = ] OverrideFichierImprimante (<sNomFichier> est chaîne, <sOUTQ> est chaîne)
+      // Paramètres :
+      //	sNomFichier (chaîne UNICODE) : Nom du fichier à rediriger vers l'imprimante.
+      //	sOUTQ (chaîne UNICODE) : Nom de la file de sortie (imprimante) vers laquelle rediriger le fichier.
+      // Valeur de retour : booléen : Retourne Vrai si la redirection du fichier vers l'imprimante est réussie, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE OverrideFichierImprimante(sNomFichier est une chaîne,sOUTQ est une chaine) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomFichier,sOUTQ)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      sLigneCmd est une chaîne = chaineconstruit("ovrprtf file(%1) outq(%2)",sNomFichier,sOUTQ)
+      renvoyer ASExec(sLigneCmd)
+     type : 458752
+   -
+     name : EstDateHeureVide
+     procedure_id : 2015568864845914738
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de vérifier si une valeur de type DateHeure est vide selon le format de DateHeure AS400. Elle retourne Vrai si la DateHeure est vide, Faux sinon.
+      // Syntaxe : [ <Résultat> = ] EstDateHeureVide (<dhDateHeure> est dateheure)
+      // Paramètres :
+      //	dhDateHeure (dateheure) : La valeur de type DateHeure à vérifier.
+      // Valeur de retour : booléen : Retourne Vrai si la DateHeure est vide, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE global EstDateHeureVide(dhDateHeure est une DateHeure) : booleen
+      renvoyer dhDateHeure dans ("00010101000000000","00000000000000000","")
+     type : 458752
+   -
+     name : ASAppelRTV
+     internal_properties : CQAAAAkAAADXsx/KSW4u8qAz8C8LntIXcesRZ2nl7Ji9q9GZbJAl2toIDAbjKJjmFrj+jAJawkZH+ItrQkFBkk8asWnqEjOUNQFqRkTaCQWFOIP8uFFQl1U4MiDCkta+m1JGupibiU5RZwfIiOs68BX6FTndM88+YIvLqdUKRN6wa1UA1cgdxIDJu5blPg9v+Uynwy73may4GgpQh9arqnHqvmL5XtL09dH7xE1GjgiIU4bC5RkkIMG4dTgKfmMWk69FkiBsQuiEttvPBMt3ZVrYVA==
+     procedure_id : 2017228839992757625
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'exécuter une commande AS400 via le système d'appel distant (AS/400). Elle retourne Vrai si l'appel est réussi, Faux sinon.
+      // Syntaxe : [ <Résultat> = ] ASAppelRTV (<sCommande> est chaîne)
+      // Paramètres :
+      //	sCommande (chaîne UNICODE) : La commande AS400 à exécuter.
+      // Valeur de retour : booléen : Retourne Vrai si l'appel est réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE ASAppelRTV(sCommande est une chaîne) : booleen
+      m_pclErreur.Raz()
+      
+      SI m_nIndiceDeConnexion>0 ALORS
+      	SI sCommande>"" ALORS
+      		SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès=cBaseDeDonnées.ODBC ALORS
+      			m_pclErreur.AjouteErreur(<§$000a§>)
+      		SINON
+      			SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCommande)
+      			renvoyer wl.ASAppelRTV(sCommande,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées)
+      		fin
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0009§>)
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0007§>)
+      FIN
+      RENVOYER faux
+     type : 458752
+   -
+     name : ASExec
+     internal_properties : CQAAAAkAAADXN5K9eFCwdcPa3OOKJjexrlfSjg7ncLr6sx8mxdD6RfRIjr1q1twcucURmOcw7kTOLhN8iHezjJyrAoEqO8CsjRkyeBEG8ckwWF2TWZ6t93Qbta5yZL+6aWffMLgCzQSh8a4kwQDA6yO2VMtcuimQua87NtQd+A/E4RhUjhPHHmVhrxHmfaUATVr0t8dQsSgNAkr/HJXh1W9pDDyCrQ/SQ7gZC3rZ8nlW46VO1DI6BnAgluoKSzDSCzW4mLxWksUUTXhMyJM=
+     procedure_id : 2017229750525904686
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'exécuter une commande AS400 directement sur le serveur AS/400. Elle retourne Vrai si l'exécution est réussie, Faux sinon.
+      // Syntaxe : [ <Résultat> = ] ASExec (<sCommande> est chaîne)
+      // Paramètres :
+      //	sCommande (chaîne UNICODE) : La commande AS400 à exécuter.
+      // Valeur de retour : booléen : Retourne Vrai si l'exécution est réussie, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE ASExec(sCommande est une chaîne) : booleen
+      m_pclErreur.Raz()
+      
+      SI m_nIndiceDeConnexion>0 ALORS
+      	SI sCommande>"" ALORS
+      		SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès=cBaseDeDonnées.ODBC ALORS
+      			m_pclErreur.AjouteErreur(<§$000a§>)
+      		SINON
+      			SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCommande)
+      			RENVOYER WL.ASExec(sCommande,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées)
+      		fin
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0009§>)
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0007§>)
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : ASResultatRTV
+     internal_properties : CQAAAAkAAACUIj7S1TDkCxFhezsmkpjvkii9N/Tif0tTNhKUXkYcjyPO0O4VGijbOIAGkKT0ktlSGE1lJd0qXJohXDg49IMZXWY/z+qhMDjmjwQK7ecFRYAAPtPp04G8eWgP0IxymLzyZvcNw44FwWZq1EssDMBOUtBPG7KPw333Cy56Cm1KdgA01epAiVDIimAOQU+O7EZ0OeYqCOns/bCwUK4cX9dr+QazBDeiPi0SRXyUMbg1vjFx52LG+Vn6JyFRK1pe6rQGRvaCOMHeHke+p9MH
+     procedure_id : 2017229819245463338
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de récupérer le résultat d'une commande RTV (Retrieve) AS400.
+      // Syntaxe : [ <Résultat> = ] ASResultatRTV (<sNomDeVariable> est chaîne)
+      // Paramètres :
+      //	sNomDeVariable (chaîne UNICODE) : Le nom de la variable dont vous souhaitez récupérer le résultat.
+      // Valeur de retour : chaîne UNICODE : La valeur de la variable récupérée.
+      // Exemple :
+      //
+      PROCEDURE ASResultatRTV(sNomDeVariable est une chaîne) : chaine
+      m_pclErreur.Raz()
+      
+      SI m_nIndiceDeConnexion>0 ALORS
+      	si sNomDeVariable>"" alors
+      		SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès=cBaseDeDonnées.ODBC ALORS
+      			m_pclErreur.AjouteErreur(<§$000a§>)
+      		SINON
+      			SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomDeVariable)
+      			RENVOYER WL.ASResultatRTV(sNomDeVariable,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées)
+      		fin
+      	sinon
+      		m_pclErreur.AjouteErreur(<§$0008§>)
+      	fin
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0007§>)
+      FIN
+      RENVOYER ""
+     type : 458752
+   -
+     name : Connecte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035452420561335093
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour établir une connexion à un serveur AS400 en utilisant les paramètres fournis. Tous les paramètres de la méthode peuvent être récupérés des paramètres de l'application avec le nom de section "AS400".
+      // Syntaxe : [ <Résultat> = ] Connecte ( [<eAccès> est cBaseDeDonnées.ETypeAccès [, <sServeurPort> est chaîne [, <sUtilisateur> est chaîne [, <sMotDePasse> est chaîne [, <sGroupeOuTypeOuNomDeFichiers> est chaîne [, <sEmplacementDesMémos> est chaîne [, <sRépertoireCache> est chaîne [, <sInfosÉtendues> est chaîne [, <bResterConnecté> est booléen]]]]]]]]])
+      // Paramètres :
+      //	eAccès (cBaseDeDonnées.ETypeAccès) : Type d'accès à la base de données (par défaut à partir des paramètres). Paramètre "Access", par défaut "RequêteSQL".
+      //	sServeurPort (chaîne UNICODE) : Nom du serveur et port. Paramètre "Address" et "Port".
+      //	sUtilisateur (chaîne UNICODE) : Nom d'utilisateur pour la connexion. Paramètre "User".
+      //	sMotDePasse (chaîne UNICODE) : Mot de passe pour la connexion. Paramètre "Password".
+      //	sGroupeOuTypeOuNomDeFichiers (chaîne UNICODE) : Paramètre pour spécifier le groupe, type ou nom de fichiers. Paramètre "Group", par défaut "*".
+      //	sEmplacementDesMémos (chaîne UNICODE) : Emplacement des mémos. Paramètre "PathMemos".
+      //	sRépertoireCache (chaîne UNICODE) : Répertoire du cache des mémos. Paramètre "CacheMemos", par défaut cApplication._Application.p_sRépertoireCacheMémo.
+      //	sInfosÉtendues (chaîne UNICODE) : Informations étendues pour la connexion. Paramètre "ExtInfos", par défaut "<EASYCOM>"+RC+"SHOWDIALOGS=0"+RC+"</EASYCOM>".
+      //	bResterConnecté (booléen) :  Indique si la connexion doit être maintenue ou non. Paramètre "StayConnected", par défaut Vrai.
+      // Valeur de retour : entier : Indice de la connexion établie. En cas d'échec, renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE Connecte(eAccès est un cBaseDeDonnées.ETypeAccès = EnumérationDepuisNom(cBaseDeDonnées.ETypeAccès,cApplication._Application.m_pclParamètres.Lit("AS400","Access",faux,"RequêteSQL")),	//ETypeAccès.RequêteSQL..Nom affiche une erreur en Android et Java 
+      			sServeurPort est une chaine = cApplication._Application.m_pclParamètres.Lit("AS400","Address")+[":"]+cApplication._Application.m_pclParamètres.Lit("AS400","Port"),		
+      			sUtilisateur est une chaîne = cApplication._Application.m_pclParamètres.Lit("AS400","User"),
+      			sMotDePasse = cApplication._Application.m_pclParamètres.Lit("AS400","Password",Vrai),
+      			local sGroupeOuTypeOuNomDeFichiers est une chaine = cApplication._Application.m_pclParamètres.Lit("AS400","Group",Faux,"*"),
+      			sEmplacementDesMémos est une chaine = cApplication._Application.m_pclParamètres.Lit("AS400","PathMemos"),
+      			sRépertoireCache est une chaîne = cApplication._Application.m_pclParamètres.Lit("AS400","CacheMemos",Faux,cApplication._Application.p_sRépertoireCacheMémo),
+      			sInfosÉtendues est une chaine = cApplication._Application.m_pclParamètres.Lit("AS400","ExtInfos",faux,"<EASYCOM>"+RC+"SHOWDIALOGS=0"+RC+"</EASYCOM>"),
+      			bResterConnecté est un booleen = cApplication._Application.m_pclParamètres.Lit("AS400","StayConnected",faux,vrai)) : entier
+      			
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(eAccès..Nom,sServeurPort,sUtilisateur,(enmodetest() ? sMotDePasse sinon Répète(cGénérique._Sep,Taille(sMotDePasse))),sGroupeOuTypeOuNomDeFichiers,sEmplacementDesMémos,sInfosÉtendues,bResterConnecté)
+      m_pclErreur.Raz()
+      
+      SI sServeurPort~="" 	ALORS m_pclErreur.AjouteErreur(<§$000b§>)
+      SI sUtilisateur~="" 	ALORS m_pclErreur.AjouteErreur(<§$000c§>)
+      
+      SI m_pclErreur.p_sErreur>"" ALORS RENVOYER 0
+      
+      stUneConnexion 	est un cBaseDeDonnées.STConnexion
+      cnxDonnées 		est une connexion
+      sCodeErreur		est une chaine
+      sClé			est une chaine = Minuscule(sServeurPort+TAB+sUtilisateur)+tab+(eAccès=cBaseDeDonnées.ODBC)
+      
+      m_nIndiceDeConnexion = TableauCherche(cBaseDeDonnées.mg_tabConnexion,tcLinéaire,"sCLé",sClé)
+      SI m_nIndiceDeConnexion>0 _ET_ cBaseDeDonnées.mg_taUtilisationServeur[sClé]>0 ALORS cBaseDeDonnées.connexionajoute(sClé);RENVOYER m_nIndiceDeConnexion	//la connexion existe déjà, renvoyer l'indice pour minimiser le nombre de connexions faites par l'appli
+      
+      
+      SI cApplication.mg_bSécurité ALORS 
+      	procConnecte est une Procédure = ChercheProcédure("COL_Betula_Secu.BDConnecteSecurisé")
+      	SI procConnecte<>Null ALORS
+      		cnxDonnées			= ExécuteTraitement("COL_Betula_Secu.BDConnecteSecurisé",trtProcédure,sServeurPort,"",sUtilisateur,sMotDePasse)
+      		SI ErreurDétectée() ALORS m_pclErreur.AjouteErreur(ErreurInfo());RENVOYER 0
+      	fin
+      sinon
+      	cnxDonnées..Provider									= hAccèsNatifAS400
+      	cnxDonnées..Serveur										= sServeurPort
+      	cnxDonnées..Utilisateur									= sUtilisateur
+      	cnxDonnées..MotDePasse	    							= sMotDePasse
+      	cnxDonnées..BaseDeDonnées								= ""
+      	cnxDonnées..Accès										= hOLectureEcriture
+      	cnxDonnées..InfosEtendues								= sInfosÉtendues
+      fin
+      
+      SI HOuvreConnexion(cnxDonnées) _et_ ChangeConnexion() ALORS
+      	cBaseDeDonnées.ConnexionAjoute(sClé)
+      	SI m_nIndiceDeConnexion<1 ALORS 
+      		stUneConnexion.sNomUnique							= Minuscule(cnxDonnées..Serveur+cGénérique._Sep+"")
+      		stUneConnexion.cnxDonnées							= cnxDonnées
+      		stUneConnexion.bConnecté							= Vrai
+      		stUneConnexion.sClé									= sClé
+      		stUneConnexion.eAccès								= cBaseDeDonnées.FonctionsH
+      		stUneConnexion.sRépertoireCache						= ComplèteRep(sRépertoireCache)
+      		stUneConnexion.sEmplacementDesMémos					= ComplèteRep(sEmplacementDesMémos)
+      		stUneConnexion.bResterConnecté						= bResterConnecté
+      		m_nIndiceDeConnexion=TableauAjoute(cBaseDeDonnées.mg_tabConnexion,stUneConnexion)	//ne pas faire TableauAjouteTrié car il peut prendre un indice déjà utilisé par une autre connexion
+      //		ServeurVersion()
+      	sinon
+      		cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté	= vrai
+      	fin
+      	RENVOYER m_nIndiceDeConnexion
+      SINON 
+      	sCodeErreur=HErreurInfo(hErrMessageNatif)	// Traitement de l'erreur "Mot de passe expiré"
+      	m_pclErreur.AjouteErreurHF(ChaîneConstruit(<§$000d§>,"AS400",sServeurPort)) 
+      	SI ExtraitChaîne(sCodeErreur,1)=6 AND ExtraitChaîne(sCodeErreur,2)=-5 ALORS
+      		m_pclErreur.AjouteErreur(<§$000e§>)
+      	fin
+      FIN
+      
+      	procédure interne ChangeConnexion()
+      	si sGroupeOuTypeOuNomDeFichiers="*" alors
+      		 renvoyer HChangeConnexion("*",cnxDonnées)
+      	sinon SI sGroupeOuTypeOuNomDeFichiers=hFichierAS400 ALORS
+      		POUR TOUTE CHAÎNE sTable de cApplication.mg_sTablesAnalyse separee par rc
+      			SI {sTable,indFichier}..Type=hFichierAS400 _Et_ pas HChangeConnexion(sTable,cnxDonnées) alors renvoyer faux
+      		FIN
+      	sinon SI sGroupeOuTypeOuNomDeFichiers>"" ALORS
+      		POUR TOUTE CHAÎNE sTable de sGroupeOuTypeOuNomDeFichiers separee par [rc," ",",",";",tab]
+      			SI pas HChangeConnexion(sTable,cnxDonnées) alors renvoyer faux
+      		FIN
+      	FIN	
+      	renvoyer vrai
+      	FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : Connecte_
+     procedure_id : 2035452424856368409
+     type_code : 12
+     code : |1-
+      // Résumé : Même fonction que Connecte() mais en passant en paramètre le nom de la section des paramètres de l'application (pour spécifier une valeur autre que "AS400")
+      // Syntaxe : [ <Résultat> = ] Connecte_ ( [<sSectionParamètres> est chaîne])
+      // Paramètres :
+      // 	sSectionParamètres (chaîne UNICODE) : Nom de la section des paramètres de l'application dans laquelle aller récupérer les autres paramètres de connexion, par défaut="AS400".
+      // Valeur de retour : entier : L'indice de la connexion si elle est établie.
+      // Exemple :
+      //
+      PROCEDURE Connecte_(sSectionParamètres est une chaîne = "AS400") : entier
+      RENVOYER connecte(EnumérationDepuisNom(cBaseDeDonnées.ETypeAccès,cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Access",Faux,"RequêteSQL")),	//ETypeAccès.RequêteSQL..Nom affiche une erreur en Android et Java
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Address")+[":"]+cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Port"),
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"User"),
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Password",Vrai),
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Group",Faux,"*"),
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"PathMemos"),
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"CacheMemos",Faux,cApplication._Application.p_sRépertoireCacheMémo),
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"ExtInfos",faux,"<EASYCOM>"+RC+"SHOWDIALOGS=0"+RC+"</EASYCOM>"),
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"StayConnected",faux,vrai))
+     type : 458752
+   -
+     name : Colonnes
+     procedure_id : 2035463221991560156
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] Colonnes (<sNomTable> est chaîne)
+      //
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : <indiquez ici le rôle de sNomTable>
+      // Valeur de retour :
+      // 	chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE Colonnes(local sNomTable est une chaine) : chaines
+      //code à compléter
+      renvoyer ""
+     type : 458752
+   -
+     name : ColonneExiste
+     procedure_id : 2035467027359094605
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] ColonneExiste (<sNomTableEtColonne> est chaîne)
+      //
+      // Paramètres :
+      //	sNomTableEtColonne (chaîne UNICODE) : <indiquez ici le rôle de sNomTableEtColonne>
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE ColonneExiste(sNomTableEtColonne est une chaîne) : booléen
+      //code à compléter
+      renvoyer faux
+     type : 458752
+   -
+     name : DateHeureUTC
+     procedure_id : 2035471442657871425
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie la date et l'heure actuelles en temps universel coordonné (UTC) depuis un serveur AS400.
+      // Syntaxe : [ <Résultat> = ] DateHeureUTC ()
+      // Paramètres : Aucun
+      // Valeur de retour : dateheure : La date et l'heure actuelles en temps universel coordonné (UTC) depuis le serveur AS400.
+      // Exemple :
+      //
+      PROCÉDURE DateHeureUTC() : DateHeure
+      clSQL est un csql(m_nIndiceDeConnexion)
+      SI clSQL.Requête("SELECT NOW() AS DateHeureAS400 FROM SYSIBM.SYSDUMMY1") _ET_ HLitPremier(clSQL.m_sd) ALORS 
+      	SI DateHeureValide(Milieu(clSQL.m_sd.DateHeureAS400,2)) ALORS RENVOYER Milieu(clSQL.m_sd.DateHeureAS400,2) SINON m_pclErreur.AjouteErreur(<§$000f§>)
+      FIN
+      RENVOYER ""
+     type : 458752
+   -
+     name : Déconnecte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035477378376343093
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de fermer la connexion à la base de données AS400. Si la connexion est la dernière connexion active sur le serveur et que l'option bResterConnecté est désactivée, la méthode supprime également toutes les connexions associées à ce serveur.
+      // Syntaxe : [ <Résultat> = ] Déconnecte ( [<bForce> est booléen])
+      // Paramètres :
+      // 	bForce (booléen optionnel) : Indique si la déconnexion doit être forcée même si d'autres connexions sont actives sur le même serveur. Par défaut : Faux.
+      // Valeur de retour : booléen : Indique si la déconnexion a été réalisée avec succès (Vrai) ou s'il y a eu des erreurs (Faux).
+      // Exemple :
+      //
+      PROCÉDURE Déconnecte(bForce est un booleen = faux) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bForce)
+      m_pclErreur.Raz()
+      
+      si m_nIndiceDeConnexion>0 alors
+      	sClé 			est une chaine = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé
+      	nUtilisation 	est un entier = cBaseDeDonnées.mg_taUtilisationServeur[sClé]
+      	SI ((PAS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bResterConnecté _ET_ nUtilisation=1) OU bForce) ALORS	//nUtilisation=1 ALORS c'est la dernière connexion active sur ce serveur
+      		SI HFermeConnexion(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées) ALORS 
+      			cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté=Faux
+      			cBaseDeDonnées.ConnexionSupprimeTout(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)
+      			m_nIndiceDeConnexion=0;nUtilisation=0
+      		SINON
+      			m_pclErreur.AjouteErreurHF(ChaîneConstruit(<§$0010§>,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..BaseDeDonnées))
+      			RENVOYER Faux
+      		FIN
+      	FIN
+      	SI nUtilisation>1 ALORS cBaseDeDonnées.ConnexionSupprime(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)
+      SINON
+      	m_pclErreur.AjouteAvertissement(<§$0013§>)
+      FIN
+      rENVOYER Vrai
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Sauvegarde
+     procedure_id : 2035480947733941560
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] Sauvegarde ( [<bÉcraseSiExistant> est booléen [, <sNomTables> est chaîne [, <sRépertoireLocal> est chaîne [, <eSuffixe> est cBaseDeDonnées.ESauvegardeSuffixe]]]])
+      //
+      // Paramètres :
+      // 	bÉcraseSiExistant (booléen - valeur par défaut=1) : <indiquez ici le rôle de bÉcraseSiExistant>
+      //	sNomTables (chaîne UNICODE) : <indiquez ici le rôle de sNomTables>
+      //	sRépertoireLocal (chaîne UNICODE) : <indiquez ici le rôle de sRépertoireLocal>
+      //	eSuffixe (cBaseDeDonnées.ESauvegardeSuffixe) : <indiquez ici le rôle de eSuffixe>
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE Sauvegarde(bÉcraseSiExistant est un booléen = Vrai, LOCAL sNomTables est une chaîne = "", sRépertoireLocal est une chaîne = "",eSuffixe est un cBaseDeDonnées.ESauvegardeSuffixe = cBaseDeDonnées.ESauvegardeSuffixe.SuffixeAucun) : booléen	//les tables peuvent être séparées par des , ou RC
+      //à compléter
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bÉcraseSiExistant,sNomTables,sRépertoireLocal,eSuffixe)
+      m_pclErreur.Raz()
+      
+      sSuffixe est une chaine
+      
+      SELON eSuffixe
+      	CAS cBaseDeDonnées.SuffixeDate 		: sSuffixe="_"+DateSys()
+      	CAS cBaseDeDonnées.SuffixeHeure 	: sSuffixe="_"+HeureSys()
+      	CAS cBaseDeDonnées.SuffixeDateHeure : sSuffixe="_"+DateSys()+"_"+HeureSys()
+      FIN
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : TableExiste
+     procedure_id : 2035500102738696897
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] TableExiste (<sNomTable> est chaîne)
+      //
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : <indiquez ici le rôle de sNomTable>
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE TableExiste(sNomTable est une chaîne) : booléen
+      //à compléter
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTable)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : Tables
+     procedure_id : 2035500124213603593
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] Tables ( [<sCondition> est chaîne])
+      //
+      // Paramètres :
+      //	sCondition (chaîne UNICODE) : <indiquez ici le rôle de sCondition>
+      // Valeur de retour :
+      // 	chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE Tables(sCondition est une chaine = "") : chaine
+      //à compléter
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer ""
+      SI sCondition="" _ET_ cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sToutesLesTables>"" ALORS RENVOYER cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sToutesLesTables
+      
+      //SI sCondition="" ALORS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sToutesLesTables=sRes
+      //A compléter
+      renvoyer ""
+     type : 458752
+   -
+     name : TransactionAnnule
+     procedure_id : 2035804856823417525
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] TransactionAnnule ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE TransactionAnnule() : booléen
+      //à essayer
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours ALORS	//au cas où on aurait la merveilleuse idée d'annuler une transaction qui n'a pas été ouverte
+      	clSQL est un cSQL(m_nIndiceDeConnexion)
+      	SI clSQL.SQLTransactionAnnule() ALORS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux
+      SINON
+      	m_pclErreur.AjouteAvertissement(<§$0011§>)
+      FIN
+      RENVOYER (cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux)
+     type : 458752
+   -
+     name : TransactionFin
+     procedure_id : 2035804998557371318
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] TransactionFin ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE TransactionFin() : booléen
+      //à essayer
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours ALORS	//au cas où on aurait la merveilleuse idée de terminer une transaction qui n'a pas été ouverte
+      	clSQL est un cSQL(m_nIndiceDeConnexion)
+      	SI clSQL.SQLTransactionAnnule() ALORS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux
+      SINON
+      	m_pclErreur.AjouteAvertissement(<§$0011§>)
+      FIN
+      RENVOYER (cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux)
+     type : 458752
+   -
+     name : TransactionDébut
+     procedure_id : 2035805118816614883
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] TransactionDébut ( [<sNomTables> est chaîne])
+      //
+      // Paramètres :
+      //	sNomTables (chaîne UNICODE) : <indiquez ici le rôle de sNomTables>
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE TransactionDébut(sNomTables est une chaîne = "") : booléen
+      //à essayer
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTables)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      
+      SI PAS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours ALORS
+      	clSQL est un cSQL(m_nIndiceDeConnexion)
+      	SI clSQL.SQLTransactionDébut() ALORS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Vrai
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0012§>)
+      FIN
+      RENVOYER (cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux)
+     type : 458752
+   -
+     name : SQLColonneSQLMémoVide
+     procedure_id : 2036158220663577784
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Renvoi du code SQL d'une colonne binaire vide. Permet de récupérer un binaire vide dans le résultat plutôt que de charger le binaire dès le départ.
+      // Syntaxe : [ <Résultat> = ] SQLColonneMémoVide (<sNomColonne> est chaîne)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Le nom de la colonne mémo pour laquelle la vérification sera faite.
+      // Valeur de retour : chaîne UNICODE : Représente l'expression SQL qui teste si le contenu de la colonne mémo spécifiée est vide.
+      // Exemple :
+      //
+      PROCEDURE SQLColonneSQLMémoVide()
+      RENVOYER "CAST('' AS VARBINARY(max))"
+     type : 458752
+   -
+     name : TableVersion
+     procedure_id : 2036158723182929142
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] TableVersion (<sNomTable> est chaîne)
+      //
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : <indiquez ici le rôle de sNomTable>
+      // Valeur de retour :
+      // 	entier : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCEDURE TableVersion(sNomTable est une chaine)
+      //à compléter
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTable)
+      renvoyer 0
+     type : 458752
+   -
+     name : SQLLimiteRequêteA
+     procedure_id : 2063238556345279225
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : EGénère les parties préliminaire et postliminaire d'une requête SQL destinés à limiter le nombre de résultats renvoyés.
+      // Syntaxe : [ <Résultat> = ] SQLLimiteRequêteA (<nNombre> est entier [, <bAvecWhere> est booléen])
+      // Paramètres :
+      //	nNombre (entier) : Le nombre maximum de résultats à renvoyer dans la requête.
+      // 	bAvecWhere (booléen optionnel) : N'est pas utilisé ici.
+      // Valeur de retour : multi-valeur : Renvoie le code SQL des parties à intégrer dans une requête SQL pour limiter le nombre de résultats.
+      // Exemple :
+      //
+      PROCEDURE SQLLimiteRequêteA(nNombre est un entier,bAvecWhere est un booléen) : (chaîne,chaîne)
+      sPréLimite,sPostLimite sont des chaînes
+      sPostLimite	= "FETCH FIRST ["+nNombre+"] ROWS ONLY"
+      RENVOYER (sPréLimite,sPostLimite)
+     type : 458752
+   -
+     name : BooléenVersSQL
+     procedure_id : 2301527683801984488
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Transforme un booléen dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] BooléenVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	nValeur : Valeur booléenne à transformer en SQL.
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne un booléen au format SQL. En cas d'erreur, elle renvoie une chaîne vide.
+      // Exemple :
+      //
+      PROCEDURE BooléenVersSQL(nValeur) : chaine
+      renvoyer (nValeur="1" ? "1" sinon "0")
+     type : 458752
+   -
+     name : SQLTableAvantColonne
+     procedure_id : 1156816154257999571
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Indique si il faut ajouter le nom de la table devant le nom de la colonne lors d'une requête SQL.
+      // Syntaxe : [ <Résultat> = ] SQLTableAvantColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Vrai s'il faut ajouter le nom de la table devant le nom de la colonne, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE SQLTableAvantColonne() : booleen
+      renvoyer faux
+     type : 458752
+  properties :
+   -
+     name : p_bEstConnecté
+     identifier : 0x1c5d98e009db0963
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut de la connexion
+         PROCEDURE PUBLIQUE p_bEstConnecté() : booleen
+         renvoyer m_nIndiceDeConnexion>0
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1bf778fa1b23acd5
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le nom serveur est obligatoire
+      en-GB : The name of the server is required
+      fr-CA : Le nom serveur est obligatoire
+      en-US : The name of the server is required
+     index : 0
+   -
+     text :
+      fr-FR : Le nom d'utilisateur est obligatoire
+      en-GB : Username is required
+      fr-CA : Le nom d'utilisateur est obligatoire
+      en-US : Username is required
+     index : 1
+   -
+     text :
+      fr-FR : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to open data connection (%1 - %2) : "
+      fr-CA : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-US : "Unable to open data connection (%1 - %2) : "
+     index : 2
+   -
+     text :
+      fr-FR : "Votre mot de passe a expiré, veuillez en saisir un nouveau"
+      en-GB : "Your password has expired, please enter a new one"
+      fr-CA : "Votre mot de passe a expiré, veuillez en saisir un nouveau"
+      en-US : "Your password has expired, please enter a new one"
+     index : 3
+   -
+     text :
+      fr-FR : Pas de connexion
+      en-GB : No connection
+      fr-CA : Pas de connexion
+      en-US : No connection
+     index : 4
+   -
+     text :
+      fr-FR : Aucune connexion en cours
+      en-GB : No connection in progress
+      fr-CA : Aucune connexion en cours
+      en-US : No connection in progress
+     index : 5
+   -
+     text :
+      fr-FR : Ce serveur n'accepte pas l'exécution d'une commande
+      en-GB : This server does not accept the execution of a command
+      fr-CA : Ce serveur n'accepte pas l'exécution d'une commande
+      en-US : This server does not accept the execution of a command
+     index : 6
+   -
+     text :
+      fr-FR : Aucune connexion en cours
+      en-GB : No connection in progress
+      fr-CA : Aucune connexion en cours
+      en-US : No connection in progress
+     index : 7
+   -
+     text :
+      fr-FR : Le nom de la variable est vide
+      en-GB : The name of the variable is empty
+      fr-CA : Le nom de la variable est vide
+      en-US : The name of the variable is empty
+     index : 8
+   -
+     text :
+      fr-FR : La commande est vide
+      en-GB : The command is empty
+      fr-CA : La commande est vide
+      en-US : The command is empty
+     index : 9
+   -
+     text :
+      fr-FR : Impossible d'exécuter une commande AS400 en ODBC
+      en-GB : Can not execute an AS400 command with ODBC
+      fr-CA : Impossible d'exécuter une commande AS400 en ODBC
+      en-US : Can not execute an AS400 command with ODBC
+     index : 10
+   -
+     text :
+      fr-FR : Le nom serveur est obligatoire
+      en-GB : The name of the server is required
+      fr-CA : Le nom serveur est obligatoire
+      en-US : The name of the server is required
+     index : 11
+   -
+     text :
+      fr-FR : Le nom d'utilisateur est obligatoire
+      en-GB : Username is required
+      fr-CA : Le nom d'utilisateur est obligatoire
+      en-US : Username is required
+     index : 12
+   -
+     text :
+      fr-FR : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to open data connection (%1 - %2) : "
+      fr-CA : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-US : "Unable to open data connection (%1 - %2) : "
+     index : 13
+   -
+     text :
+      fr-FR : "Votre mot de passe a expiré, veuillez en saisir un nouveau"
+      en-GB : "Your password has expired, please enter a new one"
+      fr-CA : "Votre mot de passe a expiré, veuillez en saisir un nouveau"
+      en-US : "Your password has expired, please enter a new one"
+     index : 14
+   -
+     text :
+      fr-FR : DateHeure invalide
+      en-GB : Invalid dateTime
+      fr-CA : DateHeure invalide
+      en-US : Invalid dateTime
+     index : 15
+   -
+     text :
+      fr-FR : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to close data connection (%1 - %2) : "
+      fr-CA : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-US : "Unable to close data connection (%1 - %2) : "
+     index : 16
+   -
+     text :
+      fr-FR : Pas de transaction en cours
+      en-GB : No transaction in progress
+      fr-CA : Pas de transaction en cours
+      en-US : No transaction in progress
+     index : 17
+   -
+     text :
+      fr-FR : Une transaction est déjà en cours
+      en-GB : A transaction is already in progress
+      fr-CA : Une transaction est déjà en cours
+      en-US : A transaction is already in progress
+     index : 18
+   -
+     text :
+      fr-FR : La base de données n'était pas connectée
+      en-GB : The database was not connected
+      fr-CA : La base de données n'était pas connectée
+      en-US : The database was not connected
+     index : 19
+   -
+     text :
+      fr-FR : Aucune connexion
+      en-GB : No connection
+      fr-CA : Aucune connexion
+      en-US : No connection
+     index : 20
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,575 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_Log
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1be46eed02000cfc
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette collection surcharge des fonctions standards des boîtes de dialogue pour permettre de les tracer (message et réponse!).
+      PRIVÉ
+      CONSTANTE
+      	ErreurDeLog	= 150
+      FIN
+     type : 720896
+   -
+     code : |1+
+      //
+     type : 720898
+  procedures :
+   -
+     name : iFinImprime
+     procedure_id : 2009853297934011644
+     type_code : 15
+     code : |1+
+      // Résumé : Cette fonction indique la fin de l'impression en ajoutant un message de journalisation spécifique et en appelant la fonction iFinImprime du mécanisme d'impression de WinDev.
+      // Syntaxe : iFinImprime ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      // 	iFinImprime()
+      //
+      PROCEDURE iFinImprime()
+      cApplication._Application.m_pclLog.Ajoute("iFinImprime",clog.eLogNiveauActionUtilisateur)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	WL.iFinImprime()
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : iImprimeÉtat
+     procedure_id : 2009853297934077180
+     type_code : 15
+     code : |1+
+      // Résumé : Imprime un état spécifié avec des paramètres optionnels. Elle ajoute également une entrée dans le journal de trace de l'application.
+      // Syntaxe : [ <Résultat> = ] iImprimeÉtat (<xNomÉtat> [, <xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5> [, <xParam6>]]]]]])
+      // Paramètres :
+      // 	xNomÉtat : Nom de l'état à imprimer.
+      // 	xParam1 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam2 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam3 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam4 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam5 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam6 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // Valeur de retour : type indéfini : Type du résultat retourné par l'état 
+      // Exemple :
+      //	iImprimeÉtat("MonÉtat", Param1, Param2, Param3)
+      //
+      PROCEDURE iImprimeÉtat(xNomÉtat,xParam1<utile>=null,xParam2<utile>=Null,xParam3<utile>=Null,xParam4<utile>=Null,xParam5<utile>=null,xParam6<utile>=null)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteProcédure()
+      nParamMax est un entier
+      pour nParam = 1 _a_ 6
+      	si {"xParam"+nParam,indVariable}=null alors nParamMax=nParam;sortir
+      FIN
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	quand exception dans
+      		si nParamMax=1 alors renvoyer WL.iImprimeEtat(xNomÉtat) sinon renvoyer WL.iImprimeEtat(xNomÉtat,MesParamètres[2 À nParamMax])
+      	faire
+      		//rien, l'état n'a pas renvoyé de valeur
+      	fin
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : Erreur
+     procedure_id : 2009853297934142716
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message d'erreur et l'enregistre dans le journal de log de l'application.
+      // Syntaxe : Erreur (<sMessage> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      // 	sMessage : Le message d'erreur à afficher et à enregistrer dans le journal de log.
+      // 	xParam2 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam3 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam4 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam5 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // Valeur de retour : 	Aucune
+      // Exemple :
+      //	Erreur("Une erreur s'est produite lors du traitement de la demande.", CodeErreur, DescriptionErreur, SourceErreur)
+      //
+      PROCEDURE Erreur(sMessage,xParam2="",xParam3="",xParam4="",xParam5="")
+      QUAND EXCEPTION DANS	//cas où l'objet cApplication n'est pas encore chargé, il faut quand même afficher une erreur
+      	SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");RETOUR
+      	cApplication._Application.m_pclLog.Erreur(sMessage,xParam2,xParam3,xParam4,xParam5)
+      FAIRE
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      		WL.Erreur(sMessage,xParam2,xParam3,xParam4,xParam5)
+      	
+      <fin>
+      
+      
+      FIN
+     type : 458752
+   -
+     name : Avertissement
+     procedure_id : 2009853297934208252
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un avertissement et l'enregistre dans le journal de log de l'application.
+      // Syntaxe : Avertissement (<sMessage> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      // 	sMessage : Le message d'avertissement principal à afficher et à enregistrer dans le journal de log.
+      // 	xParam2 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam3 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam4 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam5 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	Avertissement("Une opération non critique a généré un avertissement.")
+      //
+      PROCEDURE Avertissement(sMessage,xParam2="",xParam3="",xParam4="",xParam5="")
+      si cApplication._Application=null _ou_ cApplication._Application.m_pclLog=null alors dbgAssertion(faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");retour
+      cApplication._Application.m_pcllog.Avertissement(sMessage,xParam2,xParam3,xParam4,xParam5)
+     type : 458752
+   -
+     name : Info
+     procedure_id : 2009853297934273788
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message d'information et l'enregistre dans le journal de log de l'application. 
+      // Syntaxe : Info (<sMessage> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      // 	sMessage : Message informatif à afficher et à enregistrer dans le journal de log.
+      // 	xParam2 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam3 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam4 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // 	xParam5 (optionnel) : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	Info("Opération réussie")
+      //
+      PROCEDURE Info(sMessage,xParam2="",xParam3="",xParam4="",xParam5="")
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");retour
+      cApplication._Application.m_pcllog.Info(sMessage,xParam2,xParam3,xParam4,xParam5)
+     type : 458752
+   -
+     name : OuiNon
+     procedure_id : 2009853297934339324
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche une boite de dialogue et enregistre la question et la réponse à l'aide du mécanisme de journalisation
+      // Syntaxe : [ <Résultat> = ] OuiNon (<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      //	xParam1 : Message principal de la boîte de dialogue à afficher et à enregistrer dans le journal de log.
+      //	xParam2 (valeur par défaut="") : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      //	xParam3 (valeur par défaut="") : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      //	xParam4 (valeur par défaut="") : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      //	xParam5 (valeur par défaut="") : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // Valeur de retour :
+      // 	Type indéterminé : 
+      // Exemple :
+      //	SI OKAnnuler(non,"Voulez-vous vraiment effectuer cette opération ?") ALORS
+      //		//ici le code à exécuter
+      //	FIN
+      //
+      PROCEDURE OuiNon(xParam1,xParam2="",xParam3="",xParam4="",xParam5="")                                                                                               
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");renvoyer faux
+      renvoyer cApplication._Application.m_pclLog.ouinon(xParam1,xParam2,xParam3,xParam4,xParam5)
+     type : 458752
+   -
+     name : Dialogue
+     procedure_id : 2009853297934404860
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un dialogue personnalisé et enregistre le choix à l'aide du mécanisme de journalisation. La syntaxe est celle sans identifiant.
+      // Syntaxe : [ <Résultat> = ] Dialogue (<sMessage>, <tabLibelléBoutons> est tableau [, <nBoutonParDéfaut> est entier [, <nBoutonAnnulation> est entier [, <xIcône>]]])
+      // Paramètres :
+      //	sMessage : La question affiché dans le dialogue et enregistrée dans le journal de log.
+      //	tabLibelléBoutons (tableau) : Un tableau de chaînes contenant les libellés des boutons du dialogue.
+      //	nBoutonParDéfaut (entier - valeur par défaut=0) : L'indice du bouton par défaut dans le tableau (tabLibelléBoutons). La valeur par défaut est 0.
+      //	nBoutonAnnulation (entier - valeur par défaut=0) : L'indice du bouton d'annulation dans le tableau (tabLibelléBoutons). La valeur par défaut est 0.
+      //	xIcône (valeur par défaut=0) : L'icône à afficher dans le dialogue. La valeur par défaut est Null.
+      // Valeur de retour :
+      // 	Type indéterminé : 
+      // Exemple :
+      //	nRésultatDialogue = Dialogue("Veuillez choisir une option :", ["Option 1", "Option 2", "Annuler"], 1, 2, iIcôneQuestion)
+      //
+      PROCEDURE Dialogue(sMessage,tabLibelléBoutons est un tableau de chaîne,nBoutonParDéfaut est un entier = 0,nBoutonAnnulation est un entier = 0,xIcône = null)	//ne prend en compte QUE la seconde syntaxe
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");renvoyer faux
+      renvoyer cApplication._Application.m_pclLog.Dialogue(sMessage,tabLibelléBoutons,nBoutonParDéfaut,nBoutonAnnulation,xIcône)
+     type : 458752
+   -
+     name : OKAnnuler
+     procedure_id : 2009853297934470396
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche une boîte de dialogue avec les options "OK" et "Annuler", et enregistre le choix dans le journal de log de l'application.
+      // Syntaxe : [ <Résultat> = ] OKAnnuler (<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      //	xParam1 : Message principal de la boîte de dialogue à afficher et à enregistrer dans le journal de log.
+      //	xParam2 (valeur par défaut="") : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      //	xParam3 (valeur par défaut="") : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      //	xParam4 (valeur par défaut="") : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      //	xParam5 (valeur par défaut="") : paramètre supplémentaire qui peut être inclus pour fournir une information contextuelle
+      // Valeur de retour :
+      // 	Type indéterminé : 
+      // Exemple :
+      //	SI OKAnnuler("Voulez-vous vraiment effectuer cette opération ?") ALORS
+      //		//le code à exécuter
+      //	FIN
+      //
+      PROCEDURE OKAnnuler(xParam1,xParam2="",xParam3="",xParam4="",xParam5="")
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");renvoyer faux
+      renvoyer cApplication._Application.m_pclLog.OKAnnuler(xParam1,xParam2,xParam3,xParam4,xParam5)
+     type : 458752
+   -
+     name : Confirmer
+     procedure_id : 2009853297934535932
+     type_code : 15
+     code : |1-
+      // Résumé : Demande une confirmation et renvoie le résultat, et enregistre le choix dans le journal de log de l'application.
+      // Syntaxe : [ <Résultat> = ] Confirmer (<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      //	xParam1 : Bouton sélectionné (Oui, Non, Annuler) ou message principal de la confirmation
+      //	xParam2 (valeur par défaut="") : paramètre supplémentaire pour afficher la confirmation
+      //	xParam3 (valeur par défaut="") : paramètre supplémentaire pour afficher la confirmation
+      //	xParam4 (valeur par défaut="") : paramètre supplémentaire pour afficher la confirmation
+      //	xParam5 (valeur par défaut="") : paramètre supplémentaire pour afficher la confirmation
+      // Valeur de retour (entier) : Oui (1), Non (0), Annuler (2)
+      // Exemple :
+      //	SI Confirmer("Voulez-vous vraiment effectuer cette opération ?", "(aucun retour arrière possible)") = Oui ALORS 
+      //		// Code à exécuter en cas de confirmation positive
+      //	SINON
+      //		// Code à exécuter en cas de confirmation négative ou annulation
+      //	FIN
+      PROCEDURE Confirmer(xParam1,xParam2="",xParam3="",xParam4="",xParam5="")
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");renvoyer faux
+      renvoyer cApplication._Application.m_pclLog.Confirmer(xParam1,xParam2,xParam3,xParam4,xParam5)
+     type : 458752
+   -
+     name : FinProgramme
+     procedure_id : 2074359901978752718
+     type_code : 15
+     code : |1-
+      // Résumé : Effectue une sortie contrôlée du programme et l'enregistre dans le journal de log de l'application.. En cas d'absence de l'objet cApplication, elle utilise le mécanisme de fin de programme de WinDev pour afficher un message de fin.
+      // Syntaxe : FinProgramme (<sMessage> est chaîne [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      //	sMessage (chaîne UNICODE) : Le message de fin de programme à enregistrer ou afficher.
+      // 	xParam2 (optionnel) : ligne supplémentaire du message
+      // 	xParam3 (optionnel) : ligne supplémentaire du message
+      // 	xParam4 (optionnel) : ligne supplémentaire du message
+      // 	xParam5 (optionnel) : ligne supplémentaire du message
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	FinProgramme("Le programme s'est terminé de manière inattendue.", sErreur, sInformationsSupplémentaires)
+      //
+      PROCEDURE FinProgramme(sMessage est une chaîne,xParam2="",xParam3="",xParam4="",xParam5="")
+      quand exception dans
+      	cApplication._Application.m_pclLog.FinProgramme(sMessage,xParam2,xParam3,xParam4,xParam5)	//pourrait planter quand on teste directement une fonction
+      faire
+      	wl.finprogramme(sMessage,xParam2,xParam3,xParam4,xParam5)
+      fin
+     type : 458752
+   -
+     name : InfoAsynchrone
+     procedure_id : 1632469575957034174
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message d'information asynchrone (non bloquant), et l'enregistre dans le journal de log de l'application. InfoAsynchrone n'étant disponible qu'en Wx25+, son appel avec les versions 23 ou 24 exécutera Info()
+      // Syntaxe : InfoAsynchrone (<xMessage> [, <procCallBack> est procédure])
+      // Paramètres :
+      //	xMessage : Message informatif à afficher et à enregistrer dans le journal de log.
+      //	procCallBack (procédure optionnelle) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre d'information. 
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	InfoAsynchrone("Opération réussie",procClicInfo)
+      //
+      PROCEDURE InfoAsynchrone(xMessage,procCallBack est une procédure = null)
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");RETOUR
+      cApplication._Application.m_pclLog.InfoAsynchrone(xMessage,procCallBack)
+     type : 458752
+   -
+     name : InfoAvecDélai
+     procedure_id : 1632474085812877074
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message d'information avec un délai et l'enregistre dans le journal de log de l'application.
+      // Syntaxe : InfoAvecDélai (<duDélai> est durée, <sMessage> est chaîne [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      //	duDélai (durée) : Durée avant la fermeture automatique de la fenêtre d'information système
+      //	sMessage (chaîne UNICODE) : Message informatif à afficher et à enregistrer dans le journal de log.
+      //	xParam2 (valeur par défaut="") : Premier paramètre de l'information (remplacera le %1)
+      //	xParam3 (valeur par défaut="") : Premier paramètre de l'information (remplacera le %2)
+      //	xParam4 (valeur par défaut="") : Premier paramètre de l'information (remplacera le %3)
+      //	xParam5 (valeur par défaut="") : Premier paramètre de l'information (remplacera le %4)
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	InfoAvecDélai(5s,"Opération réussie")
+      //
+      PROCEDURE InfoAvecDélai(duDélai est une durée,sMessage est une chaîne,xParam2="",xParam3="",xParam4="",xParam5="")
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");RETOUR
+      cApplication._Application.m_pclLog.InfoAvecDélai(duDélai,sMessage,xParam2,xParam3,xParam4,xParam5)
+     type : 458752
+   -
+     name : ErreurAvecDélai
+     procedure_id : 1696790075600082692
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message d'information avec un délai et l'enregistre dans le journal de log de l'application.
+      // Syntaxe : ErreurAvecDélai (<duDélai> est durée, <sMessage> est chaîne [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      //	duDélai (durée) : Durée avant la fermeture automatique de la fenêtre d'information système
+      //	sMessage (chaîne UNICODE) : Message informatif à afficher et à enregistrer dans le journal de log.
+      //	xParam2 (valeur par défaut="") : Premier paramètre de l'erreur (remplacera le %1)
+      //	xParam3 (valeur par défaut="") : Premier paramètre de l'erreur (remplacera le %2)
+      //	xParam4 (valeur par défaut="") : Premier paramètre de l'erreur (remplacera le %3)
+      //	xParam5 (valeur par défaut="") : Premier paramètre de l'erreur (remplacera le %4)
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	Erreur(5s,"L'opération a échouée")
+      //
+      PROCEDURE ErreurAvecDélai(duDélai est une durée,sMessage est une chaîne,xParam2="",xParam3="",xParam4="",xParam5="")
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");RETOUR
+      cApplication._Application.m_pclLog.ErreurAvecDélai(duDélai,sMessage,xParam2,xParam3,xParam4,xParam5)
+     type : 458752
+   -
+     name : InfoAvecDélaiAsynchrone
+     procedure_id : 1696793090667367186
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message d'information asynchrone avec un délai et l'enregistre dans le journal de log de l'application.
+      // Syntaxe : InfoAvecDélaiAsynchrone (<duDélai> est durée, <sMessage> est chaîne [, <procCallBack> est procédure])
+      // Paramètres :
+      //	duDélai (durée) : Durée avant la fermeture automatique de la fenêtre d'information système
+      //	sMessage (chaîne UNICODE) : Message informatif à afficher et à enregistrer dans le journal de log.
+      //	procCallBack (procédure - valeur par défaut=0) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre d'information. 
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE InfoAvecDélaiAsynchrone(duDélai est une durée,sMessage est une chaîne,procCallBack est une procédure = null)
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");RETOUR
+      cApplication._Application.m_pclLog.InfoAvecDélaiAsynchrone(duDélai,sMessage,procCallBack)
+     type : 458752
+   -
+     name : InfoConstruit
+     procedure_id : 1696822622866028442
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message d'information personnalisé et l'enregistre dans le journal de log de l'application. 
+      // Syntaxe : InfoConstruit (<sMessage> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      // 	sMessage : Message informatif à afficher et à enregistrer dans le journal de log.
+      // 	xParam2 (optionnel) : Premier paramètre de l'information (remplacera le %1)
+      // 	xParam3 (optionnel) : Premier paramètre de l'information (remplacera le %2)
+      // 	xParam4 (optionnel) : Premier paramètre de l'information (remplacera le %3)
+      // 	xParam5 (optionnel) : Premier paramètre de l'information (remplacera le %4)
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	InfoConstruit("Opération %1 réussie","d'ajout")
+      //
+      PROCEDURE InfoConstruit(sMessage,xParam2="",xParam3="",xParam4="",xParam5="")
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");RETOUR
+      cApplication._Application.m_pclLog.InfoConstruit(sMessage,xParam2,xParam3,xParam4,xParam5)
+     type : 458752
+   -
+     name : ErreurAsynchrone
+     procedure_id : 1696824435345860822
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message d'erreur asynchrone (non bloquant), et l'enregistre dans le journal de log de l'application. ErreurAsynchrone n'étant disponible qu'en Wx25+, son appel avec les versions 23 ou 24 exécutera Erreur()
+      // Syntaxe : ErreurAsynchrone (<xMessage> [, <procCallBack> est procédure])
+      // Paramètres :
+      //	xMessage : Message d'erreur à afficher et à enregistrer dans le journal de log.
+      //	procCallBack (procédure optionnelle) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre d'erreur. 
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	ErreurAsynchrone("Opération n'a pas réussi",procClicErreur)
+      //
+      PROCEDURE ErreurAsynchrone(xMessage,procCallBack est une procédure = null)
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");RETOUR
+      cApplication._Application.m_pclLog.ErreurAsynchrone(xMessage,procCallBack)
+     type : 458752
+   -
+     name : ConfirmerAsynchrone
+     procedure_id : 1696827905683520602
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message de confirmation asynchrone (non bloquant), et l'enregistre dans le journal de log de l'application. ConfirmerAsynchrone n'étant disponible qu'en Wx25+, son appel avec les versions 23 ou 24 exécutera Confirmation()
+      // Syntaxe :
+      //[ <Résultat> = ] ConfirmerAsynchrone (<xBouton>, <xMessage> [, <procCallBack> est procédure])
+      // Paramètres :
+      //	xBouton : Bouton sélectionné par défaut (Oui, Non, Annuler) ou message principal de la confirmation
+      //	xMessage : Message d'erreur à afficher et à enregistrer dans le journal de log.
+      //	procCallBack (procédure - valeur par défaut=0) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre d'erreur.
+      // Valeur de retour (entier) : Oui = 1, Non = 0, Annuler = 2
+      // Exemple :
+      //	ConfirmerAsynchrone("Enregistrer avant de quitter ?",procClicConfirme)
+      //
+      PROCEDURE ConfirmerAsynchrone(xBouton,xMessage,procCallBack est une procédure = null) : entier
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");renvoyer -1
+      renvoyer cApplication._Application.m_pclLog.ConfirmerAsynchrone(xBouton,xMessage,procCallBack)
+     type : 458752
+   -
+     name : DialogueAsynchrone
+     procedure_id : 1696828893530291570
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche une boite de dialogue asynchrone (non bloquant), et l'enregistre dans le journal de log de l'application. DialogueAsynchrone n'étant disponible qu'en Wx25+, son appel avec les versions 23 ou 24 exécutera Dialogue(). Syntaxe avec identifiant (utilisez l'assistant).
+      // Syntaxe : [ <Résultat> = ] DialogueAsynchrone (<IDMessage> [, <procCallBack> est procédure [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]]])
+      // Paramètres :
+      //	IDMessage : Message d'erreur à afficher et à enregistrer dans le journal de log.
+      //	procCallBack (procédure - valeur par défaut=0) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre d'erreur.
+      //	xParam2 (valeur par défaut="") : Premier paramètre de la question (remplacera le %1)
+      //	xParam3 (valeur par défaut="") : Second paramètre de la question (remplacera le %2)
+      //	xParam4 (valeur par défaut="") : Troisième paramètre de la question (remplacera le %3)
+      //	xParam5 (valeur par défaut="") : Quatrième paramètre de la question (remplacera le %4)
+      // Valeur de retour (entier) : Valeur du bouton cliqué dans la boite de dialogue
+      // Exemple :
+      //	DialogueAsynchrone(3,procClicConfirme,"l'application")
+      //
+      PROCEDURE DialogueAsynchrone(IDMessage,procCallBack est une procédure = null,xParam2="",xParam3="",xParam4="",xParam5="") : entier
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");renvoyer -1
+      renvoyer cApplication._Application.m_pclLog.DialogueAsynchrone(IDMessage,procCallBack,xParam2="",xParam3="",xParam4="",xParam5="")
+     type : 458752
+   -
+     name : OuiNonAsynchrone
+     procedure_id : 1696833282991297923
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message de confirmation asynchrone (non bloquant), et l'enregistre dans le journal de log de l'application. OuiNonAsynchrone n'étant disponible qu'en Wx25+, son appel avec les versions 23 ou 24 exécutera OuiNon()
+      // Syntaxe : [ <Résultat> = ] OuiNonAsynchrone (<xMessage> [, <procCallBack> est procédure])
+      // Paramètres :
+      //	xMessage : Message d'erreur à afficher et à enregistrer dans le journal de log.
+      //	procCallBack (procédure - valeur par défaut=0) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre d'erreur.
+      // Valeur de retour (entier) : Oui = 1, Non = 0
+      // Exemple :
+      //	OuiNonAsynchrone("Enregistrer avant de quitter ?",procClicConfirme)
+      //
+      PROCEDURE OuiNonAsynchrone(xMessage,procCallBack est une procédure = null)
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");renvoyer -1
+      renvoyer cApplication._Application.m_pclLog.OuiNonAsynchrone(xMessage,procCallBack)
+     type : 458752
+   -
+     name : OKAnnulerAsynchrone
+     procedure_id : 1696838967951346144
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message de confirmation asynchrone (non bloquant), et l'enregistre dans le journal de log de l'application. OKAnnulerAsynchrone n'étant disponible qu'en Wx25+, son appel avec les versions 23 ou 24 exécutera OKAnnuler()
+      // Syntaxe :
+      //[ <Résultat> = ] OKAnnulerAsynchrone (<xMessage> [, <procCallBack> est procédure])
+      // Paramètres :
+      //	xMessage : Message d'erreur à afficher et à enregistrer dans le journal de log.
+      //	procCallBack (procédure - valeur par défaut=0) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre d'erreur.
+      // Valeur de retour (entier) : OK = 1, Annuler = 0
+      // Exemple :
+      //	OKAnnulerAsynchrone("Enregistrer avant de quitter ?",procClicConfirme)
+      //
+      PROCEDURE OKAnnulerAsynchrone(xMessage,procCallBack est une procédure = null)
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");renvoyer -1
+      renvoyer cApplication._Application.m_pclLog.OuiNonAsynchrone(xMessage,procCallBack)
+     type : 458752
+   -
+     name : ErreurAvecDélaiAsynchrone
+     procedure_id : 1696843232853946849
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message d'erreur asynchrone avec un délai et l'enregistre dans le journal de log de l'application.
+      // Syntaxe : ErreurAvecDélaiAsynchrone (<duDélai> est durée, <sMessage> est chaîne [, <procCallBack> est procédure])
+      // Paramètres :
+      //	duDélai (durée) : Durée avant la fermeture automatique de la fenêtre d'erreur
+      //	sMessage (chaîne UNICODE) : Message d'erreur à afficher et à enregistrer dans le journal de log.
+      //	procCallBack (procédure - valeur par défaut=0) : Nom de la procédure WLangage (appelée "callback") appelée lorsque l'utilisateur clique sur le bouton "OK" de la fenêtre d'erreur.
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE ErreurAvecDélaiAsynchrone(duDélai est une durée,sMessage est une chaîne,procCallBack est une procédure = null)
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");RETOUR
+      cApplication._Application.m_pclLog.InfoAvecDélaiAsynchrone(duDélai,sMessage,procCallBack)
+     type : 458752
+   -
+     name : ErreurConstruit
+     procedure_id : 1696851895806965633
+     type_code : 15
+     code : |1-
+      // Résumé : Affiche un message d'erreur personnalisé et l'enregistre dans le journal de log de l'application. 
+      // Syntaxe : ErreurConstruit (<sMessage> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5>]]]])
+      // Paramètres :
+      //	sMessage : Message d'erreur à afficher et à enregistrer dans le journal de log.
+      //	xParam2 (valeur par défaut="") : Premier paramètre de l'erreur (remplacera le %1)
+      //	xParam3 (valeur par défaut="") : Premier paramètre de l'erreur (remplacera le %2)
+      //	xParam4 (valeur par défaut="") : Premier paramètre de l'erreur (remplacera le %3)
+      //	xParam5 (valeur par défaut="") : Premier paramètre de l'erreur (remplacera le %4)
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	ErreurConstruit("Opération %1 n'a pas réussi","d'ajout")
+      //
+      PROCEDURE ErreurConstruit(sMessage,xParam2="",xParam3="",xParam4="",xParam5="")
+      SI cApplication._Application=Null _OU_ cApplication._Application.m_pclLog=Null ALORS dbgAssertion(Faux,"Cette fonction ne peut s'exécuter car Betula n'a pas été initialisé");RETOUR
+      cApplication._Application.m_pclLog.ErreurConstruit(sMessage,xParam2,xParam3,xParam4,xParam5)
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1ae090c10326a0de
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Fenêtre %1 fermée
+      en-GB : Window %1 closed
+      fr-CA : Fenêtre %1 fermée
+      en-US : Window %1 closed
+     index : 0
+   -
+     text :
+      fr-FR : Fenêtre %1 ouverte
+      en-GB : Window %1 opened
+      fr-CA : Fenêtre %1 ouverte
+      en-US : Window %1 opened
+     index : 1
+   -
+     text :
+      fr-FR : Message de dialogue non permis sur cette plateforme
+      en-GB : Dialogue box not allowed on this platform
+      fr-CA : Message de dialogue non permis sur cette plateforme
+      en-US : Dialogue box not allowed on this platform
+     index : 2
+   -
+     text :
+      fr-FR : Message d'avertissement non permis sur cette plateforme
+      en-GB : Warning box not allowed on this platform
+      fr-CA : Message d'avertissement non permis sur cette plateforme
+      en-US : Warning box not allowed on this platform
+     index : 3
+   -
+     text :
+      fr-FR : "Avertissement : "
+      en-GB : "Warning : "
+      fr-CA : "Avertissement : "
+      en-US : "Warning : "
+     index : 4
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

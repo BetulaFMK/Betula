@@ -1,0 +1,99 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cLDAP2013MailExchange
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f55b1b12627e35
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe qui donne la structure d'un enregistrement MailExchange sur un serveur Windows 2013.
+      
+      cLDAP2013MailExchange est une Classe, abstraite		//ref : http://www.phpldaptools.com/reference/Default-Schema-Attributes/#exchange-contact-types
+      	//les attributs suivants, liés à Exchange (version ? mais vérifiés sur un 2012), sont non documentés chez Microsoft ! 
+      	msExchOmaAdminWirelessEnable		est un booleen				//Whether or not ActiveSync is enabled
+      	msExchMobileMailboxPolicyLink		est une chaine				//The Active Sync policy name
+      	mailNickname						est une chaine				//The Exchange Mailbox alias
+      	msExchArchiveDatabaseLink			est une chaine				//The Archive Database name
+      	msExchArchiveGUID					est une chaine				//The GUID for the Mailbox archive
+      	msExchArchiveQuota					est un entier				//The hard quota for the archive
+      	msExchArchiveName					est une chaine				//The archive name
+      	msExchArchiveWarnQuota				est un entier				//The warning quota for the archive
+      	msExchELCMailboxFlags				est un booleen				//Whether calendar logging is disabled, whether or not the archive DB is considered valid, Whether or not litigation is enabled, Whether or not message records management is enabled, Whether or not retention is enabled,Whether or not single item recovery is enabled
+      	msExchHideFromAddressLists			est un booleen				//Whether or not to hide the mailbox from the address books
+      	msExchUserCulture					est une chaine				//The language (ie en-us) for the mailbox
+      	msexchLitigationHoldDate			est une chaine				//The datetime for litigation hold
+      	msexchLitigationHoldOwner			est une chaine				//The litigation owner name
+      	homeMDB								est une chaine				//The name of the database where the mailbox resides
+      	msExchUserAccountControl			est un booleen				//Whether or not the mailbox is disabled
+      	msExchMailboxGUID					est une chaine				//The GUID of the mailbox
+      	msExchMailboxSecurityDescriptor		est une chaine	//secu		//The mailbox security permissions
+      	msExchHomeServerName				est une chaine				//The name of the exchange server where the mailbox resides
+      	msExchSenderHintTranslations		est une chaine				//
+      	mDBStorageQuota						est un entier				//The quota size warning for the mailbox
+      	mDBOverQuotaLimit					est un entier				//The quota size to limit sends at
+      	mDBOverHardQuotaLimit				est un entier				//The quota size to limit all actions at
+      	msExchRBACPolicyLink				est une chaine				//The RBAC policy name
+      	msExchMailboxTemplateLink			est une chaine				//The retention policy name
+      	msExchRecipientDisplayType			est une chaine				//The recipient display type
+      	msExchPoliciesIncluded				est un tableau de chaine	//The recipient policy names for the contact
+      	msExchRecipientTypeDetails			est une chaine				//The recipient type details
+      	publicDelegates						est un tableau de chaine	//The users allowed to send-on-behalf of this mailbox
+      	mDBUseDefaults						est un booleen				//Whether or not the mailbox should use the default quota limits
+      	msExchCoManagedByLink				est une chaine 				//!!! non documenté
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1294040639769640501
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1294040639769706037
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f55b19125c7494
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,400 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cePays
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12b66eb32d6cfe16
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe est l'équivalent d'un cEnregistrement pour un pays. Elle est utilisé lors de la récupération de la liste des pays dans csdPays.
+      //Ref : https://restcountries.com/#api-endpoints-v3
+      
+      EPaysFiltre est une énumération			//Permet la recherche ou d'appliquer un filtre lorsque csdPays.Liste() est appelé
+      	AucunFiltre					= 0
+      	ParNom						= 1		//can be native name or partial name
+      	ParNomComplet				= 2
+      	ParCode						= 3
+      	ParCodes					= 4
+      	ParDevise					= 5
+      	ParLangue					= 6
+      	ParCapitale					= 7
+      	ParIndicatif				= 8
+      	ParContinent				= 9
+      	ParRégion					= 10	
+      	ParDémonyme					= 11
+      fin
+      COPaysColonne est un combinaison		//Combinaison des informations que l'on veut récupérer
+      	ID											
+      	Nom											
+      	Noms						
+      	CodeISO2									
+      	CodeISO3	
+      	Capitale
+      	Continent
+      	Région
+      	Démonyme
+      	SurfaceKm2
+      	Domaines
+      	Indicatifs
+      	NomsAlternatifs
+      	Frontières
+      	Devises
+      	Langues
+      	Drapeau
+      	LatLong
+      fin
+      
+      STNom est une structure
+      	sCommun			est une chaine				<serialise="common">		//en anglais
+      	sOfficiel		est une chaine				<serialise="official">
+      	taNomNatif		est un tableau associatif de STNomNatif
+      fin
+      STNomNatif est une structure
+      	sCommun			est une chaine				<serialise="common">
+      	sOfficiel		est une chaine				<serialise="official">
+      fin
+      STDevise est une structure
+      	sNom			est une chaine				<serialise="name">
+      	sSymbole		est une chaine				<serialise="symbol">
+      fin
+      STTraduction est une structure
+      	sCommun			est une chaine				<serialise="common">
+      	sOfficiel		est une chaine				<serialise="official">
+      fin
+      STIndicatif est une structure
+      	sPrincipal		est une chaine				<serialise="root">
+      	tabSuffixes		est un tableau				<serialise="suffix"> d'entiers
+      fin
+      STDémonyme est une structure
+      	sFéminin		est une chaine				<serialise="f">
+      	sMasculin		est une chaine				<serialise="m">
+      fin
+      cePays est une Classe
+      	hérite de cgenerique
+      	m_nLargeurDrapeau		est un entier		<serialise="sizeFlag">					//Largeur du drapeau désiré (mot clé de sérialisation inconnu de l'API mais sert à mettre l'objet courant vide)
+      public
+      	m_nID					est un entier		<serialise="ccn3">						//Identifiant du pays
+      	m_sNomCommunEN			est une chaîne		<serialise = faux>						//Nom commun en anglais
+      	m_sNomOfficielEN		est une chaine		<serialise = faux>						//Nom officiel en anglais
+      	m_sNomCommunFR			est une chaîne		<serialise="nameCommonFra">				//Nom commun en français (mot clé de sérialisation inconnu de l'API mais sert à mettre l'objet courant vide)
+      	m_sNomOfficielFR		est une chaine		<serialise="nameOfficialFra">			//Nom officiel en français (mot clé de sérialisation inconnu de l'API mais sert à mettre l'objet courant vide)
+      	m_stNom					est un STNom 		<serialise="name">						//Liste des noms
+      	m_taTraductions			est un tableau associatif de STTraduction					//Tableau des traductions du nom
+      	m_tabNomsAlternatifs	est un tableau		<serialise="altSpellings"> de chaines	//Tableau des noms alternatifs
+      	m_sCodeISO2				est une chaine		<serialise="cca2">						//Code ISO sur 2 lettres
+      	m_sCodeISO3				est une chaine		<serialise="cca3">						//Code ISO sur 3 lettres
+      	m_sCodeCIOC				est une chaine		<serialise="cioc">						//Code donné par le CIO (Comité International Olympique)
+      	m_sCodeFIFA				est une chaine		<serialise="fifa">						//Code donné par la FIFA (Fédération Internationale de Football Association)	
+      	m_bEstIndépendant		est un booleen		<serialise="independent">				//Indique si le pays est indépendant
+      	m_sStatut				est une chaine		<serialise="status">					//Statut du pays
+      	m_bMembreNationsUnies	est un booleen		<serialise="unMember">					//Indique si le pays est membre des Nations-Unies
+      	m_tabCapitale			est un tableau		<serialise="capital"> de chaines		//Tableau de capitales
+      	m_sRégion				est une chaine		<serialise="region">					//Nom du continent (voir ceContinent)
+      	m_sSousRégion			est une chaine		<serialise="subregion">					//Nom de la région (voir ceContinentRégion)
+      	m_taDémonyme			est un tableau associatif <serialise = faux> de STDémonyme	//Nom des habitants
+      	m_nSurfaceKm2			est un entier		<serialise="area">						//Surface en km²
+      	m_tabDomaines			est un tableau 		<serialise="tld"> de chaines			//Tableau des TLD (https://fr.wikipedia.org/wiki/Liste_des_domaines_Internet_de_premier_niveau)
+      	m_nIndicatif			est un entier		<serialise = faux>						//Indicatif national téléphonique
+      	m_tabIndicatifs			est un tableau		<serialise="callingCodes"> d'entiers	//Tableau d'indicatifs régionaux
+      	m_nLatitude				est un entier   	<serialise="lat">						//Latitude (mot clé de sérialisation inconnu de l'API mais sert à mettre l'objet courant vide)
+      	m_nLongitude			est un entier   	<serialise="lng">						//Longitude (mot clé de sérialisation inconnu de l'API mais sert à mettre l'objet courant vide)
+      	m_tabFrontières			est un tableau		<serialise="borders"> de chaines		//Tableau des pays frontaliers
+      	m_taDevises				est un tableau associatif <serialise = faux> de STDevise	//Tableau des devises
+      	m_taLangues				est un tableau associatif <serialise = faux> de chaines		//Tableau des langues
+      	m_bSansAccèsMer			est un booleen		<serialise="landlocked">				//Indique si le pays a accès à la mer
+      	m_tabDrapeaux			est un tableau		<serialise="flags"> de chaines			//Tableau des drapeaux
+      	m_taCartes				est un tableau associatif <serialise = faux> de chaines		//Tableau avec un lien vers les cartes (ex : Google Maps, OpenStreetMap, ..)
+      	m_bCirculationDroite	est un booleen		<serialise = faux>						//Indique si la circulation des véhicules se fait à droite
+      	m_tabSigneVéhicule		est un tableau 		<serialise = faux> de chaines			//Signe permettant de distinguer un véhicule immatriculé dans ce pays
+      privé                       	
+      	m_sDrapeau				est une chaine												//Chemin du drapeau
+      	m_tabPosition			est un tableau		<serialise="latlng"> d'entiers			//Longitude et latitude
+      	m_bLitAussiMemo			est un booleen												//Indique s'il faut aussi lire le mémo (ici le drapeau)
+      	m_bufDrapeau			est un buffer		<serialise="pictFlag">					//Drapeau au format image (mot clé de sérialisation inconnu de l'API mais sert à mettre l'objet courant vide)
+      	m_bufObjetVide			est un buffer												//Buffer vide pour garder en mémoire un cePays vide pour faire un Raz()
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1348386854284754470
+     type_code : 27
+     code : |1-
+      // Résumé : Initialisation de la classe lors de sa création.
+      // Syntaxe : Constructeur ( [<bLitAussiMemo> est booléen [, <nLargeurDrapeau> est entier]])
+      // Paramètres :
+      //	bLitAussiMemo (booléen optionnel) : Indique si la lecture du mémo (drapeau) doit être effectuée. Par défaut, la valeur est Faux.
+      //	nLargeurDrapeau (entier optionnel) : Largeur souhaitée du drapeau. Si spécifié, le drapeau sera redimensionné à cette largeur. La valeur par défaut est 0, ce qui signifie qu'aucun redimensionnement n'est effectué.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(bLitAussiMemo est un booleen = faux,nLargeurDrapeau est un entier = 0)
+      m_bLitAussiMemo		= bLitAussiMémo
+      m_nLargeurDrapeau	= nLargeurDrapeau
+      serialise(objet,m_bufObjetVide,psdBinaire)
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1348386854284820006
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres :	Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : AprèsLecture
+     procedure_id : 1348386854284885542
+     type_code : 12
+     code : |1-
+      // Résumé : Effectue des opérations supplémentaires, après la lecture, pour mettre à jour les propriétés de l'objet, telles que la latitude et la longitude, les noms en français et en anglais.
+      // Syntaxe : AprèsLecture ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE AprèsLecture()
+      si m_tabPosition..Occurrence>1 alors
+      	m_nLatitude		= m_tabPosition[1]
+      	m_nLongitude	= m_tabPosition[2]
+      fin
+      M_sNomCommunFR	= (m_taTraductions["fra"]..Existe ? m_taTraductions["fra"].sCommun sinon m_stnom.sCommun)
+      M_sNomOfficielFR= (m_taTraductions["fra"]..Existe ? m_taTraductions["fra"].sOfficiel sinon m_stnom.sOfficiel)
+      M_sNomCommunEN	= (m_taTraductions["eng"]..Existe ? m_taTraductions["eng"].sCommun sinon m_stnom.sCommun)
+      M_sNomOfficielEN= (m_taTraductions["eng"]..Existe ? m_taTraductions["eng"].sOfficiel sinon m_stnom.sOfficiel)
+      
+      si m_bLitAussiMemo alors MemoTélécharge()
+     type : 458752
+   -
+     name : Recherche
+     procedure_id : 1348386854284951078
+     type_code : 12
+     code : |1-
+      // Résumé : Rechercher un pays en fonction d'une valeur donnée et d'un type de recherche spécifié.
+      // Syntaxe : [ <Résultat> = ] Recherche (<xValeur> [, <eTypeRecherche> est cePays.EPaysFiltre])
+      // Paramètres :
+      //	xValeur : Valeur à rechercher dans les pays. Le type de cette valeur dépend du type de recherche spécifié.
+      //	eTypeRecherche (cePays.EPaysFiltre) : Type de recherche défini par l'énumération EPaysFiltre. Par défaut, la recherche est effectuée sans filtre.
+      // Valeur de retour : booléen : Vrai si la recherche a abouti à un seul résultat (l'objet courant est chargé des informations de ce pays), Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Recherche(xValeur,eTypeRecherche est un EPaysFiltre = null) : booleen
+      m_pclerreur.RAZ()
+      clRésultat est un csdPays(m_bLitAussiMemo,m_nLargeurDrapeau)
+      
+      Raz()
+      
+      si clRésultat.liste(*,xValeur,eTypeRecherche,*,2) alors
+      	SI clRésultat.Occurrence()=0 alors
+      	sinon si clRésultat.Occurrence()=1 alors 
+      		objet = clRésultat.m_tabPays[1]
+      		renvoyer vrai
+      	sinon
+      		m_pclErreur.AjouteErreur(<§$0004§>)
+      	FIN
+      sinon
+      	m_pclErreur <- clRésultat.m_pclErreur
+      FIN
+      renvoyer faux
+     type : 458752
+   -
+     name : MemoTélécharge
+     procedure_id : 1348386854285016614
+     type_code : 12
+     code : |1-
+      // Résumé : Télécharge le drapeau du pays depuis une URL spécifiée et le sauvegarde dans un répertoire temporaire. Elle renvoie ensuite le contenu du drapeau sous forme de buffer. Si un répertoire cache est spécifié dans l'application, la méthode vérifie si le drapeau est déjà présent dans le cache pour éviter de le télécharger à nouveau.
+      // Syntaxe : [ <Résultat> = ] MemoTélécharge ()
+      // Paramètres : Aucun
+      // Valeur de retour : buffer : le contenu du drapeau sous forme de buffer (image). Si le téléchargement ou la sauvegarde échoue, la méthode renvoie Null.
+      // Exemple :
+      //
+      PROCEDURE MemoTélécharge() : Buffer
+      si m_tabDrapeaux..occurrence=0 alors renvoyer null
+      
+      sFichierTemporaire 	est une chaine = fFichierTemp("FMK",cApplication._Application.p_sRépertoireTemporaire,".png")
+      sNomFichier 		est une chaine 
+      
+      pour tout sDrapeau de m_tabDrapeaux
+      	si droite(sDrapeau,4)~=".png" alors m_sDrapeau=sDrapeau;sNomFichier=extraitchaine(extraitchaine(sDrapeau,1,"/",DepuisFin),1,".")+(m_nLargeurDrapeau=0 ? "" sinon "_"+m_nLargeurDrapeau)+".png";sortir
+      fin
+      
+      si sNomFichier~="" alors renvoyer null
+      
+      SI pas cApplication._Application.m_sRépertoireCacheMémo~="" ALORS															//dans un répertoire
+      	SI PAS fRepCrée(cApplication._Application.m_sRépertoireCacheMémo) ALORS m_pclErreur.AjouteErreurWx();RENVOYER Null		//petite vérification préalable pour éviter de faire une lecture inutile si le répertoire n'existe pas
+      	SI fFichierExiste(cApplication._Application.m_sRépertoireCacheMémo+["\"]+sNomFichier) ALORS m_sDrapeau=cApplication._Application.m_sRépertoireCacheMémo+["\"]+sNomFichier;renvoyer fChargeBuffer(m_sDrapeau)
+      FIN
+      renvoyer DrapeauTélécharge()
+      
+      	procédure interne DrapeauTélécharge()
+      	si m_sDrapeau~="" alors renvoyer null
+      	SI PAS HTTPRequête(m_sDrapeau) ALORS m_pclErreur.AjouteErreurwx();RENVOYER null
+      	bufImage est un buffer = HTTPDonneRésultat(httpRésultat)
+      	SI fSauveBuffer(sFichierTemporaire,bufImage) ALORS
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64>
+      			imgDrapeau est une image = dChargeImage(sFichierTemporaire)
+      			m_sDrapeau=(cApplication._Application.m_sRépertoireCacheMémo~="" ? sFichierTemporaire SINON cApplication._Application.m_sRépertoireCacheMémo+["\"]+sNomFichier)
+      			SI m_nLargeurDrapeau>0 ALORS 
+      				SI PAS dRedimensionne(imgDrapeau,m_nLargeurDrapeau,m_nLargeurDrapeau,drHauteQualité+drHomothétiqueCentré) ALORS m_pclErreur.AjouteErreurWx();RENVOYER Null
+      				SI dSauveImagePNG(imgDrapeau,m_sDrapeau) ALORS //transformation en PNG
+      					RENVOYER fChargeBuffer(m_sDrapeau)
+      				SINON
+      					m_pclErreur.AjouteErreurWx()
+      				FIN
+      			SINON
+      				RENVOYER bufImage
+      			FIN
+      	
+      <fin>
+      
+      	
+      	sinon
+      		m_pclErreur.AjouteErreurwx()
+      	fin
+      	RENVOYER Null
+      	FIN
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 1348386854285082150
+     type_code : 12
+     code : |1-
+      // Résumé : Réinitialiser les propriétés de l'objet cePays en utilisant la désérialisation d'un buffer vide. Elle ramène l'objet à son état initial.
+      // Syntaxe : Raz ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Raz()
+      Désérialise(objet,m_bufObjetVide,psdBinaire)
+     type : 458752
+  properties :
+   -
+     name : p_coToutesColonnes
+     identifier : 0x12b66eb32d6dfe26
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie tous les éléments de la combinaison COPaysColonne
+         PROCEDURE PUBLIQUE globale p_coToutesColonnes() : COPaysColonne
+         renvoyer  = COPaysColonne.ID+COPaysColonne.Nom+COPaysColonne.CodeISO2+COPaysColonne.CodeISO3+COPaysColonne.Capitale+COPaysColonne.continent+COPaysColonne.Région+COPaysColonne.Langues+...
+         COPaysColonne.Démonyme+COPaysColonne.SurfaceKm2+COPaysColonne.Domaines+COPaysColonne.Indicatifs+COPaysColonne.NomsAlternatifs+COPaysColonne.Frontières+COPaysColonne.Devises
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bufDrapeau
+     identifier : 0x12b66eb32d6efe26
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le drapeau en format image
+         PROCEDURE PUBLIQUE p_bufDrapeau() : buffer
+         m_bufdrapeau=MémoTélécharge()
+         RENVOYER m_bufDrapeau
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bLitAussiMemo
+     identifier : 0x12b66eb32d6ffe26
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur permettant la récupération du drapeau
+         PROCEDURE PUBLIQUE p_bLitAussiMemo() : booleen
+         renvoyer m_bLitAussiMemo
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie l'indicateur permettant la récupération du drapeau
+         PROCEDURE PUBLIQUE p_bLitAussiMemo(Valeur)
+         m_bLitAussiMemo = Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sDrapeau
+     identifier : 0x12b66eb32d71fe26
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le chemin du drapeau
+         PROCEDURE PUBLIQUE p_sDrapeau() : chaine
+         m_bufDrapeau=MemoTélécharge()
+         RENVOYER m_sDrapeau
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x10d8f3590063c258
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le type de recherche n'est pas supporté
+      en-GB : Search type is not supported
+      fr-CA : Le type de recherche n'est pas supporté
+      en-US : Search type is not supported
+     index : 0
+   -
+     text :
+      fr-FR : L'énumération passée en paramètre n'est pas reconnue
+      en-GB : The enumeration passed in parameter is not recognized
+      fr-CA : L'énumération passée en paramètre n'est pas reconnue
+      en-US : The enumeration passed in parameter is not recognized
+     index : 1
+   -
+     text :
+      fr-FR : "La valeur, le type de valeur ou le type de recherche n'est pas reconnu"
+      en-GB : "Value, value type, or search type is not recognized"
+      fr-CA : "La valeur, le type de valeur ou le type de recherche n'est pas reconnu"
+      en-US : "Value, value type, or search type is not recognized"
+     index : 2
+   -
+     text :
+      fr-FR : Image invalide
+      en-GB : Invalid image
+      fr-CA : Image invalide
+      en-US : Invalid image
+     index : 3
+   -
+     text :
+      fr-FR : Plusieurs enregistrements ont été trouvés
+      en-GB : Several records were found
+      fr-CA : Plusieurs enregistrements ont été trouvés
+      en-US : Several records were found
+     index : 4
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

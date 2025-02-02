@@ -1,0 +1,302 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cCourriel
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1c5dd70617a7ce6b
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //La classe cCourriel permet de faciliter l'envoi de courriel
+      cCourriel est une Classe
+      	hérite de cGénérique
+      PRIVÉ	
+      	m_sServeurCourriel		est une chaine	<serialise = faux>				//Serveur de courriels
+      	m_nServeurPort			est un entier	<serialise = faux>				//Numéro de port du serveur de courriel
+      	m_sSessionNom			est une chaine	<serialise = faux>				//Nom de la session utilisée lors de l'ouverture de connexion
+      	m_sSessionUtilisateur	est une chaine	<serialise = faux>				//Nom d'utilisateur pour se connecter au compte courriel
+      	m_sSessionMotDePasse	est une chaine	<serialise = faux>				//Mot de passe pour se connecter au compte courriel
+      	m_bServeurSynchrone		est un booléen	<serialise = faux>				//Indicateur d'une communication synchrone
+      	m_tabPJ					est un tableau 	<serialise = faux> de chaines	//Tableau de fichiers à joindre au courriel
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2044026227062853227
+     type_code : 27
+     code : |1-
+      // Résumé : Cette classe est utilisée pour gérer l'envoi de courriels, et le constructeur initialise les paramètres nécessaires pour établir une connexion au serveur de messagerie.
+      // Syntaxe : Constructeur (<sServeurPort> est chaîne [, <sUtilisateurSession> est chaîne [, <sMotDePasseSession> est chaîne [, <bSynchrone> est booléen [, <nTimeOut> est entier]]]])
+      // Paramètres :
+      //	sServeurPort (chaîne UNICODE) : L'adresse du serveur de messagerie au format "serveur:port".
+      //	sUtilisateurSession (chaîne UNICODE optionnelle) : Le nom de l'utilisateur de la session, par défaut vide.
+      //	sMotDePasseSession (chaîne UNICODE optionnelle) : Le mot de passe de l'utilisateur de la session, par défaut vide.
+      // 	bSynchrone (booléen optionnel) : Un indicateur déterminant si la communication avec le serveur de messagerie doit être synchrone (Vrai) ou asynchrone (Faux).
+      // 	nTimeOut (entier optionnel) : Le temps d'attente maximal pour la communication avec le serveur de messagerie en millisecondes (par défaut : 2 minutes).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	MaBoiteMail est un cCourriel dynamique = allouer un cCourriel("smtp.monserveur.com:25", "utilisateur@mail.com", "motdepasse", Vrai, 60000)
+      // 	MaBoiteMail.FichierAjoute("C:\Chemin\vers\monfichier.txt")
+      //	MaBoiteMail.Envoie("moi@hotmail.com","Hello world","Un premier message")
+      //
+      PROCEDURE Constructeur(sServeurPort est une chaîne,sUtilisateurSession est une chaîne = "", sMotDePasseSession = "",bSynchrone est un booléen = Vrai,nTimeOut est un entier = 2min)	//ne pas typer le mot de passe afin qu'il soit compatible avec le passage d'une chaîne indétectable
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajouteméthode(sServeurPort,sUtilisateurSession,repete(cgenerique._sep,taille(sMotDePasseSession)),bSynchrone,nTimeOut)
+      m_sServeurCourriel		= sServeurPort
+      SI Position(m_sServeurCourriel,":")>0 ALORS	m_nServeurPort=Val(ExtraitChaîne(m_sServeurCourriel,2,":"));m_sServeurCourriel=ExtraitChaîne(m_sServeurCourriel,1,":")
+      SI m_nServeurPort=0 ALORS m_nServeurPort=cRéseau._PortSMTP
+      m_sSessionUtilisateur	= sUtilisateurSession	
+      m_sSessionMotDePasse	= sMotDePasseSession	
+      m_bServeurSynchrone		= bSynchrone
+      EmailChangeTimeOut(nTimeOut)
+      SI m_sSessionUtilisateur>"" ALORS m_sSessionNom=m_sSessionUtilisateur SINON m_sSessionNom = "FMW_MAIL"
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2044026227062918763
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Envoi
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2044026227062984299
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'envoyer un courriel en utilisant les paramètres spécifiés tels que les destinataires, le message, le sujet, etc.
+      // Syntaxe : [ <Résultat> = ] Envoi (<sDestinataires> est chaîne, <sMessage> est chaîne ANSI, <sSujet> est chaîne [, <sExpéditeur> est chaîne [, <sCC> est chaîne [, <sCci> est chaîne]]])
+      // Paramètres :
+      //	sDestinataires (chaîne UNICODE) : Une chaîne de caractères représentant les adresses courriel des destinataires. Les adresses sont séparées par des points-virgules (;).
+      //	sMessage (chaîne ANSI) : Une chaîne ANSI représentant le corps du courriel.
+      //	sSujet (chaîne UNICODE) : Une chaîne de caractères représentant le sujet du courriel.
+      //	sExpéditeur (chaîne UNICODE optionnel) : Une chaîne de caractères représentant l'adresse de l'expéditeur. Laissez vide pour utiliser l'adresse de la session.
+      //	sCC (chaîne UNICODE optionnel) : Une chaîne de caractères représentant les adresses en copie conforme (CC)
+      //	sCci (chaîne UNICODE optionnel) : Une chaîne de caractères représentant les adresses en copie conforme invisible (CCI)
+      // Valeur de retour : booléen : Vrai si le courriel est envoyé avec succès.
+      // Exemple : voir constructeur
+      //
+      PROCÉDURE Envoi(sDestinataires est une chaine,sMessage est une chaine ansi,sSujet est une chaine,sExpéditeur est une chaine = "",sCC est une chaine = "",sCci est une chaine = "") : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sDestinataires,sMessage,sSujet,sExpéditeur,sCC,sCci)
+      m_pclErreur.Raz()
+      sDestinataire,sDomaine 				sont des chaines
+      sAdresseExpéditeur,sAdresseRéponse  sont des chaines
+      
+      SI PAS sMessage~="" ALORS
+      	SI PAS sDestinataires+sCC+sCci~="" ALORS
+      			
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      			MaSession est un EmailSessionsmtp
+      			MaSession..Nom 				= m_sSessionNom
+      			MaSession..AdresseServeur 	= m_sServeurCourriel
+      			MaSession..Port				= m_nServeurPort
+      			MaSession..MotDePasse 		= m_sSessionMotDePasse
+      			SELON m_nServeurPort
+      				CAS cRéseau._PortSMTPi	: MaSession..Option = optionSSL
+      				CAS cRéseau._PortSMTPe	: MaSession..Option = emailOptionSécuriséTLS
+      				AUTRES CAS 				: MaSession..Option = emailOptionDéfaut
+      			FIN                  
+      			SI EmailOuvreSession(MaSession) ALORS
+      				SI Position(sExpéditeur,";")>0 ALORS
+      					sAdresseRéponse 	= ExtraitChaîne(sExpéditeur,1,";")	//adresse de réponse
+      					sAdresseExpéditeur 	= ExtraitChaîne(sExpéditeur,2,";")
+      				SINON
+      					sAdresseRéponse   	= sExpéditeur	//adresse de réponse
+      					sAdresseExpéditeur	= SansEspace((Position(sExpéditeur,"<") ? SansEspace(ExtraitChaîne(ExtraitChaîne(sExpéditeur,2,"<"),1,">")) SINON sExpéditeur))
+      				FIN
+      				SI sAdresseExpéditeur~="" ALORS sAdresseExpéditeur=(m_sSessionUtilisateur="" ? cApplication._Application.p_snom SINON m_sSessionUtilisateur)
+      				sDomaine = RéseauNomDomaineDNS()
+      				SI Position(sAdresseExpéditeur,"@")<1 ALORS sAdresseExpéditeur+="@"+sDomaine
+      				EmailRAZ()
+      				Email.Expéditeur		= sAdresseExpéditeur
+      				Email.AdresseExpéditeur	= sAdresseRéponse
+      				Email.Sujet 			= sSujet
+      				Email.HTML 				= (Position(sMessage,"</body>",0,SansCasse)>0 ? sMessage SINON TexteVersHTML(AnsiVersUnicode(sMessage)))
+      				POUR TOUTE CHAÎNE sDestinataire DE sDestinataires SEPAREE PAR ";"
+      					SI Position(sDestinataire,"@")<1 ALORS sDestinataire+="@"+sDomaine
+      					SI EmailVérifieAdresse(sDestinataire,emailValideSyntaxe)=emailAdresseValide ALORS 
+      						Email.NbDestinataire++;Email.Destinataire[Email.NbDestinataire]=sDestinataire
+      					SINON
+      						m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0000§>,sDestinataire))
+      					FIN
+      				FIN
+      				POUR TOUTE CHAÎNE sDestinataire DE sCC SEPAREE PAR ";"
+      					SI Position(sDestinataire,"@")<1 ALORS sDestinataire+="@"+sDomaine
+      					SI EmailVérifieAdresse(sDestinataire,emailValideSyntaxe)=emailAdresseValide ALORS 
+      						Email.NbCc++;Email.Cc[Email.NbCc]=sDestinataire
+      					SINON
+      						m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0000§>,sDestinataire))
+      					FIN
+      				FIN
+      				POUR TOUTE CHAÎNE sDestinataire DE sCci SEPAREE PAR ";"
+      					SI Position(sDestinataire,"@")<1 ALORS sDestinataire+="@"+sDomaine
+      					SI EmailVérifieAdresse(sDestinataire,emailValideSyntaxe)=emailAdresseValide ALORS 
+      						Email.NbCci++;Email.Cci[Email.NbCci]=sDestinataire
+      					SINON
+      						m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0000§>,sDestinataire))
+      					FIN
+      				FIN
+      				SI m_tabPJ..Occurrence>0 ALORS
+      					Email.NbAttache	= m_tabPJ..Occurrence
+      					POUR nPJ = 1 _a_ m_tabPJ..Occurrence
+      						Email.Attache[nPJ]=m_tabPJ[nPJ]
+      					FIN
+      				FIN
+      				SI m_pclErreur.p_sErreur="" ALORS 
+      					SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(VariableVersJSON(Email))
+      					SI PAS EmailEnvoieMessage(MaSession) ALORS 
+      						m_pclErreur.AjouteErreurWx()
+      						EmailFermeSession(MaSession)
+      					SINON
+      						EmailFermeSession(MaSession);RENVOYER Vrai
+      					FIN
+      				SINON
+      					EmailFermeSession(MaSession)
+      				FIN
+      			SINON
+      				m_pclErreur.AjouteErreurWx()
+      			FIN
+      	
+      <sinon si CibleExécution=SitePHP ou CibleExécution=Java ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp>
+      	
+      	m_pclErreur.AjouteErreur(<§$0004§>)
+      	
+      <fin>
+      
+      			
+      	SINON
+      		m_pclerreur.AjouteErreur(<§$0001§>)
+      	FIN
+      SINON
+      	renvoyer vrai
+      FIN
+      renvoyer faux
+      
+      	procédure interne OuvreSession()
+      	renvoyer EmailOuvreSessionSMTP(m_sSessionNom,m_sSessionMotDePasse,m_sServeurCourriel,m_nServeurPort,(m_bServeurSynchrone ? emailSynchrone SINON emailAsynchrone),(m_nServeurPort=cRéseau._PortSMTP ? emailOptionDéfaut SINON emailOptionSécuriséTLS))
+      	FIN
+      	
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();renvoyer faux
+     type : 458752
+   -
+     name : FichierAjoute
+     procedure_id : 2044026227063049835
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter un fichier en tant que pièce jointe au courriel en cours de composition.
+      // Syntaxe : FichierAjoute (<sCheminfichier> est chaîne)
+      // Paramètres :
+      //	sCheminfichier (chaîne UNICODE) : Une chaîne de caractères représentant le chemin du fichier à ajouter en tant que pièce jointe.
+      // Valeur de retour : Aucune
+      // Exemple : voir constructeur
+      //
+      PROCEDURE FichierAjoute(sCheminfichier est une chaine)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCheminfichier)
+      m_pclErreur.Raz()
+      si ffichierexiste(sCheminfichier) alors tableauajoute(m_tabPJ,sCheminfichier) sinon m_pclErreur.AjouteErreur(<§$0005§>)
+     type : 458752
+  properties :
+   -
+     name : p_sServeurCourriel
+     identifier : 0x1c5dd70617a8ce6b
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Permet de récupérer l'adresse du serveur de messagerie configuré dans l'objet.
+         PROCEDURE PUBLIQUE p_sServeurCourriel() : chaîne
+         RENVOYER m_sServeurCourriel
+        type : 1966080
+      -
+        code : |1-
+         //Permet de définir l'adresse du serveur de messagerie pour l'objet courriel.
+         PROCEDURE PUBLIQUE p_sServeurCourriel(sValeur est une chaîne)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(sValeur)
+         m_sServeurCourriel=sValeur
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1aabce8702e353d1
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : L'adresse courriel %1 invalide
+      en-GB : "%1 is an invalid email address "
+      fr-CA : L'adresse courriel %1 invalide
+      en-US : "%1 is an invalid email address "
+     index : 0
+   -
+     text :
+      fr-FR : Aucun destinataire
+      en-GB : No recipient
+      fr-CA : Aucun destinataire
+      en-US : No recipient
+     index : 1
+   -
+     text :
+      fr-FR : L'envoi par courriel n'est pas disponible
+      en-GB : Emailing is not available
+      fr-CA : L'envoi par courriel n'est pas disponible
+      en-US : Emailing is not available
+     index : 2
+   -
+     text :
+      fr-FR : Le fichier HTML ou le répertoire des images est vide ou inexistant
+      en-GB : The HTML file or the images directory is empty or does not exist
+      fr-CA : Le fichier HTML ou le répertoire des images est vide ou inexistant
+      en-US : The HTML file or the images directory is empty or does not exist
+     index : 3
+   -
+     text :
+      fr-FR : L'envoi de courriel n'est pas disponible sur cette plateforme
+      en-GB : Sending email is not available on this platform
+      fr-CA : L'envoi de courriel n'est pas disponible sur cette plateforme
+      en-US : Sending email is not available on this platform
+     index : 4
+   -
+     text :
+      fr-FR : Le fichier n'existe pas
+      en-GB : The file does not exist
+      fr-CA : Le fichier n'existe pas
+      en-US : The file does not exist
+     index : 5
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

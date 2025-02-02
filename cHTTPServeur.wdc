@@ -1,0 +1,532 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cHTTPServeur
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1522b54500606f33
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe permettant de mettre en œuvre un serveur HTTP sans installer IIS, Apache, ... ni WebDev. Fonctionne en utilisant les sockets.
+      constante
+      	_AdresseDéfaut			= "HTTPDéfaut"
+      fin
+      STHTTPFonction est une structure
+      	sErreurCompilation		est une chaîne
+      	eTypeRéponse			est une chttp.EMimeType
+      	procExecute				est une procédure
+      fin
+      cHTTPServeur est une Classe
+      	hérite de cGénérique
+      privé
+      	m_sNom					est une chaine								<serialise = faux>	//Nom du serveur
+      	m_nPort					est un entier								<serialise = faux>	//Port d'écoute du serveur
+      	m_sSocket				est une chaine								<serialise = faux>	//Nom du socket d'écoute
+      	m_sCléCryptage			est une chaine								<serialise = faux>	//Clé de cryptage pour les communication (voir cHTTP.RequêteServeurBetula)
+      	m_sSectionCritique		est une chaine								<serialise = faux>	//Nom de la section critique qui gère les appels concurrentiels
+      	m_bDémarré				est un booleen								<serialise = faux>	//Indicateur de démarrage du serveur
+      	m_procCallBackRequête	est une procédure							<serialise = faux>	//Procédure appelée au moment de faire la requête
+      	m_procCallBackRéponse	est une procédure							<serialise = faux>	//Procédure appelée au moment d'envoyer la réponse
+      	m_procCallBackErreur	est une procédure							<serialise = faux>	//Procédure appelée au moment d'envoyer une erreur
+      	m_taFonctions			est un tableau associatif <serialise = faux> de STHTTPFonction	//Tableau de fonctions qui seront exécutées (selon la méthode d'appel et le nom)
+      	m_tabIPAutorisées		est un tableau <serialise = faux> de chaines					//Tableau d'adresse IP acceptées par le serveur (whitelist)
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1522978931968536387
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise les propriétés de la classe, telles que le nom du serveur, le port d'écoute, le nom du socket d'écoute, la clé de cryptage, etc.
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple : voir https://wlplus.org/betula/serveur-http/
+      //
+      PROCEDURE Constructeur()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1522978931968601923
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Arrête
+     procedure_id : 1522978931968667459
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'arrêter le serveur HTTP en cours d'exécution. Elle s'assure de fermer la connexion du socket d'écoute, d'arrêter le thread du serveur s'il est en cours d'exécution, et réinitialise l'indicateur de démarrage du serveur.
+      // Syntaxe : Arrête ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Arrête()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      si m_bDémarré alors
+      	si ThreadEtat("SERVEUR_HTTP_TH"+m_nPort)<>inexistant alors ThreadArrête("SERVEUR_HTTP_TH"+m_nPort)
+      	SI SocketExiste(m_sSocket) ALORS SocketFerme(m_sSocket)
+      	m_bDémarré=faux
+      FIN
+     type : 458752
+   -
+     name : Démarre
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1522978931968732995
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de démarrer le serveur HTTP en spécifiant le port d'écoute, la clé de cryptage, le nom du serveur, et les procédures de rappel pour la gestion des requêtes, des réponses, et des erreurs.
+      // Syntaxe : [ <Résultat> = ] Démarre (<nPort> est entier [, <sCléCryptage> est chaîne [, <sNomDuServeur> est chaîne [, <procCallBackQuandMessageReçu> est procédure [, <procCallBackValeurRetour> est procédure [, <procCallBackErreur> est procédure]]]]])
+      // Paramètres :
+      //	nPort (entier) : Le port sur lequel le serveur écoute les requêtes.
+      //	sCléCryptage (chaîne UNICODE optionnelle): La clé de cryptage utilisée pour sécuriser les communications, conforme à la méthode cHTTP.RequêteServeurBetula.
+      //	sNomDuServeur (chaîne UNICODE optionnelle): Le nom du serveur. Par défaut, le nom est défini comme "HTTP Server". Par défaut="HTTP Server"
+      //	procCallBackQuandMessageReçu (procédure optionnel): La procédure de rappel appelée lorsqu'une requête est reçue.
+      //	procCallBackValeurRetour (procédure optionnel): La procédure de rappel appelée lorsqu'une réponse est prête à être renvoyée.
+      //	procCallBackErreur (procédure optionnel): La procédure de rappel appelée en cas d'erreur.
+      // Valeur de retour : booléen : Indique si le démarrage du serveur s'est effectué avec succès (Vrai) ou non (Faux).
+      // Exemple :
+      //
+      PROCEDURE Démarre(nPort est un entier,sCléCryptage est une chaine = "",sNomDuServeur est une chaine = "HTTP Server",procCallBackQuandMessageReçu est une procédure = null,procCallBackValeurRetour est une procédure = null,procCallBackErreur est une procédure = null) : booleen
+      si m_bDémarré alors renvoyer vrai
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nPort,repete(cGénérique._Sep,taille(sCléCryptage)),sNomDuServeur)
+      m_pclErreur.Raz()
+      
+      m_bDémarré				= faux
+      m_sNom					= sNomDuServeur
+      m_nPort					= nPort
+      m_sSocket				= "SERVEUR_HTTP_SOCKET_"+nPort
+      m_sSectionCritique		= "SERVEUR_HTTP_SC_"+nPort
+      m_sCléCryptage			= sCléCryptage
+      m_procCallBackRequête	= procCallBackQuandMessageReçu
+      m_procCallBackRéponse	= procCallBackValeurRetour
+      m_procCallBackErreur	= procCallBackErreur
+      ThreadMode(threadSectionCritique)
+      
+      SI SocketCrée(m_sSocket,m_nPort) _ET_ SocketChangeModeTransmission(m_sSocket,SocketSansMarqueurFin) alors	//SocketMarqueurFin et SocketSansMarqueurFin fonctionne avec HTTPEnvoie
+      	m_bDémarré=Vrai
+      	threadexecute("SERVEUR_HTTP_TH"+nPort,threadNormal,Écoute)
+      SINON
+      	m_pclErreur.AjouteErreurWx()
+      FIN
+      RENVOYER m_bDémarré
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Écoute
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1522978931968798531
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privé qui permet d'écouter les requêtes sur le port ouvert par la procédure Démarre()
+      PROCEDURE PRIVÉE Écoute()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      sSocketClient,sIPClient sont des chaines
+      BOUCLE
+      	SI SocketAttendConnexion(m_sSocket,10) ALORS
+      		sSocketClient 	= SocketAccepte(m_sSocket)
+      		sIPClient		= SocketClientInfo(sSocketClient,SocketAdresse)
+      		si m_tabIPAutorisées..occurrence=0 _ou_ m_tabIPAutorisées.cherche(tcDichotomique,sIPClient) alors		//est-ce que l'IP appelante est dans la liste blanche ?
+      			ThreadExécute(DonneGUID(guidBrut),threadNormal,RecoitMessageDuClient,sSocketClient,sIPClient)
+      		sinon
+      			//logguer ici l'IP rejetée
+      		fin
+      	FIN
+      	ThreadPause(1)
+      FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 458752
+   -
+     name : FonctionAjouteTxt
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1522978931968864067
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter une fonction au serveur HTTP avec le code source spécifié et de définir le type de réponse attendu.
+      // Syntaxe : [ <Résultat> = ] FonctionAjouteTxt (<eMéthode> est cHTTP.EHTTPMéthode, <sNomDeLaFonction> est chaîne, <sCodeDeLaFonction> est chaîne, <eTypeRéponse> est cHTTP.EMimeType)
+      // Paramètres :
+      //	eMéthode (cHTTP.EHTTPMéthode) : Enumération représentant la méthode HTTP associée à la fonction.
+      //	sNomDeLaFonction (chaîne UNICODE) : Le nom de la fonction à ajouter.
+      //	sCodeDeLaFonction (chaîne UNICODE) : Le code source de la fonction à exécuter en réponse à une requête.
+      //	eTypeRéponse (cHTTP.EMimeType) : Le type de réponse attendu de la fonction (par exemple, "text/html", "application/json", etc.).
+      // Valeur de retour : booléen : renvoie un booléen indiquant si l'ajout de la fonction s'est effectué avec succès (Vrai) ou non (Faux).
+      // Exemple :
+      //
+      PROCEDURE FonctionAjouteTxt(eMéthode est un chttp.EHTTPMéthode,sNomDeLaFonction est une chaîne, sCodeDeLaFonction est une chaine,eTypeRéponse est un chttp.EMimeType) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(eMéthode..nom,sNomDeLaFonction,sCodeDeLaFonction,eTypeRéponse..nom)
+      m_pclErreur.Raz()
+      
+      si sNomDeLaFonction="" alors sNomDeLaFonction = _AdresseDéfaut
+      sNomFonctionInterne est une chaine = eMéthode..valeur+cGénérique._Sep+sNomDeLaFonction
+      stLaFonction		est un STHTTPFonction
+      stLaFonction.eTypeRéponse 	= eTypeRéponse
+      stLaFonction.procExecute 	= Compile(sNomFonctionInterne,sCodeDeLaFonction)
+      si erreurdétectée() alors m_pclErreur.AjouteErreur(ErreurInfo()) sinon m_taFonctions[sNomFonctionInterne]=stLaFonction;RENVOYER Vrai
+      renvoyer faux
+      		
+      cAS EXCEPTION:
+      m_pclErreur.AjouteException();rENVOYER Faux
+     type : 458752
+   -
+     name : RecoitMessageDuClient
+     internal_properties : CQAAAAkAAABBAiQeIKn7kQPqOVjPv9ItLbEMavh52OT+zHdM0ue+7F9ZuQbo1bb+GmrwqSAmEwLr3Z0fsPm1gXo1ccFSpGKH4EObri0/T+LhiIDj/70y4QhAeUsW5HCjXI+DV9SHjUCRbxk5JjXQegp+aNPgzNcuTFtjInGQYQuwtNv1AhpHbEnP
+     procedure_id : 1522978931968929603
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui traite le message du client (si son adresse IP est dans la whitelist le cas échéant) et exécute les procédures callback le cas échéant.
+      PROCEDURE privé RecoitMessageDuClient(sSocketClient est une chaine,sIPClient)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sSocketClient)
+      m_pclErreur.Raz()
+      
+      sFonction,sMéthode,sRéponse,sErreur,sEntête,sAccepte,sParam est une chaine
+      sContenuAnsi,sAdresse,sParamètres,sParamètre,sReçu est une chaine ansi
+      nTaille est un entier
+      taParamètres est un tableau associatif de chaines
+      stLaFonction est un STHTTPFonction
+      QUAND EXCEPTION DANS
+      	BOUCLE
+      		sReçu		= SocketLit(sSocketClient)
+      		SI sReçu="" ALORS SORTIR
+      
+      		sMéthode	= Majuscule(ExtraitChaîne(sReçu,1," "))
+      		
+      		SI EnumérationVérifieValeur(cHTTP.EhttpMéthode,sMéthode) ALORS
+      			sEntête=ExtraitChaîne(sReçu,1,RC+RC);sContenuAnsi=Milieu(sReçu,Position(sReçu,RC+RC)+4)
+      			
+      			POUR TOUTE CHAÎNE sLigne DE sEntête SEPAREE PAR RC
+      				SI ExtraitChaîne(sLigne,1,":")="Content-Length" ALORS 
+      					nTaille=Val(ExtraitChaîne(sLigne,2,":"))
+      					TANTQUE Taille(sContenuAnsi)<nTaille sContenuAnsi+=SocketLit(sSocketClient)
+      				FIN
+      				SI ExtraitChaîne(sLigne,1,":")="Accept" ALORS sAccepte=ExtraitChaîne(sLigne,2,":")
+      			FIN
+      			
+      			sAdresse	= ExtraitChaîne(sEntête,1,RC)
+      			sAdresse 	= Milieu(sAdresse,Position(sAdresse,"/")+1);sAdresse=Gauche(sAdresse,Taille(sAdresse)-9)	//on enlève le _HTTP/1.1 à la fin
+      			si sAdresse="" alors sAdresse=_AdresseDéfaut
+      			
+      			SI m_sCléCryptage>"" 	ALORS sAdresse=UnicodeVersAnsi(Décrypte(sAdresse,m_sCléCryptage,crypteSécurisé,encodeBASE64))
+      			SI m_procCallBackRequête<>null ALORS m_procCallBackRequête(sAdresse)
+      			sFonction	= ExtraitChaîne(sAdresse,1,"?")
+      			SI m_taFonctions[sMéthode+cGénérique._Sep+sFonction]..Existe ALORS	//la fonction a été ajoutée par ServeurFonctionAjoute
+      				stLaFonction=m_taFonctions[sMéthode+cGénérique._Sep+sFonction]
+      				SI stLaFonction.sErreurCompilation="" ALORS	//la fonction a été compilée avec succès
+      					si Position(sAccepte,"*/*")>0 _ou_ position(sAccepte,stLaFonction.eTypeRéponse..nom,0,SansCasse)>0 alors
+      						si ExtraitChaîne(sAdresse,2,"?")<>eot alors sParamètres = ExtraitChaîne(sAdresse,2,"?") sinon sParamètres=""
+      						taParamètres.supprimetout()
+      						POUR TOUTE CHAÎNE sParamètre de sParamètres separee par "&"
+      							sParam = URLDécode(sParamètre,encodeURLVersUnicode)
+      							taParamètres[ExtraitChaîne(sParam,1,"=")]=ExtraitChaîne(sParam,2,"=")
+      						FIN
+      						SI m_sCléCryptage>"" 			ALORS sContenuAnsi=Décrypte(sContenuAnsi,m_sCléCryptage,crypteSécurisé,encodeBASE64)
+      						SI m_procCallBackRequête<>null 	ALORS m_procCallBackRequête(sContenuAnsi)
+      						SectionCritiqueDébut(m_sSectionCritique)
+      						sRéponse=m_taFonctions[sMéthode+cGénérique._Sep+sFonction].procExecute(taParamètres,sContenuAnsi)
+      						SectionCritiqueFin(m_sSectionCritique)
+      						si pas erreurdetectée() alors
+      							SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(sIPClient+" : "+sFonction+" ("+sMéthode+") ? "+sParamètres)
+      							SI m_procCallBackRéponse<>Null ALORS m_procCallBackRéponse(sRéponse)
+      							Écrit(sSocketClient,sRéponse,chttp._HTTPStatutOK,stLaFonction.eTypeRéponse)
+      						sinon
+      							m_pclErreur.AjouteErreurWx()
+      							sErreur=sIPClient+" : "+ChaîneConstruit("Runtime error of %1 : % 2",sFonction+" ("+sMéthode+")")
+      							si m_procCallBackErreur<>Null alors m_procCallBackErreur(sErreur)
+      							m_pclErreur.AjouteErreur(sErreur);Écrit(sSocketClient,"",cHTTP._HTTPStatutInternalServerError,chttp.typeMimeTexte)	//on n'envoie pas le détail de l'erreur au client car trop de caractères utiles (car il se trouve dans le log du serveur)
+      						fin
+      					sinon
+      						sErreur=sIPClient+" : "+"Response format not accepted"	//uniquement en anglais sinon erreur : La ressource n°6 n'existe pas dans l'élément 'cHTTPServeur'. Je voyais bien le message en 4 langues > Bug WD ?
+      						si m_procCallBackErreur<>Null alors m_procCallBackErreur(sErreur)
+      						m_pclErreur.AjouteErreur(sErreur);Écrit(sSocketClient,"",cHTTP._HTTPStatutUnsupportedMediaType,chttp.typeMimeTexte)		//on n'envoie pas le détail de l'erreur au client car trop de caractères utiles (car il se trouve dans le log du serveur)
+      					fin
+      				sinon
+      					sErreur=sIPClient+" : "+ChaîneConstruit("Compilation error of %1 : %2",sFonction+" ("+sMéthode+")",m_taFonctions[sMéthode+cGénérique._Sep+sFonction])
+      					SI m_procCallBackErreur<>Null ALORS m_procCallBackErreur(sErreur)
+      					m_pclErreur.AjouteErreur(sErreur);Écrit(sSocketClient,"",cHTTP._HTTPStatutInternalServerError,chttp.typeMimeTexte)			//on n'envoie pas le détail de l'erreur au client car trop de caractères utiles (car il se trouve dans le log du serveur)
+      				fin
+      			sinon
+      				sErreur=sIPClient+" : "+"The function doesn't exist : "+sFonction+" ("+sMéthode+")"
+      				SI m_procCallBackErreur<>Null ALORS m_procCallBackErreur(sErreur)
+      				m_pclErreur.AjouteErreur(sErreur);Écrit(sSocketClient,ChaîneVersUTF8(m_pclErreur.p_sErreur),cHTTP._HTTPStatutNotFound,chttp.typeMimeTexte)
+      			fin
+      		SINON
+      			sErreur=sIPClient+" : "+"Unrecognized method : "+sMéthode
+      			SI m_procCallBackErreur<>Null ALORS m_procCallBackErreur(sErreur)
+      			m_pclErreur.AjouteErreur(sErreur);Écrit(sSocketClient,ChaîneVersUTF8(m_pclErreur.p_sErreur),cHTTP._HTTPStatutBadRequest,chttp.typeMimeTexte)
+      		FIN
+      	FIN
+      FAIRE
+      	m_pclErreur.AjouteException()
+      	SI m_procCallBackErreur<>Null ALORS m_procCallBackErreur(m_pclerreur.p_serreur)
+      	Écrit(sSocketClient,ChaîneVersUTF8(m_pclErreur.p_sErreur),cHTTP._HTTPStatutInternalServerError,chttp.typeMimeTexte)
+      FIN
+      SI SocketExiste(sSocketClient) ALORS SocketFerme(sSocketClient)
+     type : 458752
+   -
+     name : Écrit
+     procedure_id : 1522978931968995139
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée permettant de créer le contenu HTTP à envoyer
+      PROCEDURE privé Écrit(sSocketClient est une chaine,sValeur est une chaine,nCodeHTTP est un entier,eTypeDeRéponse est un chttp.EMimeType)     
+      m_pclErreur.RAZ()                                                    
+      sMessageHTTP est une chaine ansi
+      sMessage est une chaine = (m_sCléCryptage="" ? sValeur SINON remplace(Crypte(sValeur,m_sCléCryptage,crypteSécurisé,encodeBASE64),rc,""))
+      sMessageHTTP 	= "HTTP/1.1 "+nCodeHTTP+" "+chttp.CodeHTTPVersDescription(nCodeHTTP)+RC
+      sMessageHTTP	+= "Serveur: "+m_sNom+RC									//je ne sais pas comment ça se comporte avec des accents ou caractères spéciaux
+      //sMessageHTTP	+= "Date: "+DateVersChaîne(datesys(),maskDateEmail)+RC		//A FAIRE : maskDateEmail pas dispo en Windows mobile
+      sMessageHTTP	+= "Content-Type: "+eTypeDeRéponse..valeur+RC
+      sMessageHTTP	+= "Content-Length: "+Taille(sMessage)+RC
+      sMessageHTTP	+= RC														//le double RC sépare entête et contenu dans la trame
+      sMessageHTTP	+= UnicodeVersAnsi(sMessage)
+      SI PAS SocketEcrit(sSocketClient,sMessageHTTP) ALORS m_pclErreur.AjouteErreurWx()
+     type : 458752
+   -
+     name : IPAutoriséeAjoute
+     procedure_id : 1522978931969126211
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter une ou plusieurs adresses IP à la liste des adresses IP acceptées par le serveur HTTP.
+      // Syntaxe : IPAutoriséeAjoute (<sAdresseIP> est chaîne)
+      // Paramètres :
+      //	sAdresseIP (chaîne UNICODE) : Une ou plusieurs adresses IP à ajouter à la liste, séparées par des tabulations.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE IPAutoriséeAjoute(sAdresseIP est une chaine)
+      pour tout chaine sAdresse de sAdresseIP
+      	si pas m_tabIPAutorisées.Cherche(tcDichotomique,sAdresse)<1 alors m_tabIPAutorisées.ajoute(sAdresse)
+      fin
+      m_tabIPAutorisées.trie(ttCroissant)
+     type : 458752
+   -
+     name : IPAutoriséeRaz
+     procedure_id : 1522978931969191747
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de réinitialiser la liste des adresses IP autorisées à accéder au serveur HTTP.
+      // Syntaxe : IPAutoriséeRaz ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE IPAutoriséeRaz()
+      m_tabIPAutorisées.supprimetout()
+     type : 458752
+   -
+     name : FonctionSupprime
+     procedure_id : 1522978931969257283
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de supprimer une fonction associée à une méthode HTTP spécifiée.
+      // Syntaxe : [ <Résultat> = ] FonctionSupprime (<eMéthode> est cHTTP.EHTTPMéthode, <sNomDeLaFonction> est chaîne)
+      // Paramètres :
+      //	eMéthode (cHTTP.EHTTPMéthode) : représente la méthode HTTP pour laquelle la fonction doit être supprimée.
+      //	sNomDeLaFonction (chaîne UNICODE) : Nom de la fonction à supprimer.
+      // Valeur de retour : booléen : Vrai si la suppression de la fonction a réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE FonctionSupprime(eMéthode est un chttp.EhttpMéthode,sNomDeLaFonction est une chaîne) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(eMéthode..nom,sNomDeLaFonction)
+      m_pclErreur.Raz()
+      
+      sNomFonctionInterne est une chaine = eMéthode..valeur+cGénérique._Sep+sNomDeLaFonction
+      si m_taFonctions[sNomFonctionInterne]=null alors renvoyer Vrai
+      
+      sRésultatCompile est une chaine =Compile(sNomFonctionInterne,"")
+      SELON sRésultatCompile
+      	CAS ""		: m_taFonctions.supprime(sNomFonctionInterne);RENVOYER Vrai //pas de problème
+      	CAS "ERR" 	: m_taFonctions[sNomFonctionInterne].sErreurCompilation=erreurinfo()
+      	AUTRE CAS 	: m_taFonctions[sNomFonctionInterne].sErreurCompilation=sRésultatCompile
+      FIN
+      m_pclErreur.AjouteErreur(m_taFonctions[sNomFonctionInterne].sErreurCompilation)
+      RENVOYER Faux	
+     type : 458752
+   -
+     name : FonctionErreur
+     procedure_id : 1522978931969322819
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie le message d'erreur associé à la compilation de la fonction spécifiée pour une méthode HTTP donnée.
+      // Syntaxe : [ <Résultat> = ] FonctionErreur (<eMéthode> est cHTTP.EHTTPMéthode, <sNomDeLaFonction> est chaîne)
+      // Paramètres :
+      //	eMéthode (cHTTP.EHTTPMéthode) : Représente la méthode HTTP pour laquelle le message d'erreur doit être récupéré.
+      //	sNomDeLaFonction (chaîne UNICODE) : Nom de la fonction pour laquelle le message d'erreur est requis.
+      // Valeur de retour : chaîne UNICODE : Message d'erreur de la compilation
+      // Exemple :
+      //
+      PROCEDURE FonctionErreur(eMéthode est un chttp.EHTTPMéthode,sNomDeLaFonction est une chaîne) : chaine                                               
+      sNomFonctionInterne est une chaine = eMéthode..valeur+cGénérique._Sep+sNomDeLaFonction
+      si pas m_taFonctions[sNomFonctionInterne]..existe ALORS renvoyer "" sinon renvoyer m_taFonctions[sNomFonctionInterne].sErreurCompilation
+     type : 458752
+   -
+     name : FonctionSupprimeTout
+     procedure_id : 1522978931969388355
+     type_code : 12
+     code : |1-
+      // Résumé : Supprime toutes les fonctions enregistrées associées aux différentes méthodes HTTP dans le serveur HTTP.
+      // Syntaxe : FonctionSupprimeTout ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE FonctionSupprimeTout()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      m_taFonctions.supprimetout()
+     type : 458752
+   -
+     name : FonctionAjoute
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1522978931969453891
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter une nouvelle fonction associée à une méthode HTTP dans le serveur HTTP. L'ajout d'une fonction de type et de nom identique remplace celle qui serait déjà là avec le même type et même nom.
+      // Syntaxe : [ <Résultat> = ] FonctionAjoute (<eMéthode> est cHTTP.EHTTPMéthode, <sNomDeLaFonction> est chaîne, <procExécute> est procédure, <eTypeRéponse> est cHTTP.EMimeType)
+      // Paramètres :
+      //	eMéthode (cHTTP.EHTTPMéthode) : La méthode HTTP associée à la fonction.
+      //	sNomDeLaFonction (chaîne UNICODE) : Le nom de la fonction à ajouter.
+      //	procExécute (procédure) : La procédure qui sera exécutée lorsque la fonction est appelée.
+      //	eTypeRéponse (cHTTP.EMimeType) : Le type MIME de la réponse attendue de la fonction.
+      // Valeur de retour : booléen : Vrai si la fonction a été ajoutée avec succès, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE FonctionAjoute(eMéthode est un chttp.EhttpMéthode, sNomDeLaFonction est une chaîne, procExécute est une procédure,eTypeRéponse est un chttp.EMimeType) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(eMéthode..Nom,sNomDeLaFonction,eTypeRéponse..nom)
+      m_pclErreur.Raz()
+      
+      sNomFonctionInterne est une chaine 	= eMéthode..valeur+cGénérique._Sep+sNomDeLaFonction
+      stLaFonction		est un STHTTPFonction
+      stLaFonction.eTypeRéponse 			= eTypeRéponse
+      stLaFonction.procExecute 			= procExécute
+      m_taFonctions[sNomFonctionInterne]	= stLaFonction
+      RENVOYER Vrai
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+  properties :
+   -
+     name : p_bDémarré
+     identifier : 0x1522b54500616f43
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoi l'état démarré du serveur
+         PROCEDURE PUBLIQUE p_bDémarré() : booleen
+         renvoyer m_bDémarré
+        type : 1966080
+     template_refs : []
+   -
+     name : p_taServeurFonctions
+     identifier : 0x1522b54500626f43
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le tableau de fonctions
+         PROCEDURE PUBLIQUE p_taServeurFonctions()
+         renvoyer m_taFonctions
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1522b4be0f08628b
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Erreur d'exécution de %1 : %2"
+      en-GB : "Runtime error of %1 : % 2"
+      fr-CA : "Erreur d'exécution de %1 : %2"
+      en-US : "Runtime error of %1 : % 2"
+     index : 0
+   -
+     text :
+      fr-FR : "Erreur de compilation de %1 : %2"
+      en-GB : "Compilation error of %1 : %2"
+      fr-CA : "Erreur de compilation de %1 : %2"
+      en-US : "Compilation error of %1 : %2"
+     index : 1
+   -
+     text :
+      fr-FR : "La fonction n'existe pas : "
+      en-GB : "The function doesn't exist : "
+      fr-CA : "La fonction n'existe pas : "
+      en-US : "The function doesn't exist : "
+     index : 2
+   -
+     text :
+      fr-FR : "Méthode non reconnue : "
+      en-GB : "Unrecognized method : "
+      fr-CA : "Méthode non reconnue : "
+      en-US : "Unrecognized method : "
+     index : 3
+   -
+     text :
+      fr-FR : Format de réponse non reconnu
+      en-GB : Unrecognized response format
+      fr-CA : Format de réponse non reconnu
+      en-US : Unrecognized response format
+     index : 4
+   -
+     text :
+      fr-FR : Format de réponse non accepté
+      en-GB : Response format not accepted
+      fr-CA : Format de réponse non accepté
+      en-US : Response format not accepted
+     index : 5
+   -
+     text :
+      fr-FR : Format de réponse non accepté
+      en-GB : Response format not accepted
+      fr-CA : Format de réponse non accepté
+      en-US : Response format not accepted
+     index : 6
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

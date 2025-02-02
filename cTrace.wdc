@@ -1,0 +1,601 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cTrace
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1aaa93bb06be3b95
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet, contrairement à la classe cLog qui capte les interactions de l'utilisateur, de tracer dans un fichier texte toutes les procédures appelées dans le framework. Elle est très utile pour déboguer.
+      
+      COTraceFenêtreEtImpression est une combinaison
+      	TraceFenAvertissement
+      	TraceFenConfirmer
+      	TraceFenDialogue
+      	TraceFenErreur
+      	TraceFenInfo
+      	TraceFenOKAnnuler
+      	TraceFenOuiNon
+      	TraceImprimeÉtat
+      	TraceImprimeFin	
+      FIN
+      ETraceFormat est une énumération
+      	AucuneTrace
+      	TraceANSI
+      	TraceUnicode
+      fin
+      
+      cTrace est une Classe
+      	hérite de cGénérique
+      	
+      local publique
+      	m_bTraceActive				est un booleen							<serialise = faux>		//Savoir que la trace est actif ou pas, ou de l'activer/désactiver.
+      	m_bTraceJauneEnTest			est un booleen							<serialise = faux>		//Savoir que la trace dans une fenêtre jaune, en mode test, est active ou pas, ou de l'activer/désactiver.
+      	m_bTraceAppelAPI			est un booleen							<serialise = faux>		//Savoir que la trace de appels API Windows est active ou pas, ou de l'activer/désactiver.
+      	m_nNbMaxLignePile			est un entier							<serialise = faux>		//Nombre de lignes de la pile de ligne de trace à retenir au cas où la trace est désactivée. Cela sert à quand même mettre une trace dans le fichier de crash.
+      	                                                                	
+      LOCAL PRIVÉ                                                         	
+      	m_sFormatDate				est une chaîne							<serialise = faux>		//Format de la date dans le fichier de trace
+      	m_sFormatHeure				est une chaine							<serialise = faux>		//Format de l'heure dans le fichier de trace
+      	                    		    	                            	
+      	m_sDernièreLigne			est une chaine							<serialise = faux>		//Dernière ligne écrite dans le fichier (pour faire une comparaison sur la suivante)
+      	m_nOccurrenceLigne			est un entier							<serialise = faux>		//Nombre de lignes de trace identiques
+      	                    		
+      	m_pclFichierTrace			est un cFichierTexteEnBoucle dynamique	<serialise = faux>		//Objet qui gère le fichier texte de trace en boucle.
+      	m_pileAppel					est une pile <serialise = faux> de chaines						//Pile de lignes de trace quand même enregistrée quand la trace n'est active. Servira à compléter le fichier de crash le cas échéant.
+      	
+      global privé	//nécessaire car interception des ouvertures/fermetures des fenêtres et des lancements d'impression dans COL_Trace
+      	mg_nEvenementFermeFenêtre1	est un entier							<serialise = faux>		//Événement intercepté lors de la fermeture des fenêtres
+      	mg_nEvenementFermeFenêtre2	est un entier							<serialise = faux>		//Autre événement intercepté lors de la fermeture des fenêtres
+      	mg_nEvenementOuvreFenêtre	est un entier							<serialise = faux>		//Événement intercepté lors de l'ouverture des fenêtres
+      	mg_coFenêtreEtImpression	est un COTraceFenêtreEtImpression		<serialise = faux>		//Combinaison d'indicateur permettant de tracer les fenêtres et/ou les impressions
+      	
+      Global public constant
+      	mg_sRépertoireTrace			est une chaine							<sérialise = faux>		//Répertoire par défaut des traces (si aucun utilisateur loggué)
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1921510622508301205
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise les paramètres de la classe cTrace. Elle permet de spécifier le chemin du fichier de trace, la taille maximale du fichier, le nombre maximal de lignes, le format du fichier, le format de la date et de l'heure, et la fermeture automatique après chaque écriture.
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur()
+      m_bTraceJauneEnTest	= enmodetest()	//le changer via une propriété au besoin
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1921510622508366741
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : TraceInitTexte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1928542256964647132
+     type_code : 12
+     code : |1-
+      // Résumé : Initialise les paramètres nécessaires pour la gestion des traces texte. Elle permet de définir le chemin du fichier de trace, sa taille maximale, le nombre maximal de lignes, le format du fichier, le format de la date et de l'heure, et d'autres paramètres.
+      // Syntaxe : [ <Résultat> = ] TraceInitTexte ( [<sCheminFichierTrace> est chaîne [, <nTaille> est entier [, <nNbMax> est entier [, <eFormat> est cFichier.EFormatInterne [, <sFormatDate> est chaîne [, <sFormatHeure> est chaîne [, <bSupprimeAncienneTrace> est booléen [, <bFermeAChaqueÉcriture> est booléen]]]]]]]])
+      // Paramètres :
+      //	sCheminFichierTrace (chaîne UNICODE optionnelle) : Le chemin du fichier trace avec un nom générique. Si vide, le fichier log sera créé dans le répertoire de l'application.
+      //	nTaille (entier optionnel) : Taille maximale du fichier de trace en octets. Par défaut, elle est fixée à 1Mo.
+      //	nNbMax (entier optionnel) : Nombre maximal de fichiers de trace. Par défaut, il est limité à 10.
+      //	eFormat (cFichier.EFormatInterne optionnel) : Format interne du fichier de trace. Par défaut, c'est le format Unicode.
+      //	sFormatDate (chaîne UNICODE optionnelle") : Format de la date pour les entrées de trace. Par défaut, il est défini sur "JJ/MM/AAAA".
+      //	sFormatHeure (chaîne UNICODE optionnelle) : Format de l'heure pour les entrées de trace. Par défaut, il est défini sur "HH:MM:SS:CC".
+      //	bSupprimeAncienneTrace (booléen optionnel) : Indique si l'ancien contenu du fichier de trace doit être supprimé. Par défaut, c'est vrai en mode test.
+      //	bFermeAChaqueÉcriture (booléen optionnel) : Si vrai, ferme le fichier de trace après chaque enregistrement. Ceci est nécessaire pour forcer l'écriture du fichier dans certains applications. Par défaut, c'est désactivé.
+      // Valeur de retour : booléen : Indique si l'initialisation du fichier de trace s'est effectuée avec succès. Si la création du fichier de test échoue ou si le répertoire n'est pas accessible, la trace est désactivée, et la méthode renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE TraceInitTexte(LOCAL sCheminFichierTrace est une chaine = capplication._Application.p_sRépertoireDonnées,nTaille est un entier = 1000000,nNbMax est un entier = 10,eFormat est un cFichier.EFormatInterne = cFichier.fiUnicode,sFormatDate est une chaine = "JJ/MM/AAAA", sFormatHeure est une chaine = "HH:MM:SS:CC",bSupprimeAncienneTrace est un booleen = enmodetest(),bFermeAChaqueÉcriture est un booléen = Faux) : booleen
+      cApplication._Application.m_pclErreur.RAZ()
+      
+      sRep est une chaine = SysRepAppData()
+      SI sRep="" ALORS sRep=cApplication._Application.p_sRépertoireSystème
+      
+      //cas des fichiers avec chemin relatif (toujours relatif à l'exe)
+      si sCheminFichierTrace~="" alors sCheminFichierTrace=completerep(sRep+[fSep()]+cApplication._Application.p_sNom)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	SI Gauche(sCheminFichierTrace,2)<>"\\" _ET_ sCheminFichierTrace[[2 À 3]]<>":\" ALORS 
+      		//c'est un chemin relatif Windows, on le transforme en chemin absolu
+      		SI sCheminFichierTrace[[1 À 2]]=".\" 	ALORS sCheminFichierTrace=Milieu(sCheminFichierTrace,3)
+      		SI sCheminFichierTrace[[1]]="\"			ALORS sCheminFichierTrace=Milieu(sCheminFichierTrace,2)
+      		sCheminFichierTrace						= ComplèteRep(sRep+["\"]+sCheminFichierTrace)
+      	FIN
+      	
+      <fin>
+      
+      
+      //valeur par défaut du nom de fichier log
+      SI fExtraitChemin(sCheminFichierTrace,fDisque)~="" 		ALORS sCheminFichierTrace=fSéparateur(ComplèteRep(sRep+[fSep()]+sCheminFichierTrace))+fExtraitChemin(sCheminFichierTrace,fFichier+fExtension)
+      SI fExtraitChemin(sCheminFichierTrace,fFichier)~="" 	ALORS sCheminFichierTrace=fExtraitChemin(sCheminFichierTrace,fDisque+fRépertoire)+(cApplication._Application.p_sNom~="" ? fExtraitChemin(ExeInfo(exeNom),fFichier) sinon cApplication._Application.p_sNom)+fExtraitChemin(sCheminFichierTrace,fExtension)
+      SI fExtraitChemin(sCheminFichierTrace,fExtension)~="" 	ALORS sCheminFichierTrace+=".txt"
+      
+      SI PAS fRepCrée(fExtraitChemin(sCheminFichierTrace,fDisque+fRépertoire)) ALORS
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteErreurWx()
+      	m_bTraceActive=Faux
+      SINON 
+      	SI fSauveTexte(sCheminFichierTrace,"test") ALORS 	//fichier de test pour voir si on a droit en écriture
+      		fSupprime(sCheminFichierTrace) 
+      		SI m_pclFichiertrace=Null ALORS m_pclFichiertrace = allouer un cFichierTexteEnBoucle(sCheminFichierTrace,cFichierTexteEnBoucle.eFichierBoucleIndice,Max(0,nTaille),Max(0,nNbMax),eFormat=cFichier.fiUnicode,bFermeAChaqueÉcriture)
+      		si bSupprimeAncienneTrace alors m_pclFichierTrace.SupprimeTout()
+      		m_sFormatDate	= sFormatDate
+      		m_sFormatHeure	= sFormatHeure
+      		m_bTraceActive	= vrai
+      	SINON 
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteErreurWx()
+      		m_bTraceActive	= Faux
+      	FIN
+      FIN
+      
+      RENVOYER m_bTraceActive
+      
+      CAS ERREUR:
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : AjouteMéthode
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1928588784554902296
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter une entrée de trace représentant l'appel d'une méthode avec ses paramètres. Cette entrée est ajoutée au fichier de trace si la trace est activée et dans la trace jaune si celle-ci est activée (en mode test uniquement). Est utilisée dans les méthodes du framework.
+      // Syntaxe : AjouteMéthode ( [<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5> [, <xParam6> [, <xParam7> [, <xParam8> [, <xParam9> [, <xParam10> [, <xParam11> [, <xParam12> [, <xParam13> [, <xParam14> [, <xParam15> [, <xParam16> [, <xParam17> [, <xParam18> [, <xParam19> [, <xParam20>]]]]]]]]]]]]]]]]]]]])
+      // Paramètres :
+      // 	xParam1 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam2 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam3 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam4 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam5 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam6 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam7 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam8 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam9 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam10 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam11 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam12 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam13 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam14 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam15 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam16 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam17 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam18 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam19 (valeur optionnelle) : Paramètres de la méthode.
+      // 	xParam20 (valeur optionnelle) : Paramètres de la méthode.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE AjouteMéthode(xParam1 <utile> = null,xParam2 <utile> = null,xParam3 <utile> = null,xParam4 <utile> = null,xParam5 <utile> = null,xParam6 <utile> = null,xParam7 <utile> = null,xParam8 <utile> = null,xParam9 <utile> = null,xParam10 <utile> = null,xParam11 <utile> = null,xParam12 <utile> = null,xParam13 <utile> = null,xParam14 <utile> = null,xParam15 <utile> = null,xParam16 <utile> = null,xParam17 <utile> = null,xParam18 <utile> = null,xParam19 <utile> = null,xParam20 <utile> = null)
+      SI PAS ((EnModeTest() _ET_ m_bTraceJauneEnTest) _OU_ m_bTraceActive) ALORS RETOUR
+      cApplication._Application.m_pclErreur.RAZ()
+      		
+      sMessage,sLigne,sDepuis,sPile sont des chaines
+      pour nParam = 1 _a_ 20	//WD23 : mesParamètres pas dispo en Java et PHP
+      	sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=null ? "" sinon "¶"+nParam+"="+VariableVersJSON({"xParam"+nParam,indVariable}))
+      fin
+      sPile=dbgInfo(dbgPile,dbgTraitementAppelant)
+      pour toute chaine sSuite,nPosition,nIndice de sPile separée par rc
+      	si nIndice=2 alors sLigne=cErreur.pileformate(sSuite)
+      	si nIndice>2 alors sDepuis+=[", "]+cErreur.PileFormate(sSuite)	//garder l'espace après la virgule, permet le passage à la ligne plus facile dans un éditeur de texte
+      fin
+      
+      Ajoutetexte(sLigne+tab+sMessage+tab+sDepuis)
+      
+      CAS ERREUR:
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteException()
+     type : 458752
+   -
+     name : AjoutePropriété
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1928597460424283212
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute une entrée de trace représentant l'appel d'une propriété. Cette entrée est ajoutée au fichier de trace si la trace est activée et dans la trace jaune si celle-ci est activée (en mode test uniquement). Est utilisée dans les propriétés du framework.
+      // Syntaxe : AjoutePropriété ( [<xParam1>])
+      // Paramètres : xParam1 (optionnel) : Paramètre de la propriété
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE AjoutePropriété(xParam1<utile>=null)
+      SI PAS ((EnModeTest() _ET_ m_bTraceJauneEnTest) _OU_ m_bTraceActive) ALORS RETOUR
+      cApplication._Application.m_pclErreur.RAZ()
+      
+      sMessage,sLigne sont des chaines
+      sMessage+=(TypeVar(xParam1)=wlVariant ET xParam1=Null ? "" SINON [cGénérique._Sep]+"¶1="+VariableVersJSON(xParam1))
+      sLigne=cErreur.PileFormate(ExtraitChaîne(dbgInfo(dbgPile,dbgTraitementAppelant),2,RC))
+      
+      Ajoutetexte(sLigne+TAB+sMessage)
+      
+      CAS ERREUR:
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteException()
+     type : 458752
+   -
+     name : AjouteProcédure
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1936764774328493377
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute une entrée de trace représentant l'appel d'une procédure avec ses paramètres. Cette entrée est ajoutée au fichier de trace si la trace est activée et dans la trace jaune si celle-ci est activée (en mode test uniquement). Est utilisée dans les procédures du framework.
+      // Syntaxe : AjouteProcédure ( [<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5> [, <xParam6>]]]]]])
+      // Paramètres :
+      // 	xParam1 (optionnel) : Valeur du paramètre de la procédure.
+      // 	xParam2 (optionnel) : Valeur du paramètre de la procédure.
+      // 	xParam3 (optionnel) : Valeur du paramètre de la procédure.
+      // 	xParam4 (optionnel) : Valeur du paramètre de la procédure.
+      // 	xParam5 (optionnel) : Valeur du paramètre de la procédure.
+      // 	xParam6 (optionnel) : Valeur du paramètre de la procédure.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE AjouteProcédure(xParam1<utile>=null,xParam2<utile>=null,xParam3<utile>=null,xParam4<utile>=null,xParam5<utile>=null,xParam6<utile>=null)
+      SI PAS ((EnModeTest() _ET_ m_bTraceJauneEnTest) _OU_ m_bTraceActive) ALORS RETOUR
+      cApplication._Application.m_pclErreur.RAZ()
+      
+      sMessage,sLigne,sDepuis,sPile sont des chaines
+      POUR nParam = 1 a 6
+      	sMessage+=(TypeVar({"xParam"+nParam,indVariable})=wlVariant ET {"xParam"+nParam,indVariable}=Null ? "" SINON [cGénérique._Sep]+"¶"+nParam+"="+VariableVersJSON({"xParam"+nParam,indVariable}))
+      FIN
+      sPile=dbgInfo(dbgPile,dbgTraitementAppelant)
+      POUR TOUTE CHAÎNE sSuite,nPosition,nIndice de sPile separée par rc
+      	SI nIndice=2 ALORS sLigne=cErreur.PileFormate(sSuite)
+      	SI nIndice>2 ALORS sDepuis+=[", "]+cErreur.PileFormate(sSuite)	//garder l'espace après la virgule, permet le passage à la ligne plus facile dans un éditeur de texte
+      FIN
+      
+      Ajoutetexte("Procédure"+sLigne+tab+sMessage+tab+sDepuis)
+      
+      CAS ERREUR:
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteException()
+     type : 458752
+   -
+     name : TraceFenêtre
+     procedure_id : 1979870695161225750
+     type_code : 12
+     code : |1+
+      // Résumé : Méthode privée qui crée ou fini les événements qui interceptent l'ouverture et la fermeture des fenêtres
+      PROCEDURE globale PRIVÉE TraceFenêtre()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	SI mg_coFenêtreEtImpression=TraceFenAvertissement _OU_ TraceFenAvertissement=TraceFenDialogue _OU_ TraceFenAvertissement=TraceFenErreur _OU_ ...
+      		TraceFenAvertissement=TraceFenInfo _OU_ TraceFenAvertissement=TraceFenOKAnnuler _OU_ TraceFenAvertissement=TraceFenOuiNon ALORS
+      		si mg_nEvenementFermeFenêtre1=0 	alors mg_nEvenementFermeFenêtre1	= Evénement(FenêtreFermeture, "*.", 16)		//WM_CLOSE		
+      		si mg_nEvenementFermeFenêtre2=0 	alors mg_nEvenementFermeFenêtre2	= Evénement(FenêtreFermeture, "*.", 2)		//WM_DESTROY
+      		si mg_nEvenementOuvreFenêtre=0 		alors mg_nEvenementOuvreFenêtre		= Evénement(FenêtreOuverture, "*.", 1)		//WM_CREATE
+      	SINON
+      		SI mg_nEvenementFermeFenêtre1<>0 _ET_ FinEvénement(mg_nEvenementFermeFenêtre1) ALORS mg_nEvenementFermeFenêtre1=0
+      		SI mg_nEvenementFermeFenêtre2<>0 _ET_ FinEvénement(mg_nEvenementFermeFenêtre2) ALORS mg_nEvenementFermeFenêtre2=0
+      		SI mg_nEvenementOuvreFenêtre<>0 _ET_ FinEvénement(mg_nEvenementOuvreFenêtre) ALORS mg_nEvenementOuvreFenêtre=0
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : Ajoute
+     procedure_id : 1992062053490734219
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter une entrée de trace générale avec des informations sur les paramètres et la pile d'appels. Cette entrée est ajoutée au fichier de trace si la trace est activée et dans la trace jaune si celle-ci est activée (en mode test uniquement). Est utilisée dans les procédures du framework. 
+      // Syntaxe : Ajoute ( [<xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5> [, <xParam6>]]]]]])
+      // Paramètres :
+      // 	xParam1 (valeur) : Paramètres de la trace.
+      // 	xParam2 (valeur optionnelle) : Paramètres de la trace.
+      // 	xParam3 (valeur optionnelle) : Paramètres de la trace.
+      // 	xParam4 (valeur optionnelle) : Paramètres de la trace.
+      // 	xParam5 (valeur optionnelle) : Paramètres de la trace.
+      // 	xParam6 (valeur optionnelle) : Paramètres de la trace.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Ajoute(xParam1 <utile> = null,xParam2 <utile> = null,xParam3 <utile> = null,xParam4 <utile> = null,xParam5 <utile> = null,xParam6 <utile> = null)
+      SI PAS (m_bTraceActive _OU_ (EnModeTest() ET m_bTraceJauneEnTest) _ou_ xParam1~="") ALORS RETOUR
+      sMessage,sPile,sLigne,sDepuis sont des chaines
+      sMessage = xParam1
+      QUAND EXCEPTION DANS
+      	POUR i=1 _a_ 6
+      		sMessage+=({"xParam"+i,indVariable}=Null ? "" SINON "¶"+i+"="+{"xParam"+i,indVariable})
+      	FIN
+      FAIRE
+      	SINON
+      		sPile=dbgInfo(dbgPile,dbgTraitementAppelant)
+      	POUR TOUTE CHAÎNE sSuite,nPosition,nIndice de sPile separée par rc
+      		SI nIndice=2 ALORS sLigne=cErreur.PileFormate(sSuite)
+      		SI nIndice>2 ALORS sDepuis+=[", "]+cErreur.PileFormate(sSuite)	//garder l'espace après la virgule, permet le passage à la ligne plus facile dans un éditeur de texte
+      	FIN
+      fin
+      
+      ajoutetexte(sLigne+TAB+sMessage+TAB+sDepuis)
+     type : 458752
+   -
+     name : AjouteTexte
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1928526447189888001
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisé pour ajouter du texte à la trace, en prenant en charge la gestion des fichiers de trace et des occurrences de lignes. Cette entrée est ajoutée au fichier de trace si la trace est activée et dans la trace jaune si celle-ci est activée (en mode test uniquement). Est utilisée dans les procédures du framework.
+      // Syntaxe : AjouteTexte (<sMessage> est chaîne)
+      // Paramètres :
+      //	sMessage (chaîne UNICODE) : Le texte à ajouter à la trace.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE AjouteTexte(sMessage est une chaine)
+      SI PAS ((EnModeTest() _ET_ m_bTraceJauneEnTest) _OU_ m_bTraceActive _ou_ sMessage~="") ALORS RETOUR
+      m_pclErreur.RAZ()
+      
+      sFichierMessage	est une chaine	= Remplace(Remplace(sMessage,CRLF," "),CaractUnicode(10)," ")	//tout en une ligne
+      si m_pclFichierTrace<>null _et_ m_bTraceActive ALORS
+      	dhEvenement 	est une dateheure = datesys()+heuresys()
+      	sContenu	 	sont des chaines
+      	sFichierEnCours	est une chaine 	= m_pclFichierTrace.m_sFichierEnCoursChemin
+      	
+      	si m_pclFichierTrace.p_bOuvert _et_ sFichierEnCours<>m_pclFichierTrace.m_sFichierEnCoursChemin  alors m_nOccurrenceLigne = 0;m_sDernièreLigne = ""
+      	
+      	//ci-dessous, ne pas mettre cUtilisateur::p_sLogin+"/"+cUtilisateur::p_sNomComplet, risque de bouclage
+      	SI m_pclFichierTrace.p_bOuvert alors
+      		si EnModeTest() _ET_ m_sDernièreLigne=sFichierMessage _et_ 0<m_nOccurrenceLigne<99999999 alors
+      			m_nOccurrenceLigne++ 
+      			si pas m_pclFichierTrace.Positionne(taille(sFichierMessage)+11,cfichier.EOriginePosition.fpFin) alors retour
+      			si pas m_pclFichierTrace.ecrit((m_pclFichierTrace.m_bUnicode ? Complète(m_nOccurrenceLigne+"x",9," ")+sFichierMessage sinon UnicodeVersAnsi(Complète(m_nOccurrenceLigne+"x",9," ")+sFichierMessage))) alors retour
+      			m_pclFichierTrace.Positionne(0,cFichier.EOriginePosition.fpFin)
+      		sinon 
+      			m_nOccurrenceLigne=1;m_sDernièreLigne=sFichierMessage
+      			si enmodetest() alors
+      				sContenu=DateVersChaîne(dhEvenement..PartieDate,"JJ/MM")+" "+HeureVersChaîne(dhEvenement..PartieHeure,"HH:MM:SS:CC")+TAB+complete(m_nOccurrenceLigne+"x",9," ")+sFichierMessage	//complète agit comme un tab
+      			sinon
+      				sContenu=TraceFormatDateHeure()+TAB+"%1"+tab+sFichierMessage
+      			
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ServiceWindows>
+      	sContenu=ChaîneConstruit(sContenu,(RéseauUtilisateur()+"_"+cApplication._Application.p_sProcessus))
+      	
+      <sinon si CibleExécution=SiteLinux ou CibleExécution=SitePHP ou CibleExécution=WebserviceLinux ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceLinux64 ou CibleExécution=WindowsMobile>
+      	sContenu=ChaîneConstruit(sContenu,NetNomMachine())
+      	
+      <sinon si CibleExécution=Android>
+      	sContenu=ChaîneConstruit(sContenu,NetAdresseMAC())
+      	
+      <fin>
+      
+      			
+      			FIN
+      			si pas m_pclFichierTrace.AjouteLigne(sContenu) alors RETOUR			
+      		fin
+      		
+      		SI (m_pclFichiertrace.m_nTailleMax>0 _ET_ m_pclFichierTrace.p_nTaille>m_pclFichierTrace.m_nTailleMax) ALORS
+      			m_pclFichierTrace.AjouteLigne("... suite dans le prochain fichier ...")
+      			m_pclFichierTrace.Ferme()
+      		FIN
+      	fin
+      sinon
+      	//met la trace en mémoire pour créer des fichiers de trace qui seront joint au fichier de crash le cas échéant
+      	empile(m_pileAppel,sFichierMessage)
+      	si m_pileAppel..Occurrence>m_nNbMaxLignePile alors dépile(m_pileAppel,m_nNbMaxLignePile)
+      FIN
+      
+      	PROCÉDURE INTERNE TriNumérique(sFichier1,sFichier2) : entier
+      	nIndice1 est un entier = ExtraitChaîne(fExtraitChemin(sFichier1,fFichier),1,"_",DepuisFin)
+      	nIndice2 est un entier = ExtraitChaîne(fExtraitChemin(sFichier2,fFichier),1,"_",DepuisFin)
+      	SI nIndice1 < nIndice2 ALORS RENVOYER -1
+      	SI nIndice1 > nIndice2 ALORS RENVOYER 1
+      	RENVOYER 0
+      	FIN
+      	
+      	procédure interne TraceFormatDateHeure(LOCAL dhTrace est une dateheure = DateSys()+HeureSys(),local sFormatDate est une chaine = m_sFormatDate,local sFormatHeure est une chaine = m_sFormatHeure) : chaine
+      	//m_pclErreur.RAZ() 	//pas ici sinon bouclage
+      	
+      	SI sFormatDate="" 	ALORS sFormatDate="JJ/MM/AAAA"
+      	SI sFormatHeure="" 	ALORS sFormatHeure="HH:MM:SS:CC"
+      	SI PAS DateHeureValide(dhTrace) ALORS dhTrace=DateSys()+HeureSys()	//au lieu de DateHeureSys non compatible avec mobile
+      	RENVOYER (sFormatDate>"" ? DateVersChaîne(dhTrace..PartieDate,sFormatDate) SINON "")+[" "]+(sFormatHeure>"" ? HeureVersChaîne(dhTrace..PartieHeure,sFormatHeure) SINON "")
+      	FIN
+      
+      CAS EXCEPTION:
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteException()
+     type : 458752
+   -
+     name : FenêtreFermeture
+     procedure_id : 2009853637239783718
+     type_code : 12
+     code : |1+
+      // Résumé : Méthode privée ajoutant la fermeture d'une fenêtre dans la trace.
+      PROCEDURE globale PRIVÉE FenêtreFermeture()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	SI PAS Majuscule(_EVE.nom) DANS ("WINDEVMESSAGEBOX","WINDEVDIALOGBOX","WD_AFFICHEEXCEPTION") ALORS 	//ces fenêtres sont appelées par leurs fonctions respectives
+      		sAlias est une chaîne = {_EVE.nom,indFenetre}..Alias
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(ChaîneConstruit(<§@1ae090c10326a0de0000§>,_EVE.nom+["="]+sAlias))
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : FenêtreOuverture
+     procedure_id : 2009853637239914899
+     type_code : 12
+     code : |1+
+      // Résumé : Méthode privée ajoutant l'ouverture d'une fenêtre dans la trace.
+      PROCEDURE PRIVÉE GLOBALE FenêtreOuverture()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	SI PAS Majuscule(_EVE.nom) DANS ("WINDEVMESSAGEBOX","WINDEVDIALOGBOX","WD_AFFICHEEXCEPTION") ALORS 
+      		sAlias est une chaîne = {_EVE.nom,indFenêtre}..Alias
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(ChaîneConstruit("Fenêtre %1 ouverte",_EVE.nom+["="]+sAlias))
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+  properties :
+   -
+     name : p_sFichierGénériqueChemin
+     identifier : 0x1ac3b3ab0a6d9457
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom générique des fichiers de trace qui seront créés
+         PROCEDURE PUBLIQUE p_sFichierGénériqueChemin() : chaîne
+         RENVOYER (m_pclFichierTrace=null ? "" sinon m_pclFichierTrace.m_sFichierNomGénériqueChemin)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sFichierEnCours
+     identifier : 0x1b71e5970d97f457
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom du fichier de trace en cours d'utilisation
+         PROCEDURE PUBLIQUE p_sFichierEnCours() : chaine
+         renvoyer (m_pclFichierTrace=Null ? "" SINON m_pclFichierTrace.m_sFichierEnCoursChemin)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_coFenêtreEtImpression
+     identifier : 0x1b79ea3b4e4ca694
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoi les indicateurs de traçage des fenêtres et des impressions
+         PROCEDURE PUBLIQUE p_coFenêtreEtImpression() : COTraceFenêtreEtImpression
+         renvoyer mg_coFenêtreEtImpression
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de modifier des indicateurs pour intercepter aussi les fenêtres et les impressions
+         PROCEDURE PUBLIQUE p_coFenêtreEtImpression(coValeur est un COTraceFenêtreEtImpression)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(coValeur[TraceFenAvertissement]+","+coValeur[TraceFenConfirmer]+","+coValeur[TraceFenDialogue]+","+coValeur[TraceFenErreur]+","+coValeur[TraceFenouinon]+","+coValeur[TraceFenOKAnnuler]+","+coValeur[TraceImprimeÉtat]+","+coValeur[TraceImprimeFin])
+         mg_coFenêtreEtImpression = coValeur
+         TraceFenêtre()
+         //A FAIRE : Tracer les impressions (en captant les paramètres)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sRépertoireDonnées
+     identifier : 0x173b4926114e0c61
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Permet de modifier le répertoire dans lequel le fichier de trace sera créé le cas échéant
+         PROCEDURE globale PUBLIQUE p_sRépertoireDonnées(Valeur)
+         mg_sRépertoireTrace=Valeur
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1aaa93b906bb3187
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : ============== L'application a démarré ==============
+      en-GB : ============== The application started ==============
+      fr-CA : ============== L'application a démarré ==============
+      en-US : ============== The application started ==============
+     index : 0
+   -
+     text :
+      fr-FR : <vide>
+      en-GB : <empty>
+      fr-CA : <vide>
+      en-US : <empty>
+     index : 1
+   -
+     text :
+      fr-FR : <structure ou objet à traiter>
+      en-GB : <structure or object to be treated>
+      fr-CA : <structure ou objet à traiter>
+      en-US : <structure or object to be treated>
+     index : 2
+   -
+     text :
+      fr-FR : "Méthode "
+      en-GB : "Method "
+      fr-CA : "Méthode "
+      en-US : "Method "
+     index : 3
+   -
+     text :
+      fr-FR : "Propriété "
+      en-GB : "Property "
+      fr-CA : "Propriété "
+      en-US : "Property "
+     index : 4
+   -
+     text :
+      fr-FR : lecture
+      en-GB : reading
+      fr-CA : lecture
+      en-US : reading
+     index : 5
+   -
+     text :
+      fr-FR : écriture
+      en-GB : writing
+      fr-CA : écriture
+      en-US : writing
+     index : 6
+   -
+     text :
+      fr-FR : "Procédure "
+      en-GB : "Procedure "
+      fr-CA : "Procédure "
+      en-US : "Procedure "
+     index : 7
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

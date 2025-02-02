@@ -1,0 +1,703 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cAppParamètres
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1aa96a6200efb742
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe est instanciée uniquement depuis cApplication. Elle sert à aller lire et écrire des valeurs persistantes (paramètres).
+      //Le principe est de lire tous les paramètres d'un emplacement (fichier ini, base de registre, ...) pour les mettre dans un variant.
+      //Les fonctions Lit et Écrit utilisent donc le variant en mémoire. Les fonctions Charge et Sauve exécutent, respectivement, une lecture
+      //et une écriture physiques dans l'emplacement des paramètres.
+      
+      ETypeEmplacementParamètres est une Enumération					//5 méthodes pour sauvegarder des paramètres
+      	FichierIni
+      	FichierXML
+      	FichierJSON
+      	BaseDeRegistre
+      	BaseDeDonnées
+      FIN
+      cAppParamètres est une Classe
+      	hérite de cGénérique
+      PRIVÉ
+      	m_eTypeAppParamètres	est un ETypeEmplacementParamètres	//Type de source de données des paramètres
+      	//membres pour ETypeEmplacementParamètres.BaseDeDonnées
+      	m_nIDConnexion			est un entier						//Identifiant de connexion si les paramètres sont dans une BD. Une connexion doit être faite au préalable et l'identifiant passé à ParamètreCharge()
+      	m_sRequêteÉcriture		est une chaine						//Requête SQL récupérant les paramètres dans une BD, doit être passé à ParamètreCharge()
+      	m_sApplicationModule	est une chaine						//Nom de l'application + TAB + Nom du module
+      	
+      	//membres pour ETypeEmplacementParamètres.FichierIni
+      	m_sChemin 				est une chaine						//Chemin du fichier INI utilisé
+      	m_sCheminINIparDéfaut	est une chaine						//Chemin par défaut du fichier INI
+      
+      	//membres pour ETypeEmplacementParamètres.BaseDeRegistre
+      	m_sRegistreParDéfaut	est une chaine						//Chemin dans la base de registre dans lequel il est possible de sauver des informations spécifiques au projet.
+      
+      	m_taValeurParDéfaut		est un tableau associatif de chaine	//tableau contenant les valeurs par défaut des paramètres
+      	m_bÉcritQuandLit		est un booleen						//Indique qu'il faut écrire le paramètre lors d'une lecture (utile si les paramètres par défaut sont ajoutés par programmation : permet de les mettre dans, par exemple, le fichier INI)
+      	m_sMotDePasseCryptage	est une chaine						//Mot de passe pour crypter les paramètres sensibles (ex : mot de passe)
+      public constant
+      	m_vParamètres			est un variant						//Variant contenant l'ensemble des paramètres (chargé par ParamètreCharge). Toutes les lectures et écritures se font dans ce variant.
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1921183685205342018
+     type_code : 27
+     code : |1+
+      // Résumé : Le constructeur de la classe. Elle est appelée lors de la création d'une instance de la classe cAppParamètres et initialise ses membres.
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows ou CibleExécution=WindowsMobile>
+      	m_sRegistreParDéfaut				= ProjetInfo(piRegistre)
+      	
+      <fin>
+      
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1921183685205407554
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : ParamètresCharge
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921476855444947543
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisé pour charger les paramètres de l'application à partir de différentes sources de données telles que les fichiers INI, JSON, la base de registre, XML, ou une base de données. Cette méthode initialise les paramètres en fonction de l'emplacement spécifié.
+      // Syntaxe : [ <Résultat> = ] ParamètresCharge ( [<eEmplacementDesParamètres> est cAppParamètres.ETypeEmplacementParamètres [, <sCheminOuAppliModule> est chaîne [, <bÉcritQuandLit> est booléen [, <sMotDePasseCryptage> est chaîne [, <nIndiceDeConnexion> est entier [, <sReqLecture> est chaîne [, <sReqÉcriture> est chaîne]]]]]]])
+      // Paramètres :
+      //	eEmplacementDesParamètres (cAppParamètres.ETypeEmplacementParamètres optionnel) : Indique l'emplacement de stockage des paramètres (FichierIni, FichierJSON, BaseDeRegistre, FichierXML, BaseDeDonnées). Par défaut, FichierIni
+      //	sCheminOuAppliModule (chaîne UNICODE optionnelle) : Chemin du fichier ou nom de l'application (utilisé pour les bases de données). Par défaut, le nom du fichier INI.
+      // 	bÉcritQuandLit (booléen optionnel) : Indique s'il faut écrire les paramètres lors de la lecture. Par défaut, vrai.
+      //	sMotDePasseCryptage (chaîne UNICODE optionnelle) : Mot de passe pour crypter les paramètres sensibles. Par défaut, chaine vide (aucun mot de passe).
+      // 	nIndiceDeConnexion (entier optionnel) : Indice de connexion pour les paramètres stockés dans une base de données.
+      //	sReqLecture (chaîne UNICODE optionnelle) : Requête SQL de lecture pour les paramètres stockés dans une base de données.
+      //	sReqÉcriture (chaîne UNICODE optionnelle) : Requête SQL d'écriture pour les paramètres stockés dans une base de données. Doit contenir 3 colonnes (Application varchar(100) NOT NULL, Module varchar(100), Params varchar(max) NOT NULL). Le nom du module est facultatif. La BD peut alors contenir les paramètres de plusieurs applications.
+      // Valeur de retour : booléen : Vrai si les paramètres sont chargés avec succès, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE ParamètresCharge(eEmplacementDesParamètres est un ETypeEmplacementParamètres = ETypeEmplacementParamètres.FichierIni,sCheminOuAppliModule est une chaine = p_sCheminINI,bÉcritQuandLit est un booleen = vrai,sMotDePasseCryptage = "",nIndiceDeConnexion est un entier = 0,sReqLecture est une chaine = "",sReqÉcriture est une chaine = "") : booleen	//ne pas typer le mot de passe afin qu'il soit compatible avec le passage d'une chaîne indétectable
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoutemethode(eEmplacementDesParamètres,sCheminOuAppliModule,bÉcritQuandLit,(EnModeTest ? m_sMotDePasseCryptage SINON Répète(cGénérique._Sep,Taille(m_sMotDePasseCryptage))),nIndiceDeConnexion,sReqLecture,sReqÉcriture)
+      m_pclErreur.RAZ()
+      
+      m_sMotDePasseCryptage	= sMotDePasseCryptage
+      m_bÉcritQuandLit		= bÉcritQuandLit
+      
+      SELON eEmplacementDesParamètres
+      	CAS ETypeEmplacementParamètres.FichierIni
+      		sSections,sMotsClé sont des chaînes
+      		
+      		si sCheminOuAppliModule~="" alors sCheminOuAppliModule=p_sCheminINI
+      		
+      		si ffichierexiste(frepexe()+[fsep()]+fExtraitChemin(sCheminOuAppliModule,fFichier+fExtension)) alors
+      			m_sChemin=fRepExe()+[fSep()]+fExtraitChemin(sCheminOuAppliModule,fFichier+fExtension)													//priorité du fichier INI à côté de l'exécutable s'il existe
+      		sinon si ffichierexiste(SysRepAppData+[fSep()]+fExtraitChemin(sCheminOuAppliModule,fFichier+fExtension)) alors
+      			m_sChemin=SysRepAppData+[fSep()]+fExtraitChemin(sCheminOuAppliModule,fFichier+fExtension)												//priorité du fichier INI dans C:\ProgramData\ s'il existe
+      		sinon si fFichierExiste(SysRepAppData+[fSep()]+cApplication._Application.p_sNom+[fSep()]+fExtraitChemin(sCheminOuAppliModule,fFichier+fExtension)) ALORS
+      			m_sChemin=SysRepAppData+[fSep()]+cApplication._Application.p_sNom+[fSep()]+fExtraitChemin(sCheminOuAppliModule,fFichier+fExtension)		//priorité du fichier INI dans C:\ProgramData\NomApplication s'il existe
+      		sinon
+      			m_sChemin=sCheminOuAppliModule
+      		FIN
+      
+      		SI PAS frepertoireExiste(fExtraitChemin(m_sChemin,fDisque+fRépertoire)) ALORS 
+      			si pas fRepCrée(fExtraitChemin(m_sChemin,fDisque+fRépertoire)) alors	//même si le fichier ini va créer le répertoire, c'est pour avoir, ici, l'exception au cas où 
+      				m_vParamètres=Null;m_pclErreur.AjouteErreurWx();renvoyer faux
+      			FIN
+      		FIN
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(<§$0009§>+m_sChemin)
+      
+      		m_eTypeAppParamètres	= eEmplacementDesParamètres
+      		
+      		sSections=wl.IniLit("","","",m_sChemin)
+      		POUR TOUTE CHAÎNE sSection de sSections separee par rc
+      			si sSection<>"" alors
+      				sMotsClé=WL.IniLit(sSection,"","",m_sChemin)
+      				POUR TOUTE CHAÎNE sMotClé de sMotsClé separee par rc
+      					si sMotClé ~= "" alors continuer
+      					{"m_vParamètres."+sSection+"."+sMotClé,indVariable}= wl.IniLit(sSection,sMotClé,"",m_sChemin)
+      				FIN
+      			fin
+      		FIN
+      	
+      		renvoyer vrai
+      		
+      	cas ETypeEmplacementParamètres.Fichierjson
+      		m_sChemin=sCheminOuAppliModule
+      		SI fFichierExiste(m_sChemin) ALORS
+      			QUAND EXCEPTION DANS
+      				m_vParamètres=JSONVersVariant(fChargeTexte(m_sChemin))
+      			FAIRE
+      				m_vParamètres=Null;m_pclErreur.AjouteException()
+      			SINON
+      				SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute("Emplacement des paramètres : "+m_sChemin)	
+      				RENVOYER Vrai
+      			FIN
+      		SINON
+      			m_vParamètres=Null;m_pclErreur.AjouteErreur(<§$0004§>)
+      		FIN
+      		
+      	CAS ETypeEmplacementParamètres.BaseDeRegistre
+      		m_eTypeAppParamètres=eEmplacementDesParamètres
+      	CAS ETypeEmplacementParamètres.fichierXML
+      		//XMLVersVariant ? 	//A FAIRE : à développer
+      	cas ETypeEmplacementParamètres.BaseDeDonnées
+      		SI nIndiceDeConnexion>0 _OU_ PAS cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].bConnecté ALORS
+      			m_eTypeAppParamètres	= ETypeEmplacementParamètres.BaseDeDonnées
+      			m_sApplicationModule	= sCheminOuAppliModule
+      			m_nIDConnexion			= nIndiceDeConnexion
+      			sApplication 			est une chaine = extraitchaine(sCheminOuAppliModule,1)
+      			sModule 				est une chaine = extraitchaine(sCheminOuAppliModule,2)
+      			sdParam 				est une source de données
+      			SI HExécuteRequêteSQL(sdParam,cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].cnxDonnées,hRequêteDéfaut,ChaîneConstruit(sReqLecture,sApplication,sModule)) ALORS
+      				SI HNbEnr(sdParam)=1 ALORS
+      					QUAND EXCEPTION DANS
+      						m_vParamètres=JSONVersVariant(sdParam.Params)
+      					FAIRE
+      						m_vParamètres=Null;m_pclErreur.AjouteException()
+      					SINON
+      						RENVOYER Vrai
+      					FIN
+      				SINON SI HNbEnr(sdParam)>1 ALORS
+      					m_vParamètres=Null;m_pclErreur.AjouteErreur(<§$000a§>)
+      				SINON
+      					m_vParamètres=Null;m_pclErreur.AjouteAvertissement(<§$000b§>)
+      				FIN
+      			SINON
+      				m_vParamètres=Null;m_pclErreur.AjouteErreurHF()
+      			FIN
+      		SINON
+      			m_vParamètres=Null;m_pclErreur.AjouteErreur(<§$0005§>)
+      		FIN
+      
+      	autre cas
+      		m_pclErreur.AjouteErreur(chaineconstruit(<§$0000§>,eEmplacementDesParamètres..nom))
+      FIN
+      
+      RENVOYER Faux
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : ParamètresSauve
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921478156820144483
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour sauvegarder les paramètres de l'application. Cette méthode enregistre les paramètres actuels dans une source de données spécifiée, telle qu'un fichier INI, un fichier JSON, une base de registre, un fichier XML ou une base de données. Attention, certaines informations utilisées dans cette méthode sont initialisées dans ParamètreCharge().
+      // Syntaxe : [ <Résultat> = ] ParamètresSauve ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Vrai si les paramètres sont sauvegardés avec succès, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE ParamètresSauve() : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.RAZ()
+      
+      SI m_vParamètres<>Null  ALORS
+      	selon m_eTypeAppParamètres
+      		CAS FichierIni
+      			//ce code plutôt que IniEcrit car il permet de mettre des espace entre les sections et d'avoir des mots clé sans valeur (on peut ainsi les compléter manuellement au besoin)
+      			sIni est une chaine
+      			POUR TOUT mMembre DE m_vParamètres..Membre
+      				SI PAS mMembre..Nom="" ALORS
+      					sIni+=[RC+RC]+"["+mMembre..Nom+"]"
+      					POUR TOUT mSousMembre de mMembre..membre
+      						SI PAS mSousMembre..Nom~="" sIni+=[RC]+mSousMembre..Nom+"="+mSousMembre..Valeur
+      					FIN
+      				FIN	
+      			FIN	
+      			RENVOYER fSauveTexte(p_sCheminINI,sIni)
+      		CAS BaseDeRegistre
+      			
+      		CAS fichierxml
+      			
+      		CAS BaseDeDonnées
+      			sApplication 	est une chaine = extraitchaine(m_sApplicationModule,1)
+      			sModule 		est une chaine = extraitchaine(m_sApplicationModule,2)
+      			SI HExécuteRequêteSQL("REQ_UPDATE",cBaseDeDonnées.mg_tabConnexion[m_nIDConnexion].cnxDonnées,hRequêteSansCorrection,ChaîneConstruit(m_sRequêteécriture,VariantVersJSON(m_vParamètres),sApplication,sModule)) ALORS
+      				renvoyer vrai 
+      			sinon 
+      				m_pclErreur.AjouteErreurhf()
+      			fin
+      		autres cas
+      					
+      	FIN
+      FIN
+      renvoyer faux
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Lit
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921872043942391860
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisé pour lire la valeur d'un paramètre spécifique depuis la source de données de paramètres. Cette méthode prend en charge différentes sources de données telles que les fichiers INI, JSON, la base de registre, etc. Elle permet également de définir une valeur par défaut si le paramètre n'est pas trouvé.
+      // Syntaxe : [ <Résultat> = ] Lit (<sSection> est chaîne, <sMotClé> est chaîne [, <bEstCrypté> est booléen [, <sValeurParDéfaut> est chaîne]])
+      // Paramètres :
+      //	sSection (chaîne UNICODE) : Le nom de la section où le paramètre est stocké.
+      //	sMotClé (chaîne UNICODE) : Le mot-clé du paramètre à lire.
+      // 	bEstCrypté (booléen optionnel) : Indique si le paramètre est crypté. Par défaut : Faux.
+      //	sValeurParDéfaut (chaîne UNICODE optionnelle) : La valeur par défaut à utiliser si le paramètre n'est pas trouvé.
+      // Valeur de retour : chaîne UNICODE : La valeur du paramètre lue depuis la source de données. Si le paramètre n'est pas trouvé, la valeur par défaut est renvoyée.
+      // Exemple :
+      //
+      PROCEDURE Lit(sSection est une chaine,sMotClé est une chaine,bEstCrypté est un booléen = Faux,sValeurParDéfaut est une chaine = m_taValeurParDéfaut[sSection+["."]+sMotClé]) : chaine
+      //SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sSection,sMotClé,bEstCrypté,(bEstCrypté _et_ pas enmodetest() ? Répète(cGénérique._Sep,taille(sValeurParDéfaut)) sinon sValeurParDéfaut))	//20210120 : créée trop de log
+      m_pclErreur.RAZ()
+      
+      sRes est une chaine
+      SI sMotClé~="" ALORS
+      	m_pclErreur.AjouteErreur(<§$0001§>)
+      SINON
+      	sTag est une chaine = sSection+["."]+sMotClé
+      	SI {"m_vParamètres."+sTag,indVariable}=Null ALORS 
+      		{"m_vParamètres."+sTag,indVariable}=sValeurParDéfaut  
+      		SI m_bÉcritQuandLit alors ecrit(sSection,sMotClé,sValeurParDéfaut,bEstCrypté)
+      	FIN
+      	sRes={"m_vParamètres."+sTag,indVariable}
+      	SI bEstCrypté ALORS sRes=Décrypte(sRes,m_sMotDePasseCryptage,crypteansi)
+      FIN
+      RENVOYER sRes
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Écrit
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921875119131368769
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'écrire la valeur d'un paramètre spécifique dans la source de données des paramètres. Cette méthode prend en charge différentes sources de données telles que les fichiers INI, JSON, la base de registre, etc. Elle offre également la possibilité de crypter la valeur du paramètre si nécessaire.
+      // Syntaxe : [ <Résultat> = ] Écrit (<sSection> est chaîne, <sMotClé> est chaîne, <xValeur> [, <bEstCrypté> est booléen [, <bSauveParamètre> est booléen]])
+      // Paramètres :
+      //	sSection (chaîne UNICODE) : Le nom de la section où le paramètre doit être stocké.
+      //	sMotClé (chaîne UNICODE) : Le mot-clé du paramètre à écrire.
+      // 	xValeur : La valeur du paramètre à écrire.
+      // 	bEstCrypté (booléen optionnel) : Indique si la valeur doit être cryptée. Par défaut : Faux.>
+      //	bSauveParamètre (booléen optionnel) : Indique qu'il faut l'écrire dans les paramètres de l'application (sinon il reste dans un variant en mémoire). Par défaut, prend m_bÉcritQuandLit.
+      // Valeur de retour : booléen : Vrai si l'écriture du paramètre a réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Écrit(sSection est une chaine,sMotClé est une chaine,xValeur,bEstCrypté est un booleen = faux,bSauveParamètre est un booleen = m_bÉcritQuandLit) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sSection,sMotClé,(bEstCrypté _Et_ pas enmodetest() ? repete(cGénérique._Sep,taille(xValeur)) sinon xValeur),bEstCrypté)
+      m_pclErreur.RAZ()
+      
+      SI sMotClé~="" ALORS
+      	m_pclErreur.AjouteErreur(<§$0002§>)
+      	renvoyer faux
+      SINON
+      	sTag est une chaine = sSection+["."]+sMotClé
+      	sValeur est une chaine = (bEstCrypté ? crypte(xValeur,m_sMotDePasseCryptage,crypteAnsi) SINON xValeur)	//passer par une chaine car si xValeur=0, la balise disparaît dans le fichier INI
+      	{"m_vParamètres."+sTag,indVariable}=sValeur
+      	si bSauveParamètre alors renvoyer ParamètresSauve() sinon renvoyer vrai
+      fin
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Supprime
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921876283067580444
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de supprimer un paramètre spécifique de la source de données des paramètres. Cette méthode prend en charge différentes sources de données telles que les fichiers INI, JSON, la base de registre, etc.
+      // Syntaxe : [ <Résultat> = ] Supprime (<sSection> est chaîne, <sMotClé> est chaîne [, <bSauveParamètre> est booléen])
+      // Paramètres :
+      //	sSection (chaîne UNICODE) : Le nom de la section où le paramètre à supprimer est stocké.
+      //	sMotClé (chaîne UNICODE) : Le mot-clé du paramètre à supprimer. Si le mot clé est (explicitement) vide, la section est supprimée
+      //	bSauveParamètre (booléen optionnel) : Indique qu'il faut l'écrire dans les paramètres de l'application (sinon il reste dans un variant en mémoire). Par défaut, prend m_bÉcritQuandLit.
+      // Valeur de retour : booléen : Vrai si la suppression du paramètre a réussi, Faux sinon.
+      // Exemple :
+      //
+      
+      PROCEDURE Supprime(sSection est une chaine,sMotClé est une chaine,bSauveParamètre est un booleen = m_bÉcritQuandLit) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sSection,sMotClé)
+      m_pclErreur.RAZ()
+      
+      sTag est une chaine = sSection+["."]+sMotClé
+      {"m_vParamètres."+sTag,indVariable}=null
+      SI bSauveParamètre ALORS RENVOYER ParamètresSauve() SINON RENVOYER Vrai
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : ValeurParDéfaut
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921884722678708382
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de définir une valeur par défaut pour un paramètre spécifique dans la source de données des paramètres. Si la valeur par défaut n'est pas définie, la méthode renvoie la valeur par défaut prédéfinie dans la classe.
+      // Syntaxe : [ <Résultat> = ] ValeurParDéfaut (<sSection> est chaîne, <sMotClé> est chaîne [, <xValeur> [, <bEstCrypté> est booléen]])
+      // Paramètres :
+      //	sSection (chaîne UNICODE) : Le nom de la section où la valeur par défaut sera associée.
+      //	sMotClé (chaîne UNICODE) : Le mot-clé du paramètre pour lequel la valeur par défaut sera associée.
+      // 	xValeur (valeur optionnel) : La valeur par défaut à associer. Si la valeur est Null, la méthode renvoie la valeur par défaut prédéfinie dans la classe.
+      // 	bEstCrypté (booléen optionnel) : Indique si la valeur par défaut doit être cryptée.
+      // Valeur de retour : booléen : Vrai si la définition de la valeur par défaut a réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE ValeurParDéfaut(sSection est une chaine, sMotClé est une chaîne, xValeur = null,bEstCrypté est un booleen = faux) : booleen	//la valeur est déjà cryptée en arrivant ici
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sSection,sMotClé,(bEstCrypté _ET_ PAS EnModeTest() ? repete(cgenerique._sep,taille(xValeur)) sinon xValeur))
+      m_pclErreur.RAZ()
+      
+      si xValeur=null alors
+      	RENVOYER m_taValeurParDéfaut[sSection+["."]+sMotClé]
+      sinon
+      	sTag est une chaine = sSection+["."]+sMotClé 
+      	m_taValeurParDéfaut[sTag]=xValeur
+      	SI m_bÉcritQuandLit _ET_ {"m_vParamètres."+sTag,indVariable}=Null ALORS 
+      		RENVOYER Écrit(sSection,sMotClé,xValeur,bEstCrypté) 
+      	sinon 
+      		renvoyer vrai
+      	FIN
+      FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : MigreSection
+     procedure_id : 2006112184037237408
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de migrer les paramètres d'une section vers une nouvelle section. Elle renomme la section en utilisant un nouveau nom, transférant ainsi tous les paramètres associés de l'ancienne section vers la nouvelle.
+      // Syntaxe : MigreSection (<sAncienSection> est chaîne, <sNouvelleSection> est chaîne)
+      // Paramètres :
+      //	sAncienSection (chaîne UNICODE) : Le nom de l'ancienne section à migrer.
+      //	sNouvelleSection (chaîne UNICODE) :  Le nouveau nom de la section.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE MigreSection(sAncienSection est une chaine,sNouvelleSection est une chaine)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sAncienSection,sNouvelleSection)
+      m_pclErreur.Raz()
+      si sAncienSection>"" _et_ sNouvelleSection>"" _et_ {"m_vParamètres."+sAncienSection,indVariable}<>NULL alors 
+      	{"m_vParamètres."+sNouvelleSection,indVariable}	= {"m_vParamètres."+sAncienSection,indVariable}
+      	{"m_vParamètres."+sAncienSection,indVariable}	= null
+      fin
+     type : 458752
+   -
+     name : MigreMotClé
+     procedure_id : 2006112699434415215
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de migrer un mot-clé spécifique d'une section vers un nouveau nom au sein de la même section. Elle renomme le mot-clé, transférant ainsi sa valeur associée.
+      // Syntaxe : MigreMotClé (<sSection> est chaîne, <sAncienNom> est chaîne, <sNouveauNom> est chaîne)
+      // Paramètres :
+      //	sSection (chaîne UNICODE) : Le nom de la section contenant le mot-clé à migrer.
+      //	sAncienNom (chaîne UNICODE) : Le nom actuel du mot-clé à migrer.
+      //	sNouveauNom (chaîne UNICODE) : Le nouveau nom du mot-clé.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE MigreMotClé(sSection est une chaine, sAncienNom est une chaine,sNouveauNom est une chaine)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sSection,sAncienNom,sNouveauNom)
+      m_pclErreur.Raz()
+      
+      POUR TOUT mMembre DE m_vParamètres..Membre			//niveau section
+      	si sSection="*" _ou_ mMembre..nom~=sSection alors
+      		pour tout mSousMembre de mMembre..Membre	//niveau mot clé
+      			si mSousMembre..nom~=sAncienNom alors
+      				{"m_vParamètres."+mMembre..nom+"."+sNouveauNom,indVariable}		= {"m_vParamètres."+mMembre..Nom+"."+mSousMembre..Nom,indVariable}
+      				{"m_vParamètres."+mMembre..Nom+"."+mSousMembre..Nom,indVariable}= Null
+      			FIN
+      		FIN
+      	fin
+      fin
+     type : 458752
+   -
+     name : MigreValeur
+     procedure_id : 2006119451140961033
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de migrer la valeur associée à un mot-clé spécifique au sein d'une section. Elle modifie la valeur du mot-clé de l'ancienne valeur vers la nouvelle valeur spécifiée.
+      // Syntaxe : MigreValeur (<sSection> est chaîne, <sMotClé> est chaîne, <sAncienneValeur> est chaîne, <sNouvelleValeur> est chaîne [, <bEstCrytpé> est booléen])
+      // Paramètres :
+      //	sSection (chaîne UNICODE) : Le nom de la section contenant le mot-clé dont la valeur doit être migrée.
+      //	sMotClé (chaîne UNICODE) : Le nom du mot-clé dont la valeur doit être migrée.
+      //	sAncienneValeur (chaîne UNICODE) : L'ancienne valeur du mot-clé à migrer.
+      //	sNouvelleValeur (chaîne UNICODE) : La nouvelle valeur à assigner au mot-clé.
+      // 	bEstCrytpé (booléen optionnel) : Indique si les valeurs sont cryptées. Par défaut : Faux.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE MigreValeur(sSection est une chaine, sMotClé est une chaîne, sAncienneValeur est une chaine,sNouvelleValeur est une chaine,bEstCrytpé est un booleen = faux)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sSection,sMotClé,(bEstCrytpé ? repete(cGénérique._sep,taille(sAncienneValeur)) sinon sAncienneValeur),(bEstCrytpé ? Répète(cGénérique._Sep,Taille(sNouvelleValeur)) SINON sNouvelleValeur),bEstCrytpé)
+      m_pclErreur.Raz()
+      
+      POUR TOUT mMembre DE m_vParamètres..Membre			//niveau section
+      	SI sSection="*" _OU_ mMembre..nom~=sSection ALORS
+      		POUR TOUT mSousMembre de mMembre..Membre	//niveau mot clé
+      			SI sMotClé="*" _ou_ mSousMembre..Nom~=sMotClé ALORS
+      				SI cApplication._Application.m_pclParamètres.Lit(mMembre..Nom,mSousMembre..Nom,bEstCrytpé)=sAncienneValeur ALORS cApplication._Application.m_pclParamètres.Écrit(mMembre..Nom,mSousMembre..Nom,sNouvelleValeur,bEstCrytpé)
+      			FIN
+      		FIN
+      	FIN
+      FIN
+     type : 458752
+  properties :
+   -
+     name : p_sCheminINI
+     identifier : 0x1aac18080836752c
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Résumé : Renvoie le chemin du fichier INI
+         PROCEDURE PUBLIQUE p_sCheminINI() : chaîne
+         m_pclErreur.RAZ()
+         
+         RENVOYER (m_sChemin="" ? p_sCheminINIparDéfaut sinon m_sChemin)
+        type : 1966080
+      -
+        code : |1-
+         //Résumé : Permet de définir le chemin du fichier INI
+         PROCEDURE PUBLIQUE p_sCheminINI(sChemin est une chaîne)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(sChemin)
+         m_pclErreur.RAZ()
+         
+         SI sChemin~="" ALORS sChemin=m_sCheminINIparDéfaut
+         
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+         	SI Gauche(sChemin,2)=".\" _OU_ (sChemin[[1]]="\" _ET_ sChemin[[2]]<>"\") ALORS 
+         		//répertoire relatif en Windows                          
+         		SI sChemin[[1 À 2]]=".\" ALORS sChemin=Milieu(sChemin,2)	
+         		SI sChemin[[1]]="\" ALORS sChemin=Milieu(sChemin,2)	
+         		sChemin=ComplèteRep(cApplication._Application.p_sRépertoireDonnées+sChemin)
+         	FIN
+         	
+         <fin>
+         
+         
+         //valeur par défaut du nom de fichier ini
+         SI fExtraitChemin(sChemin,fDisque+fRépertoire)~="" 	ALORS sChemin=fSéparateur(ComplèteRep(cApplication._Application.p_sRépertoireDonnées+[fSep()]+sChemin))+fExtraitChemin(sChemin,fFichier+fExtension)
+         SI fExtraitChemin(sChemin,fFichier)~="" 			ALORS sChemin=fExtraitChemin(sChemin,fDisque+fRépertoire)+(cApplication._Application.p_sNom~="" ? fExtraitChemin(ExeInfo(exeNom),fFichier) SINON cApplication._Application.p_sNom)+fExtraitChemin(sChemin,fExtension)
+         SI fExtraitChemin(sChemin,fExtension)~="" 			ALORS sChemin+=".ini"
+         
+         m_sChemin=sChemin
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sCheminINIparDéfaut
+     identifier : 0x1b86bc7212062cbe
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le chemin du fichier INI par défaut
+         PROCEDURE PUBLIQUE p_sCheminINIparDéfaut() : chaine
+         m_sCheminINIparDéfaut=cApplication._Application.p_sRépertoireDonnées+cApplication._Application.p_sNom+"_"+cApplication._Application.p_eSuffixeIni..Nom+".ini"
+         renvoyer m_sCheminINIparDéfaut
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEcritQuandLit
+     identifier : 0x1b96c16636329ca5
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur d'écriture quand est faite une lecture de paramètre
+         PROCEDURE PUBLIQUE p_bEcritQuandLit()
+         renvoyer m_bÉcritQuandLit
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de définir si l'écriture doit se faire au moment de la lecture d'un paramètre (ex : utile notamment dans le cas de paramètre par défaut)
+         PROCEDURE PUBLIQUE p_bEcritQuandLit(Valeur)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(Valeur)
+         m_bÉcritQuandLit=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sMotDePasseCryptage
+     identifier : 0x1b96c1be3633f36c
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le chemin du fichier INI
+         PROCEDURE PUBLIQUE p_sMotDePasseCryptage(Valeur)	//ne pas typer le mot de passe afin qu'il soit compatible avec le passage d'une chaîne indétectable
+         //SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(valeur)	//Non car cela mettrait un mdp en clair dans le fichier de trace!
+         m_sMotDePasseCryptage=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_tabSection
+     identifier : 0x1c40878625e72eae
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le tableau des sections contenues dans les paramètres
+         PROCEDURE PUBLIQUE p_tabSection()
+         tabRes est un tableau de chaines
+         si m_vParamètres<>null alors
+         	POUR TOUT mMembre DE m_vParamètres..Membre
+         		tableauajoute(tabRes,mMembre..nom)
+         	fin
+         FIN
+         renvoyer tabRes
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1aa96c2f013bbf6c
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le type de paramètre n'est pas reconnu (%1)
+      en-GB : The parameter type is not recognized (%1)
+      fr-CA : Le type de paramètre n'est pas reconnu (%1)
+      en-US : The parameter type is not recognized (%1)
+     index : 0
+   -
+     text :
+      fr-FR : Aucun mot clé pour lire un paramètre
+      en-GB : No keyword to read a parameter
+      fr-CA : Aucun mot clé pour lire un paramètre
+      en-US : No keyword to read a parameter
+     index : 1
+   -
+     text :
+      fr-FR : Aucun mot clé pour écrire le paramètre
+      en-GB : No keyword to write the parameter
+      fr-CA : Aucun mot clé pour écrire le paramètre
+      en-US : No keyword to write the parameter
+     index : 2
+   -
+     text :
+      fr-FR : Le fichier INI n'existe pas
+      en-GB : The INI file does not exist
+      fr-CA : Le fichier INI n'existe pas
+      en-US : The INI file does not exist
+     index : 3
+   -
+     text :
+      fr-FR : Le fichier JSON n'existe pas
+      en-GB : The JSON file does not exist
+      fr-CA : Le fichier JSON n'existe pas
+      en-US : The JSON file does not exist
+     index : 4
+   -
+     text :
+      fr-FR : Aucune connexion avec la base de données
+      en-GB : No connection with the database
+      fr-CA : Aucune connexion avec la base de données
+      en-US : No connection with the database
+     index : 5
+   -
+     text :
+      fr-FR : "Impossible d'afficher la liste des groupes :"
+      en-GB : "Unable to display group list :"
+      fr-CA : "Impossible d'afficher la liste des groupes :"
+      en-US : "Unable to display group list :"
+     index : 6
+   -
+     text :
+      fr-FR : Le fichier JSON ne peut pas être lu sur cette plateforme
+      en-GB : The JSON file can not be read on this platform
+      fr-CA : Le fichier JSON ne peut pas être lu sur cette plateforme
+      en-US : The JSON file can not be read on this platform
+     index : 7
+   -
+     text :
+      fr-FR : "Répertoire cache : "
+      en-GB : "Cache directory : "
+      fr-CA : "Répertoire cache : "
+      en-US : "Cache directory : "
+     index : 8
+   -
+     text :
+      fr-FR : "Emplacement des paramètres : "
+      en-GB : "Location of parameters : "
+      fr-CA : "Emplacement des paramètres : "
+      en-US : "Location of parameters : "
+     index : 9
+   -
+     text :
+      fr-FR : La requête renvoie plusieurs enregistrements
+      en-GB : The query returns multiple records
+      fr-CA : La requête renvoie plusieurs enregistrements
+      en-US : The query returns multiple records
+     index : 10
+   -
+     text :
+      fr-FR : La requête ne renvoie aucun enregistrement
+      en-GB : The query does not return any records
+      fr-CA : La requête ne renvoie aucun enregistrement
+      en-US : The query does not return any records
+     index : 11
+   -
+     text :
+      fr-FR : Le format JSON n'est pas disponible
+      en-GB : JSON format is not available
+      fr-CA : Le format JSON n'est pas disponible
+      en-US : JSON format is not available
+     index : 12
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

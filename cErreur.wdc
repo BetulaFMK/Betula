@@ -1,0 +1,992 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cErreur
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1aa9654400daba2e
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe de gestion des erreurs (et des avertissements) et initialisée dans cApplication. Utilisez principalement p_sErreur pour récupérer les messages d'erreur dans votre programme.
+      //ref:http://jsonapi.org/format/#error-objects 
+      
+      STMessage est une structure								//structure d'un message d'erreur ou d'avertissement
+      	id			est un entier							//un identifiant unique pour cette occurrence particulière du problème.
+      	links		est une chaine							//pas encore utilisé
+      	about		est une chaine							//un lien qui mène à plus de détails sur cette occurrence particulière du problème.
+      	status		est une chaine							//le code d'état HTTP applicable à ce problème, exprimé sous forme de valeur de chaîne.
+      	code		est une chaine							//un code d'erreur spécifique à l'application, exprimé sous forme de valeur de chaîne.
+      	title		est une chaine							//un résumé court et lisible du problème qui NE DEVRAIT PAS changer d'une occurrence à l'autre, sauf à des fins de localisation.
+      	detail		est une chaine							//une explication lisible par l'homme spécifique à cette occurrence du problème. Comme le titre, la valeur de ce champ peut être localisée.
+      	source		est une chaine							//la pile de code ayant conduit au message
+      	pointer		est une chaine							//un pointeur JSON [RFC6901] vers l'entité associée dans le document de demande [par ex. "/data" pour un objet de données principal, ou "/data/attributes/title" pour un attribut spécifique].
+      	parameter	est une chaine							//une chaîne indiquant quel paramètre de requête URI a provoqué l'erreur.
+      	meta		est une chaine							//un méta-objet contenant des méta-informations non standard sur l'erreur.
+      	timestamp	est une dateheure						//date et heure du message
+      	user		est une chaine							//nom de l'utilisateur associé au message
+      FIN
+      
+      COAttributJSON est une combinaison						//combinaison pour savoir ce qui va être renvoyé par p_sErreurJSON (en anglais, en minuscule et en singulier)
+      	id
+      	links
+      	about
+      	status	
+      	code
+      	title
+      	detail
+      	source
+      	pointer
+      	parameter
+      	meta
+      	timestamp
+      	user
+      FIN
+      
+      COCritèreDoublon est une combinaison					//critère de dédoublonnage quand un message est ajouté 
+      	message
+      	code
+      	pile
+      FIN
+      
+      cErreur est une Classe
+      PUBLIC CONSTANT
+      	m_tabErreur			est un tableau  		<Sérialise = Faux> de STMessage 	// Tableau de messages d'erreur
+      	m_tabAvertissement	est un tableau 			<Sérialise = Faux> de STMessage		// Tableau de messages d'avertissement
+      globale privé
+      	mg_nNiveauClassique	est un entier 			<Sérialise = Faux>					// Niveau d'affichage des erreurs classiques (constante errXXX tels que errMessage ou errComplet voir https://doc.pcsoft.fr/fr-FR/index.awp?3013008).
+      	mg_nNiveauHyperFile	est un entier 			<Sérialise = Faux>					// Niveau d'affichage des erreurs HyperFile (constante hErrXXX tels que hErMessage ou hErrComplet voir https://doc.pcsoft.fr/fr-FR/?3044071).
+      GLOBAL Public
+      	mg_coAttributsJSON	est une COAttributJSON 	<Sérialise = Faux>					//combinaison des éléments à renvoyer dans les messages JSON (voir COAttributJSON)
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1921178058796808750
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise les niveaux d'affichage d'erreur et les attributs JSON par défaut.
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple : est essentiellement utilisé par cApplication
+      //
+      PROCEDURE Constructeur()
+      si mg_nNiveauClassique=0 alors
+      	mg_nNiveauClassique	= (enmodetesT() ? ErrComplet sinon ErrMessage)
+      	mg_nNiveauHyperFile	= (enmodetesT() ? hErrComplet sinon hErrMessage)
+      	mg_coAttributsJSON	= COAttributJSON.id+COAttributJSON.links+COAttributJSON.status+COAttributJSON.code+COAttributJSON.title+COAttributJSON.detail+COAttributJSON.source+COAttributJSON.meta+COAttributJSON.timestamp+COAttributJSON.user	//tous par défaut
+      fin
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1921178058796874286
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Raz
+     procedure_id : 1921196999610597849
+     type_code : 12
+     code : |1+
+      // Résumé : réinitialise l'état de l'objet cErreur en supprimant tous les messages d'erreur et avertissements stockés dans les tableaux associées (m_tabErreur et m_tabAvertissement)
+      // Syntaxe : Raz ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      // 	m_pclErreur.Raz()	//à mettre dans chaque fonction de votre classe pour être sûr que l'erreur déclenchée ne concerne que le code courant
+      //
+      PROCEDURE Raz()
+      TableauSupprimeTout(m_tabErreur)
+      TableauSupprimeTout(m_tabAvertissement)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64>
+      	//supprimer aussi les messages enfants pour éviter de laisser traîner des message lors de l'utilisation de p_sErreurTout
+      	defStructure est une Définition = RécupèreDéfinition(objet)
+      	POUR i=1 _À_ defStructure.Variable..Occurrence
+      		QUAND EXCEPTION DANS
+      			SI PAS defStructure.Variable[i]..Nom~="m_pclErreur" _ET_ TypeVar({defStructure.Variable[i]..Nom,indVariable})=wlInstance ALORS 
+      				ExécuteTraitement(defStructure.Variable[i]..Nom+".m_pclErreur.Raz",trtProcédure)
+      			FIN
+      		FAIRE
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : AjouteErreur
+     procedure_id : 1921197940208721124
+     type_code : 12
+     code : |1-
+      // Résumé : permet d'ajouter un message d'erreur à le tableau d'erreurs (m_tabErreur). Elle prend en compte la possibilité de dédoublonner les messages en fonction de critères spécifiés dans la structure COCritèreDoublon.
+      // Syntaxe : AjouteErreur (<sErreur> est chaîne [, <sCode> est chaîne [, <coDédoublonnage> est cErreur.COCritèreDoublon]])
+      // Paramètres :
+      //	sErreur (chaîne UNICODE) : La description de l'erreur.
+      // 	sCode (chaîne UNICODE optionnel) : Le code d'erreur associé (par défaut "ERR").
+      // 	coDédoublonnage (cErreur.COCritèreDoublon optionnel) : critères de dédoublonnage. Les critères possibles sont pile, message, et code. Si Null, aucun dédoublonnage n'est effectué.
+      // Valeur de retour : Aucune
+      // Exemple :
+      // 	maClasse.m_pclErreur.AjouteErreur("Une erreur s'est produite.", "ERR001", COCritèreDoublon.message)
+      //
+      PROCEDURE AjouteErreur(sErreur est une chaine,sCode est une chaine = "ERR",coDédoublonnage est COCritèreDoublon = null)
+      si sErreur~="" alors retour
+      
+      stUneErreur 	est un STMessage
+      sLigne,sPile 	sont des chaines
+      
+      sPile = dbgInfo(dbgPile)
+      POUR TOUTE CHAÎNE sSuite,nPosition,nIndice de sPile separée par rc
+      	si nIndice>1 alors sLigne+=[", "]+cerreur.PileFormate(sSuite)	//garder l'espace après la virgule, permet le passage à la ligne plus facile dans un éditeur de texte
+      FIN
+      
+      SI coDédoublonnage<>Null ALORS
+      	SI coDédoublonnage[COCritèreDoublon.pile] _ET_ coDédoublonnage[COCritèreDoublon.message] _ET_ coDédoublonnage[COCritèreDoublon.code] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"source,detail,code",sLigne,sErreur,sCode)>0 ALORS RETOUR
+      	SINON SI coDédoublonnage[COCritèreDoublon.pile] _ET_ coDédoublonnage[COCritèreDoublon.message] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"source,detail",sLigne,sErreur)>0 ALORS RETOUR
+      	SINON SI coDédoublonnage[COCritèreDoublon.message] _ET_ coDédoublonnage[COCritèreDoublon.code] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"detail,code",sLigne,sCode)>0 ALORS RETOUR
+      	SINON SI coDédoublonnage[COCritèreDoublon.pile] _ET_ coDédoublonnage[COCritèreDoublon.code] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"source,code",sLigne,sCode)>0 ALORS RETOUR
+      	SINON SI coDédoublonnage[COCritèreDoublon.pile] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"source",sLigne)>0 ALORS RETOUR
+      	SINON SI coDédoublonnage[COCritèreDoublon.message] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"detail",sErreur)>0 ALORS RETOUR
+      	SINON SI coDédoublonnage[COCritèreDoublon.code] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"code",sCode)>0 ALORS RETOUR
+      	FIN
+      FIN
+      
+      quand exception dans
+      	stUneErreur.title		= <§$0000§>+cApplication._Application.p_sNom
+      	stUneErreur.detail		= sErreur
+      	stUneErreur.source		= sLigne
+      	stUneErreur.code		= sCode
+      	stUneErreur.status		= "error"
+      	stUneErreur.timestamp	= dateheuresys()
+      	stUneErreur.user		= (cApplication._Application.m_pclUtilisateur=null ? "" sinon cApplication._Application.m_pclUtilisateur.p_sLogin+"/"+cApplication._Application.m_pclUtilisateur.p_sNomComplet)
+      faire
+      	stUneErreur.title		= <§$0000§>+<§$0016§>
+      	stUneErreur.detail		= sErreur
+      	stUneErreur.source		= sLigne
+      	stUneErreur.code		= sCode
+      	stUneErreur.status		= "error"
+      	stUneErreur.timestamp	= DateHeureSys()
+      	stUneErreur.user		= ""
+      fin
+      tableauajoute(m_tabErreur,stUneErreur)
+      
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(sErreur) //car l'erreur pourrait venir du constructeur de la classe
+     type : 458752
+   -
+     name : AjouteErreurWx
+     procedure_id : 1921505550133965659
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute des erreurs issues de l'environnement de programmation WinDev (WX). Elle recueille des informations détaillées sur l'erreur actuelle et les organise en un message d'erreur plus informatif.
+      // Syntaxe : AjouteErreurWx ( [<sMessageComplémentaire> est chaîne])
+      // Paramètres :
+      //	sMessageComplémentaire (chaîne UNICODE optionnel) : Un message complémentaire à ajouter à l'erreur.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	maClasse.m_pclErreur.AjouteErreurWx()
+      //
+      PROCEDURE AjouteErreurWx(sMessageComplémentaire est une chaine = "")
+      sErreurDateHeure,sErreurNbSousErreur,sErreurComposant,sErreur sont des chaines
+      sErreurRésumé,sErreurCode,sErreurMessage,sErreurCodeSystème,sErreurMessageSystème,sErreurFIC,sErreurMMO,sErreurNDX,sErreurNumEnr,sErreurWDD,sErreurDotNet sont des chaines
+      sErreurTable,sErreurColonne,sErreurLiaison,sErreurInfo,sErreurDebug,sErreurTraitement,sErreurFonction,sErreurLigne,sErreurElement sont des chaînes
+      
+      sErreurRésumé			= erreurinfo(errRésumé)
+      sErreurCode 			= erreurinfo(errCode)
+      
+      sErreur=Remplace(sErreurRésumé,RC," ")
+      SI mg_nNiveauClassique=errComplet ALORS	//..Valeur ALORS
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	sErreurDateHeure 		= ErreurInfo(errDateHeure)
+      	sErreurNbSousErreur		= ErreurInfo(errNombreSousErreur)
+      	sErreurComposant		= ErreurInfo(errNomCompletComposant)
+      	//sErreurPile			= ErreurInfo(errPile)
+      	
+      <sinon si CibleExécution=SitePHP ou CibleExécution=Java ou CibleExécution=Android>
+      	sErreurDateHeure=dateheuresys()
+      	
+      <fin>
+      
+      
+      sErreurMessage			= erreurinfo(errMessage)
+      
+      sErreurCodeSystème 		= erreurinfo(errCodeSystème)
+      sErreurMessageSystème 	= erreurinfo(errMessageSystème)
+      
+      //sErreurDotNet			= erreurinfo(errExceptionDotNet)		//fait une exception même si la syntaxe est correcte
+      
+      quand exception dans
+      	sErreurFIC 				= erreurinfo(errFIC)
+      	sErreurMMO				= erreurinfo(errMMO)
+      	sErreurNDX				= ErreurInfo(errNDX)
+      	sErreurNumEnr			= ErreurInfo(errNumEnr)
+      	sErreurWDD				= ErreurInfo(errWDD)
+      	
+      	sErreurTable			= ErreurInfo(errFichier)
+      	sErreurColonne			= ErreurInfo(errRubrique)
+      	sErreurLiaison			= ErreurInfo(errLiaison)
+      faire
+      	//rien, il ne s'agit pas d'une erreur fichier
+      fin                        
+      sErreurInfo				= ErreurInfo(errInfo)			//idem message mais premier caractères tronqués ?!
+      sErreurDebug			= ErreurInfo(errInfoDebug)
+                              
+      sErreurTraitement		= ErreurInfo(errTraitement)		//déjà dans pile
+      sErreurFonction			= ErreurInfo(errPendant)		//déjà dans pile
+      sErreurLigne			= ErreurInfo(errLigne)			//déjà dans pile
+      sErreurElement 			= erreurinfo(errElément)		//déjà dans pile
+      
+      sErreur+=[rc]+sMessageComplémentaire
+      sErreur+=[RC]+<§$000f§>+sErreurElement+":"+sErreurLigne+<§$0014§>+sErreurFonction
+      si sErreurMessage>"" 		alors sErreur+=[RC]+<§$000f§>+sErreurCode+[" : "]+remplacE(sErreurMessage,rc," ")
+      si sErreurMessageSystème>"" alors sErreur+=[RC]+<§$0010§>+sErreurCodeSystème+[" : "]+sErreurMessageSystème
+      si sErreurComposant>"" 		alors sErreur+=[RC]+<§$0011§>+sErreurComposant
+      si sErreurTable>"" 			alors sErreur+=[RC]+<§$0012§>+sErreurTable+["."]+sErreurColonne+[":"]+sErreurLiaison
+      //	si sErreurDotNet>"" 		alors sErreur+=[RC]+"DotNet : "+sErreurDotNet
+      //	sErreur+=[rc+rc]+sErreurPile
+      FIN
+      ajouteerreur(sErreur,sErreurCode)
+     type : 458752
+   -
+     name : AjouteErreurHF
+     procedure_id : 1921505580198810192
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute des erreurs issues de l'environnement de base de données HyperFile (HF). Elle récupère les informations détaillées sur l'erreur HyperFile et les organise en un message d'erreur plus informatif.
+      // Syntaxe : AjouteErreurHF ( [<sMessageComplémentaire> est chaîne])
+      // Paramètres :
+      //	sMessageComplémentaire (chaîne UNICODE optionnel) : Un message complémentaire à ajouter à l'erreur.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	maClasse.m_pclErreur.AjouteErreurHF()
+      //
+      PROCEDURE AjouteErreurHF(sMessageComplémentaire est une chaine = "")
+      sErreurADO,sErreurMessageADO,sErreurOLEDB,sErreurMessageOLEDB,sErreurBase,sErreurMessageBase,sErreurNatif,sErreurMessageNatif sont des chaines
+      sErreurFIC,sErreurMMO,sErreurNDX,sErreurWDD,sErreurTable,sErreurColonne,sErreurLiaison,sErreurCodeSystème,sErreurMessageSystème sont des chaines
+      sErreurClient,sErreurServeur,sErreurBlocage,sErreurDebug,sErreurNomServeurHF,sErreurMessage,sErreurSQL,sErreur,sErreurCode sont des chaines
+      
+      sErreurBase				= HErreurInfo(hErrBase)
+      sErreurMessageBase		= HErreurInfo(hErrMessageBase)
+      sErreurCode				= HErreur()
+                             
+      sErreurWDD				= HErreurInfo(hErrWDD)
+                             
+      sErreurTable			= HErreurInfo(hErrFichier)
+      sErreurColonne			= HErreurInfo(hErrRubrique)
+                             
+      sErreurClient			= HErreurInfo(hErrInfoClient)
+      sErreurServeur			= HErreurInfo(hErrInfoServeur)
+      
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS>
+      	//les 4 lignes ci-dessous créent d'autres erreurs
+      	sErreurADO 				= HErreurInfo(hErrADO)
+      	sErreurMessageADO		= HErreurInfo(hErrMessageADO)
+      	sErreurOLEDB			= HErreurInfo(hErrOLEDB)
+      	sErreurMessageOLEDB		= HErreurInfo(hErrMessageOLEDB)
+      	                    	
+      	
+      	//sErreurNatif	est une chaine = hErrCodeSystèmeNatif 	//constante dans la documentation mais non reconnue dans l'éditeur!
+      	sErreurNatif			= HErreurInfo(hErrNatif)
+      	sErreurMessageNatif		= HErreurInfo(hErrMessageNatif) 
+      	                    	
+      	sErreurFIC				= HErreurInfo(hErrFIC)
+      	sErreurMMO				= HErreurInfo(hErrMMO)
+      	sErreurNDX				= HErreurInfo(hErrNDX)
+      	                    	
+      	sErreurLiaison			= HErreurInfo(hErrLiaison)
+      	
+      	sErreurCodeSystème		= HErreurInfo(hErrCodeSystème)
+      	sErreurMessageSystème	= HErreurInfo(hErrMessageSystème)
+      	
+      	sErreurBlocage			= HErreurInfo(hErrInfoBlocage)
+      	sErreurDebug			= HErreurInfo(hErrInfoDebug)		//ne doit apparaître que si PC SOFT le demande
+      	sErreurNomServeurHF		= HErreurInfo(hErrServeur)
+      	sErreurMessage			= HErreurInfo(hErrMessage)
+      	sErreurSQL				= HErreurInfo(hErrPositionErreurSQL)
+      	
+      <fin>
+      
+      	
+      sErreur=dbgInfo(dbgTraitementAppelant)+[rc]+Remplace(sErreurMessage,RC," ")
+      si mg_nNiveauHyperFile=hErrComplet alors	//..Valeur alors
+      	sErreur+=[RC]+sMessageComplémentaire
+      	si sErreurMessageBase>"" 	alors sErreur+=[rc]+"Base : "+sErreurBase+[" : "]+sErreurMessageBase
+      	si sErreurMessageADO>"" 	alors sErreur+=[rc]+"ADO : "+sErreurADO+[" : "]+sErreurMessageADO
+      	si sErreurMessageOLEDB>"" 	alors sErreur+=[rc]+"OLEDB : "+sErreurOLEDB+[" : "]+sErreurMessageOLEDB
+      	si sErreurMessageNatif>""	alors sErreur+=[rc]+"AN : "+sErreurNatif+[" : "]+sErreurMessageNatif+[", client : "]+sErreurClient
+      	si sErreurServeur>"" 		alors sErreur+=[rc]+<§$0008§>+sErreurServeur
+      	si sErreurNomServeurHF>"" 	alors sErreur+=[rc]+<§$0009§>+sErreurNomServeurHF
+      	si sErreurFIC>"" 			alors sErreur+=[rc]+"FIC : "+sErreurFIC+[", NDX : "]+sErreurNDX+[", MMO : "]+sErreurMMO
+      	si sErreurTable>"" 			alors sErreur+=[rc]+<§$0012§>+sErreurTable+[<§$000b§>]+sErreurColonne+[<§$000c§>]+sErreurLiaison
+      	si sErreurMessageSystème>"" alors sErreur+=[RC]+<§$0010§>+sErreurCodeSystème+[" : "]+sErreurMessageSystème
+      	si sErreurBlocage>"" 		alors sErreur+=[rc]+<§$000e§>+sErreurBlocage
+      	si sErreurSQL>"" 			alors sErreur+=[rc]+"SQL : "+sErreurSQL
+      FIN
+      ajouteerreur(sErreur,sErreurCode)
+     type : 458752
+   -
+     name : AjouteAvertissement
+     procedure_id : 1921519388544359878
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter un avertissement à la liste des avertissements de l'objet cErreur. Les avertissements sont des messages informatifs qui ne bloquent pas le fonctionnement normal de l'application mais qui attirent l'attention sur des situations particulières.
+      // Syntaxe : AjouteAvertissement (<sAvertissement> est chaîne [, <sCode> est chaîne [, <coDédoublonnage> est cErreur.COCritèreDoublon]])
+      // Paramètres :
+      //	sAvertissement (chaîne UNICODE) : Le message d'avertissement à ajouter.
+      // 	sCode (chaîne UNICODE optionnel) : Le code associé à l'avertissement. Par défaut, le code est défini comme "AVR".
+      // 	coDédoublonnage (cErreur.COCritèreDoublon optionnel) : critères de dédoublonnage. Les critères possibles sont pile, message, et code. Si Null, aucun dédoublonnage n'est effectué.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	maClasse.m_pclErreur.AjouteAvertissement("Ceci est un problème non bloquant")
+      //
+      PROCEDURE AjouteAvertissement(sAvertissement est une chaine,sCode est une chaine = "AVR",coDédoublonnage est COCritèreDoublon = null)
+      SI sAvertissement~="" ALORS RETOUR
+      
+      stUnAvertissement est un STMessage
+      
+      sLigne,sPile sont des chaines
+      sPile = dbgInfo(dbgPile)
+      POUR TOUTE CHAÎNE sSuite,nPosition,nIndice de sPile separée par rc
+      	SI nIndice>1 ALORS sLigne+=[", "]+PileFormate(sSuite)	//garder l'espace après la virgule, permet le passage à la ligne plus facile dans un éditeur de texte
+      FIN
+      
+      SI coDédoublonnage<>Null ALORS
+      	SI coDédoublonnage[COCritèreDoublon.pile] _ET_ coDédoublonnage[COCritèreDoublon.message] _ET_ coDédoublonnage[COCritèreDoublon.code] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"source,detail,code",sLigne,sAvertissement,sCode)>0 ALORS RETOUR
+      	SINON SI coDédoublonnage[COCritèreDoublon.pile] _ET_ coDédoublonnage[COCritèreDoublon.message] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"source,detail",sLigne,sAvertissement)>0 ALORS RETOUR
+      	SINON SI coDédoublonnage[COCritèreDoublon.message] _ET_ coDédoublonnage[COCritèreDoublon.code] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"detail,code",sLigne,sCode)>0 ALORS RETOUR
+      	SINON SI coDédoublonnage[COCritèreDoublon.pile] _ET_ coDédoublonnage[COCritèreDoublon.code] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"source,code",sLigne,sCode)>0 ALORS RETOUR
+      	SINON SI coDédoublonnage[COCritèreDoublon.pile] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"source",sLigne)>0 ALORS RETOUR
+      	SINON SI coDédoublonnage[COCritèreDoublon.message] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"detail",sAvertissement)>0 ALORS RETOUR
+      	SINON SI coDédoublonnage[COCritèreDoublon.code] ALORS
+      		SI TableauCherche(m_tabAvertissement,tcLinéaire,"code",sCode)>0 ALORS RETOUR
+      	FIN
+      FIN
+      
+      stUnAvertissement.title		= <§$0013§>+cApplication._Application.p_sNom
+      stUnAvertissement.detail	= sAvertissement
+      stUnAvertissement.source	= sLigne
+      stUnAvertissement.code		= sCode
+      stUnAvertissement.timestamp	= DateSys()+HeureSys()
+      
+      stUnAvertissement.user		= (cApplication._Application.m_pclUtilisateur=Null ? "" SINON cApplication._Application.m_pclUtilisateur.p_sLogin+"/"+cApplication._Application.m_pclUtilisateur.p_sNomComplet)
+      TableauAjoute(m_tabAvertissement,stUnAvertissement)
+      
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(sAvertissement+" : "+stUnAvertissement.source) //car l'erreur pourrait venir du constructeur de la classe
+     type : 458752
+   -
+     name : AjouteException
+     procedure_id : 1921536899126236038
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter une exception à la liste des erreurs de l'objet cErreur. Les exceptions sont des situations exceptionnelles qui ont entraîné une interruption de l'application.
+      // Syntaxe : AjouteException ( [<sMessageComplémentaire> est chaîne])
+      // Paramètres :
+      //	sMessageComplémentaire (chaîne UNICODE, optionnel) : Un message optionnel qui peut être ajouté pour fournir des informations supplémentaires sur l'exception.
+      // Valeur de retour : Aucune
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //	maClasse.m_pclErreur.AjouteException("Aie ça va pas bien là !")
+      //
+      PROCEDURE AjouteException(sMessageComplémentaire est une chaine = "")
+      sErreur,sErreurRésumé,sErreurCode,sErreurMessage,sErreurCodeSystème,sErreurMessageSystème,sErreurFIC,sErreurMMO,sErreurNDX,sErreurNumEnr,sErreurWDD est une chaine
+      sErreurDateHeure,sErreurNbSousErreur,sErreurComposant,sErreurTable,sErreurColonne,sErreurLiaison,sErreurInfo,sErreurDebug sont des chaines	//,sErreurPile
+      sErreurTraitement,sErreurFonction,sErreurLigne,sErreurElement sont des chaines
+      
+      QUAND EXCEPTION DANS
+      	sErreurRésumé			= exceptioninfo(errRésumé)
+      	sErreurCode 			= exceptioninfo(errCode)
+      
+      	SI mg_nNiveauClassique=errComplet ALORS	//..Valeur ALORS
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      		sErreurDateHeure 		= exceptioninfo(errDateHeure)
+      		sErreurNbSousErreur		= ExceptionInfo(errNombreSousErreur)
+      		sErreurComposant		= ExceptionInfo(errNomCompletComposant)
+      		//sErreurPile			= ExceptionInfo(errPile)
+      	
+      <fin>
+      
+      
+      		sErreurMessage			= exceptioninfo(errMessage)
+      		
+      		sErreurCodeSystème 		= exceptioninfo(errCodeSystème)
+      		sErreurMessageSystème 	= exceptioninfo(errMessageSystème)
+      		
+      		//sErreurDotNet			est une chaine = exceptioninfo(errExceptionDotNet)	//documenté mais fait planter l'appli
+      		
+      		sErreurFIC 				= exceptioninfo(errFIC)
+      		sErreurMMO				= ExceptionInfo(errMMO)
+      		sErreurNDX				= ExceptionInfo(errNDX)
+      		sErreurNumEnr			= ExceptionInfo(errNumEnr)
+      		sErreurWDD				= ExceptionInfo(errWDD)
+      		
+      		sErreurTable			= ExceptionInfo(errFichier)
+      		sErreurColonne			= ExceptionInfo(errRubrique)
+      		sErreurLiaison			= ExceptionInfo(errLiaison)
+      		                        
+      		sErreurInfo				= ExceptionInfo(errInfo)				//idem message mais premier caractères tronqués ?!
+      		sErreurDebug			= ExceptionInfo(errInfoDebug)
+      		
+      		sErreurTraitement		= ExceptionInfo(errTraitement)		//déjà dans pile
+      		sErreurFonction			= ExceptionInfo(errPendant)			//déjà dans pile
+      		sErreurLigne			= ExceptionInfo(errLigne)			//déjà dans pile
+      		sErreurElement 			= ExceptionInfo(errElément)			//déjà dans pile
+      
+      		sErreur=sMessageComplémentaire
+      		sErreur+=[RC]+<§$000f§>+sErreurElement+":"+sErreurLigne+<§$0014§>+sErreurFonction
+      		SI sErreurMessage>"" 		ALORS sErreur+=[RC]+<§$000f§>+sErreurCode+[" : "]+remplace(sErreurMessage,RC," ")
+      		SI sErreurMessageSystème>"" ALORS sErreur+=[RC]+<§$0010§>+sErreurCodeSystème+[" : "]+sErreurMessageSystème
+      		SI sErreurComposant>"" 		ALORS sErreur+=[RC]+<§$0011§>+sErreurComposant
+      		SI sErreurTable>"" 			ALORS sErreur+=[RC]+<§$0012§>+sErreurTable+["."]+sErreurColonne+[":"]+sErreurLiaison
+      		//	SI sErreurDotNet>"" 		ALORS sErreur+=[RC]+"DotNet : "+sErreurDotNet
+      		//	sErreur+=[RC+RC]+sErreurPile	
+      	sinon
+      		sErreur+=[rc]+remplace(sErreurRésumé,rc," ")
+      	FIN
+      
+      	ajouteerreur(sErreur,sErreurCode)
+      FAIRE
+      	WL.Erreur(ExceptionInfo(errMessage))	//pas le choix de l'afficher
+      FIN
+     type : 458752
+   -
+     name : EstWBErreur
+     procedure_id : 1951563706923544377
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour déterminer si le résultat d'une requête WebDev (WebDev Response) contient une erreur. Elle est particulièrement utile lorsqu'on interroge un serveur WebDev via un WebService, où la réponse peut être une page HTTP contenant une erreur.
+      //	Lorsqu'on interroge un serveur Webdev via un webservice, on peut recevoir, comme réponse, une page http contenant une erreur.  Ce code vérifie si le retour est une erreur (pas de détail de l'erreur ici, voir WBErreur pour ça).
+      // Syntaxe : <Résultat> = ] EstWBErreur (<restRésultat>)
+      // Paramètres :
+      //	restRésultat : Le résultat de la requête WebDev, généralement un objet de type RequêteHTTP
+      // Valeur de retour : booléen : Indiquant si le résultat contient une erreur
+      // Exemple :
+      //	SI m_pclErreur.EstWBErreur(oReponseWebService) ALORS
+      //		// Traitement en cas d'erreur dans la réponse
+      //	FIN
+      //
+      PROCEDURE EstWBErreur(restRésultat) : booleen	// est un HTTPRequête n'est pas précisé car crée une erreur sur certaines plateformes
+      RENVOYER (Position(AnsiVersUnicode(restRésultat..Contenu),"ERR_NO_WWADMIN")>0) _OU_ (Position(restRésultat..Contenu,"<h1")>0 _ET_ Position(restRésultat..Contenu,"data:image/png;base64")>0)
+     type : 458752
+   -
+     name : WBErreur
+     internal_properties : CQAAAAkAAAB447LzjaYid/rPbEcFsQZplOWmM1JH2drGUHoXkCDU1gjJ4CfdAgOUeTnqYrnLCWngaSWYORVcEuAqunP5fHUyhHT6
+     procedure_id : 1951564574506944050
+     type_code : 12
+     code : |1-
+      // Résumé : Est utilisé pour interpréter les erreurs potentielles dans le résultat d'une requête HTTP WebDev
+      // Syntaxe : [ <Résultat> = ] WBErreur (<stRésultat> est STHTTPRéponse)
+      // Paramètres :
+      //	stRésultat (STHTTPRéponse) : représentant la réponse HTTP obtenue après une requête WebDev.
+      // Valeur de retour : chaîne UNICODE : Une chaîne de caractères décrivant l'erreur ou le résultat de la requête.
+      // Exemple :
+      //	SI m_pclErreur.WBErreur(oReponseWebService)>"" ALORS Erreur(m_pclErreur.WBErreur(oReponseWebService))
+      //
+      PROCEDURE WBErreur(stRésultat est un cHTTP.STHTTPRéponse) : chaine
+      sErreur,sMsg sont des chaines
+      
+      QUAND EXCEPTION DANS
+      	SI stRésultat.bufContenu>"" ALORS
+      		SI (Position(AnsiVersUnicode(stRésultat.bufContenu),"ERR_NO_WWADMIN")>0) ALORS
+      			RENVOYER <§$0001§>
+      		SINON
+      			SI Position(stRésultat.bufContenu,"<h1")>0 _ET_ Position(stRésultat.bufContenu,"data:image/png;base64")>0 ALORS
+      				//on va chercher le titre de la page HTML d'erreur renvoyée par le serveur
+      				sMsg=Milieu(stRésultat.bufContenu,Position(stRésultat.bufContenu,"<h1")+4)
+      				sMsg=Milieu(sMsg,Position(sMsg,">")+1)
+      				sErreur=Gauche(sMsg,Position(sMsg,"</h1>")-1)
+      			SINON
+      				POUR TOUTE CHAÎNE sEntête DE stRésultat.sEntêteBrut SEPAREE PAR RC
+      					SI ChaîneCommencePar(sEntête,"WebDevError:") ALORS
+      						sErreur=Milieu(sEntête,13);SORTIR	
+      					FIN
+      				FIN
+      			FIN
+      			RENVOYER stRésultat.nCodeÉtat+" / "+(sErreur="" ? (Position(stRésultat.bufContenu,"<html")<1 ? stRésultat.bufContenu SINON <§$0007§>) sinon sErreur)
+      		FIN
+      	SINON
+      		RENVOYER <§$0003§>+stRésultat.nCodeÉtat+")"
+      	FIN
+      FAIRE
+      	RENVOYER <§$0004§>
+      FIN
+     type : 458752
+   -
+     name : AjouteErreurODBC
+     procedure_id : 2006172180308921068
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisé pour ajouter des informations sur une éventuelle erreur liée à une requête ODBC à la liste des erreurs gérées par l'application.
+      // Syntaxe : AjouteErreurODBC ( [<sRequête> est chaîne])
+      // Paramètres :
+      //	sRequête (chaîne UNICODE, optionnel) : Une chaîne contenant le nom de la requête SQL ODBC qui a généré l'erreur (par défaut, la chaîne est vide, c'est donc la requête en cours)
+      // Valeur de retour : Aucune
+      // Exemple :
+      // 	SI PAS SQLExec("SELECT NOM, PRENOM, POSTE, PHOTO FROM CLIENT", "REQ1") ALORS m_pclErreur.AjouteErreurODBC()
+      //
+      PROCEDURE AjouteErreurODBC(sRequête est une chaine = "")
+      sErreur est une chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	si SQLReqExiste(sRequête) alors
+      		SQLInfoGene(sRequête)
+      		si SQL.MesErreur>"" alors sErreur+=[RC]+<§$000f§>+SQL.Erreur+[" : "]+SQL.MesErreur
+      		si sRequête>"" alors
+      			sErreur+=[RC]+"Base : "+SQL.Base+<§$0017§>+SQL.Connexion
+      			sErreur+=[rc]+"SQL : "+SQL.Requete
+      			sErreur+=[rc]+<§$0018§>+SQL.NbLig+"/"+SQL.EnCours+<§$0019§>+SQL.NbCol
+      			sErreur+=[rc]+<§$001a§>+SQL.EnDehors+<§$001b§>+SQL.RecupEnCours
+      		FIN
+      	fin
+      	
+      <fin>
+      
+      
+      ajouteerreur(sErreur)
+     type : 458752
+   -
+     name : AjouteErreurAS400
+     procedure_id : 2015555155271790144
+     type_code : 12
+     code : |1-
+      // Résumé : Est utilisée pour ajouter des informations sur une erreur AS/400 à la liste des erreurs gérées par l'application.
+      // Syntaxe : AjouteErreurAS400 ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      // 	voir la méthode cBaseDeDonnéesAS400.Exécute()
+      //
+      PROCEDURE AjouteErreurAS400()
+      sErreur est une chaîne 	= ErreurInfo()
+      sCode 	est une chaine 	= ExtraitChaîne(sErreur,2,RC)
+      sErreur="Code : "+sCode+[<§$0015§>]+ExtraitChaîne(sErreur,1,RC)
+      ajouteerreur(sErreur,sCode)
+     type : 458752
+   -
+     name : PileFormate
+     procedure_id : 2035858694005642513
+     type_code : 12
+     code : |1-
+      // Résumé : Prend une chaîne représentant une pile d'appels de fonctions ou de procédures en paramètre et renvoie une version formatée de la première référence de la pile.
+      // Syntaxe : [ <Résultat> = ] PileFormate (<sPile> est chaîne)
+      // Paramètres :
+      //	sPile (chaîne UNICODE) :  La chaîne représentant la pile d'appels de fonctions ou de procédures. Cette chaîne est généralement obtenue à partir des informations de débogage.
+      // Valeur de retour : chaîne UNICODE : Une version formatée de la première référence de la pile. Si la référence est vide, elle renvoie "Projet.Initialisation".
+      // Exemple :
+      //	Utilisé notamment dans cErreur.AjouteErreur ou cTrace.Ajoute
+      //
+      PROCEDURE global PileFormate(sPile est une chaine) : chaine
+      sRef est une chaine = ExtraitChaîne(sPile,2,["(",")"])
+      renvoyer (sRef="" ? "Projet.Initialisation" sinon remplace(sRef,".FUNCTION.","."))+":"+ExtraitChaîne(sPile,1," ",DepuisFin)
+     type : 458752
+  properties :
+   -
+     name : p_sErreur
+     identifier : 0x1aa977cf015b29b4
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Permet de récupérer une chaîne de caractères contenant la liste des erreurs stockées dans le tableau m_tabErreur. Chaque erreur est formatée de manière lisible avec le titre, les liens, et les détails.
+         //Exemple : SI maClasse.p_sErreur>"" ALORS Erreur(maClasse.p_sErreur)
+         PROCEDURE PUBLIQUE p_sErreur() : chaine
+         sErreur est une chaine
+         pour tout element stUnMessage de m_tabErreur
+         	sErreur+=[rc]+stUnMessage.title+(EnModeTest() ? [" @"]+ExtraitChaîne(stUnMessage.source,1,",") SINON "")+" : "+[rc]+remplacE(stUnMessage.detail,stUnMessage.title+" : ","")
+         FIN
+         RENVOYER sErreur
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sAvertissement
+     identifier : 0x1aaa9bd50737dfff
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Permet de récupérer une chaîne de caractères contenant la liste des avertissements stockées dans le tableau m_tabErreur. Chaque erreur est formatée de manière lisible avec le titre, les liens, et les détails.
+         //Exemple : SI maClasse.p_sAvertissement>"" ALORS Avertissement(maClasse.p_sAvertissement)
+         PROCEDURE PUBLIQUE p_sAvertissement() : chaine
+         sAvertissement est une chaine
+         POUR TOUT element stUnMessage de m_tabAvertissement
+         	sAvertissement+=[RC]+stUnMessage.title+" : "+Remplace(stUnMessage.detail,stUnMessage.title+" : ","")
+         FIN
+         RENVOYER sAvertissement
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nNiveauHyperFile
+     identifier : 0x1aafd797008cce08
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Renvoie un entier représentant le niveau d'affichage des erreurs pour HyperFile (voir https://doc.pcsoft.fr/fr-FR/?3044071).
+         PROCEDURE PUBLIQUE GLOBAL p_nNiveauHyperFile() : entier
+         RENVOYER mg_nNiveauHyperFile
+        type : 1966080
+      -
+        code : |1-
+         //Affecte un entier représentant le niveau d'affichage des erreurs pour HyperFile (voir https://doc.pcsoft.fr/fr-FR/?3044071).
+         PROCEDURE PUBLIQUE GLOBAL p_nNiveauHyperFile(nValeur)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(nValeur)
+         mg_nNiveauHyperFile=nValeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_nNiveauClassique
+     identifier : 0x1aafd7a9008d1506
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Renvoie un entier représentant le niveau d'affichage des erreurs classiques (voir https://doc.pcsoft.fr/fr-FR/index.awp?3013008).
+         PROCEDURE PUBLIQUE global p_nNiveauClassique() : entier
+         RENVOYER mg_nNiveauClassique
+        type : 1966080
+      -
+        code : |1-
+         //Affecte un entier représentant le niveau d'affichage des erreurs classiques (voir https://doc.pcsoft.fr/fr-FR/index.awp?3013008).
+         PROCEDURE PUBLIQUE GLOBAL p_nNiveauClassique(nValeur)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(nValeur)
+         mg_nNiveauClassique=nValeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sErreurJSON
+     identifier : 0x1ab92e8000c6b040
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Convertit les erreurs stockées dans le tableau m_tabErreur en une chaîne JSON conformément à la norme JSON API jsonapi.org. 
+         PROCEDURE PUBLIQUE p_sErreurJSON() : chaîne
+         vMessage,vTabMessage sont des variants
+         pour tout stUneErreur,nIndice de m_tabErreur
+         	si mg_coAttributsJSON[COAttributJSON.id] 		alors vMessage.ID			= nIndice
+         	si mg_coAttributsJSON[COAttributJSON.links] 	alors vMessage.links		= stUneErreur.links
+         	si mg_coAttributsJSON[COAttributJSON.about] 	alors vMessage.about		= stUneErreur.about
+         	si mg_coAttributsJSON[COAttributJSON.status] 	alors vMessage.status		= stUneErreur.status
+         	si mg_coAttributsJSON[COAttributJSON.code] 		alors vMessage.code			= stUneErreur.code
+         	si mg_coAttributsJSON[COAttributJSON.title] 	alors vMessage.title		= stUneErreur.title
+         	si mg_coAttributsJSON[COAttributJSON.detail] 	alors vMessage.detail		= stUneErreur.detail
+         	si mg_coAttributsJSON[COAttributJSON.source] 	alors vMessage.source		= stUneErreur.source
+         	si mg_coAttributsJSON[COAttributJSON.pointer] 	alors vMessage.pointer		= stUneErreur.pointer
+         	si mg_coAttributsJSON[COAttributJSON.meta] 		alors vMessage.meta			= stUneErreur.meta
+         	si mg_coAttributsJSON[COAttributJSON.timestamp]	alors vMessage.timestamp	= stUneErreur.timestamp
+         	si mg_coAttributsJSON[COAttributJSON.user]		alors vMessage.user			= stUneErreur.user
+         	vTabMessage[nIndice]=vMessage
+         fin
+         renvoyer VariantVersJSON(vTabMessage)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sAvertissementJSON
+     identifier : 0x1c62cbe500e0532a
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Convertit les avertissement stockés dans le tableau m_tabErreur en une chaîne JSON conformément à la norme JSON API jsonapi.org. 
+         PROCEDURE PUBLIQUE p_sAvertissementJSON()
+         vMessage,vTabMessage sont des variants
+         POUR TOUT stUnAvertissement,nIndice de m_tabAvertissement
+         	SI mg_coAttributsJSON[COAttributJSON.id] 		ALORS vMessage.ID			= nIndice
+         	SI mg_coAttributsJSON[COAttributJSON.links] 	ALORS vMessage.links		= stUnAvertissement.links
+         	SI mg_coAttributsJSON[COAttributJSON.about] 	ALORS vMessage.about		= stUnAvertissement.about
+         	SI mg_coAttributsJSON[COAttributJSON.status] 	ALORS vMessage.status		= stUnAvertissement.status
+         	SI mg_coAttributsJSON[COAttributJSON.code] 		ALORS vMessage.code			= stUnAvertissement.code
+         	SI mg_coAttributsJSON[COAttributJSON.title] 	ALORS vMessage.title		= stUnAvertissement.title
+         	SI mg_coAttributsJSON[COAttributJSON.detail] 	ALORS vMessage.detail		= stUnAvertissement.detail
+         	SI mg_coAttributsJSON[COAttributJSON.source] 	ALORS vMessage.source		= stUnAvertissement.source
+         	SI mg_coAttributsJSON[COAttributJSON.pointer] 	ALORS vMessage.pointer		= stUnAvertissement.pointer
+         	SI mg_coAttributsJSON[COAttributJSON.meta] 		ALORS vMessage.meta			= stUnAvertissement.meta
+         	SI mg_coAttributsJSON[COAttributJSON.timestamp]	ALORS vMessage.timestamp	= stUnAvertissement.timestamp
+         	SI mg_coAttributsJSON[COAttributJSON.user]		ALORS vMessage.user			= stUnAvertissement.user
+         	vTabMessage[nIndice]=vMessage
+         FIN
+         RENVOYER VariantVersJSON(vTabMessage)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sErreurCode
+     identifier : 0x1e77e89e1b747d73
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Récupère les codes d'erreur associés aux messages d'erreur stockés dans la collection m_tabErreur et les concatène en une chaîne pour une utilisation ultérieure.
+         PROCEDURE PUBLIQUE p_sErreurCode() : chaine
+         sErreur est une chaîne
+         POUR TOUT ELEMENT stUnMessage DE m_tabErreur 
+         	sErreur+=[RC]+stUnMessage.Code
+         FIN
+         RENVOYER sErreur
+        type : 1966080
+     template_refs : []
+   -
+     name : p_AttributsJSON
+     identifier : 0x15958ae4098d023e
+     type_code : 103
+     p_codes :
+      -
+        code : |1+
+         //Récupération de 
+         PROCEDURE PUBLIQUE p_AttributsJSON()
+         renvoyer m_tabAvertissement
+        type : 1966080
+      -
+        code : |1+
+         PROCEDURE PUBLIQUE p_AttributsJSON(Valeur)
+         m_tabAvertissement = Valeur
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1aa9654100d7ae4c
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Erreur dans "
+      en-GB : "Error in "
+      fr-CA : "Erreur dans "
+      en-US : "Error in "
+     index : 0
+   -
+     text :
+      fr-FR : Le serveur WebDev n'est pas démarré
+      en-GB : The WebDev server is not started
+      fr-CA : Le serveur WebDev n'est pas démarré
+      en-US : The WebDev server is not started
+     index : 1
+   -
+     text :
+      fr-FR : erreur inconnue
+      en-GB : unknown error
+      fr-CA : erreur inconnue
+      en-US : unknown error
+     index : 2
+   -
+     text :
+      fr-FR : Pas de message d'erreur (
+      en-GB : No error message (
+      fr-CA : Pas de message d'erreur (
+      en-US : No error message (
+     index : 3
+   -
+     text :
+      fr-FR : Le message d'erreur ne peut pas être interprété
+      en-GB : The error message can not be interpreted
+      fr-CA : Le message d'erreur ne peut pas être interprété
+      en-US : The error message can not be interpreted
+     index : 4
+   -
+     text : {}
+     index : 5
+   -
+     text :
+      fr-FR : erreur inconnue
+      en-GB : unknown error
+      fr-CA : erreur inconnue
+      en-US : unknown error
+     index : 6
+   -
+     text :
+      fr-FR : erreur inconnue
+      en-GB : unknown error
+      fr-CA : erreur inconnue
+      en-US : unknown error
+     index : 7
+   -
+     text :
+      fr-FR : "Serveur : "
+      en-GB : "Server : "
+      fr-CA : "Serveur : "
+      en-US : "Server : "
+     index : 8
+   -
+     text :
+      fr-FR : "ServeurHF : "
+      en-GB : "HFServer : "
+      fr-CA : "ServeurHF : "
+      en-US : "HFServer : "
+     index : 9
+   -
+     text :
+      fr-FR : "Fichier : "
+      en-GB : "File : "
+      fr-CA : "Fichier : "
+      en-US : "File : "
+     index : 10
+   -
+     text :
+      fr-FR : ", Colonne : "
+      en-GB : ", Column : "
+      fr-CA : ", Colonne : "
+      en-US : ", Column : "
+     index : 11
+   -
+     text :
+      fr-FR : ", Liaison : "
+      en-GB : ", Link : "
+      fr-CA : ", Liaison : "
+      en-US : ", Link : "
+     index : 12
+   -
+     text :
+      fr-FR : "Système : "
+      en-GB : "System : "
+      fr-CA : "Système : "
+      en-US : "System : "
+     index : 13
+   -
+     text :
+      fr-FR : "Blocage : "
+      en-GB : "Blocking : "
+      fr-CA : "Blocage : "
+      en-US : "Blocking : "
+     index : 14
+   -
+     text :
+      fr-FR : "Erreur : "
+      en-GB : "Error : "
+      fr-CA : "Erreur : "
+      en-US : "Error : "
+     index : 15
+   -
+     text :
+      fr-FR : "Système : "
+      en-GB : "System : "
+      fr-CA : "Système : "
+      en-US : "System : "
+     index : 16
+   -
+     text :
+      fr-FR : "Composant : "
+      en-GB : "Component : "
+      fr-CA : "Composant : "
+      en-US : "Component : "
+     index : 17
+   -
+     text :
+      fr-FR : "Table : "
+      en-GB : "Table : "
+      fr-CA : "Table : "
+      en-US : "Table : "
+     index : 18
+   -
+     text :
+      fr-FR : "Avertissement dans "
+      en-GB : "Warning in "
+      fr-CA : "Avertissement dans "
+      en-US : "Warning in "
+     index : 19
+   -
+     text :
+      fr-FR : " dans "
+      en-GB : " in "
+      fr-CA : " dans "
+      en-US : " in "
+     index : 20
+   -
+     text :
+      fr-FR : ", erreur : "
+      en-GB : ", error : "
+      fr-CA : ", erreur : "
+      en-US : ", error : "
+     index : 21
+   -
+     text :
+      fr-FR : le programme
+      en-GB : the software
+      fr-CA : le programme
+      en-US : the software
+     index : 22
+   -
+     text :
+      fr-FR : ", connexion : "
+      en-GB : ", connection : "
+      fr-CA : ", connexion : "
+      en-US : ", connection : "
+     index : 23
+   -
+     text :
+      fr-FR : "Lignes / ligne en cours : "
+      en-GB : "Lines / current line : "
+      fr-CA : "Lignes / ligne en cours : "
+      en-US : "Lines / current line : "
+     index : 24
+   -
+     text :
+      fr-FR : ", Colonnes : "
+      en-GB : ", Columns : "
+      fr-CA : ", Colonnes : "
+      en-US : ", Columns : "
+     index : 25
+   -
+     text :
+      fr-FR : "Statut Endehors : "
+      en-GB : "Statuse Out : "
+      fr-CA : "Statut Endehors : "
+      en-US : "Statuse Out : "
+     index : 26
+   -
+     text :
+      fr-FR : ", Récup.en cours : "
+      en-GB : ", Retrieving in progress : "
+      fr-CA : ", Récup.en cours : "
+      en-US : ", Retrieving in progress : "
+     index : 27
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

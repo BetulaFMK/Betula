@@ -1,0 +1,202 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cIndex
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1ed9093430c712e8
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe est une structure permettant de mettre en mémoire le détail d'un index de table. Elle est notamment utilisé par cTable et cBaseDeDonnéesXXX.
+      
+      STIndexComposante est une structure
+      	nIndice		est un entier
+      	pclColonne	est un cColonne dynamique
+      	nTri		est un entier
+      fin
+      cIndex est une Classe
+      hérite de cGénérique	
+      public
+      	m_bEstPrimaire					est un booleen 		<Sérialise = Faux>						//Indique que l'index est une clé primaire
+      public constant                 	                	
+      	m_sNom							est une chaine 		<Sérialise = Faux>						//Nom en minuscule de l'index
+      	m_sNomOriginal					est une chaine 		<Sérialise = Faux>						//Nom original de l'index dans la BD
+      	m_sNomUnique					est une chaine 		<Sérialise = Faux>						//Nom unique de l'index dans l'application (m_sNomUniqueTable + cGénérique._Sep + m_sNom)
+      	m_bEstUnique					est un booleen 		<Sérialise = Faux>						//Indique que c'est un clé unique
+      	m_bEstAutomatique				est un booleen 		<Sérialise = Faux>						//Indique que l'index est calcul automatiquement
+      	m_bEstAscendante				est un booleen 		<Sérialise = Faux>						//Indique que l'index est en ordre ascendant
+      	m_tabComposante					est un tableau 		<Sérialise = Faux> de STIndexComposante	//Composantes de la clé (voir structure ci-dessus)
+      	m_tabLienIntégrité				est un tableau 		<Sérialise = Faux> de chaines 			//Tableau de liens avec les autres tables. NomTableCascade.NomColonneCascade
+      	//valeur spécifiques à la BD utilisée	        	
+      	m_bHFSensibleCasse				est un booléen		<Sérialise = Faux>						//Indique que l'index est sensible à la casse
+      	m_bHFSensibleAccent				est un booléen		<Sérialise = Faux>						//Indique que l'index est sensible aux accents
+      	m_bHFSensiblePonctuation		est un booleen		<Sérialise = Faux>						//Indique que l'index est sensible à la ponctuation
+      	m_dhHFStatistiqueDateHeureUTC	est une dateheure	<Sérialise = Faux>						//Date et heure des dernière statistiques (UTC)
+      	m_nHFStatistiqueEnregistrements	est un entier  		<serialise = faux>						//Nombre d'entrées (voir HStatNbEnr)
+      	m_nHFStatistiqueDoublons		est un entier  		<serialise = faux>						//Nombre de doublons (voir HStatNbDoublon)
+      privé	
+      	m_nIndiceDeConnexion			est un entier  		<serialise = faux>						//Indice de connexion en cours
+      	m_sTableNomUnique					est une chaine 	<Sérialise = Faux>						//Nom unique de la table à laquelle est reliée la colonne
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2222818010845614824
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe avec les paramètres fournis.
+      // Syntaxe : Constructeur (<nIndiceDeConnexion> est entier, <sNomUniqueTable> est chaîne, <sNomOriginal> est chaîne, <bUnique> est booléen, <bAscendante> est booléen [, <bCasse> est booléen [, <bAccent> est booléen [, <bPonctuation> est booléen [, <dhStatHeure> est dateheure [, <nStatEnreg> est entier [, <nStatDoubon> est entier]]]]]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indice de connexion associé à l'index.
+      //	sNomUniqueTable (chaîne UNICODE) : Nom unique de la table à laquelle est lié l'index.
+      //	sNomOriginal (chaîne UNICODE) : Nom original de l'index dans la base de données.
+      //	bUnique (booléen) : Indique si l'index est unique.
+      //	bAscendante (booléen) : Indique si l'index est en ordre ascendant.
+      // 	bCasse (booléen optionnel) : Indique si l'index est sensible à la casse.
+      // 	bAccent (booléen optionnel) : Indique si l'index est sensible aux accents.
+      // 	bPonctuation (booléen optionnel) : Indique si l'index est sensible à la ponctuation.
+      //	dhStatHeure (dateheure optionnelle) : Date et heure des dernières statistiques (UTC).
+      // 	nStatEnreg (entier optionnel) : Nombre d'enregistrements pour les statistiques.
+      // 	nStatDoubon (entier optionnel) : Nombre de doublons pour les statistiques.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexion est un entier,sNomUniqueTable est une chaine,sNomOriginal est une chaine,bUnique est un booleen,bAscendante est un booleen, bCasse est un booleen = faux,...
+      						bAccent est un booleen = faux,bPonctuation est un booleen = faux,dhStatHeure est une dateheure="",nStatEnreg est un entier = 0,nStatDoubon est un entier = 0)
+      
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomUniqueTable,sNomOriginal,bUnique,bAscendante,bCasse,bAccent,bPonctuation)
+      
+      m_nIndiceDeConnexion			= nIndiceDeConnexion
+      m_sTableNomUnique				= sNomUniqueTable
+      m_sNomOriginal 					= sNomOriginal
+      m_sNom							= Minuscule(m_sNomOriginal)
+      m_sNomUnique					= sNomUniqueTable+cgenerique._sep+m_sNom
+      m_bEstUnique		 			= bUnique
+      m_bEstAscendante				= bAscendante
+      
+      m_bHFSensibleCasse				= bCasse
+      m_bHFSensibleAccent				= bAccent
+      m_bHFSensiblePonctuation		= bPonctuation	
+      m_dhHFStatistiqueDateHeureUTC	= dhStatHeure
+      m_nHFStatistiqueEnregistrements	= nStatEnreg 
+      m_nHFStatistiqueDoublons		= nStatDoubon
+      
+      cApplication.mg_taInfo[m_sTableNomUnique].p_sTousLesIndexes=m_sNom
+      m_bEstPrimaire					= (m_sNom=capplication.mg_taInfo[sNomUniqueTable].p_sColonneAutomatique)	//après p_sToutesLesClés
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2222818010845680360
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : ComposanteAjoute
+     procedure_id : 2222818010845745896
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute une composante à l'index. Une composante est constituée du nom de la colonne et de l'indication si elle est en ordre ascendant ou descendant.
+      // Syntaxe : ComposanteAjoute (<sNomColonne> est chaîne, <bEstAscendant> est booléen)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Nom de la colonne à ajouter comme composante.
+      //	bEstAscendant (booléen) : Indique si la colonne doit être triée en ordre ascendant.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE ComposanteAjoute(sNomColonne est une chaine,bEstAscendant est un booleen)
+      stUnComposante est un STIndexComposante
+      stUnComposante.nIndice	= m_tabComposante.Occurrence()+1
+      stUnComposante.nTri		= (bEstAscendant ? hcroissant sinon hdeCroissant)
+      nIndice est un entier 	= tableaucherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",Minuscule(sNomColonne))
+      si nIndice>0 alors 
+      	stUnComposante.pclColonne <- cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice] 
+      sinon
+       	cApplication._Application.m_pclTrace.AjouteTexte("colonne non trouvée pour composante : "+m_sTableNomUnique+" : "+sNomColonne)
+      FIN
+      tableauajoute(m_tabComposante,stUnComposante)
+      m_bEstAutomatique		= (m_tabComposante..occurrence=1 _et_ m_tabComposante[1].pclColonne.m_bEstAutomatique)
+      si m_tabComposante..occurrence>1 alors cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesCléComposé=m_sNom
+     type : 458752
+  properties :
+   -
+     name : p_bEstComposé
+     identifier : 0x1ed9093430c812e8
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie vrai si l'index est composé
+         PROCEDURE PUBLIQUE p_bEstComposé() : booléen
+         RENVOYER m_tabComposante..occurrence>1
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sComposantes
+     identifier : 0x1ed9093430c912e8
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie les composantes de la clé composée séparés par des virgules
+         PROCEDURE PUBLIQUE p_sComposantes() : chaine
+         sComposantes est une chaine
+         pour tout stUneComposante de m_tabComposante
+         	sComposantes+=[","]+stUneComposante.pclColonne.m_sNom
+         FIN
+         renvoyer sComposantes
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sColonnesSQL
+     identifier : 0x1ed9093430ca12e8
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie les colonnes qui composent l'index dans une chaîne compatible SQL
+         PROCEDURE PUBLIQUE p_sColonnesSQL() : chaine
+         sSQL est une chaine
+         pour tout stUneComposante de m_tabComposante
+         	sSQL+=["+"+cGénérique._Sep+"+"]+stUneComposante.pclColonne.p_sNomSQL
+         FIN
+         renvoyer sSQL+" AS "+m_sNom
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1e94517c0340d3f2
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

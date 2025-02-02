@@ -1,0 +1,724 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cFTP
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1bd7420203303d9d
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe permettant de faire une connexion FTP (sécurisé ou pas) et diverses opération sur le serveur avec, en plus, la fonction RépertoireExiste().
+      //Cette classe contient également tous les codes erreur liés aux communications FTP.
+      EProtocoleFTP est une Enumération
+      	SFTP
+      	FTP
+      	FTPS	
+      	FTPES
+      FIN
+      EModeConnexion est une enumération
+      	ModeActif			= 0
+      	ModePassif			= 1
+      	ModePassifEtendu	= 2
+      fin
+      EModeDeTransfert est un enumération
+      	Binaire				= ftpModeBinaire
+      	ASCII				= ftpModeASCII
+      fin
+      ETypeDateHeure est une énumération	//ce sont les mêmes constantes ! 
+      	fModification		= ftpModification
+      	fAccès				= ftpAccès
+      	fCréation			= ftpCréation
+      fin
+      ETypeContenu est une énumération
+      	Fichier
+      	Répertoire
+      fin
+      COIgnoreErreur est une combinaison
+      	IgnoreCertificatExpiré
+      	IgnoreCertificatInvalide
+      	IgnoreNomCertificatInvalide
+      	IgnoreRévocation
+      fin
+      
+      constante
+      	//*** STATUT FTP	 
+      	//ref : https://kb.globalscape.com/KnowledgebaseArticle10142.aspx                                           	
+      	_FTPStatutRestartMarkerReply					= 110
+      	_FTPStatutServiceReadyInNMinutes				= 120
+      	_FTPStatutDataConnectionAlreadyOpen				= 125
+      	_FTPStatutFileStatusOK							= 150
+      	
+      	_FTPStatutCommandOK								= 200
+      	_FTPStatutSuperfluousCommand	 				= 202
+      	_FTPStatutSystemStatus 							= 211
+      	_FTPStatutDirectoryStatus 						= 212
+      	_FTPStatutFileStatus 							= 213
+      	_FTPStatutHelpMessage 							= 214
+      	_FTPStatutNameSystemType 						= 215
+      	_FTPStatutServiceReadyForNewUser 				= 220
+      	_FTPStatutServiceClosingControlConnection 		= 221
+      	_FTPStatutDataConnectionOpen					= 225
+      	_FTPStatutClosingDataConnection					= 226
+      	_FTPStatutEnteringPassiveMode					= 227
+      	_FTPStatutUserLoggedIn							= 230
+      	_FTPStatutRequestedFileActionOK					= 250
+      	_FTPStatutPathnameCreated						= 257
+      	
+      	_FTPStatutUserNameOK							= 331
+      	_FTPStatutNeedAccountForLogin 					= 332
+      	_FTPStatutRequestedFileActionPendingIngo 		= 350
+      	
+      	_FTPStatutOtherError 							= 421
+      	_FTPStatutCannotOpenDataConnection				= 425
+      	_FTPStatutConnectionClosed						= 426
+      	_FTPStatutRequestedFileActionNotTaken			= 450
+      	_FTPStatutLocalErrorInProcessing				= 451
+      	_FTPStatutInsufficientStorage 					= 452
+      	
+      	_FTPStatutSyntaxError 							= 500
+      	_FTPStatutSyntaxErrorInParametersOrArguments	= 501
+      	_FTPStatutCommandNotImplemented					= 502
+      	_FTPStatutBadSequenceOfCommands 				= 503
+      	_FTPStatutCommandNotImplementedForThatParameter = 504
+      	_FTPStatutUserNotLoggedIn 						= 530
+      	_FTPStatutNeedAccountForStoringFiles			= 532
+      	_FTPStatutRequestedActionNotTaken				= 550
+      	_FTPStatutExceededStorageAllocation				= 552
+      	_FTPStatutFileNameNotAllowed 					= 553
+      fin
+      
+      cFTP est une Classe
+      	herite de creseau
+      public constant																		//On ne peut pas modifier ces membres une fois que le constructeur s'est exécuté. On peut par contre voir leur valeur.
+      	m_sFTPServeur	 			est une chaîne				<serialise = faux>		//adresse du serveur FTP
+      	m_sFTPUtilisateur 			est une chaine				<serialise = faux>		//utilisateur utilisé pour la connexion FTP
+      	m_sFTPMotDePasse 			est une chaine				<serialise = faux>		//mot de passe utilisé pour la connexion FTP
+      	m_sFTPCléSSH 				est une chaine				<serialise = faux>		//Clé SSH pour la connexion FTP sécurisée
+      	m_sFTPMotPasseKey 			est une chaîne ansi			<serialise = faux>		//Mot de passe de la clé SSH pour la connexion FTP sécurisée
+      	m_nPort 					est un entier				<serialise = faux>		//Numéro de port du serveur FTP
+      	m_nDelaiConnexion 			est un entier				<serialise = faux>		//Délai de connexion
+      	m_eProtocolFTP 				est un EProtocoleFTP		<serialise = faux>		//Protocole FTP
+      	m_eTypeConnexion 			est un EModeConnexion		<serialise = faux>		//Type de connexion (actif, passif,...)
+      prive                       	
+      	m_nConnect 					est un entier				<serialise = faux>		//Indice de connexion de FTPConnecte
+      	m_sRépertoireInitial		est une chaine				<serialise = faux>		//Répertoire initial au moment de l'appel du constructeur (sert ensuite de base pour les chemin relatifs) 
+      	m_sRepertoireEnCours 		est une chaine				<serialise = faux>		//Répertoire en cours
+      	m_nTailleTransferée  		est un entier sur 8 octets	<serialise = faux>		//Nombre d'octets transféré (est utile pour la jauge de progression)
+      	m_clJauge					est un cJauge				<serialise = faux>		//Objet jauge de progression
+      	m_bAvecBarreObliqueAuDébut	est un booleen				<serialise = faux>		//Garde en mémoire le fait d'ajouter ou pas un / au début des noms de fichier ou de répertoire (certains serveur en ont besoin, d'autres pas)
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2006144735427771805
+     type_code : 27
+     code : |1-
+      // Résumé : Permet d'initialiser les propriétés de l'objet pour établir une connexion FTP. Elle prend en charge différents paramètres pour configurer la connexion, tels que le serveur, l'utilisateur, le mot de passe, le port, le type de connexion, etc.
+      //	Tous les paramètres de connexion peuvent être lus dans les paramètres de l'application si la section respecte le terme "FTP"
+      // Syntaxe : Constructeur ( [<eTypeConnexion> est cFTP.EProtocoleFTP [, <sServeur> est chaîne [, <sUtilisateur> est chaîne [, <sMotPasse> est chaîne [, <nPort> est entier [, <sRepCléSSH> est chaîne [, <sMotPasseCléSSH> est chaîne ANSI [, <eLModeConnexion> est cFTP.EModeConnexion [, <nDelaiConnexion> est entier [, <bAvecBarreObliqueAuDébut> est booléen]]]]]]]]]])
+      // Paramètres :
+      //	eTypeConnexion (cFTP.EProtocoleFTP) : Type de protocole FTP à utiliser (SFTP, FTP, FTPS, FTPES).
+      //	sServeur (chaîne UNICODE) : Adresse du serveur FTP. Peut être structuré comme : sftp://user:password@url:port/repInitial
+      //	sUtilisateur (chaîne UNICODE optionnelle) : Nom d'utilisateur pour la connexion FTP.
+      //	sMotPasse (chaîne UNICODE optionnel) : Mot de passe associé à l'utilisateur pour la connexion FTP.
+      //	nPort (entier optionnel) : Numéro de port pour la connexion FTP. Peut être déduit de l'URL
+      //	sRepCléSSH (chaîne UNICODE optionnelle) : Répertoire de la clé SSH utilisée pour la connexion SFTP.
+      //	sMotPasseCléSSH (chaîne ANSI optionnel) : Mot de passe de la clé SSH.
+      //	eLModeConnexion (cFTP.EModeConnexion optionnel) : Mode de connexion FTP (Actif, Passif, Passif Étendu).
+      //	nDelaiConnexion (entier optionnel) : Délai d'attente pour la connexion FTP.
+      // 	bAvecBarreObliqueAuDébut (booléen optionnel) : Indique si la barre oblique doit être ajoutée au début du chemin (répertoire). Par défaut, faux
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(eTypeConnexion est un EProtocoleFTP = FTP,
+      						sServeur est une chaine = cApplication._Application.m_pclParamètres.Lit("FTP","Address"),
+      						sUtilisateur est une chaine = cApplication._Application.m_pclParamètres.Lit("FTP","User"),
+      						sMotPasse est une chaine = cApplication._Application.m_pclParamètres.Lit("FTP","Password",vrai),
+      						nPort est un entier = cApplication._Application.m_pclParamètres.Lit("FTP","Port"),
+      						sRepCléSSH est une chaine = cApplication._Application.m_pclParamètres.Lit("FTP","KeySSH"),
+      						sMotPasseCléSSH est une chaine ansi = cApplication._Application.m_pclParamètres.Lit("FTP","PasswordKey"),
+      						eLModeConnexion est un EModeConnexion = EnumérationDepuisNom(EModeConnexion,cApplication._Application.m_pclParamètres.Lit("FTP","Mode",faux,Modepassif..nom)),
+      						nDelaiConnexion est un entier = cApplication._Application.m_pclParamètres.Lit("FTP","TimeOut",faux,20),
+      						bAvecBarreObliqueAuDébut est un booleen = faux)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sServeur,sUtilisateur,repete(_Sep,taille(sMotPasse)),nPort,sRepCléSSH,sMotPasseCléSSH,eLModeConnexion..Valeur,nDelaiConnexion)
+      m_pclErreur.Raz()
+      
+      stServeur est un cRéseau.sturl = cRéseau.URLVersStructure(sServeur)
+      selon stServeur.sProtocole
+      	cas "ftp"	: m_eProtocolFTP = FTP
+      	cas "sftp"	: m_eProtocolFTP = SFTP
+      	cas "ftps"	: m_eProtocolFTP = FTPS
+      	cas "ftpes"	: m_eProtocolFTP = FTPES
+      	autres cas	: m_eProtocolFTP = eTypeConnexion
+      fin
+      si stServeur.sUtilisateur>"" 	alors m_sFTPUtilisateur		= stServeur.sUtilisateur sinon m_sFTPUtilisateur = sUtilisateur
+      si stServeur.sMotDePasse>"" 	alors m_sFTPMotDePasse		= stServeur.sMotDePasse sinon m_sFTPMotDePasse = sMotPasse
+      si stServeur.sDomaine>"" 		alors m_sFTPServeur			= stServeur.sDomaine sinon m_sFTPServeur = sServeur
+      si stServeur.scheminabsolu>"" 	alors m_sRépertoireInitial	= stServeur.sCheminAbsolu
+      m_sFTPCléSSH 				= sRepCléSSH
+      m_sFTPMotPasseKey 			= sMotPasseCléSSH
+      m_eTypeConnexion 			= eLModeConnexion
+      m_nDelaiConnexion   		= nDelaiConnexion
+      m_bAvecBarreObliqueAuDébut	= bAvecBarreObliqueAuDébut
+      
+      si nPort = 0 ALORS
+      	selon m_eProtocolFTP
+      		CAS SFTP	: m_nPort = _PortSFTP
+      		CAS FTP		: m_nPort = _PortFTP
+      		CAS FTPS	: m_nPort = _PortFTPS
+      		CAS FTPES	: m_nPort = _PortFTPES
+      	FIN
+      FIN
+      
+      m_nConnect = -1
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2006144735427837341
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe. La connexion FTP est déconnectée le cas échéant.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      si p_bEstConnecté alors Deconnecte()
+     type : 655360
+   -
+     name : Connecte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2006148326083658057
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisé pour établir une connexion au serveur FTP spécifié. Elle prend en compte les paramètres tels que le serveur, l'utilisateur, le mot de passe, le port, le type de connexion, le délai de connexion, et les options d'ignorance d'erreur.
+      // Syntaxe : [ <Résultat> = ] Connecte ( [<coIgnoreErreur> est cFTP.COIgnoreErreur])
+      // Paramètres :
+      //	coIgnoreErreur (cFTP.COIgnoreErreur optionnel) : Objet combinatoire définissant les erreurs potentielles à ignorer lors de la connexion. Par défaut, la connexion n'ignore aucune erreur.
+      // Valeur de retour : booléen : Vrai si la connexion a pu être établie, faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Connecte(coIgnoreErreur est un COIgnoreErreur = null) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      si p_bEstConnecté alors renvoyer vrai
+      
+      si ChaîneCommencePar(m_sFTPServeur,m_eProtocolFTP..nom,ccSansCasse) = 0 ALORS
+      	m_sFTPServeur = m_eProtocolFTP..Nom + "://" + ExtraitChaîne(m_sFTPServeur,1,"://",DepuisFin) 
+      	cApplication._Application.m_pclParamètres.Écrit("FTP","Address",m_sFTPServeur)
+      FIN
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64>
+      	FTP.IgnoreErreur=0
+      	SI coIgnoreErreur[IgnoreCertificatExpiré] 		ALORS FTP.IgnoreErreur+=ftpIgnoreCertificatExpiré 
+      	SI coIgnoreErreur[IgnoreCertificatInvalide] 	ALORS FTP.IgnoreErreur+=ftpIgnoreCertificatInvalide
+      	SI coIgnoreErreur[IgnoreNomCertificatInvalide] 	ALORS FTP.IgnoreErreur+=ftpIgnoreNomCertificatInvalide
+      	SI coIgnoreErreur[IgnoreRévocation] 			ALORS FTP.IgnoreErreur+=ftpIgnoreRévocation
+      	
+      <fin>
+      
+      	
+      m_nConnect = FTPConnecte(m_sFTPServeur,m_sFTPUtilisateur,m_sFTPMotDepasse,m_nPort,m_eTypeConnexion,m_nDelaiConnexion,m_sFTPCléSSH,m_sFTPMotPasseKey)
+      si m_nConnect=-1 ALORS m_pclErreur.AjouteErreurWx()	sinon p_sRepEnCours=m_sRépertoireInitial;RENVOYER Vrai
+      	
+      RENVOYER Faux
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER faux
+     type : 458752
+   -
+     name : Déconnecte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2006436097496605093
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisé pour fermer la connexion FTP établie précédemment. Elle assure la déconnexion proprement dite du serveur FTP.
+      // Syntaxe : [ <Résultat> = ] Déconnecte ()
+      // Paramètres :	Aucun
+      // Valeur de retour : booléen : Vrai si la déconnexion a été faite, faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Déconnecte() : booleen
+      m_pclErreur.Raz()
+      
+      si pas p_bEstConnecté alors renvoyer vrai
+      si pas FTPDéconnecte(m_nConnect) ALORS m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      m_nConnect=-1;renvoyer vrai
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : FichierExiste
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2006436415324258723
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de vérifier l'existence d'un fichier distant sur le serveur FTP spécifié par son chemin. Si le fichier existe, la méthode renvoie la taille du fichier, sinon elle renvoie -1.
+      // Syntaxe : [ <Résultat> = ] FichierExiste (<sCheminFichierFTP> est chaîne)
+      // Paramètres :
+      //	sCheminFichierFTP (chaîne UNICODE) : Le chemin du fichier sur le serveur FTP.
+      // Valeur de retour : entier : Renvoie la taille du fichier distant s'il existe, sinon elle renvoie -1.
+      // Exemple :
+      //
+      PROCEDURE FichierExiste(local sCheminFichierFTP est une chaîne) : entier
+      m_pclErreur.Raz()
+      
+      si Connecte() _et_ FormateChemin(sCheminFichierFTP) alors
+      	si FTPFichierExiste(m_nConnect,sCheminFichierFTP) ALORS renvoyer FTPTaille(m_nConnect,sCheminFichierFTP) 
+      	m_pclErreur.AjouteErreur(<§$0007§>+sCheminFichierFTP)
+      FIN
+      RENVOYER -1
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER -1
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER -1
+     type : 458752
+   -
+     name : Télécharge
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2006441633740884890
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de télécharger un fichier depuis le serveur FTP vers le répertoire local spécifié. Elle prend en charge des options telles que l'écrasement du fichier local en cas d'existence, le mode de transfert (binaire ou ASCII), et la possibilité de suivre la progression via une jauge ou un rappel (callback).
+      // Syntaxe : [ <Résultat> = ] Télécharge (<sFichierFTP> est chaîne [, <sFichierDestination> est chaîne [, <bÉcraseSiExistant> est booléen [, <eModeTransfert> est cFTP.EModeDeTransfert [, <sJaugeOuCallBack> est chaîne [, <duRafraichiJauge> est durée [, <sLibelléJauge> est chaîne [, <sTextePersoLibelléJauge> est chaîne]]]]]]])
+      // Paramètres :
+      //	sFichierFTP (chaîne UNICODE) : Le chemin du fichier sur le serveur FTP.
+      //	sFichierDestination (chaîne UNICODE) : Le chemin local où le fichier sera téléchargé. Si non spécifié, le fichier sera téléchargé dans le répertoire de l'application.
+      // 	bÉcraseSiExistant (booléen optionnel) : Spécifie si le fichier local doit être écrasé s'il existe déjà. Par défaut, il ne sera pas écrasé.
+      //	eModeTransfert (cFTP.EModeDeTransfert optionnel) : Le mode de transfert du fichier, soit en binaire, soit en ASCII. Par défaut, en binaire.
+      //	sJaugeOuCallBack (chaîne UNICODE optionnelle) : Le nom de la jauge ou du callback qui sera utilisé pour suivre la progression du téléchargement. Si non spécifié, aucune jauge ne sera utilisée.
+      // 	duRafraichiJauge (durée optionnelle) : La fréquence de rafraîchissement de la jauge pendant le téléchargement. Par défaut, 100ms.
+      //	sLibelléJauge (chaîne UNICODE optionnelle) : Le libellé de la jauge qui apparaîtra pendant le téléchargement.
+      //	sTextePersoLibelléJauge (chaîne UNICODE optionnelle) : Un texte personnalisé qui peut être ajouté au libellé de la jauge.
+      // Valeur de retour : booléen : renvoie Vrai si le téléchargement est réussi, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE Télécharge(local sFichierFTP est une chaine,local sFichierDestination est une chaîne="",bÉcraseSiExistant est un booleen = faux,eModeTransfert est un EMoDeDeTransfert = Binaire,sJaugeOuCallBack est une chaine="",duRafraichiJauge est une durée=100ms,sLibelléJauge est une chaine = "",sTextePersoLibelléJauge est une chaine="") : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sFichierFTP,sFichierDestination,bÉcraseSiExistant,eModeTransfert..valeur,sJaugeOuCallBack,duRafraichiJauge,sLibelléJauge,sTextePersoLibelléJauge)
+      m_pclErreur.Raz()
+      
+      SI fFichierExiste(sFichierDestination) ALORS
+      	SI bÉcraseSiExistant ALORS fSupprime(sFichierDestination) SINON m_pclErreur.AjouteErreur(<§$0002§>);renvoyer faux
+      FIN
+      
+      si Connecte() alors
+      	nTailleMax est un entier = FichierExiste(sFichierFTP)
+      	si nTailleMax>=0 alors
+      		SI sJaugeOuCallBack>"" ALORS m_clJauge.Démarre(sJaugeOuCallBack,nTailleMax,&m_nTailleTransferée,duRafraichiJauge,sLibelléJauge,sTextePersoLibelléJauge)
+      		si FTPRécupère(m_nConnect,[(m_bAvecBarreObliqueAuDébut ? "/" SINON "")]+sFichierFTP,sFichierDestination,:FTPJauge,eModeTransfert..Valeur) alors //_OU_ FTPRécupère(m_nConnect, "." + ["/"] + sFichierFTP,sFichierDestination,:FTPJauge,eModeTransfert..Valeur)  ALORS
+      			 m_clJauge.arrete()
+      			 Multitâche(1);RENVOYER Vrai
+      		sinon
+      			m_pclErreur.AjouteErreurWx()	 
+      			m_clJauge.Arrête()
+      		FIN
+      	FIN
+      FIN
+      renvoyer faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Téleverse
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2006497979516599063
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de téléverser des fichiers ou des répertoires vers un serveur FTP distant. Elle prend en charge la gestion des erreurs, l'écrasement de fichiers existants, le suivi de la progression avec une jauge, et la spécification du mode de transfert (binaire ou ASCII).
+      // Syntaxe : [ <Résultat> = ] Téleverse (<sFichierRepAEnvoyé> est chaîne [, <sFichierDestination> est chaîne [, <eType> est cFTP.ETypeContenu [, <bÉcraseSiExistant> est booléen [, <eModeTransfert> est cFTP.EModeDeTransfert [, <sJaugeOuCallBack> est chaîne [, <duRafraichiJauge> est durée [, <sLibelléJauge> est chaîne [, <sTextePersoLibelléJauge> est chaîne]]]]]]]])
+      // Paramètres :
+      //	sFichierRepAEnvoyé (chaîne UNICODE) : Le chemin du fichier ou du répertoire à téléverser.
+      //	sFichierDestination (chaîne UNICODE) : Le chemin de destination sur le serveur FTP. Si non spécifié, le fichier ou le répertoire sera téléversé dans le répertoire actuel du serveur.
+      //	eType (cFTP.ETypeContenu optionnel) : Le type de contenu à téléverser, soit un fichier (Fichier) ou un répertoire (Répertoire). La valeur par défaut est Fichier.
+      // 	bÉcraseSiExistant (booléen optionnel) : Indique si le fichier sur le serveur doit être écrasé s'il existe déjà. La valeur par défaut est Faux.
+      //	eModeTransfert (cFTP.EModeDeTransfert optionnel) : Le mode de transfert à utiliser, soit binaire (Binaire) ou ASCII (ASCII). La valeur par défaut est Binaire.
+      //	sJaugeOuCallBack (chaîne UNICODE optionnelle) : Le nom de la jauge ou du callback qui sera utilisé pour suivre la progression du téléchargement. Si non spécifié, aucune jauge ne sera utilisée.
+      // 	duRafraichiJauge (durée optionnelle) : La fréquence de rafraîchissement de la jauge pendant le téléchargement. Par défaut, 100ms.
+      //	sLibelléJauge (chaîne UNICODE optionnelle) : Le libellé de la jauge qui apparaîtra pendant le téléchargement.
+      //	sTextePersoLibelléJauge (chaîne UNICODE optionnelle) : Un texte personnalisé qui peut être ajouté au libellé de la jauge.
+      // Valeur de retour : booléen : Vrai si le téléversement est réussi, faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Téleverse(LOCAL sFichierRepAEnvoyé est une chaine,local sFichierDestination est une chaîne="",eType est un ETypeContenu = Fichier,bÉcraseSiExistant est un booleen = faux,eModeTransfert est un EMoDeDeTransfert = Binaire,sJaugeOuCallBack est une chaine="",duRafraichiJauge est une durée=100ms,sLibelléJauge est une chaine = "",sTextePersoLibelléJauge est une chaine="") : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sFichierRepAEnvoyé,sFichierDestination,eType..valeur,bÉcraseSiExistant,eModeTransfert..valeur,sJaugeOuCallBack,duRafraichiJauge,sLibelléJauge,sTextePersoLibelléJauge)
+      m_pclErreur.Raz()
+      
+      nTailleMax est un entier
+      selon eType
+      	CAS Fichier		: 
+      		SI PAS fFichierExiste(sFichierRepAEnvoyé) ALORS m_pclErreur.AjouteErreur(<§$0005§>+sFichierRepAEnvoyé);renvoyer faux
+      		nTailleMax=ftaille(sFichierRepAEnvoyé)
+      	CAS Répertoire	: 
+      		SI PAS fRépertoireExiste(sFichierRepAEnvoyé) ALORS m_pclErreur.AjouteErreur(<§$000a§>+sFichierRepAEnvoyé);renvoyer faux
+      		nTailleMax=fRepTaille(sFichierRepAEnvoyé)
+      FIN
+      
+      SI Connecte() alors
+      	si FormateChemin(sFichierDestination) alors
+      		si FichierExiste(sFichierDestination)=-1 _ou_ bÉcraseSiExistant alors
+      			si sJaugeOuCallBack>"" alors m_clJauge.Démarre(sJaugeOuCallBack,nTailleMax,&m_nTailleTransferée,duRafraichiJauge,sLibelléJauge,sTextePersoLibelléJauge)
+      			ftpEnvoie(m_nConnect,sFichierRepAEnvoyé,sFichierDestination,::FTPJauge,eModeTransfert..Valeur)	//pas d'exploitation de la valeur de retour car problème sur certains serveurs : tout est bien transféré mais renvoie faux. Donc test sur la taille transférée. 
+      			si m_nTailleTransferée=nTailleMax ALORS 
+      				m_cljauge.Arrête()
+      				Multitâche(1);RENVOYER Vrai
+      			sinon
+      				m_pclErreur.AjouteErreurWx()
+      				m_clJauge.Arrête()
+      			FIN
+      		sinon
+      			m_pclErreur.AjouteErreur(<§$0008§>)
+      		fin
+      	FIN
+      FIN
+      RENVOYER Faux
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : FormateChemin
+     procedure_id : 2006500693936431569
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui formate le chemin selon le paramètre m_bAvecBarreObliqueAuDébut initialisé dans le constructeur. Utilisé dans toutes les autres méthodes.
+      PROCEDURE PRIVÉE FormateChemin(sCheminFichierFTP est une chaine)
+      m_pclErreur.Raz()
+      
+      SI sCheminFichierFTP = "" ALORS m_pclErreur.AjouteErreur(<§$0006§>); RENVOYER Faux
+      
+      SI PAS ChaîneCommencePar(sCheminFichierFTP,"/") OU PAS Contient(sCheminFichierFTP,p_sRepEnCours,MotComplet+SansCasse) ALORS
+      	sCheminFichierFTP = [(m_bAvecBarreObliqueAuDébut ? "/" SINON "")] + p_sRepEnCours + ["/"] + sCheminFichierFTP
+      FIN
+      renvoyer vrai
+     type : 458752
+   -
+     name : SupprimeFichier
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2007178379501533068
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de supprimer un fichier distant sur le serveur FTP. Elle prend en charge la gestion des erreurs et vérifie l'existence du fichier avant la suppression.
+      // Syntaxe : [ <Résultat> = ] SupprimeFichier (<sCheminFichierASupprimer> est chaîne)
+      // Paramètres :
+      //	sCheminFichierASupprimer (chaîne UNICODE) : Le chemin du fichier à supprimer sur le serveur FTP.
+      // Valeur de retour : booléen : Vrai si la suppression du fichier est réussie. Faux si une erreur survient pendant la suppression du fichier ou si le fichier n'existe pas.
+      // Exemple :
+      //
+      PROCEDURE SupprimeFichier(local sCheminFichierASupprimer est une chaine) : booleen
+      m_pclErreur.Raz()
+      
+      si Connecte() alors
+      	SI FormateChemin(sCheminFichierASupprimer) ALORS
+      		si FichierExiste(sCheminFichierASupprimer)<>-1 alors
+      			si FTPSupprimeFichier(m_nConnect,sCheminFichierASupprimer) ALORS renvoyer vrai
+      			m_pclErreur.AjouteErreurWx()
+      		fin
+      	fin
+      FIN
+      renvoyer faux
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : FTPJauge
+     procedure_id : 2012801377156800575
+     type_code : 12
+     code : |1-
+      // Résumé : intercepte la progression pour permettre l'affichage de la jauge le cas échéant
+      PROCEDURE PRIVÉE FTPJauge(nTailleTotale est un entier sur 8 octets, nTailleTransférée est un entier sur 8 octets)                                      
+      m_nTailleTransferée=nTailleTransférée
+      renvoyer vrai
+     type : 458752
+   -
+     name : RépertoireExiste
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2074399441451052390
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de vérifier l'existence d'un répertoire distant sur le serveur FTP.
+      // Syntaxe : [ <Résultat> = ] RépertoireExiste (<sRépertoire> est chaîne)
+      // Paramètres :
+      //	sRépertoire (chaîne UNICODE) : Le chemin du répertoire à vérifier sur le serveur FTP.
+      // Valeur de retour : booléen : Vrai si le répertoire existe, faux sinon.
+      // Exemple :
+      //
+      PROCEDURE RépertoireExiste(local sRépertoire est une chaîne) : booleen
+      // ref : https://www.developpez.net/forums/d1173964/environnements-developpement/windev/ftp-tester-l-existence-d-dossier/
+      bTrouvé 	est un booléen
+      nRépertoire est un entier = FTPListeFichier(m_nConnect,[(m_bAvecBarreObliqueAuDébut ? "/" SINON "")]+sRépertoire+"*",FTPRecupListe,ftpRépertoire)
+      RENVOYER bTrouvé
+      //RENVOYER (FTPAttribut(m_nConnect,sRépertoire)="D")	//fonctionne mais crée une erreur non-bloquante si le répertoire n'existe pas
+      
+      	PROCÉDURE INTERNE FTPRecupListe(sUnRépertoire)
+      	SI sUnRépertoire=ExtraitChaîne(sRépertoire,1,"/",DepuisFin) ALORS bTrouvé=Vrai
+      	RENVOYER sUnRépertoire<>sRépertoire
+      	FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER ""
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER ""
+     type : 458752
+   -
+     name : Liste
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2074442078073317724
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de lister les fichiers ou répertoires présents dans le répertoire courant du serveur FTP.
+      // Syntaxe : [ <Résultat> = ] Liste (<eType> est cFTP.ETypeContenu)
+      // Paramètres :
+      //	eType (cFTP.ETypeContenu) : Le type de contenu à lister (Fichier ou Répertoire).
+      // Valeur de retour : chaîne UNICODE : Contient la liste des fichiers ou répertoires dans le répertoire courant du serveur FTP.
+      // Exemple :
+      //
+      PROCEDURE Liste(eType est un ETypeContenu) : chaine
+      sRésultat est une chaine
+      nRésultat est un entier = FTPListeFichier(m_nConnect,[(m_bAvecBarreObliqueAuDébut ? "/" SINON "")]+"*.*",FTPRecupListe,(eType=fichier ? ftpfichier sinon ftpRépertoire))
+      RENVOYER sRésultat
+      
+      	PROCÉDURE INTERNE FTPRecupListe(sUnRésultat)
+      	sRésultat+=[rc]+sUnRésultat
+      	RENVOYER Vrai
+      	FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER ""
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER ""
+     type : 458752
+   -
+     name : FichierDateHeure
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2108148392696910820
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'obtenir la date et l'heure associées à un fichier distant sur le serveur FTP. L'utilisateur peut spécifier s'il souhaite obtenir la date de modification, d'accès, ou de création du fichier.
+      // Syntaxe : [ <Résultat> = ] FichierDateHeure (<sCheminFichier> est chaîne [, <eTypeDateHeure> est cFTP.ETypeDateHeure])
+      // Paramètres :
+      //	sCheminFichier (chaîne UNICODE) : Le chemin du fichier distant pour lequel obtenir la date et l'heure.
+      //	eTypeDateHeure (cFTP.ETypeDateHeure optionnel) : Le type de date et d'heure à récupérer. Par défaut, la date de modification.
+      // Valeur de retour : chaîne UNICODE : Une chaîne représentant la date et l'heure associées au fichier distant, au format standard.
+      // Exemple :
+      //
+      PROCEDURE FichierDateHeure(sCheminFichier est une chaine,eTypeDateHeure est un ETypeDateHeure = fModification) : chaine
+      m_pclErreur.Raz()
+      
+      SI Connecte() ALORS
+      	SI FormateChemin(sCheminFichier) ALORS
+      		SI FichierExiste(sCheminFichier)<>-1 ALORS
+      			renvoyer FTPDateHeure(m_nConnect,sCheminFichier,eTypeDateHeure)
+      		sinon
+      			m_pclErreur.AjouteErreurWx()
+      		FIN
+      	FIN
+      FIN
+      RENVOYER ""
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER ""
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER ""
+     type : 458752
+   -
+     name : FichierAttributs
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2108150484346012958
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'obtenir les attributs d'un fichier distant sur le serveur FTP. Les attributs peuvent inclure des informations telles que les autorisations, le propriétaire, le groupe, etc.
+      // Syntaxe : [ <Résultat> = ] FichierAttributs (<sCheminFichier> est chaîne)
+      // Paramètres :
+      //	sCheminFichier (chaîne UNICODE) : Le chemin du fichier distant pour lequel obtenir les attributs.
+      // Valeur de retour : chaîne UNICODE : Une chaîne représentant les attributs du fichier distant.
+      // Exemple :
+      //
+      PROCEDURE FichierAttributs(sCheminFichier est une chaine) : chaine
+      m_pclErreur.Raz()
+      
+      SI Connecte() ALORS
+      	SI FormateChemin(sCheminFichier) ALORS
+      		SI FichierExiste(sCheminFichier)<>-1 ALORS
+      			RENVOYER FTPAttribut(m_nConnect,sCheminFichier)
+      		SINON
+      			m_pclErreur.AjouteErreurWx()
+      		FIN
+      	FIN
+      FIN
+      RENVOYER ""
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER ""
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER ""
+     type : 458752
+  properties :
+   -
+     name : p_sRepEnCours
+     identifier : 0x1bd85cfa0baf9baa
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Résumé : Permet de récupérer le répertoire actuel sur le serveur FTP. Si la connexion est établie (p_bEstConnecté est Vrai), elle utilise la fonction FTPRepEnCours pour obtenir le chemin du répertoire courant. Sinon, elle renvoie une chaîne vide.
+         PROCEDURE PUBLIQUE p_sRepEnCours()
+         si p_bEstConnecté alors m_sRepertoireEnCours = FTPRepEnCours(m_nConnect) sinon m_sRepertoireEnCours=""
+         renvoyer m_sRepertoireEnCours
+        type : 1966080
+      -
+        code : |1-
+         //Résumé : Permet de changer le répertoire courant sur le serveur FTP en spécifiant un nouveau chemin. Si la connexion est établie (p_bEstConnecté est Vrai) et que la valeur passée en paramètre n'est ni ".", ni "\", ni ".\", elle utilise la fonction FTPRepEnCours avec le nouveau chemin pour mettre à jour le répertoire courant. Sinon, elle n'effectue aucune action.
+         PROCEDURE PUBLIQUE p_sRepEnCours(Valeur)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(Valeur)
+         SI p_bEstConnecté _ET_ Valeur<>"." _ET_ Valeur<>"\" _ET_ Valeur<>".\" ALORS
+         	SI FTPRepEnCours(m_nConnect,Valeur) ALORS m_sRepertoireEnCours=[(m_bAvecBarreObliqueAuDébut ? "/" sinon "")]+Valeur SINON m_pclErreur.AjouteErreurWx()
+         FIN
+        type : 2031616
+     template_refs : []
+   -
+     name : p_bEstConnecté
+     identifier : 0x1bdb65f209606047
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Résumé : Indicateur de connexion au serveur
+         PROCEDURE PUBLIQUE p_bEstConnecté()
+         renvoyer m_nConnect<>-1
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nConnect
+     identifier : 0x1cc9c24f29502d99
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Résumé : Indice de connexion FTP
+         PROCEDURE PUBLIQUE p_nConnect()
+         renvoyer m_nConnect
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1bd741fb032a2388
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : L'adresse de destination du fichier est incomplète
+      en-GB : The destination address of the file is incomplete
+      fr-CA : L'adresse de destination du fichier est incomplète
+      en-US : The destination address of the file is incomplete
+     index : 0
+   -
+     text :
+      fr-FR : "Le protocole n'est par reconnu : "
+      en-GB : "The protocol is not recognized : "
+      fr-CA : "Le protocole n'est par reconnu : "
+      en-US : "The protocol is not recognized : "
+     index : 1
+   -
+     text :
+      fr-FR : Le fichier de destination existe déjà
+      en-GB : The destination file already exists
+      fr-CA : Le fichier de destination existe déjà
+      en-US : The destination file already exists
+     index : 2
+   -
+     text :
+      fr-FR : Le nom du fichier de destination est vide
+      en-GB : The destination file name is empty
+      fr-CA : Le nom du fichier de destination est vide
+      en-US : The destination file name is empty
+     index : 3
+   -
+     text :
+      fr-FR : Le fichier distant n'existe pas
+      en-GB : Remote file does not exist
+      fr-CA : Le fichier distant n'existe pas
+      en-US : Remote file does not exist
+     index : 4
+   -
+     text :
+      fr-FR : "Le fichier à téléverser n'existe pas : "
+      en-GB : "The file to upload does not exist : "
+      fr-CA : "Le fichier à téléverser n'existe pas : "
+      en-US : "The file to upload does not exist : "
+     index : 5
+   -
+     text :
+      fr-FR : Nom de fichier vide
+      en-GB : Empty file name
+      fr-CA : Nom de fichier vide
+      en-US : Empty file name
+     index : 6
+   -
+     text :
+      fr-FR : "Le fichier distant n'existe pas : "
+      en-GB : "The remote file does not exist : "
+      fr-CA : "Le fichier distant n'existe pas : "
+      en-US : "The remote file does not exist : "
+     index : 7
+   -
+     text :
+      fr-FR : Le fichier de destination existe déjà
+      en-GB : The destination file already exists
+      fr-CA : Le fichier de destination existe déjà
+      en-US : The destination file already exists
+     index : 8
+   -
+     text :
+      fr-FR : Le protocole FTP n'est pas reconnu
+      en-GB : FTP protocol is not recognized
+      fr-CA : Le protocole FTP n'est pas reconnu
+      en-US : FTP protocol is not recognized
+     index : 9
+   -
+     text :
+      fr-FR : "Le répertoire à téléverser n'existe pas : "
+      en-GB : "The directory to upload does not exist : "
+      fr-CA : "Le répertoire à téléverser n'existe pas : "
+      en-US : "The directory to upload does not exist : "
+     index : 10
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

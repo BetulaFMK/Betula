@@ -1,0 +1,118 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cLDAP2008User
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f559e61216c66b
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe qui donne la structure d'un enregistrement User sur un serveur Windows 2008.
+      
+      cLDAP2008User est une Classe, abstraite		//ref : https://docs.microsoft.com/en-us/windows/win32/adschema/c-user#windows-server-2008-attributes
+      	hérite de cLDAP2003R2User
+      	msDS_AuthenticatedAtDC									est une chaine	//DN					//Forward link for ms-DS-AuthenticatedTo-Accountlist. Identifies which DC a user has authenticated to.
+      	msDS_FailedInteractiveLogonCount						est un entier							//The total number of failed interactive logons since this feature was turned on.
+      	msDS_FailedInteractiveLogonCountAtLastSuccessfulLogon	est un entier							//The total number of failed interactive logons up until the last successful C-A-D logon.
+      	msDS_LastFailedInteractiveLogonTime						est un entier							//The time that an incorrect password was presented during a Ctrl+Alt+Delete logon.
+      	msDS_LastSuccessfulInteractiveLogonTime					est un entier							//The time that the correct password was presented during a Ctrl+Alt+Delete logon.
+      	msDS_ResultantPSO										est une chaine	//DN					//Resultant password settings object applied to this object.
+      	msDS_SecondaryKrbTgtNumber								est un entier							//Identifies the protocol identification number associated with the secondary domain.
+      	msDS_SupportedEncryptionTypes							est un entier							//The encryption algorithms supported by user, computer or trust accounts.
+      	msDS_UserPasswordExpiryTimeComputed						est un entier							//Contains the expiry time for the user's current password.
+      	msPKIAccountCredentials									est une chaine	//DN bin				//Storage of encrypted user credential token BLOBs for roaming.
+      	msPKIDPAPIMasterKeys									est une chaine	//DN bin				//Storage of encrypted DPAPI Master Keys for user.
+      	msPKIRoamingTimeStamp									est une chaine	//replica-link			//Time stamp for last change to roaming tokens.
+      	msRADIUS_FramedInterfaceId								est une chaine							//Indicates the IPv6 interface identifier to be configured for the user.
+      	msRADIUS_FramedIpv6Prefix								est une chaine							//Indicates an IPv6 prefix (and corresponding route) to be configured for the user.
+      	msRADIUS_FramedIpv6Route								est une chaine							//Provides routing information to be configured for the user on the NAS.
+      	msRADIUS_SavedFramedInterfaceId							est une chaine							//Indicates the IPv6 interface identifier to be configured for the user.
+      	msRADIUS_SavedFramedIpv6Prefix							est une chaine							//Indicates an IPv6 prefix (and corresponding route) to be configured for the user.
+      	msRADIUS_SavedFramedIpv6Route							est une chaine							//Provides routing information to be configured for the user on the NAS.
+      	msTSAllowLogon											est un booleen							//Specifies whether the user is allowed to log on to the Terminal Server. The value is 1 if logon is allowed, and 0 if logon is not allowed.
+      	msTSBrokenConnectionAction								est un booleen							//Terminal Services session Broken Connection Action specifies the action to take when a Terminal Services session limit is reached.
+      	msTSConnectClientDrives									est un booleen							//Terminal Services session Connect Client Drives specifies whether to reconnect to mapped client drives at logon.
+      	msTSConnectPrinterDrives								est un booleen							//Terminal Services session Connect Printer Drives specifies whether to reconnect to mapped client printers at logon.
+      	msTSDefaultToMainPrinter								est un booleen							//Terminal Services Default To Main Printer specifies whether to print automatically to the client's default printer.
+      	msTSExpireDate											est une chaine 	//dateheure				//TS expiration date.
+      	msTSExpireDate2											est une chaine	//dateheure				//Expiration date of the second TS per user CAL.
+      	msTSExpireDate3											est une chaine	//dateheure				//Expiration date of the third TS per user CAL.
+      	msTSExpireDate4											est une chaine	//dateheure				//Expiration date of the third TS per user CAL.
+      	msTSHomeDirectory										est une chaine							//Terminal Services Home Directory specifies the Home directory for the user.
+      	msTSHomeDrive											est une chaine							//Terminal Services Home Drive specifies a Home drive for the user.
+      	msTSInitialProgram										est une chaine							//Terminal Services Session Initial Program specifies the path and file name of the application that the user wants to start automatically when the user logs on to the Terminal Server.
+      	msTSLicenseVersion										est une chaine							//Terminal server license version.
+      	msTSLicenseVersion2										est une chaine							//Version of the second terminal server per user CAL.
+      	msTSLicenseVersion3										est une chaine							//Version of the second terminal server per user CAL.
+      	msTSLicenseVersion4										est une chaine							//Version of the second terminal server per user CAL.
+      	msTSLSProperty01										est une chaine							//Placeholder terminal server property 01.
+      	msTSLSProperty02										est une chaine							//Placeholder terminal server property 02.
+      	msTSManagingLS											est une chaine							//Terminal Services managing license server.
+      	msTSManagingLS2											est une chaine							//Issuer name of the second terminal server per user CAL.
+      	msTSManagingLS3											est une chaine							//Issuer name of the second terminal server per user CAL.
+      	msTSManagingLS4											est une chaine							//Issuer name of the second terminal server per user CAL.
+      	msTSMaxConnectionTime									est un entier							//Terminal Services session Maximum Connection Time is the maximum amount of time, in minutes, of the Terminal Services session.
+      	msTSMaxDisconnectionTime								est un entier							//Terminal Services session Maximum Disconnection Time is the maximum amount of time, in minutes, that a disconnected Terminal Services session remains active on the terminal server.
+      	msTSMaxIdleTime											est un entier							//Terminal Services session Maximum Idle Time is the maximum amount of time, in minutes, that the Terminal Services session can remain idle.
+      	msTSProfilePath											est une chaine							//Terminal Services Profile Path specifies a roaming or mandatory profile path to use when the user logs on to the terminal server. 
+      	msTSProperty01											est une chaine							//Reserved for future use.
+      	msTSProperty02											est une chaine							//Reserved for future use.
+      	msTSReconnectionAction									est un booleen							//Terminal Services session Reconnection Action specifies whether to allow reconnection to a disconnected Terminal Services session from any client computer.
+      	msTSRemoteControl										est un entier							//Terminal Services Remote Control specifies whether to allow remote observation or remote control of the user's Terminal Services session.
+      	msTSWorkDirectory										est une chaine							//Terminal Services session Work Directory specifies the working directory path for the user.
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1294039312619783787
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1294039312619849323
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f559e41210bdf3
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,539 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : csdPays
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12b66ec12d7833a6
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe est l'équivalent d'un cSourceDeDonnées pour des pays. Elle hérite de cAPILayer et permet de récupérer la liste des pays et de leurs caractéristiques.
+      //Ref : https://fr.wikipedia.org/wiki/ISO_3166-1
+      
+      EPaysTri est une énumération
+      	ID_ASC				= "+m_nID"											
+      	ID_DESC				= "-m_nID"											
+      	Nom_ASC				= "+m_stNom.sOfficiel"											
+      	Nom_DESC			= "-m_stNom.sOfficiel"											
+      	NomCommun_ASC		= "+m_stNom.sCommun"											
+      	NomCommun_DESC		= "-m_stNom.sCommun"											
+      	NomCommunFR_ASC		= "+m_sNomCommunFR"											
+      	NomCommunFR_DESC	= "-m_sNomCommunFR"											
+      	NomCommunEN_ASC		= "+m_sNomCommun"											
+      	NomCommunEN_DESC	= "-m_sNomCommun"											
+      	CodeISO2_ASC		= "+m_sCodeISO2"									
+      	CodeISO2_DESC		= "-m_sCodeISO2"									
+      	CodeISO3_ASC		= "+m_sCodeISO3"	
+      	CodeISO3_DESC		= "-m_sCodeISO3"	
+      	CodeCIOC_ASC		= "+m_sCodeCIOC"								
+      	CodeCIOC_DESC		= "-m_sCodeCIOC"								
+      	Capitale_ASC		= "+m_tabCapitale[1]"
+      	Capitale_DESC		= "-m_tabCapitale[1]"
+      	Région_ASC			= "+m_sRégion"
+      	Région_DESC			= "-m_sRégion"
+      	SurfaceKm2_ASC		= "+m_nSurfaceKm2"
+      	SurfaceKm2_DESC		= "-m_nSurfaceKm2"
+      	Latitude_ASC		= "+m_nLatitude"
+      	Latitude_DESC		= "-m_nLatitude"
+      	Longitude_ASC		= "+m_nLongitude"
+      	Longitude_DESC		= "-m_nLongitude"
+      fin
+      csdPays est une Classe
+      	hérite de cHTTPAPI
+      public
+      	m_tabPays					est un tableau <Sérialise = Faux> de cePays dynamique
+      protégé
+      	m_clJauge					est un cjauge 						<Sérialise = Faux>		//Objet jauge qui peut être visualisée dans une fenêtre durant le parcours du résultat de Liste(). La valeur de la jauge change a chaque ajout d'un cEnregistrement dans le tableau.
+      privé                   		
+      	m_bLitAussiMémo				est un booleen						<Sérialise = Faux>		//Indique s'il faut aussi lire les drapeaux
+      	m_nLargeurDrapeau			est un entier						<Sérialise = Faux>		//Largeur des drapeaux
+      	m_nIndiceParcours			est un entier						<Sérialise = Faux>		//Indice de parcours
+      	m_pclContinents				est un csdContinent dynamique		<Sérialise = Faux>		//Charge en même temps les continents
+      	m_pclContinentRégions		est un csdContinentRégion dynamique	<Sérialise = Faux>		//Charge en même temps les régions
+      public global constant
+      	mg_sDernierFiltre			est un chaine						<Sérialise = Faux>		//Mémorise le dernier filtre exécuté
+      	mg_tabPays 					est un tableau <Sérialise = Faux> de cePays dynamique		//Liste des pays (si sFiltre="" alors contiendra tous les pays, sinon le résultat du filtre)
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1348386914414703526
+     type_code : 27
+     code : |1-
+      //Résumé : Initialise les propriétés de l'objet, en particulier l'URL de l'API utilisée pour récupérer les données sur les pays.
+      // Syntaxe : Constructeur ( [<bLitAussiMemo> est booléen [, <nLargeurDrapeau> est entier]])
+      // Paramètres :
+      //	bLitAussiMemo (booléen optionnel) : Indique si la lecture du mémo (drapeau) doit être effectuée. Par défaut, la valeur est Faux.
+      //	nLargeurDrapeau (entier optionnel) : Largeur souhaitée du drapeau. Si spécifié, le drapeau sera redimensionné à cette largeur. La valeur par défaut est 0, ce qui signifie qu'aucun redimensionnement n'est effectué.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(bLitAussiMémo est un booleen = faux,nLargeurDrapeau est un entier = 0)
+      cHTTPAPI.Constructeur("https://restcountries.com/v3/")
+      si mg_sDernierFiltre~="" alors mg_sDernierFiltre = "none"
+      m_bLitAussiMemo		= bLitAussiMemo
+      m_nLargeurDrapeau	= nLargeurDrapeau
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1348386914414769062
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Liste
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1348386914414834598
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère une liste de pays en fonction de différents critères de recherche. Elle utilise l'API https://restcountries.com/v3/ pour obtenir les données. 
+      // Syntaxe : [ <Résultat> = ] Liste ( [<coNomColonnes> est cePays.COPaysColonne [, <xValeur> [, <eTypeFiltre> est cePays.EPaysFiltre [, <eOrdre> est csdPays.EPaysTri [, <nLimiteMax> est entier [, <bLectureSeule> est booléen [, <sJaugeOuCallBack> est chaîne [, <duRafraichiJauge> est durée [, <sChampLibelléJauge> est chaîne [, <sContenuLibelléJauge> est chaîne]]]]]]]]]])
+      // Paramètres :
+      //	coNomColonnes (cePays.COPaysColonne) : Combinaison spécifiant les colonnes à récupérer pour chaque pays.
+      //	xValeur (valeur par défaut=0) : La valeur de recherche. Le type de recherche dépend du type de filtre spécifié.
+      //	eTypeFiltre (cePays.EPaysFiltre) : Le type de filtre à appliquer, par exemple, filtrer par nom, code, devise, etc.
+      //	eOrdre (csdPays.EPaysTri) : L'ordre de tri à appliquer à la liste de pays. Par défaut, la liste est triée par le nom commun en ordre ascendant.
+      //	nLimiteMax (entier - valeur par défaut=0) : La limite maximale d'enregistrements à récupérer. Si la valeur est 0, tous les enregistrements sont récupérés. Par défaut, la valeur est 0.
+      //	sJaugeOuCallBack (chaîne UNICODE optionnelle) : Le nom de la jauge ou de la méthode de rappel pour indiquer la progression.
+      //	duRafraichiJauge (durée optionnelle) : La fréquence de rafraîchissement de la jauge, par défaut toutes les 100ms (10x par seconde).
+      //	sChampLibelléJauge (chaîne UNICODE optionnelle) : Le champ "libellé" de la jauge à mettre à jour.
+      //	sContenuLibelléJauge (chaîne UNICODE optionnelle) : Le contenu du champ libellé associé à la jauge à mettre à jour (voir cJauge pour le détail des balises reconnues).
+      // Valeur de retour : booléen : Un booléen indiquant le succès ou l'échec de la récupération de la liste de pays.
+      // Exemple :
+      //
+      PROCEDURE Liste(coNomColonnes est une cePays.COPaysColonne = cePays.p_coToutesColonnes,xValeur = null,eTypeFiltre est un cePays.EPaysfiltre = cePays.EPaysfiltre.AucunFiltre,eOrdre est un csdPays.Epaystri = NomCommunFR_ASC,nLimiteMax est un entier = 0,local sJaugeOuCallBack est une chaine = "",local duRafraichiJauge est une durée = 100ms,local sChampLibelléJauge est une chaine="",local sContenuLibelléJauge est une chaine="") : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(coNomColonnes,xValeur,eTypeFiltre..nom,eOrdre..nom)
+      m_pclErreur.raz()	
+      SI nLimiteMax<0 	ALORS m_pclErreur.AjouteErreur(<§$0005§>);renvoyer faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	TableauSupprimeTout(m_tabPays)
+      	
+      	nMaxEnreg,nIndiceContinent,nIndiceRégion,nOccurrence sont des entiers
+      	sFiltre,sColonnes	est une chaine
+      	pclNouveauPays		est un cePays dynamique
+      	sValeur				est une chaine
+      	
+      	SI m_pclContinents=Null ALORS 
+      		m_pclContinents = allouer un csdContinent
+      		m_pclContinents.Liste(csdContinent.Selon6Amérique,nationAnglais)
+      	FIN
+      	SI m_pclContinentRégions=Null ALORS 
+      		m_pclContinentRégions = allouer un csdContinentRégion
+      		m_pclContinentRégions.Liste(nationAnglais)
+      	FIN
+      	
+      	nIndiceContinent=TableauCherche(m_pclContinents.m_tabContinent,tcDichotomique,"m_sNom3",xValeur)
+      	SI nIndiceContinent<1 ALORS nIndiceContinent=TableauCherche(m_pclContinents.m_tabContinent,tcLinéaire,"m_sNom5",xValeur)
+      	SI nIndiceContinent>0 ALORS eTypeFiltre=cePays.ParContinent;sValeur=m_pclContinents.m_tabContinent[nIndiceContinent].m_sNom5
+      	nIndiceRégion=TableauCherche(m_pclContinentRégions.m_tabRégions,tcDichotomique,"m_sNom3",xValeur)
+      	SI nIndiceRégion<1 ALORS nIndiceRégion=TableauCherche(m_pclContinentRégions.m_tabRégions,tcLinéaire,"m_sNom5",xValeur)
+      	SI nIndiceRégion>0 ALORS eTypeFiltre=cePays.ParRégion;sValeur=m_pclContinentRégions.m_tabRégions[nIndiceRégion].m_sNom5
+      	
+      	SI xValeur<>Null ALORS
+      		SELON eTypeFiltre..Nom
+      			CAS cePays.ParNom..Nom				: sFiltre="name/"+sValeur
+      			CAS cePays.ParNomComplet..Nom		: sFiltre="name/"+sValeur+"?fullText=true"
+      			CAS cePays.ParCode..Nom				: sFiltre="alpha/"+sValeur
+      			CAS cePays.ParCodes..Nom			: sFiltre="alpha?codes="+sValeur
+      			CAS cePays.ParDevise..Nom			: sFiltre="currency/"+sValeur
+      			CAS cePays.ParLangue..Nom			: sFiltre="lang/"+sValeur
+      			CAS cePays.ParCapitale..Nom			: sFiltre="capital/"+sValeur
+      			CAS cePays.ParDémonyme..Nom			: sFiltre="demonym/"+sValeur
+      			CAS cePays.ParContinent..Nom		: sFiltre="region/"+sValeur
+      			CAS cePays.ParRégion..Nom			: sFiltre="region/"+sValeur
+      			AUTRE CAS							: m_pclErreur.AjouteErreur(<§$0002§>);renvoyer faux
+      		FIN
+      		SI sFiltre~="" ALORS m_pclErreur.AjouteErreur(<§$0003§>);renvoyer faux
+      	FIN
+      	SI sFiltre~="" ALORS sFiltre="all"
+      	
+      	SI coNomColonnes<>cePays.p_coToutesColonnes ALORS
+      		SI coNomColonnes[cePays.ID] 												ALORS sColonnes+=[","]+"ccn3"
+      		SI coNomColonnes[cePays.Nom] _OU_ eTypeFiltre=cePays.ParNom _OU_ eTypeFiltre=cePays.ParNomComplet ALORS sColonnes+=[","]+"name"
+      		SI coNomColonnes[cePays.Noms]												ALORS sColonnes+=[","]+"translations"
+      		SI coNomColonnes[cePays.NomsAlternatifs]									ALORS sColonnes+=[","]+"altSpellings"
+      		SI coNomColonnes[cePays.CodeISO2] _OU_ eTypeFiltre=cePays.ParCode			ALORS sColonnes+=[","]+"cca2"
+      		SI coNomColonnes[cePays.CodeISO3] _OU_ eTypeFiltre=cePays.ParCode			ALORS sColonnes+=[","]+"cca3"
+      		SI coNomColonnes[cePays.Capitale] _OU_ eTypeFiltre=cePays.ParCapitale		ALORS sColonnes+=[","]+"capital"
+      		SI coNomColonnes[cePays.Continent]	_OU_ eTypeFiltre=cePays.ParContinent	ALORS sColonnes+=[","]+"region"
+      		SI coNomColonnes[cePays.Région]	_OU_ eTypeFiltre=cePays.ParRégion			ALORS sColonnes+=[","]+"subregion"
+      		SI coNomColonnes[cePays.Démonyme]											ALORS sColonnes+=[","]+"demonyms"
+      		SI coNomColonnes[cePays.SurfaceKm2]											ALORS sColonnes+=[","]+"area"
+      		SI coNomColonnes[cePays.Domaines]											ALORS sColonnes+=[","]+"tld"
+      		SI coNomColonnes[cePays.Indicatifs]	 _OU_ eTypeFiltre=cePays.ParIndicatif	ALORS sColonnes+=[","]+"idd"
+      		SI coNomColonnes[cePays.Frontières]											ALORS sColonnes+=[","]+"borders"
+      		SI coNomColonnes[cePays.Devises] _OU_ eTypeFiltre=cePays.ParDevise			ALORS sColonnes+=[","]+"currencies"
+      		SI coNomColonnes[cePays.Langues]  _OU_ eTypeFiltre=cePays.ParLangue			ALORS sColonnes+=[","]+"languages"
+      		SI coNomColonnes[cePays.Drapeau]											ALORS sColonnes+=[","]+"flags"	//et non flag !
+      		SI coNomColonnes[cePays.LatLong]											ALORS sColonnes+=[","]+"latlng"
+      	FIN
+      	
+      	SI sColonnes>"" ALORS
+      		SI Position(sFiltre,"?")>0 ALORS sFiltre+="&" SINON sFiltre+="?"
+      		sFiltre+="fields="+sColonnes
+      	FIN
+      	
+      	SI mg_sDernierFiltre="none" _OU_ mg_sDernierFiltre<>"all" _OU_ mg_sDernierFiltre<>sFiltre ALORS
+      		TableauSupprimeTout(mg_tabPays)
+      		
+      		m_stRequêteHTTPAPI.sURL 			= m_sURLdeBase+["/"]+sFiltre
+      		m_stRequêteHTTPAPI.bIgnoreErreur	= vrai
+      		SI RestExecute(cHTTPAPI.Aucune,*,*,vrai) ALORS fSauveBuffer(cApplication._Application.p_sRépertoireDonnées+"pays_reponsebrute.json",m_stReponseHTTPAPI.bufContenu) sinon RENVOYER Faux
+      		
+      		sRéponse est une chaine = RéponseBufferVersChaineUnicode()
+      		SI Position(sRéponse,"Not found") ALORS
+      			m_pclErreur.AjouteErreur(<§$0004§>);renvoyer vrai
+      		SINON
+      			nRésultat	est un entier
+      			vRésultats 	est un Variant = RéponseJSONunicodeVersVariant()
+      			SI vRésultats<>Null ALORS
+      				SI sRéponse[1]="[" ALORS
+      					SI sJaugeOuCallBack>"" _ET_ vRésultats..Occurrence>0 ALORS m_clJauge.Démarre(sJaugeOuCallBack,vRésultats..Occurrence,&nRésultat,duRafraichiJauge,sChampLibelléJauge,sContenuLibelléJauge)
+      					POUR nRésultat = 1 _À_ vRésultats..Occurrence
+      						pclNouveauPays = allouer un cePays(m_bLitAussiMémo,m_nLargeurDrapeau)
+      						pclNouveauPays = VariantVersObjet(vRésultats[nRésultat])
+      						SI pclNouveauPays=Null ALORS sortir sinon pclNouveauPays.AprèsLecture();TableauAjoute(mg_tabPays,pclNouveauPays)
+      					FIN
+      					SI sJaugeOuCallBack>"" _ET_ vRésultats..Occurrence>0 ALORS m_clJauge.Arrête()
+      				SINON
+      					pclNouveauPays = allouer un cePays(m_bLitAussiMémo,m_nLargeurDrapeau)
+      					pclNouveauPays = VariantVersObjet(vRésultats)
+      					SI pclNouveauPays<>Null ALORS pclNouveauPays.AprèsLecture();TableauAjoute(mg_tabPays,pclNouveauPays)
+      				FIN
+      			SINON
+      				m_pclErreur.AjouteErreur(<§$0000§>);renvoyer faux
+      			FIN
+      		FIN
+      	SINON
+      		nMaxEnreg=mg_tabPays..Occurrence
+      	FIN
+      	
+      	POUR TOUT pclPays de mg_tabPays
+      		pclNouveauPays = allouer un cePays 
+      		pclNouveauPays<-pclPays
+      		SELON eTypeFiltre..Nom
+      			CAS cePays.EPaysFiltre.AucunFiltre..Nom		: pclNouveauPays<-pclPays
+      			CAS cePays.EPaysFiltre.ParNom..Nom			: SI Position(pclPays.m_stNom.sCommun,sValeur,0,SansCasse+DepuisDébut)>0 _OU_ Position(pclPays.m_stNom.sOfficiel,sValeur,0,SansCasse+DepuisDébut)>0 ALORS pclNouveauPays<-pclPays SINON pclNouveauPays=Null
+      			CAS cePays.EPaysFiltre.ParNomComplet..Nom	: SI pclPays.m_stNom.sCommun~=sValeur _OU_ pclPays.m_stNom.sOfficiel~=sValeur ALORS pclNouveauPays<-pclPays SINON pclNouveauPays=Null
+      			CAS cePays.EPaysFiltre.ParCode..Nom			: SI pclPays.m_sCodeISO2=Majuscule(sValeur) _OU_ pclPays.m_sCodeISO3=Majuscule(sValeur) ALORS pclNouveauPays<-pclPays SINON pclNouveauPays=Null
+      			CAS cePays.EPaysFiltre.ParCodes..Nom		: SI Position(pclPays.m_sCodeISO2,sValeur,0,SansCasse+DepuisDébut+MotComplet)>0 _OU_ Position(pclPays.m_sCodeISO3,sValeur,0,SansCasse+DepuisDébut+MotComplet)>0 ALORS pclNouveauPays<-pclPays SINON pclNouveauPays=Null
+      			CAS cePays.EPaysFiltre.ParDevise..Nom 
+      				SI pclPays.m_taDevises[Majuscule(sValeur)]..Existe ALORS 
+      					pclNouveauPays<-pclPays 
+      				SINON 
+      					pclNouveauPays=Null
+      					POUR TOUT stUneDevise de pclPays.m_taDevises
+      						SI Position(stUneDevise.sNom,sValeur,0,SansCasse+DepuisDébut)>0 ALORS pclNouveauPays<-pclPays
+      					FIN
+      				FIN
+      			CAS cePays.EPaysFiltre.ParLangue..Nom
+      				SI pclPays.m_taLangues[Minuscule(sValeur)]..Existe ALORS 
+      					pclNouveauPays<-pclPays 
+      				SINON 
+      					pclNouveauPays=Null
+      					POUR TOUT stUneLangue de pclPays.m_taLangues
+      						SI Position(stUneLangue,sValeur,0,SansCasse+DepuisDébut)>0 ALORS pclNouveauPays<-pclPays
+      					FIN
+      				FIN
+      			CAS cePays.EPaysFiltre.ParCapitale..Nom		: SI TableauCherche(pclPays.m_tabCapitale,tcLinéaire,sValeur) ALORS pclNouveauPays<-pclPays SINON pclNouveauPays=Null
+      			CAS cePays.EPaysFiltre.ParIndicatif..Nom	: SI TableauCherche(pclPays.m_tabIndicatifs,tcLinéaire,sValeur)>0 ALORS pclNouveauPays<-pclPays SINON pclNouveauPays=Null
+      			CAS cePays.EPaysFiltre.ParRégion..Nom		: SI Position(pclPays.m_sRégion,sValeur,0,SansCasse+DepuisDébut)>0 ALORS pclNouveauPays<-pclPays SINON pclNouveauPays=Null
+      			CAS cePays.EPaysFiltre.ParRégion..Nom		: SI Position(pclPays.m_sSousRégion,sValeur,0,SansCasse+DepuisDébut)>0 ALORS pclNouveauPays<-pclPays SINON pclNouveauPays=Null
+      		FIN
+      		SI pclNouveauPays<>Null ALORS 
+      			nOccurrence++
+      			TableauAjoute(m_tabPays,pclNouveauPays)
+      			SI nLimiteMax>0 _ET_ nOccurrence=nLimiteMax ALORS SORTIR
+      		FIN
+      	FIN
+      	Trie(eOrdre)
+      	m_nIndiceParcours=0
+      	
+      <fin>
+      
+      
+      renvoyer vrai
+      
+      	procédure interne VariantVersObjet(vPays est un variant)
+      	//obligatoire de le faire à la main, la désérialisation de tableaux associatifs n'existe pas en WD
+      	pclUnPays est un cePays dynamique = allouer un cePays(m_bLitAussiMémo,m_nLargeurDrapeau)
+      	sNom 	est une chaîne
+      	pclUnPays.m_nID					= Val(vPays.ccn3)
+      	pclUnPays.m_sCodeISO2			= vPays.cca2
+      	pclUnPays.m_sCodeISO3			= vPays.cca3
+      	pclUnPays.m_sCodeCIOC			= vPays.cioc
+      	pclUnPays.m_stNom.sCommun		= vPays.name.common
+      	pclUnPays.m_stNom.sOfficiel		= vPays.name.official
+      	POUR nNom = 1 _À_ vPays.name.nativeName..Membre..Occurrence
+      		sNom=vPays.name.nativeName..Membre[nNom]..Nom
+      		stNom est un cePays.STNomNatif
+      		stNom.sCommun={"vPays.name.nativeName."+sNom+".common"}
+      		stNom.sOfficiel={"vPays.name.nativeName."+sNom+".official"}
+      		pclUnPays.m_stNom.taNomNatif[sNom]=stNom
+      	FIN
+      	stTraduction est un cePays.STTraduction
+      	stTraduction.sCommun		= {"vPays.name.common"}
+      	stTraduction.sOfficiel		= {"vPays.name.official"}
+      	pclUnPays.m_taTraductions["en"]=stTraduction
+      	POUR nNom = 1 _À_ vPays.translations..Membre..Occurrence
+      		sNom=vPays.translations..Membre[nNom]..Nom
+      		stTraduction.sCommun		= {"vPays.translations."+sNom+".common"}
+      		stTraduction.sOfficiel		= {"vPays.translations."+sNom+".official"}
+      		pclUnPays.m_taTraductions[sNom]=stTraduction
+      	FIN
+      	POUR nNom = 1 _À_ vPays.altSpellings..Occurrence
+      		tableauajoute(pclUnPays.m_tabNomsAlternatifs,vPays.altSpellings[nNom])
+      	FIN
+      	POUR nCapitale = 1 _À_ vPays.capital..Occurrence
+      		tableauajoute(pclUnPays.m_tabCapitale,vPays.capital[nCapitale])
+      	FIN
+      	pclUnPays.m_bEstIndépendant		= vPays.independent
+      	pclUnPays.m_sStatut				= vPays.status
+      	pclUnPays.m_bMembreNationsUnies	= vPays.unMember
+      	pclUnPays.m_sRégion				= vPays.region
+      	pclUnPays.m_ssousRégion			= vPays.subregion
+      	POUR nNom = 1 _À_ vPays.languages..Membre..Occurrence
+      		sNom=vPays.languages..Membre[nNom]..Nom
+      		pclUnPays.m_taLangues[sNom]	= {"vPays.languages."+sNom}
+      	FIN
+      	POUR nDevise = 1 _À_ vPays.currencies..Membre..Occurrence
+      		sNom=vPays.currencies..Membre[nDevise]..Nom
+      		stDevise est un cePays.STDevise
+      		stDevise.snom				= {"vPays.currencies."+sNom+".name"}
+      		stDevise.sSymbole			= {"vPays.currencies."+sNom+".symbol"}
+      		pclUnPays.m_tadevises[sNom]	= stDevise
+      	FIN
+      	POUR nDémonyme = 1 _À_ vPays.demonyms..Membre..Occurrence
+      		sNom=vPays.demonyms..Membre[nDémonyme]..Nom
+      		stDémonyme est un cePays.STDémonyme
+      		stDémonyme.sMasculin		= {"vPays.demonyms."+sNom+".m"}
+      		stDémonyme.sFéminin			= {"vPays.demonyms."+sNom+".f"}
+      		pclUnPays.m_taDémonyme[sNom]= stDémonyme
+      	FIN
+      	pclUnPays.m_nSurfaceKm2			= vPays.area
+      	pclUnPays.m_nIndicatif			= vPays.idd.root
+      	POUR nIndicatif = 1 _À_ vPays.idd.suffixes..Occurrence
+      		TableauAjoute(pclUnPays.m_tabIndicatifs,vPays.idd.suffixes[nIndicatif])
+      	FIN
+      	pclUnPays.m_nLatitude			= vPays.latlng[1]
+      	pclUnPays.m_nLongitude			= vPays.latlng[2]
+      	POUR nFrontière = 1 _À_ vPays.borders..Occurrence
+      		TableauAjoute(pclUnPays.m_tabFrontières,vPays.borders[nFrontière])
+      	FIN
+      	pclUnPays.m_bSansAccèsMer		= vPays.landlocked
+      	POUR nDrapeau = 1 _À_ vPays.flags..Occurrence
+      		TableauAjoute(pclUnPays.m_tabDrapeaux,vPays.flags[nDrapeau])
+      	FIN
+      	pclUnPays.m_bCirculationDroite	= (vPays.car.side="right")
+      	pour nPlaque = 1 _a_ vPays.car.signs..occurrence
+      		tableauajoute(pclUnPays.m_tabSigneVéhicule,vPays.car.signs[nPlaque])
+      	FIN
+      	renvoyer pclUnPays
+      	FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();renvoyer faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Trie
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1348386914414965670
+     type_code : 12
+     code : |1-
+      // Résumé : Trie la liste de pays en fonction d'une colonne spécifiée avec des options de tri.
+      // Syntaxe : Trie (<eColonne> est csdPays.EPaysTri [, <coOption> est cSourceDeDonnées.COTri])
+      // Paramètres :
+      //	eColonne (csdPays.EPaysTri) : Représente la colonne par laquelle effectuer le tri.
+      //	coOption (cSourceDeDonnées.COTri) : Spécifie les options de tri.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Trie(eColonne est un Epaystri,coOption est une cSourceDeDonnées.COTri = cSourceDeDonnées.COTri.Aucun)
+      m_pclerreur.RAZ()
+      SI EnumérationVérifieNom(EPaysTri,eColonne..Nom) alors
+      	nOption est un entier
+      	SI coOption[cSourceDeDonnées.COTri.tccOrdreLexicographique] 	ALORS nOption+=tccOrdreLexicographique
+      	SI coOption[cSourceDeDonnées.COTri.tccRespecteNumérique] 		ALORS nOption+=cSourceDeDonnées.COTri.tccRespecteNumérique
+      	SI coOption[cSourceDeDonnées.COTri.tccSansAccent] 				aLORS nOption+=cSourceDeDonnées.COTri.tccSansAccent
+      	SI coOption[cSourceDeDonnées.COTri.tccSansCasse] 				ALORS nOption+=cSourceDeDonnées.COTri.tccSansCasse
+      	SI coOption[cSourceDeDonnées.COTri.tccSansEspace] 				aLORS nOption+=cSourceDeDonnées.COTri.tccSansEspace
+      	SI coOption[cSourceDeDonnées.COTri.tccSansEspaceIntérieur] 		ALORS nOption+=cSourceDeDonnées.COTri.tccSansEspaceIntérieur
+      	SI coOption[cSourceDeDonnées.COTri.tccSansPonctuationNiEspace] 	ALORS nOption+=cSourceDeDonnées.COTri.tccSansPonctuationNiEspace
+      	TableauTrie(m_tabPays,ttMembre+nOption,eColonne..Valeur)
+      fin
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 458752
+   -
+     name : Premier
+     procedure_id : 1348386914415031206
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie le premier objet cePays de la liste triée ou chargée des pays.
+      // Syntaxe : Premier ()
+      // Paramètres : Aucun
+      // Valeur de retour : cePays : Représente le premier pays de la liste triée ou chargée. Si la liste est vide, la méthode renvoie Null.
+      // Exemple :
+      //
+      PROCEDURE Premier() : cePays
+      SI m_tabPays..Occurrence=0 ALORS RENVOYER Null SINON m_nIndiceParcours=1;RENVOYER m_tabPays[m_nIndiceParcours]
+     type : 458752
+   -
+     name : Dernier
+     procedure_id : 1348386914415096742
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie le dernier objet cePays de la liste triée ou chargée des pays.
+      // Syntaxe : Dernier ()
+      // Paramètres : Aucun
+      // Valeur de retour : cePays : Représente le dernier pays de la liste triée ou chargée. Si la liste est vide, la méthode renvoie Null.
+      // Exemple :
+      //
+      PROCEDURE Dernier() : cePays
+      SI m_tabPays..Occurrence=0 ALORS RENVOYER Null SINON m_nIndiceParcours=m_tabPays..Occurrence;RENVOYER m_tabPays[m_nIndiceParcours]
+     type : 458752
+   -
+     name : Suivant
+     procedure_id : 1348386914415162278
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie le pays suivant dans la liste triée ou chargée des pays, par rapport à la position actuelle de parcours.
+      // Syntaxe : Suivant ()
+      // Paramètres : Aucun
+      // Valeur de retour : cePays : Représente le pays suivant dans la liste triée ou chargée. Si la fin de la liste est atteinte, la méthode renvoie Null.
+      // Exemple :
+      //
+      PROCEDURE Suivant() : cePays
+      si m_tabPays..Occurrence>0 _ET_ m_nIndiceParcours<m_tabPays..Occurrence alors m_nIndiceParcours++;RENVOYER m_tabPays[m_nIndiceParcours] SINON RENVOYER Null
+     type : 458752
+   -
+     name : Précédent
+     procedure_id : 1348386914415227814
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie le pays précédent dans la liste triée ou chargée des pays, par rapport à la position actuelle de parcours.
+      // Syntaxe : Précédent ()
+      // Paramètres : Aucun
+      // Valeur de retour : cePays : Représente le pays précédent dans la liste triée ou chargée. Si le début de la liste est atteinte, la méthode renvoie Null.
+      // Exemple :
+      //
+      PROCEDURE Précédent() : cePays
+      SI m_tabPays..Occurrence>0 _ET_ m_nIndiceParcours>1 ALORS m_nIndiceParcours--;RENVOYER m_tabPays[m_nIndiceParcours] SINON RENVOYER Null
+     type : 458752
+   -
+     name : Occurrence
+     procedure_id : 1348386914415293350
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie le nombre d'occurrences de pays dans la liste globale des pays.
+      // Syntaxe : [ <Résultat> = ] Occurrence ()
+      // Paramètres : Aucun
+      // Valeur de retour : entier : le nombre d'occurrences de pays dans la liste globale.
+      // Exemple :
+      //
+      PROCEDURE Occurrence() : entier
+      renvoyer mg_tabPays..occurrence
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 1348386914415358886
+     type_code : 12
+     code : |1-
+      // Résumé : Réinitialise l'objet csdPays en supprimant tous les éléments de la liste globale des pays et en réinitialisant l'indice de parcours.
+      // Syntaxe : Raz ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Raz() 
+      TableauSupprimeTout(m_tabPays)
+      m_nIndiceParcours=0
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x10d8f3b100631844
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Impossible de désérialiser le résultat
+      en-GB : Cannot deserialize the result
+      fr-CA : Impossible de désérialiser le résultat
+      en-US : Cannot deserialize the result
+     index : 0
+   -
+     text :
+      fr-FR : L'énumération passée en paramètre n'est pas reconnue
+      en-GB : The enumeration passed in parameter is not recognized
+      fr-CA : L'énumération passée en paramètre n'est pas reconnue
+      en-US : The enumeration passed in parameter is not recognized
+     index : 1
+   -
+     text :
+      fr-FR : Le type de recherche n'est pas supporté
+      en-GB : Search type is not supported
+      fr-CA : Le type de recherche n'est pas supporté
+      en-US : Search type is not supported
+     index : 2
+   -
+     text :
+      fr-FR : "La valeur, le type de valeur ou le type de recherche n'est pas reconnu"
+      en-GB : "Value, value type, or search type is not recognized"
+      fr-CA : "La valeur, le type de valeur ou le type de recherche n'est pas reconnu"
+      en-US : "Value, value type, or search type is not recognized"
+     index : 3
+   -
+     text :
+      fr-FR : Pas trouvé
+      en-GB : Not found
+      fr-CA : Pas trouvé
+      en-US : Not found
+     index : 4
+   -
+     text :
+      fr-FR : La limite doit être à 0 (tous) ou supérieure à 0
+      en-GB : The limit must be 0 (all) or greater than 0
+      fr-CA : La limite doit être à 0 (tous) ou supérieure à 0
+      en-US : The limit must be 0 (all) or greater than 0
+     index : 5
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

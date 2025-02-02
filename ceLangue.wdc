@@ -1,0 +1,202 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : ceLangue
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12a9c4430172e096
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe hérite de cEnregistrement pour décrire une devise. Pour l'utiliser, ouvrir le fichier Excel "langues_V1.xlsx" avec cBaseDeDonnéesExcel et ouvrez une instance de cette classe en passant l'indice de connexion.
+      //ref : https://fr.wikipedia.org/wiki/Liste_de_langues et https://fr.wikipedia.org/wiki/Liste_des_codes_ISO_639-1
+      
+      ceLangue est une Classe
+      	hérite de cenregistrement
+      public constant
+      	m_sCode1				est une chaine sur 2	<mapping = "A", serialise = faux>	//Code ISO639-1 de la langue (attention pas remplis partout)
+      	m_sCode2T				est une chaine sur 3	<mapping = "B", serialise = faux>	//Code ISO639-2/T de la langue (attention pas remplis partout)
+      	m_sCode2B				est une chaine sur 3	<mapping = "C", serialise = faux>	//Code ISO639-2/B de la langue (attention pas remplis partout)
+      	m_sCode3				est une chaine sur 3	<mapping = "D", serialise = faux>	//Code ISO639-3 de la langue (rempli partout !)
+      	m_sNom3					est une chaine			<mapping = "E", serialise = faux>	//Noms en anglais (les synonymes sont séparés par des virgules)
+      	m_sNom5					est une chaine			<mapping = "F", serialise = faux>	//Noms en français (les synonymes sont séparés par des virgules)
+      	m_sNom					est une chaine			<mapping = "G", serialise = faux>	//Noms dans la langue elle-même (les synonymes sont séparés par des virgules)
+      	m_sFamille				est une chaine			<mapping = "H", serialise = faux>	//Famille à laquelle appartient la langue
+      	m_bEstLangueAncienne	est un booleen			<mapping = "I", serialise = faux>	//Est une langue ancienne (ex : latin)
+      	m_bEstDialecte			est un booleen												//Indique que la langue est un dialecte
+      	m_sDialectes			est une chaine			<mapping = "J", serialise = faux>	//séparés avec , et le code ISO3 entre parenthèses
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1344821755813027990
+     type_code : 27
+     code : |1-
+      // Résumé : Initialisation de la classe lors de sa création.
+      // Syntaxe : Constructeur (<nIndiceDeConnexion> est entier [, <xFeuille> [, <bLectureSeule> est booléen]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indique l'indice de connexion pour accéder au fichier Excel contenant les données des langues.
+      //	xFeuille (valeur par défaut="Langues") : Nom de la feuille Excel à partir de laquelle les données des devises seront extraites. La valeur par défaut est "Langues".
+      // 	bLectureSeule (booléen optionnel) : Gardé pour compatibilité mais sera toujours forcé à Vrai dans Betula (le fichier Excel n'a pas vocation à être modifié)
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexion est un entier,xFeuille = "Langues",bLectureSeule est un booleen = vrai)
+      cEnregistrement.Constructeur(nIndiceDeConnexion,xFeuille,Vrai)
+      cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire = "D"
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1344821755813093526
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres :	Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : RechercheSelonCodeISO
+     procedure_id : 1348241499705284055
+     type_code : 12
+     code : |1-
+      // Résumé : Recherche en fonction d'un code ISO spécifié. Met en mémoire la liste des langues si nécessaire avant d'exécuter la recherche.
+      // Syntaxe : [ <Résultat> = ] RechercheSelonCodeISO (<sCodeISO> est chaîne [, <bAussiDansDialectes> est booléen])
+      // Paramètres :
+      //	sCodeISO (chaîne UNICODE) : Code ISO de la langue (2 ou 3 caractères). Attention, la recherche dans les dialectes nécessitent le code ISO3.
+      //	bAussiDansDialectes (booléen optionnel) : Indique si la recherche doit inclure les dialectes, par défaut = Faux.
+      // Valeur de retour : booléen : Vrai si la recherche aboutit et initialise l'instance avec les informations de la langue, Faux dans le cas contraire.
+      // Exemple :
+      //
+      PROCEDURE RechercheSelonCodeISO(sCodeISO est une chaine,bAussiDansDialectes est un booleen = faux) : booleen
+      SI sCodeISO~="" _OU_ pas Taille(sCodeISO) dans (2,3) 	ALORS m_pclErreur.AjouteErreur(<§$0000§>);renvoyer faux
+      si bAussiDansDialectes et taille(sCodeISO)=2 			alors m_pclErreur.AjouteErreur(<§$0001§>);renvoyer faux
+      SI csdLangue.mg_tablangues..Occurrence = 0 ALORS
+      	//chargement de toutes les langues
+      	clLangues est un csdlangue(m_nIndiceDeConnexion,m_sTableReliée)
+      	clLangues.m_bNePasLirePremierEnreg=Vrai
+      	SI PAS clLangues.Liste() ALORS m_pclErreur.AjouteErreur(clLangues.p_sErreur);RENVOYER Faux
+      FIN
+      nIndice est un entier 
+      si taille(sCodeISO)=2 alors 
+      	nIndice=tableaucherche(csdDevise.mg_tabDevises,tcLinéaire,"m_sCode1",sCodeISO)
+      sinon
+      	si Taille(sCodeISO)=3 alors nIndice=tableaucherche(csdDevise.mg_tabDevises,tcLinéaire,"m_sCode3",sCodeISO)
+      	si Taille(sCodeISO)=2 _et_ nIndice<1 alors nIndice=tableaucherche(csdDevise.mg_tabDevises,tcLinéaire,"m_sCode2T",sCodeISO)
+      	SI Taille(sCodeISO)=2 _et_ nIndice<1 ALORS nIndice=tableaucherche(csdDevise.mg_tabDevises,tcLinéaire,"m_sCode2B",sCodeISO)
+      	si Taille(sCodeISO)=3 _et_ nIndice<1 _et_ bAussiDansDialectes alors nIndice=TableauCherche(csdDevise.mg_tabDevises,tcLinéaire,"m_sDialectes","("+sCodeISO+")")
+      fin
+      SI nIndice>0 ALORS CopieMembresDepuis(csdLangue.mg_tablangues[nIndice]);RENVOYER Vrai
+      RENVOYER Faux
+     type : 458752
+   -
+     name : AprèsLecture
+     procedure_id : 1348927873435243533
+     type_code : 12
+     code : |1-
+      // Résumé : Traitement après lecture
+      // Syntaxe : AprèsLecture ( [<sdSource>])
+      // Paramètres :
+      // 	sdSource (source de données) : source de données contant l'enregistrement en cours. Dans le cas d'une requête multi-table, contient aussi ces infos qu'il est nécessaire de traiter.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE AprèsLecture(sdSource = null)
+      m_bEstDialecte = (m_sCode2B="")
+      POUR TOUT sDialecte,sCode de p_taDialectes		//ajout des dialectes par propriété car les membres sont constant
+      	pclDialecte est un ceLangue dynamique
+      	pclDialecte.p_sDialecte=sCode+cGénérique._sep+sDialecte+cGénérique._Sep+m_bEstLangueAncienne
+      	tableauajoute(csdLangue.mg_tabLangues,pclDialecte)
+      fin
+     type : 458752
+  properties :
+   -
+     name : p_sNom
+     identifier : 0x12b855a503221d7f
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom de la langue dans la langue en cours
+         PROCEDURE PUBLIQUE p_sNom() : chaine
+         si nation() dans (nationFrançais,nationCanadienFrançais) alors renvoyer extraitchaine(m_sNom5,1,",") sinon RENVOYER ExtraitChaîne(m_sNom3,1,",")
+        type : 1966080
+     template_refs : []
+   -
+     name : p_taDialectes
+     identifier : 0x12b858d103ba849a
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie les dialectes sous forme de tableau
+         PROCEDURE PUBLIQUE p_taDialectes() : tableau associatif de chaines
+         taDialectes est un tableau associatif de chaines
+         pour toute chaine sDialecte de m_sDialectes separee par ","
+         	taDialectes[sansespace(extraitchaine(sDialecte,2,["(",")"]))]=SansEspace(ExtraitChaîne(sDialecte,1,["(",")"]))
+         FIN
+         renvoyer taDialectes
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sDialecte
+     identifier : 0x15a955ef72aa23c8
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Affecte les valeurs pour un dialecte (voir AprèsLecture)
+         PROCEDURE PUBLIQUE p_sDialecte(Valeur)
+         m_sCode3			= ExtraitChaîne(Valeur,1,cGénérique._Sep)
+         m_sNom3 			= ExtraitChaîne(Valeur,2,cGénérique._Sep)
+         m_bEstLangueAncienne= ExtraitChaîne(Valeur,3,cGénérique._Sep)
+         m_bEstDialecte		= Vrai
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x12a9c43f016ccf67
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le code ISO de la langue est obligatoire et doit comporter 2 ou 3 caractères
+      en-GB : The language ISO code is mandatory and must contain 2 or 3 characters
+      fr-CA : Le code ISO de la langue est obligatoire et doit comporter 2 ou 3 caractères
+      en-US : The language ISO code is mandatory and must contain 2 or 3 characters
+     index : 0
+   -
+     text :
+      fr-FR : La recherche par dialecte nécessite un code ISO en 3 caractères
+      en-GB : Search by dialect requires a 3-character ISO code
+      fr-CA : La recherche par dialecte nécessite un code ISO en 3 caractères
+      en-US : Search by dialect requires a 3-character ISO code
+     index : 1
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

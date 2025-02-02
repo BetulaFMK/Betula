@@ -1,0 +1,437 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cBaseDeDonnéesLDAP
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1c3e48c48959f3de
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet la connexion au LDAP. Elle est utilisée dans cApplication, cUtilisateur et quelques classe ceLDAPxxx.
+      //Attention, les classes LDAP fournis permettent de lire les OUs, les Groups, les Users et les Contacts mais pas les Computers, Printers ou SharedFolders. S'inspirer des autres classes s'ils vous sont nécessaires.
+      
+      constante
+      	_Port						= 389														//Port de connexion par défaut au LDAP
+      fin
+      cBaseDeDonnéesLDAP est une Classe
+      	hérite de cgenerique
+      	m_bTraceColonnesModifiées	est un booleen				<sérialise = faux>				//Renvoi ou permet de modifier le statut permettant la trace des colonnes modifiés lors de l'utilisation de la fonction cEnregistrement.Écrit() 
+      PUBLIC CONSTANT LOCAL
+      	m_nIndiceDeConnexion		est un entier 				<serialise = faux>				//Indice de la connexion courante
+      	m_sNomSession				est une chaine				<serialise = faux>				//Nom de la session LDAP
+      PUBLIC CONSTANT GLOBAL
+      	mg_taServeurVersion			est un tableau associatif 	<Sérialise = Faux> de chaînes	//Tableau contenant la version de chaque serveur auquel l'application aura accès
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2035144090573272030
+     type_code : 27
+     code : |1-
+      // Résumé : Permet d'initialiser la classe. Si un indice de connexion est passé en paramètre, récupère toutes les informations d'une précédente connexion qui avait renvoyé ledit indice.
+      // Syntaxe : Constructeur ( [<nIndiceDeConnexionExistant> est entier])
+      // Paramètres :
+      // 	nIndiceDeConnexionExistant (entier optionnel): L'indice de connexion existant à associer à l'instance de la classe. Par défaut, il est initialisé à zéro.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexionExistant est un entier = 0)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIndiceDeConnexionExistant)
+      m_pclErreur.Raz()
+      
+      m_nIndiceDeConnexion=nIndiceDeConnexionExistant
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2035144090573337566
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe. Déconnecte la connexion à la BD le cas échéant.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      SI p_bEstConnecté ALORS Déconnecte()
+     type : 655360
+   -
+     name : Connecte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035460627827366984
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour établir une connexion à LDAP en utilisant les paramètres fournis. Tous les paramètres de la méthode peuvent être récupérés des paramètres de l'application avec le nom de section "HF5".
+      // Syntaxe : [ <Résultat> = ] Connecte ( [<sNomDeSession> est chaîne [, <sServeurPort> est chaîne [, <sUtilisateur> est chaîne [, <sMotDePasse> est chaîne [, <nVersionLDAP> est entier [, <sDC> est chaîne ANSI [, <eVersionServeur> est cBaseDeDonnées.EVersionServeur [, <bGèreUTF8> est booléen [, <bResterConnecté> est booléen [, <sDétecteUserDN> est chaîne [, <sDétecteContactDN> est chaîne [, <sDétecteGroupDN> est chaîne [, <sDétecteComputerDN> est chaîne [, <sDétectePrinterDN> est chaîne [, <sDétecteSharedFolderDN> est chaîne [, <sAttributsUser> est chaîne [, <sAttributsContact> est chaîne [, <sAttributsGroup> est chaîne [, <sAttributsOU> est chaîne [, <sAttributsComputer> est chaîne [, <sAttributsPrinter> est chaîne [, <sAttributsSharedFolder> est chaîne]]]]]]]]]]]]]]]]]]]]]])
+      // Paramètres :
+      //	sNomDeSession (chaîne UNICODE) : Le nom de la session LDAP. Paramètre "Session", par défaut "FMK_LDAP".
+      //	sServeurPort (chaîne UNICODE) : Le nom du serveur et le port LDAP au format "serveur:port".
+      //	sUtilisateur (chaîne UNICODE) : Nom d'utilisateur pour la connexion. Paramètre "User".
+      //	sMotDePasse (chaîne UNICODE) : Mot de passe pour la connexion. Paramètre "Password".
+      //	nVersionLDAP (entier) : La version du protocole LDAP à utiliser. Paramètre "Version".
+      //	sDC (chaîne ANSI) : Le composant de domaine (Domain Component) pour la connexion LDAP. Paramètre "DomainComponent".
+      //	eVersionServeur (cBaseDeDonnées.EVersionServeur) : La version du serveur Windows qui héberge le LDAP.Paramètre "OS".
+      // 	bGèreUTF8 (booléen - valeur par défaut=1) : Un indicateur pour spécifier si le serveur LDAP gère l'encodage UTF-8. 
+      //	bResterConnecté (booléen) :  Un indicateur pour spécifier si la connexion doit être maintenue après son utilisation. Paramètre "StayConnected", par défaut Vrai.
+      //	sDétecteUserDN (chaîne UNICODE) : Chaîne de caractères permettant de savoir ce qui va être récupéré par l'application (voir TypeDétecteDansDN). Paramètre "DNUser", par défaut ",OU=Users,".
+      //	sDétecteContactDN (chaîne UNICODE) : Chaîne de caractères permettant de savoir ce qui va être récupéré par l'application (voir TypeDétecteDansDN). Paramètre "DNContact", par défaut ",OU=Contacts,".
+      //	sDétecteGroupDN (chaîne UNICODE) : Chaîne de caractères permettant de savoir ce qui va être récupéré par l'application (voir TypeDétecteDansDN). Paramètre "DNGroup", par défaut ",OU=Groups,".
+      //	sDétecteComputerDN (chaîne UNICODE) : Chaîne de caractères permettant de savoir ce qui va être récupéré par l'application (voir TypeDétecteDansDN). Paramètre "DNComputer", par défaut ",OU=Computers,".
+      //	sDétectePrinterDN (chaîne UNICODE) : Chaîne de caractères permettant de savoir ce qui va être récupéré par l'application (voir TypeDétecteDansDN). Paramètre "DNPrinter", par défaut ",OU=Printers,".
+      //	sDétecteSharedFolderDN (chaîne UNICODE) : Chaîne de caractères permettant de savoir ce qui va être récupéré par l'application (voir TypeDétecteDansDN). Paramètre "DNSharedFolder", par défaut ",OU=Shared Folders,".
+      //	sAttributsUser (chaîne UNICODE) : Attributs qui seront lus lors d'une requête sur LDAP. Paramètre "UserAttributes", par défaut "" (Tous).
+      //	sAttributsContact (chaîne UNICODE) : Attributs qui seront lus lors d'une requête sur LDAP. Paramètre "ContactAttributes", par défaut "" (Tous).
+      //	sAttributsGroup (chaîne UNICODE) : Attributs qui seront lus lors d'une requête sur LDAP. Paramètre "GroupAttributes", par défaut "" (Tous).
+      //	sAttributsOU (chaîne UNICODE) : Attributs qui seront lus lors d'une requête sur LDAP. Paramètre "OrganizationUnitAttributes", par défaut "" (Tous).
+      //	sAttributsComputer (chaîne UNICODE) : Attributs qui seront lus lors d'une requête sur LDAP. Paramètre "ComputerAttributes", par défaut "" (Tous).
+      //	sAttributsPrinter (chaîne UNICODE) : Attributs qui seront lus lors d'une requête sur LDAP. Paramètre "PrinterAttributes", par défaut "" (Tous).
+      //	sAttributsSharedFolder (chaîne UNICODE) : Attributs qui seront lus lors d'une requête sur LDAP. Paramètre "SharedFolderAttributes", par défaut "" (Tous).
+      // Valeur de retour : entier : indice de connexion si la connexion LDAP est établie avec succès, sinon 0 en cas d'erreur.
+      // Exemple :
+      //
+      PROCEDURE Connecte(sNomDeSession est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","Session",faux,"FMK_LDAP"),
+      				local sServeurPort est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","Address")+[":"]+cApplication._Application.m_pclParamètres.Lit("LDAP","Port",faux,_Port),
+      				sUtilisateur est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","User"),
+      				sMotDePasse = cApplication._Application.m_pclParamètres.Lit("LDAP","Password",vrai),
+      				nVersionLDAP est un entier = val(cApplication._Application.m_pclParamètres.Lit("LDAP","Version",faux,"3")),
+      				sDC est une chaine ansi = cApplication._Application.m_pclParamètres.Lit("LDAP","DomainComponent"),
+      				eVersionServeur est un cBaseDeDonnées.EVersionServeur = EnumérationDepuisvaleur(cBaseDeDonnées.EVersionServeur,cApplication._Application.m_pclParamètres.Lit("LDAP","OS",faux,cBaseDeDonnées.EVersionServeur.WindowsServer2012..Valeur),cBaseDeDonnées.EVersionServeur.WindowsServer2012),
+      				bGèreUTF8 est un booleen = vrai,
+      				bResterConnecté est un booleen = cApplication._Application.m_pclParamètres.Lit("LDAP","StayConnected",faux,vrai),
+      				sDétecteUserDN est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","DNUser",faux,",OU=Users,"),
+      				sDétecteContactDN est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","DNContact",faux,",OU=Contacts,"),
+      				sDétecteGroupDN est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","DNGroup",faux,",OU=Groups,"),
+      				sDétecteComputerDN est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","DNComputer",faux,",OU=Computers,"),
+      				sDétectePrinterDN est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","DNPrinter",faux,",OU=Printers,"),
+      				sDétecteSharedFolderDN est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","DNSharedFolder",faux,",OU=Shared Folders,"),
+      				sAttributsUser est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","UserAttributes",faux,""),
+      				sAttributsContact est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","ContactAttributes",faux,""),
+      				sAttributsGroup est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","GroupAttributes",faux,""),
+      				sAttributsOU est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","OrganizationUnitAttributes",faux,""),
+      				sAttributsComputer est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","ComputerAttributes",faux,""),
+      				sAttributsPrinter est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","PrinterAttributes",faux,""),
+      				sAttributsSharedFolder est une chaine = cApplication._Application.m_pclParamètres.Lit("LDAP","SharedFolderAttributes",faux,"")) : entier
+      //attention, le nom de la session est sensible à la casse
+      
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomDeSession,sServeurPort,sUtilisateur,(EnModeTest() ? sMotDePasse SINON Répète(cGénérique._Sep,Taille(sMotDePasse))),nVersionLDAP,sDC,eVersionServeur,bResterConnecté)
+      m_pclErreur.Raz()
+      
+      si sNomDeSession~="" 									alors m_pclErreur.AjouteErreur(<§$000a§>)
+      si sServeurPort~="" 									ALORS m_pclErreur.AjouteErreur(<§$0007§>)
+      SI PAS cApplication.mg_bSécurité _ET_ sUtilisateur~="" 	ALORS m_pclErreur.AjouteErreur(<§$0008§>)
+      SI m_pclErreur.p_sErreur>"" ALORS RENVOYER 0
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	SI ExtraitChaîne(sServeurPort,2,":") DANS ("",EOT) ALORS sServeurPort+=":"+_Port
+      	
+      	stUneConnexion 	est un cBaseDeDonnées.STConnexion
+      	cnxDonnées		est une connexion
+      	sClé			est une chaine = Minuscule(sServeurPort+TAB+sUtilisateur)+TAB+sNomDeSession
+      	sParams			est une chaine
+      	
+      	m_nIndiceDeConnexion = TableauCherche(cBaseDeDonnées.mg_tabConnexion,tcLinéaire,"sCLé",sClé)
+      	SI m_nIndiceDeConnexion>0 _ET_ cBaseDeDonnées.mg_taUtilisationServeur[sClé]>0 ALORS cBaseDeDonnées.ConnexionAjoute(sClé);RENVOYER m_nIndiceDeConnexion	//la connexion existe déjà, renvoyer l'indice pour minimiser le nombre de connexions faites par l'appli
+      	
+      	cnxDonnées..Provider						= hActiveDirectory
+      	cnxDonnées..Accès							= hOLectureEcriture
+      	
+      	SI cApplication.mg_bSécurité ALORS 
+      		(sDC,sParams)=ExécuteTraitement("COL_Betula_Secu.LDAPConnecteSécurisé",trtProcédure,sServeurPort,sNomDeSession,sUtilisateur,sMotDePasse)
+      		SI ErreurDétectée() ALORS m_pclErreur.AjouteErreur(ErreurInfo());RENVOYER 0 SINON m_sNomSession = sNomDeSession
+      	sinon
+      		LDAPSession.Hôte 		= ExtraitChaîne(sServeurPort,1,":")
+      		LDAPSession.Utilisateur = sUtilisateur
+      		LDAPSession.MotDePasse 	= sMotDePasse
+      		LDAPSession.Port 		= Val(ExtraitChaîne(sServeurPort,2,":"))
+      		LDAPSession.Version 	= nVersionLDAP
+      		SI pas LDAPConnecte(sNomDeSession) ALORS m_pclErreur.AjouteErreurWx(ChaîneConstruit(<§$0000§>,"LDAP",sServeurPort));renvoyer 0
+      		m_sNomSession 			= sNomDeSession
+      		sParams					= sDétecteUserDN+cGénérique._Sep+sDétecteContactDN+cGénérique._Sep+sDétecteGroupDN+cGénérique._Sep+sDétecteComputerDN+cGénérique._Sep+sDétectePrinterDN+...
+      								  cGénérique._Sep+sDétecteSharedFolderDN
+      	fin
+      	cnxDonnées..Server			= LDAPSession.Hôte	//pour la fonction Environnement
+      	
+      	cBaseDeDonnées.ConnexionAjoute(sClé)
+      	SI m_nIndiceDeConnexion<1 ALORS 
+      		stUneConnexion.sNomUnique					= Minuscule(cnxDonnées..Serveur)
+      		SI mg_taServeurVersion[stUneConnexion.sNomUnique]="" ALORS mg_taServeurVersion[stUneConnexion.sNomUnique] = eVersionServeur..Valeur	//à récupérer automatiquement par WMI ?
+      		stUneConnexion.cnxDonnées					= cnxDonnées
+      		stUneConnexion.bConnecté					= Vrai
+      		stUneConnexion.sMotDePasse					= sMotDePasse
+      		stUneConnexion.sClé							= sClé
+      		stUneConnexion.eAccès						= cBaseDeDonnées.ETypeAccès.FonctionsH
+      		stUneConnexion.sSchémaOuDC					= sDC
+      		stUneConnexion.bResterConnecté				= bResterConnecté
+      		stUneConnexion.eVersionDuServeur			= EnumérationDepuisValeur(cBaseDeDonnées.EVersionServeur,mg_taServeurVersion[stUneConnexion.sNomUnique])
+      		stUneConnexion.bGèreUTF8					= bGèreUTF8
+      		stUneConnexion.sAutresParamètres			= sParams
+      		//variable globales, pourrait être amélioré (voir les objets correspondants)
+      		ceLDAPUser.mg_sAttributsALire				= sAttributsUser
+      		ceLDAPContact.mg_sAttributsALire			= sAttributsContact
+      		ceLDAPGroup.mg_sAttributsALire				= sAttributsGroup
+      		ceLDAPOrganizationalUnit.mg_sAttributsALire	= sAttributsOU
+      		m_nIndiceDeConnexion=TableauAjoute(cBaseDeDonnées.mg_tabConnexion,stUneConnexion)
+      	SINON
+      		cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté	= Vrai
+      	fin
+      	RENVOYER m_nIndiceDeConnexion
+      	
+      <fin>
+      
+      
+      RENVOYER 0
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : Déconnecte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035461916317724515
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui déconnecte la base de données. 
+      // Syntaxe : [ <Résultat> = ] Déconnecte ( [<bForce> est booléen])
+      // Paramètres :
+      // 	bForce (booléen) : Indique s'il faut forcer la déconnexion même si la connexion a été paramétré pour garder la connexion et que la base de données est utilisée.
+      // Valeur de retour : booléen : Renvoie vrai si la déconnexion s'est correctement déroulée, faux sinon
+      // Exemple :
+      //
+      PROCEDURE Déconnecte(bForce est un booleen = faux) : booleen
+      m_pclErreur.Raz()
+      
+      si m_nIndiceDeConnexion>0 alors
+      
+      	bFermé 			est un booleen = faux
+      	sClé 			est une chaine = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé
+      	nUtilisation 	est un entier = cBaseDeDonnées.mg_taUtilisationServeur[sClé]
+      	SI nUtilisation=1 ALORS 	//c'est la dernière connexion active sur ce serveur
+      		SI (PAS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bResterConnecté _OU_ bForce) ALORS		
+      		
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      				bFermé=LDAPDéconnecte(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Libellé)
+      	
+      <fin>
+      
+      		
+      			SI bFermé ALORS 
+      				cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté=Faux
+      				cBaseDeDonnées.ConnexionSupprime(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)	//pas de suppression du tableau si plus aucune connexion, on garde ainsi les indices
+      				m_nIndiceDeConnexion=0
+      			SINON
+      				m_pclErreur.AjouteErreurwx(ChaîneConstruit(<§$0002§>,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Libellé))
+      				RENVOYER Faux
+      			FIN
+      		fin
+      	sinon
+      		cBaseDeDonnées.ConnexionSupprime(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)
+      		m_nIndiceDeConnexion=0
+      		//on annonce que c'est fermé mais on fera quand le dernier accès à cette connexion sera fermée
+      	Fin
+      SINON
+      	m_pclErreur.AjouteAvertissement(<§$000b§>)
+      FIN
+      RENVOYER Vrai
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Sauvegarde
+     procedure_id : 2035481123850644564
+     type_code : 12
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] Sauvegarde ( [<bÉcraseSiExistant> est booléen [, <sNomTables> est chaîne [, <sRépertoireLocal> est chaîne [, <eSuffixe> est cBaseDeDonnées.ESauvegardeSuffixe]]]])
+      //
+      // Paramètres :
+      // 	bÉcraseSiExistant (booléen - valeur par défaut=1) : <indiquez ici le rôle de bÉcraseSiExistant>
+      //	sNomTables (chaîne UNICODE) : <indiquez ici le rôle de sNomTables>
+      //	sRépertoireLocal (chaîne UNICODE) : <indiquez ici le rôle de sRépertoireLocal>
+      //	eSuffixe (cBaseDeDonnées.ESauvegardeSuffixe) : <indiquez ici le rôle de eSuffixe>
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      //
+      PROCÉDURE Sauvegarde(bÉcraseSiExistant est un booléen = Vrai, LOCAL sNomTables est une chaîne = "", sRépertoireLocal est une chaîne = "",eSuffixe est un cBaseDeDonnées.ESauvegardeSuffixe = cBaseDeDonnées.ESauvegardeSuffixe.SuffixeAucun) : booléen	//les tables peuvent être séparées par des , ou RC
+      //à compléter
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bÉcraseSiExistant,sNomTables,sRépertoireLocal,eSuffixe)
+      m_pclErreur.Raz()
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : Connecte_
+     procedure_id : 2303694013836468725
+     type_code : 12
+     code : |1+
+      // Résumé : Même fonction que Connecte() mais en passant en paramètre le nom de la section des paramètres de l'application (pour spécifier une valeur autre que "LDAP")
+      // Syntaxe : [ <Résultat> = ] Connecte_ ( [<sSectionParamètres> est chaîne])
+      // Paramètres :
+      // 	sSectionParamètres (chaîne UNICODE) : Nom de la section des paramètres de l'application dans laquelle aller récupérer les autres paramètres de connexion, par défaut="LDAP".
+      // Valeur de retour : entier : L'indice de la connexion si elle est établie.
+      // Exemple :
+      //
+      PROCEDURE Connecte_(sSectionParamètres est une chaîne = "LDAP")
+      renvoyer connecte(cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Session",faux,"FMK_LDAP"),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Address")+[":"]+cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Port"),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"User"),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Password",Vrai),...
+      		Val(cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Version",Faux,"3")),
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"DNObjetBase"),...
+      		EnumérationDepuisValeur(cBaseDeDonnées.EVersionServeur,cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"OS",Faux,cBaseDeDonnées.EVersionServeur.WindowsServer2012..Valeur)),...
+      		Vrai,...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"StayConnected",Faux,Vrai),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"DNUser",Faux,",OU=Users,"),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"DNContact",Faux,",OU=Contacts,"),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"DNGroup",Faux,",OU=Groups,"),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"DNComputer",Faux,",OU=Computers,"),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"DNPrinter",Faux,",OU=Printers,"),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"DNSharedFolder",Faux,",OU=Shared Folders,"),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"UserAttributes",Faux,""),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"ContactAttributes",Faux,""),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"GroupAttributes",Faux,""),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"OrganizationUnitAttributes",Faux,""),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"ComputerAttributes",Faux,""),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"PrinterAttributes",Faux,""),...
+      		cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"SharedFolderAttributes",Faux,""))
+     type : 458752
+  properties :
+   -
+     name : p_bEstConnecté
+     identifier : 0x1c5d99170a04df67
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut de la connexion
+         PROCEDURE PUBLIQUE p_bEstConnecté() : booleen
+         renvoyer m_nIndiceDeConnexion>0
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1c3e48bb8953d19f
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to open data connection (%1 - %2) : "
+      fr-CA : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-US : "Unable to open data connection (%1 - %2) : "
+     index : 0
+   -
+     text :
+      fr-FR : Type de données inconnu
+      en-GB : Unknown data type
+      fr-CA : Type de données inconnu
+      en-US : Unknown data type
+     index : 1
+   -
+     text :
+      fr-FR : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to close data connection (%1 - %2) : "
+      fr-CA : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-US : "Unable to close data connection (%1 - %2) : "
+     index : 2
+   -
+     text :
+      fr-FR : Aucune table dans LDAP
+      en-GB : No table in LDAP
+      fr-CA : Aucune table dans LDAP
+      en-US : No table in LDAP
+     index : 3
+   -
+     text :
+      fr-FR : Pas de date pour cette base de données
+      en-GB : No date for this database
+      fr-CA : Pas de date pour cette base de données
+      en-US : No date for this database
+     index : 4
+   -
+     text :
+      fr-FR : Pas de transaction permise sur cette base de données
+      en-GB : No transaction allowed on this database
+      fr-CA : Pas de transaction permise sur cette base de données
+      en-US : No transaction allowed on this database
+     index : 5
+   -
+     text :
+      fr-FR : La couche cliente de SQLServer n'est pas installée
+      en-GB : The client layer of SQLServer is not installed
+      fr-CA : La couche cliente de SQLServer n'est pas installée
+      en-US : The client layer of SQLServer is not installed
+     index : 6
+   -
+     text :
+      fr-FR : Le nom serveur est obligatoire
+      en-GB : The name of the server is required
+      fr-CA : Le nom serveur est obligatoire
+      en-US : The name of the server is required
+     index : 7
+   -
+     text :
+      fr-FR : Le nom d'utilisateur est obligatoire
+      en-GB : Username is required
+      fr-CA : Le nom d'utilisateur est obligatoire
+      en-US : Username is required
+     index : 8
+   -
+     text :
+      fr-FR : Le nom de la base de données est obligatoire
+      en-GB : The name of the database is required
+      fr-CA : Le nom de la base de données est obligatoire
+      en-US : The name of the database is required
+     index : 9
+   -
+     text :
+      fr-FR : Le nom de la session LDAP est obligatoire
+      en-GB : The name of the LDAP session is required
+      fr-CA : Le nom de la session LDAP est obligatoire
+      en-US : The name of the LDAP session is required
+     index : 10
+   -
+     text :
+      fr-FR : La base de données n'était pas connectée
+      en-GB : The database was not connected
+      fr-CA : La base de données n'était pas connectée
+      en-US : The database was not connected
+     index : 11
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

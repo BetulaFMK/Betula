@@ -1,0 +1,2700 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cBaseDeDonnéesHyperFile
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1c3e48ec89639126
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet d'accéder aux données HyperfileSQL, tant en local (ancienne version V5 et nouvelle V7) que sur serveur.
+      //Attention, pas de méthodes  Colonnes et Clés ici car déjà intégrées à cSQL
+      
+      constante
+      	_Port						= 4900								//Port de communication par défaut
+      	_TableAvantColonne			= vrai								//Le nom de la table doit toujours précéder le nom de la colonne (ex : client.nom)  dans les requête SQL
+      	_ExtensionHyperFileSQL5		= "fic"+tab+"ndx"+tab+"mmo"			//Extensions des fichiers pour l'ancienne version 5 de Hyperfile
+      	_ExtensionHyperFileSQL7		= _ExtensionHyperFileSQL5+tab+"ftx"	//Extensions des fichiers pour la récente version 7 de Hyperfile
+      	_Vrai						= "1"								//Pour le distinguer du True en PostgreSQL par exemple
+      	_Faux						= "0"								//Pour le distinguer du False en PostgreSQL par exemple
+      	hAccèsHF5					= "HyperFile5"						//Valeur du type de base de données pour Hyperfile5. N'est pas reconnu par toutes les plateformes, la répéter évite des erreurs dans Betula.
+      fin
+      
+      cBaseDeDonnéesHyperFile est une Classe
+      	hérite de cGénérique
+      	m_bTraceColonnesModifiées	est un booleen				<sérialise = faux>				//Renvoi ou permet de modifier le statut permettant la trace des colonnes modifiés lors de l'utilisation de la fonction cEnregistrement.Écrit() 
+      public constant local
+      	m_nIndiceDeConnexion		est un entier 				<serialise = faux>				//Indice de la connexion en cours
+      public constant GLOBALE	
+      	//3 tableaux pour convertir la langue des rubriques Unicode, voir https://doc.pcsoft.fr/fr-FR/?1000017053
+      	mg_taLangue					est un tableau associatif 	<Sérialise = Faux> de chaines	//Tableau contenant l'ensemble des langues reconnues par Hyperfile				
+      	mg_taPays					est un tableau associatif 	<Sérialise = Faux> de chaines	//Tableau contenant l'ensemble des pays reconnus par Hyperfile
+      	mg_taVariant				est un tableau associatif 	<Sérialise = Faux> de chaines	//Tableau contenant l'ensemble des variantes de langues reconnues par Hyperfile				
+      PRIVÉ GLOBAL
+      	mg_taServeurVersion			est un tableau associatif 	<sérialise = faux> de chaines	//Tableau contenant la version de chaque serveur auquel l'application aura accès
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2035144262372593958
+     type_code : 27
+     code : |1-
+      // Résumé : Permet d'initialiser la classe. Si un indice de connexion est passé en paramètre, récupère toutes les informations d'une précédente connexion qui avait renvoyé ledit indice.
+      // Syntaxe : Constructeur ( [<nIndiceDeConnexionExistant> est entier])
+      // Paramètres :
+      // 	nIndiceDeConnexionExistant (entier optionnel): L'indice de connexion existant à associer à l'instance de la classe. Par défaut, il est initialisé à zéro.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexionExistant est un entier = 0)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIndiceDeConnexionExistant)
+      m_pclErreur.Raz()
+      
+      m_nIndiceDeConnexion=nIndiceDeConnexionExistant
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2035144262372659494
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe. Déconnecte la connexion à la BD le cas échéant.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      <COMPILE SI TypeConfiguration<>Java> //WD25 23OCT2020 : sinon GPF en quittant l'application !
+      	SI p_bEstConnecté ALORS Déconnecte()
+      <FIN>
+     type : 655360
+   -
+     name : Connecte5
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035452184335784564
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour établir une connexion à des fichiers Hyperfile 5 en utilisant les paramètres fournis. Tous les paramètres de la méthode peuvent être récupérés des paramètres de l'application avec le nom de section "HF5".
+      // Syntaxe : [ <Résultat> = ] Connecte5 ( [<eAccès> est cBaseDeDonnées.ETypeAccès [, <sRépertoire> est chaîne [, <sAnalyse> est chaîne [, <sMotDePasseAnalyse> est chaîne [, <sMotDePasseHF> est chaîne [, <sGroupeOuTypeOuNomDeFichiers> est chaîne [, <sEmplacementDesMémos> est chaîne [, <sRépertoireCache> est chaîne [, <bResterConnecté> est booléen]]]]]]]]])
+      // Paramètres :
+      //	eAccès (cBaseDeDonnées.ETypeAccès) : Type d'accès à la base de données (par défaut à partir des paramètres). Paramètre "Access", par défaut "RequêteSQL".
+      //	sRépertoire (chaîne UNICODE) : Chemin vers le répertoire de la base de données HyperFile 5. Paramètre "Folder", par défaut cApplication._Application.p_sRépertoireDonnée.
+      //	sAnalyse (chaîne UNICODE) : Chemin vers l'analyse .wdd HyperFile 5. Paramètre "Analysis", par défaut cApplication._Application.p_sRépertoireDonnée.
+      //	sMotDePasseAnalyse (chaîne UNICODE) : Mot de passe de l'analyse HyperFile 5. Paramètre "AnalysisPassword".
+      //	sMotDePasseHF (chaîne UNICODE) : Mot de passe pour décrypter les données HyperFile 5. Paramètre "HFPassword".
+      //	sGroupeOuTypeOuNomDeFichiers (chaîne UNICODE) : Paramètre pour spécifier le groupe, type ou nom de fichiers. Paramètre "Group", par défaut "*".
+      //	sEmplacementDesMémos (chaîne UNICODE) : Emplacement des mémos. Paramètre "PathMemos".
+      //	sRépertoireCache (chaîne UNICODE) : Répertoire du cache des mémos. Paramètre "CacheMemos", par défaut cApplication._Application.p_sRépertoireCacheMémo.
+      //	bResterConnecté (booléen) :  Indique si la connexion doit être maintenue ou non. Paramètre "StayConnected", par défaut Vrai.
+      // Valeur de retour : entier : Indice de la connexion établie. En cas d'échec, renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE Connecte5(eAccès est un cBaseDeDonnées.ETypeAccès = EnumérationDepuisNom(cBaseDeDonnées.ETypeAccès,cApplication._Application.m_pclParamètres.Lit("HF5","Access",faux,"RequêteSQL")),	//ETypeAccès.RequêteSQL..Nom affiche une erreur en Android et Java
+      					sRépertoire est une chaine = cApplication._Application.m_pclParamètres.Lit("HF5","Folder",faux,cApplication._Application.p_sRépertoireDonnées),
+      					local sAnalyse est une chaine = cApplication._Application.m_pclParamètres.Lit("HF5","Analysis",faux,cApplication._Application.p_sRépertoireDonnées),
+      					sMotDePasseAnalyse = cApplication._Application.m_pclParamètres.Lit("HF5","AnalysisPassword",vrai),
+      					sMotDePasseHF = cApplication._Application.m_pclParamètres.Lit("HF5","HFPassword",vrai),
+      					LOCAL sGroupeOuTypeOuNomDeFichiers est une chaine = cApplication._Application.m_pclParamètres.Lit("HF5","Group",faux,"*"),
+      					sEmplacementDesMémos est une chaine = cApplication._Application.m_pclParamètres.Lit("HF5","PathMemos"),
+      					sRépertoireCache est une chaîne = cApplication._Application.m_pclParamètres.Lit("HF5","CacheMemos",Faux,cApplication._Application.p_sRépertoireCacheMémo),
+      					bResterConnecté est un booleen = cApplication._Application.m_pclParamètres.Lit("HF5","StayConnected",faux,vrai)) : entier
+      
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(eAccès,sRépertoire,sAnalyse,(EnModeTest() ? sMotDePasseAnalyse SINON Répète(cGénérique._Sep,Taille(sMotDePasseAnalyse))),(EnModeTest() ? sMotDePasseHF SINON Répète(cGénérique._Sep,Taille(sMotDePasseHF))),sEmplacementDesMémos,bResterConnecté)
+      m_pclErreur.Raz()
+      
+      SI PAS fRepCrée(sRépertoire) alors m_pclErreur.AjouteErreurWx(<§$0009§>+sRépertoire)
+      SI pas sAnalyse~="" alors
+      	//recherche automatique de l'analyse
+      	sAnalyses est une chaine
+      	si fExtraitChemin(sAnalyse,fExtension)~=".wdd" alors sAnalyses=sAnalyse sinon sAnalyses=flistefichier(sAnalyse+[fsep()]+"*.wdd",frNonRécursif)
+      	si contient(sAnalyses,rc) alors 
+      		m_pclErreur.AjouteErreur(<§$000b§>)
+      	sinon si sAnalyses>"" _ET_ pas fFichierExiste(sAnalyses) ALORS 
+      		m_pclErreur.AjouteErreur(<§$000a§>+sAnalyse)
+      	sinon
+      		sAnalyse=sAnalyses
+      	FIN
+      FIN
+      si m_pclErreur.p_serreur>"" alors renvoyer 0
+      
+      stUneConnexion 	est un cBaseDeDonnées.STConnexion
+      cnxDonnées 		est une connexion
+      sClé			est une chaine = hAccèsHF5+TAB+Minuscule(sRépertoire+TAB+sAnalyse)
+      
+      m_nIndiceDeConnexion = tableaucherche(cBaseDeDonnées.mg_tabConnexion,tcLinéaire,"sCLé",sClé)		//car peut y avoir plusieurs analyses ou types de fichiers dans le même répertoire
+      SI m_nIndiceDeConnexion>0 ALORS cBaseDeDonnées.ConnexionAjoute(sClé);RENVOYER m_nIndiceDeConnexion	//la connexion existe déjà, renvoyer l'indice pour minimiser le nombre de connexions faites par l'appli
+      
+      SI cApplication.mg_bSécurité ALORS 
+      	eEEnvironnement est un cApplication.EEnvironnement = cBaseDeDonnées.Environnement()
+      	cnxDonnées			= ExécuteTraitement("COL_Betula_Secu.BDConnecteSecurisé",trtProcédure,sRépertoire,"","","")
+      	SI ErreurDétectée() ALORS m_pclErreur.AjouteErreur(ErreurInfo());RENVOYER 0
+      SINON
+      	cnxDonnées..Provider								= hAccèsHF5
+      	cnxDonnées..Serveur									= sRépertoire
+      	cnxDonnées..Accès									= hOLectureEcriture
+      fin
+      
+      SI ChangeConnexion() ALORS
+      	cBaseDeDonnées.ConnexionAjoute(sClé)
+      	SI m_nIndiceDeConnexion<1 ALORS
+      		stUneConnexion.sNomUnique						= Minuscule(sRépertoire+cGénérique._Sep+sAnalyse)
+      		stUneConnexion.cnxDonnées						= cnxDonnées
+      		stUneConnexion.bConnecté						= faux
+      		stUneConnexion.sClé								= sClé
+      		stUneConnexion.eAccès							= eAccès
+      		stUneConnexion.sMotDePasseFichier				= sMotDePasseHF
+      		stUneConnexion.sAnalyse							= sAnalyse
+      		stUneConnexion.sMotDePasseAnalyse				= sMotDePasseAnalyse
+      		stUneConnexion.sRépertoireCache					= ComplèteRep(sRépertoireCache)
+      		stUneConnexion.sEmplacementDesMémos				= ComplèteRep(sEmplacementDesMémos)
+      		stUneConnexion.bResterConnecté					= bResterConnecté
+      		m_nIndiceDeConnexion=TableauAjoute(cBaseDeDonnées.mg_tabConnexion,stUneConnexion)	//ne pas faire TableauAjouteTrié car il peut prendre un indice déjà utilisé par une autre connexion
+      		SI mg_taServeurVersion[sClé]="" ALORS mg_taServeurVersion[sClé]=5
+      	SINON
+      		cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté	= Vrai
+      	fin
+      	renvoyer m_nIndiceDeConnexion
+      SINON
+      	m_pclErreur.AjouteErreurHF(ChaîneConstruit(<§$0000§>,"HyperFile",sRépertoire))
+      FIN
+      RENVOYER 0	
+      
+      	PROCÉDURE INTERNE ChangeConnexion()
+      	
+      
+      <si CibleExécution=ApplicationWindows32 ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows32>
+      		SI sGroupeOuTypeOuNomDeFichiers="*" ALORS
+      			RENVOYER HChangeConnexion("*",cnxDonnées)
+      		SINON SI sGroupeOuTypeOuNomDeFichiers=hFichierHF5 ALORS
+      			POUR TOUTE CHAÎNE sTable de cApplication.mg_sTablesAnalyse separee par rc
+      				SI {sTable,indFichier}..Type=hFichierHF5 _ET_ PAS HChangeConnexion(sTable,cnxDonnées) ALORS RENVOYER Faux
+      			FIN
+      		SINON SI sGroupeOuTypeOuNomDeFichiers>"" ALORS
+      			POUR TOUTE CHAÎNE sTable de sGroupeOuTypeOuNomDeFichiers separee par [rc," ",",",";",tab]
+      				SI PAS HChangeConnexion(sTable,cnxDonnées) ALORS RENVOYER Faux
+      			FIN
+      		FIN	
+      	
+      <fin>
+      
+      	
+      	RENVOYER Vrai
+      	FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : Connecte5_
+     procedure_id : 2035452184335850474
+     type_code : 12
+     code : |1-
+      // Résumé : Même fonction que Connecte5() mais en passant en paramètre le nom de la section des paramètres de l'application (pour spécifier une valeur autre que "HF5")
+      // Syntaxe : [ <Résultat> = ] Connecte5_ ( [<sSectionParamètres> est chaîne])
+      // Paramètres :
+      // 	sSectionParamètres (chaîne UNICODE) : Nom de la section des paramètres de l'application dans laquelle aller récupérer les autres paramètres de connexion, par défaut="HF5".
+      // Valeur de retour : entier : L'indice de la connexion si elle est établie.
+      // Exemple :
+      //
+      PROCEDURE Connecte5_(sSectionParamètres est une chaîne = "HF5") : entier	
+      RENVOYER Connecte5(EnumérationDepuisNom(cBaseDeDonnées.ETypeAccès,cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Access",Faux,"RequêteSQL")),	//ETypeAccès.RequêteSQL..Nom affiche une erreur en Android et Java
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Folder"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Analysis"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"AnalysisPassword",Vrai),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"HFPassword",Vrai),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Group",faux,"*"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"PathMemos"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"CacheMemos",Faux,cApplication._Application.p_sRépertoireCacheMémo),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"StayConnected",Faux,Vrai))
+     type : 458752
+   -
+     name : Connecte7
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035452184335916135
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour établir une connexion à des fichiers Hyperfile 7 en utilisant les paramètres fournis. Tous les paramètres de la méthode peuvent être récupérés des paramètres de l'application avec le nom de section "HF7".
+      // [ <Résultat> = ] Connecte7 ( [<eAccès> est cBaseDeDonnées.ETypeAccès [, <sRépertoire> est chaîne [, <sMotDePasseHF> est chaîne [, <sGroupeOuTypeOuNomDeFichiers> est chaîne [, <sEmplacementDesMémos> est chaîne [, <sRépertoireCache> est chaîne [, <bResterConnecté> est booléen]]]]]]])
+      // Paramètres :
+      //	eAccès (cBaseDeDonnées.ETypeAccès) : Type d'accès à la base de données (par défaut à partir des paramètres). Paramètre "Access", par défaut "RequêteSQL".
+      //	sRépertoire (chaîne UNICODE) : Chemin vers le répertoire de la base de données HyperFile 7. Paramètre "Folder", par défaut cApplication._Application.p_sRépertoireDonnée.
+      //	sMotDePasseHF (chaîne UNICODE) : Mot de passe pour décrypter les données HyperFile 7. Paramètre "HFPassword".
+      //	sGroupeOuTypeOuNomDeFichiers (chaîne UNICODE) : Paramètre pour spécifier le groupe, type ou nom de fichiers. Paramètre "Group", par défaut "*".
+      //	sEmplacementDesMémos (chaîne UNICODE) : Emplacement des mémos. Paramètre "PathMemos".
+      //	sRépertoireCache (chaîne UNICODE) : Répertoire du cache des mémos. Paramètre "CacheMemos", par défaut cApplication._Application.p_sRépertoireCacheMémo.
+      //	bResterConnecté (booléen) : Indique si la connexion doit être maintenue ou non. Paramètre "StayConnected", par défaut Vrai.
+      // Valeur de retour : entier : Indice de la connexion établie. En cas d'échec, renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE Connecte7(eAccès est un cBaseDeDonnées.ETypeAccès = EnumérationDepuisNom(cBaseDeDonnées.ETypeAccès,cApplication._Application.m_pclParamètres.Lit("HF7","Access",faux,"RequêteSQL")),
+      						sRépertoire est une chaine = cApplication._Application.m_pclParamètres.Lit("HF7","Folder",faux,cApplication._Application.p_sRépertoireDonnées),
+      						sMotDePasseHF = cApplication._Application.m_pclParamètres.Lit("HF7","HFPassword",vrai),
+      						local sGroupeOuTypeOuNomDeFichiers est une chaine = cApplication._Application.m_pclParamètres.Lit("HF7","Group",Faux,"*"),
+      						sEmplacementDesMémos est une chaine = cApplication._Application.m_pclParamètres.Lit("HF7","PathMemos"),
+      						sRépertoireCache est une chaîne = cApplication._Application.m_pclParamètres.Lit("HF7","CacheMemos",Faux,cApplication._Application.p_sRépertoireCacheMémo),
+      						bResterConnecté est un booleen = cApplication._Application.m_pclParamètres.Lit("HF7","StayConnected",faux,vrai)) : entier
+      
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(eAccès,sRépertoire,(EnModeTest() ? sMotDePasseHF SINON Répète(cGénérique._Sep,Taille(sMotDePasseHF))),sGroupeOuTypeOuNomDeFichiers,sEmplacementDesMémos,bResterConnecté)
+      m_pclErreur.Raz()
+      
+      SI PAS fRepCrée(sRépertoire) ALORS m_pclErreur.AjouteErreurWx(<§$0009§>+sRépertoire);RENVOYER 0
+      
+      stUneConnexion 	est un cBaseDeDonnées.STConnexion
+      cnxDonnées 		est une connexion
+      sClé			est une chaine = "HF7"+TAB+Minuscule(sRépertoire)
+      
+      m_nIndiceDeConnexion = tableaucherche(cBaseDeDonnées.mg_tabConnexion,tcLinéaire,"sCLé",sClé)
+      SI m_nIndiceDeConnexion>0 _ET_ cBaseDeDonnées.mg_taUtilisationServeur[sClé]>0 ALORS cBaseDeDonnées.ConnexionAjoute(sClé);RENVOYER m_nIndiceDeConnexion	//la connexion existe déjà, renvoyer l'indice pour minimiser le nombre de connexions faites par l'appli
+      
+      SI cApplication.mg_bSécurité ALORS 
+      	procConnecte est une Procédure = ChercheProcédure("COL_Betula_Secu.BDConnecteSecurisé")
+      	SI procConnecte<>Null ALORS
+      		cnxDonnées			= ExécuteTraitement("COL_Betula_Secu.BDConnecteSecurisé",trtProcédure,sRépertoire,"","","")
+      		SI ErreurDétectée() ALORS m_pclErreur.AjouteErreur(ErreurInfo());RENVOYER 0
+      	fin
+      sinon
+      	cnxDonnées..Provider									= hAccèsHF7
+      	cnxDonnées..Serveur										= sRépertoire
+      	cnxDonnées..Cryptage									= hCryptageNon
+      	cnxDonnées..Accès										= hOLectureEcriture
+      	cnxDonnées..InfosEtendues								= ""	//pas d'infos étendues documentées
+      fin
+      //SI HOuvreConnexion(cnxDonnées) //pas nécessaire
+      SI ChangeConnexion() ALORS
+      	cBaseDeDonnées.ConnexionAjoute(sClé)
+      	SI m_nIndiceDeConnexion<1 ALORS 
+      		stUneConnexion.sNomUnique							= Minuscule(cnxDonnées..Serveur+cGénérique._Sep+"")
+      		stUneConnexion.cnxDonnées							= cnxDonnées
+      		stUneConnexion.bConnecté							= vrai
+      		stUneConnexion.sClé									= sClé
+      		stUneConnexion.eAccès								= eAccès
+      		stUneConnexion.sMotDePasseFichier					= sMotDePasseHF
+      		stUneConnexion.sRépertoireCache						= ComplèteRep(sRépertoireCache)
+      		stUneConnexion.sEmplacementDesMémos					= ComplèteRep(sEmplacementDesMémos)
+      		stUneConnexion.bTransactionEnCours					= fListeFichier(ComplèteRep(sRépertoire)+"*_$$_TRSVAL.TRX")
+      		stUneConnexion.bResterConnecté						= bResterConnecté
+      		SI mg_taServeurVersion[sClé]="" ALORS mg_taServeurVersion[sClé]=7
+      		m_nIndiceDeConnexion=TableauAjoute(cBaseDeDonnées.mg_tabConnexion,stUneConnexion)	//ne pas faire TableauAjouteTrié car il peut prendre un indice déjà utilisé par une autre connexion
+      	sinon
+      		cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté	= Vrai
+      	fin
+      	renvoyer m_nIndiceDeConnexion
+      SINON
+      	m_pclErreur.AjouteErreurHF(ChaîneConstruit(<§$0000§>,"HyperFile",sRépertoire))
+      FIN
+      RENVOYER 0
+      
+      	PROCÉDURE INTERNE ChangeConnexion()
+      	SI sGroupeOuTypeOuNomDeFichiers="*" ALORS
+      		RENVOYER HChangeConnexion("*",cnxDonnées)
+      	SINON SI sGroupeOuTypeOuNomDeFichiers=hFichierNormal ALORS
+      		POUR TOUTE CHAÎNE sTable de cApplication.mg_sTablesAnalyse separee par rc
+      			SI {sTable,indFichier}..Type=hFichierNormal _ET_ PAS HChangeConnexion(sTable,cnxDonnées) ALORS RENVOYER Faux
+      		FIN
+      	SINON si sGroupeOuTypeOuNomDeFichiers>"" alors
+      		POUR TOUTE CHAÎNE sTable de sGroupeOuTypeOuNomDeFichiers separee par [rc," ",",",";",tab]
+      			SI PAS HChangeConnexion(sTable,cnxDonnées) ALORS RENVOYER Faux
+      		FIN
+      	FIN	
+      	RENVOYER Vrai
+      	FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : Connecte7_
+     procedure_id : 2035452184335981827
+     type_code : 12
+     code : |1-
+      // Résumé : Même fonction que Connecte7() mais en passant en paramètre le nom de la section des paramètres de l'application (pour spécifier une valeur autre que "HF7")
+      // Syntaxe : [ <Résultat> = ] Connecte7_ ( [<sSectionParamètres> est chaîne])
+      // Paramètres :
+      // 	sSectionParamètres (chaîne UNICODE) : Nom de la section des paramètres de l'application dans laquelle aller récupérer les autres paramètres de connexion, par défaut="HF7".
+      // Valeur de retour : entier : L'indice de la connexion si elle est établie.
+      // Exemple :
+      //
+      PROCEDURE Connecte7_(sSectionParamètres est une chaîne = "HF7") : entier 	
+      RENVOYER Connecte7(EnumérationDepuisNom(cBaseDeDonnées.ETypeAccès,cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Access",faux,"RequêteSQL")),	//ETypeAccès.RequêteSQL..Nom affiche une erreur en Android et Java
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Folder"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"HFPassword",Vrai),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Group",Faux,"*"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"PathMemos"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"CacheMemos",Faux,cApplication._Application.p_sRépertoireCacheMémo),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"StayConnected",Faux,Vrai))
+     type : 458752
+   -
+     name : ConnecteCS
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035452184336047503
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour établir une connexion à des fichiers Hyperfile client-serveur en utilisant les paramètres fournis. Tous les paramètres de la méthode peuvent être récupérés des paramètres de l'application avec le nom de section "HFCS".
+      // [ <Résultat> = ] ConnecteCS ( [<eAccès> est cBaseDeDonnées.ETypeAccès [, <sServeurPort> est chaîne [, <sUtilisateur> est chaîne [, <sMotDePasse> est chaîne [, <sBaseDeDonnées> est chaîne [, <sMotDePasseHF> est chaîne [, <sGroupeOuTypeOuNomDeFichiers> est chaîne [, <sEmplacementDesMémos> est chaîne [, <sRépertoireCache> est chaîne [, <bResterConnecté> est booléen]]]]]]]]]])
+      // Paramètres :
+      //	eAccès (cBaseDeDonnées.ETypeAccès) : Type d'accès à la base de données (par défaut à partir des paramètres). Paramètre "Access", par défaut "RequêteSQL".
+      //	sServeurPort (chaîne UNICODE) : Nom du serveur et port de communication du serveur (format : Serveur:Port). Paramètre "Address" et "Port", par défaut : "localhost" et 4900.
+      //	sUtilisateur (chaîne UNICODE) : Nom d'utilisateur pour la connexion. Paramètre "User", par défaut "admin".
+      //	sMotDePasse (chaîne UNICODE) : Mot de passe pour la connexion. Paramètre "Password".
+      //	sBaseDeDonnées (chaîne UNICODE) : Nom de la base de données. Paramètre "DB".
+      //	sMotDePasseHF (chaîne UNICODE) : Mot de passe pour décrypter les données HyperFile client-serveur. Paramètre "HFPassword".
+      //	sGroupeOuTypeOuNomDeFichiers (chaîne UNICODE) : Paramètre pour spécifier le groupe, type ou nom de fichiers. Paramètre "Group", par défaut "*".
+      //	sEmplacementDesMémos (chaîne UNICODE) : Emplacement des mémos. Paramètre "PathMemos".
+      //	sRépertoireCache (chaîne UNICODE) : Répertoire du cache des mémos. Paramètre "CacheMemos", par défaut cApplication._Application.p_sRépertoireCacheMémo.
+      //	bResterConnecté (booléen) : Indique si la connexion doit être maintenue ou non. Paramètre "StayConnected", par défaut Vrai.
+      // Valeur de retour : entier : Indice de la connexion établie. En cas d'échec, renvoie 0.
+      // Exemple :
+      //
+      PROCeDURE ConnecteCS(eAccès est un cBaseDeDonnées.ETypeAccès = EnumérationDepuisNom(cBaseDeDonnées.ETypeAccès,cApplication._Application.m_pclParamètres.Lit("HFCS","Access",faux,"RequêteSQL")),	//ETypeAccès.RequêteSQL..Nom affiche une erreur en Android et Java
+      			local sServeurPort est une chaine = cApplication._Application.m_pclParamètres.Lit("HFCS","Address",faux,"localhost")+[":"]+cApplication._Application.m_pclParamètres.Lit("HFCS","Port",faux,_port),
+      			sUtilisateur est une chaine = cApplication._Application.m_pclParamètres.Lit("HFCS","User",faux,"admin"),
+      			sMotDePasse = cApplication._Application.m_pclParamètres.Lit("HFCS","Password",vrai),
+      			sBaseDeDonnées est une chaine = cApplication._Application.m_pclParamètres.Lit("HFCS","DB"),
+      			local sMotDePasseHF = cApplication._Application.m_pclParamètres.Lit("HFCS","HFPassword",vrai),
+      			local sGroupeOuTypeOuNomDeFichiers est une chaine = cApplication._Application.m_pclParamètres.Lit("HFCS","Group",faux,"*"),
+      			sEmplacementDesMémos est une chaine = cApplication._Application.m_pclParamètres.Lit("HFCS","PathMemos"),
+      			sRépertoireCache est une chaîne = cApplication._Application.m_pclParamètres.Lit("HFCS","CacheMemos",Faux,cApplication._Application.p_sRépertoireCacheMémo),
+      			bResterConnecté est un booleen = cApplication._Application.m_pclParamètres.Lit("HFCS","StayConnected",faux,vrai)) : entier
+      
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(eAccès,sServeurPort,sUtilisateur,(EnModeTest() ? sMotDePasse SINON Répète(cGénérique._Sep,Taille(sMotDePasse))),sBaseDeDonnées,Répète(cGénérique._Sep,Taille(sMotDePasseHF)),sGroupeOuTypeOuNomDeFichiers,sEmplacementDesMémos,bResterConnecté)
+      m_pclErreur.Raz()
+      
+      SI sServeurPort~="" ALORS m_pclErreur.AjouteErreur(<§$00ab§>);renvoyer 0	//la base de données n'est pas obligatoire
+      	
+      si extraitchaine(sServeurPort,2,":") dans ("",eot) alors sServeurPort+=":"+_Port
+      
+      stUneConnexion 	est un cBaseDeDonnées.STConnexion
+      cnxDonnées 		est une connexion
+      sClé			est une chaine = Minuscule(sServeurPort+TAB+sUtilisateur+TAB+sBaseDeDonnées)
+      
+      m_nIndiceDeConnexion = tableaucherche(cBaseDeDonnées.mg_tabConnexion,tcLinéaire,"sCLé",sClé)
+      SI m_nIndiceDeConnexion>0 _ET_ cBaseDeDonnées.mg_taUtilisationServeur[sClé]>0 ALORS cBaseDeDonnées.ConnexionAjoute(sClé);RENVOYER m_nIndiceDeConnexion	//la connexion existe déjà, renvoyer l'indice pour minimiser le nombre de connexions faites par l'appli
+      
+      SI cApplication.mg_bSécurité ALORS 
+      	procConnecte est une Procédure = ChercheProcédure("COL_Betula_Secu.BDConnecteSecurisé")
+      	SI procConnecte<>Null ALORS
+      		cnxDonnées			= ExécuteTraitement("COL_Betula_Secu.BDConnecteSecurisé",trtProcédure,sServeurPort,sBaseDeDonnées,sUtilisateur,sMotDePasse)
+      		SI ErreurDétectée() ALORS m_pclErreur.AjouteErreur(ErreurInfo());RENVOYER 0
+      	fin
+      sinon
+      	cnxDonnées..Provider									= hAccèsHFClientServeur
+      	cnxDonnées..Serveur										= sServeurPort
+      	cnxDonnées..Utilisateur									= sUtilisateur
+      	cnxDonnées..MotDePasse	    							= sMotDePasse
+      	cnxDonnées..BaseDeDonnées								= sBaseDeDonnées
+      	cnxDonnées..Accès										= hOLectureEcriture
+      	cnxDonnées..Cryptage									= hCryptageRC5_16
+      	cnxDonnées..InfosEtendues								= ""	//pas d'infos étendues documentées
+      fin
+      
+      SI HOuvreConnexion(cnxDonnées) _ET_ ChangeConnexion() ALORS
+      	cBaseDeDonnées.ConnexionAjoute(sClé)
+      	si m_nIndiceDeConnexion<1 alors
+      		stUneConnexion.sNomUnique							= Minuscule(cnxDonnées..Serveur+cGénérique._Sep+cnxDonnées..BaseDeDonnées)
+      		stUneConnexion.bConnecté							= Vrai
+      		stUneConnexion.cnxDonnées							= cnxDonnées
+      		stUneConnexion.sMotDePasse							= sMotDePasse
+      		stUneConnexion.sClé									= sClé
+      		stUneConnexion.eAccès								= eAccès
+      		stUneConnexion.sMotDePasseFichier					= sMotDePasseHF
+      		stUneConnexion.sRépertoireCache						= ComplèteRep(sRépertoireCache)
+      		stUneConnexion.sEmplacementDesMémos					= ComplèteRep(sEmplacementDesMémos)
+      		stUneConnexion.bResterConnecté						= bResterConnecté
+      		m_nIndiceDeConnexion=TableauAjoute(cBaseDeDonnées.mg_tabConnexion,stUneConnexion)	//ne pas faire TableauAjouteTrié car il peut prendre un indice déjà utilisé par une autre connexion
+      		sInfo est une chaine = HInfoServeur(cnxDonnées..Nom,hInfoVersion)
+      		SI mg_taServeurVersion[Minuscule(sServeurPort)]="" ALORS mg_taServeurVersion[Minuscule(sServeurPort)]=ExtraitChaîne(sInfo,2)+"/"+ExtraitChaîne(sInfo,6)+" bits"
+      	SINON
+      		cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté	= Vrai
+      	fin
+      	//récupérer la version du serveur
+      	sInfo est une chaine = HInfoServeur(cnxDonnées..Nom,hInfoVersion)
+      	renvoyer m_nIndiceDeConnexion
+      sinon
+      	m_pclerreur.AjouteErreurHF(ChaîneConstruit(<§$0000§>,<§$0001§>,sServeurPort)) 
+      FIN
+      RENVOYER 0
+      
+      	PROCÉDURE INTERNE ChangeConnexion()
+      	SI sGroupeOuTypeOuNomDeFichiers="*" ALORS
+      		RENVOYER (HChangeConnexion("*",cnxDonnées) _et_ hpasse("*",sMotDePasseHF))
+      	SINON SI sGroupeOuTypeOuNomDeFichiers=hFichierClientServeur ALORS
+      		sTables est une chaine = HListeFichier()
+      		POUR TOUTE CHAÎNE sTable de cApplication.mg_sTablesAnalyse separee par rc
+      			SI {sTable,indFichier}..Type=hFichierClientServeur _ET_ (PAS HChangeConnexion(sTable,cnxDonnées) _ou_ pas hpasse(sTable,sMotDePasseHF)) ALORS RENVOYER Faux
+      		FIN
+      	SINON si sGroupeOuTypeOuNomDeFichiers>"" alors
+      		sTables est une chaine = HListeFichier(sGroupeOuTypeOuNomDeFichiers)
+      		POUR TOUTE CHAÎNE sTable de sGroupeOuTypeOuNomDeFichiers separee par [rc," ",",",";",tab]
+      			SI (PAS HChangeConnexion(sTable,cnxDonnées) _OU_ PAS HPasse(sTable,sMotDePasseHF)) ALORS RENVOYER Faux
+      		FIN
+      	FIN	
+      	RENVOYER Vrai
+      	FIN
+      	
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : ConnecteCS_
+     procedure_id : 2035452188631080538
+     type_code : 12
+     code : |1-
+      // Résumé : Même fonction que ConnecteCS() mais en passant en paramètre le nom de la section des paramètres de l'application (pour spécifier une valeur autre que "HFCS")
+      // Syntaxe : [ <Résultat> = ] ConnecteCS_ ( [<sSectionParamètres> est chaîne])
+      // Paramètres :
+      // 	sSectionParamètres (chaîne UNICODE) : Nom de la section des paramètres de l'application dans laquelle aller récupérer les autres paramètres de connexion, par défaut="HCFS".
+      // Valeur de retour : entier : L'indice de la connexion si elle est établie.
+      // Exemple :
+      //
+      PROCEDURE ConnecteCS_(sSectionParamètres est une chaîne = "HFCS") : entier	
+      RENVOYER ConnecteCS(EnumérationDepuisNom(cBaseDeDonnées.ETypeAccès,cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Access",faux,"RequêteSQL")),	//ETypeAccès.RequêteSQL..Nom affiche une erreur en Android et Java
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Server")+[":"]+cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Port"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"User"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Password",Vrai),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"DB"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"HFPassword",Vrai),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Group"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"PathMemos"),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"CacheMemos",Faux,cApplication._Application.p_sRépertoireCacheMémo),
+      				cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"StayConnected",Faux,Vrai))
+     type : 458752
+   -
+     name : ColonneExiste
+     procedure_id : 2035463801834496870
+     type_code : 12
+     code : |1-
+      // Résumé : Vérifie l'existence d'une colonne dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] ColonneExiste (<sNomTableEtColonne> est chaîne)
+      // Paramètres :
+      //	sNomTableEtColonne (chaîne UNICODE) : Nom de la table + "." + nom de la colonne dont on souhaite vérifier l'existence.
+      // Valeur de retour : booléen : Retourne Vrai si la colonne existe dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCÉDURE ColonneExiste(sNomTableEtColonne est une chaîne) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTableEtColonne)
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer faux
+      
+      sTable,sColonne sont des chaines
+      sColonne	= ExtraitChaîne(sNomTableEtColonne,1,".",DepuisFin)
+      sTable		= Gauche(sNomTableEtColonne,Taille(sNomTableEtColonne)-Taille(sColonne)-1)
+      RENVOYER (Position(HListeRubrique(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Nom,sTable),sColonne)>0)
+     type : 458752
+   -
+     name : TableExiste
+     procedure_id : 2035468062469325886
+     type_code : 12
+     code : |1-
+      // Résumé : Vérifie l'existence d'une colonne dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] ColonneExiste (<sNomTableEtColonne> est chaîne)
+      // Paramètres :
+      //	sNomTableEtColonne (chaîne UNICODE) : Nom de la table dont on souhaite vérifier l'existence.
+      // Valeur de retour : booléen : Retourne Vrai si la table existe dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCÉDURE TableExiste(sNomTable est une chaîne) : booléen
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer faux
+      
+      SI cApplication.mg_taInfo[cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sNomTable)]<>Null ALORS RENVOYER Vrai
+      
+      Selon cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+      	cas hAccèsHF7,hAccèsHF5 	: RENVOYER fFichierExiste(fSéparateur(ComplèteRep(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Source))+sNomTable+".fic")
+      	cas hAccèsHFClientServeur	: RENVOYER HFichierExiste(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Nom,sNomTable+".fic")
+      fin
+     type : 458752
+   -
+     name : DateHeureUTC
+     procedure_id : 2035470450508202548
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie la date et l'heure actuelles en temps universel coordonné (UTC) sur le serveur de BD. 
+      // Syntaxe : [ <Résultat> = ] DateHeureUTC ()
+      // Paramètres : Aucun
+      // Valeur de retour : dateheure : Renvoie une chaîne représentant la date et l'heure au format de la base de données. En cas d'erreur, elle renvoie une chaîne vide.
+      // Exemple :
+      //
+      PROCÉDURE DateHeureUTC() : DateHeure
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer faux
+      
+      SELON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+      	CAS hAccèsHF7,hAccèsHF5		: RENVOYER DateHeureSys()	//ou du poste distant si fichiers partagés ?
+      	CAS hAccèsHFClientServeur	: RENVOYER HInfoServeur(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées,hInfoDate)
+      fin
+      renvoyer ""
+     type : 458752
+   -
+     name : Tables
+     procedure_id : 2035473246569328995
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie l'ensemble des noms de table.
+      // Syntaxe : [ <Résultat> = ] Tables ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Retourne la liste des tables sous forme de chaine séparée par des RC.
+      // Exemple :
+      //
+      PROCÉDURE Tables() : chaine
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer ""
+      
+      sRes,sFichier sont des chaines
+      Selon cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+      	cas hAccèsHF7,hAccèsHF5 	: 
+      		nTaille est un entier = Taille(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Source)+1
+      		pour toute chaine sFichier de fListeFichier(fSéparateur(ComplèteRep(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Source))+"*.fic",frNonRécursif) separee par rc
+      			sFichier=Milieu(sFichier,nTaille)
+      			sRes+=[rc]+gauche(sFichier,taille(sFichier)-4)
+      		FIN
+      	cas hAccèsHFClientServeur	: 
+      		renvoyer HListeFichier(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Nom,hLstTable)
+      FIN
+      renvoyer sRes
+     type : 458752
+   -
+     name : Déconnecte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035476682591610533
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui déconnecte la base de données. 
+      // Syntaxe : [ <Résultat> = ] Déconnecte ( [<bForce> est booléen])
+      // Paramètres :
+      // 	bForce (booléen) : Indique s'il faut forcer la déconnexion même si la connexion a été paramétré pour garder la connexion et que la base de données est utilisée.
+      // Valeur de retour : booléen : Renvoie vrai si la déconnexion s'est correctement déroulée, faux sinon
+      // Exemple :
+      //
+      PROCÉDURE Déconnecte(bForce est un booleen = faux) : booleen
+      m_pclErreur.Raz()
+      
+      si m_nIndiceDeConnexion>0 alors
+      	sClé 			est une chaine = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé
+      	nUtilisation 	est un entier = cBaseDeDonnées.mg_taUtilisationServeur[sClé]
+      	SI ((PAS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bResterConnecté _ET_ nUtilisation=1) OU bForce) ALORS	//nUtilisation=1 ALORS c'est la dernière connexion active sur ce serveur
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bForce)
+      		SI HFermeConnexion(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées) ALORS 
+      			cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté=Faux
+      			cBaseDeDonnées.ConnexionSupprimeTout(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)
+      			m_nIndiceDeConnexion=0;nUtilisation=0
+      		SINON
+      			m_pclErreur.AjouteErreurHF(ChaîneConstruit(<§$0002§>,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..BaseDeDonnées))
+      			RENVOYER Faux
+      		FIN
+      	FIN
+      	SI nUtilisation>1 ALORS cBaseDeDonnées.ConnexionSupprime(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)
+      SINON
+      	m_pclErreur.AjouteAvertissement(<§$00ad§>)
+      FIN
+      RENVOYER Vrai
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Sauvegarde
+     procedure_id : 2035481059426054690
+     type_code : 12
+     code : |1-
+      // Résumé : Sauvegarde la BD ou certaines tables.
+      // Syntaxe : [ <Résultat> = ] Sauvegarde ( [<bÉcraseSiExistant> est booléen [, <sNomTables> est chaîne [, <sRépertoireLocal> est chaîne [, <eSuffixe> est cBaseDeDonnées.ESauvegardeSuffixe]]]])
+      // Paramètres :
+      // 	bÉcraseSiExistant (booléen optionnel): Indique s'il faut écraser les fichiers de sauvegarde existants. Par défaut, cette option est activée (Vrai).
+      //	sNomTables (chaîne UNICODE optionnelle) : Contient les noms des tables à sauvegarder, séparés par des virgules ou des retours chariots. Par défaut, toutes les tables sont sauvegardées.
+      //	sRépertoireLocal (chaîne UNICODE optionnelle): Le répertoire local où les fichiers de sauvegarde seront stockés. Si non spécifié, le répertoire par défaut sera utilisé.
+      //	eSuffixe (cBaseDeDonnées.ESauvegardeSuffixe optionnel): Le suffixe à appliquer aux fichiers de sauvegarde. Par défaut, aucun suffixe n'est ajouté (ESauvegardeSuffixe.SuffixeAucun).
+      // Valeur de retour : booléen : Retourne Vrai si la sauvegarde s'effectue avec succès, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCÉDURE Sauvegarde(bÉcraseSiExistant est un booléen = Vrai, LOCAL sNomTables est une chaîne = "", sRépertoireLocal est une chaîne = "",eSuffixe est un cBaseDeDonnées.ESauvegardeSuffixe = cBaseDeDonnées.ESauvegardeSuffixe.SuffixeAucun) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bÉcraseSiExistant,sNomTables,sRépertoireLocal,eSuffixe)
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer faux
+      
+      sSuffixe,sNomDestination est une chaine
+      
+      SELON eSuffixe
+      	CAS cBaseDeDonnées.SuffixeDate 		: sSuffixe="_"+DateSys()
+      	CAS cBaseDeDonnées.SuffixeHeure 	: sSuffixe="_"+HeureSys()
+      	CAS cBaseDeDonnées.SuffixeDateHeure : sSuffixe="_"+DateSys()+"_"+HeureSys()
+      FIN
+      
+      SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider dans (hAccèsHF7,hAccèsHF5) ALORS	//cas particulier
+      	SI sRépertoireLocal="" ALORS
+      		m_pclErreur.AjouteErreur(<§$0003§>)
+      	SINON SI sRépertoireLocal~=cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Source ALORS
+      		m_pclErreur.AjouteErreur(<§$0004§>)
+      	SINON SI PAS fRepCrée(sRépertoireLocal) ALORS
+      		m_pclErreur.AjouteErreurWx()
+      	SINON
+      		//a faire : vérifier que l'espace libre dans la destination est suffisante
+      		//a faire : fermer les fichiers avant la sauvegarde !
+      		sExtensions sont des chaines
+      		SI sNomTables="" ALORS sNomTables=Tables() SINON sNomTables=Remplace(sNomTables,",",RC)
+      		POUR TOUTE CHAÎNE sFichier de sNomTables separee par rc
+      			sNomDestination=fSéparateur(ComplèteRep(sRépertoireLocal))+fExtraitChemin(sFichier,fFichier)
+      			SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider=hAccèsHF5 ALORS sExtensions=_ExtensionHyperFileSQL5 SINON sExtensions=_ExtensionHyperFileSQL7
+      			POUR TOUTE CHAÎNE sExtension de sExtensions
+      				SI fFichierExiste(sNomDestination+"."+sExtension) ALORS
+      					SI bÉcraseSiExistant ALORS 
+      						SI PAS fSupprime(sNomDestination+"."+sExtension) ALORS m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      					SINON
+      						m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0005§>,sNomDestination+"."+sExtension));RENVOYER Faux
+      					FIN
+      				FIN
+      				SI PAS fCopieFichier(fExtraitChemin(sFichier,fDisque+fFichier+fRépertoire)+"."+sExtension,sNomDestination+"."+sExtension) ALORS
+      					m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      				FIN
+      			FIN
+      		FIN
+      		RENVOYER Vrai
+      	FIN
+      sinon
+      	
+      fin
+     type : 458752
+   -
+     name : TransactionAnnule
+     procedure_id : 2035784215205918815
+     type_code : 12
+     code : |1-
+      // Résumé : Annule la transaction débutée par TransactionDébut.
+      // Syntaxe : [ <Résultat> = ] TransactionAnnule ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Retourne Vrai si la transaction a bien été annulée, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCÉDURE VIRTUELLE TransactionAnnule() : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer faux
+      
+      SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours ALORS	//au cas où on aurait la merveilleuse idée d'annuler une transaction qui n'a pas été ouverte
+      	Selon cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+      		cas hAccèsHF7
+      			sFichiersTransaction est une chaîne = fListeFichier(ComplèteRep(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Serveur)+"*_$$_TRSVAL.TRX")
+      			POUR TOUTE CHAÎNE sFichier DE sFichiersTransaction SEPAREE PAR RC
+      
+      				SI PAS HTransactionAnnule(sFichiersTransaction) ALORS m_pclErreur.AjouteErreurHF();RENVOYER Faux
+      			FIN
+      			cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux
+      		CAS hAccèsHFClientServeur
+      			SI HTransactionAnnule(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Nom,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..BaseDeDonnées) ALORS 
+      				cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux 
+      			SINON 
+      				m_pclErreur.AjouteErreurHF()
+      			FIN
+      		autres cas	//HF5
+      			m_pclErreur.AjouteErreur(<§$0008§>)
+      	fin
+      SINON
+      	m_pclErreur.AjouteAvertissement(<§$0006§>)
+      FIN
+      RENVOYER (cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux)
+     type : 458752
+   -
+     name : TransactionDébut
+     procedure_id : 2035785022659827045
+     type_code : 12
+     code : |1-
+      // Résumé : Débute une transaction sur toutes les tables ou certaines.
+      // Syntaxe : [ <Résultat> = ] TransactionDébut ( [<sNomTables> est chaîne])
+      // Paramètres :
+      //	sNomTables (chaîne UNICODE optionnel): Une chaîne contenant les noms des tables sur lesquelles appliquer la transaction, séparés par des virgules. Pour exclure des tables de la transaction, préfixer leur nom d'un tiret -. 
+      // Valeur de retour : booléen : Retourne Vrai si la transaction est débutée avec succès, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCÉDURE VIRTUELLE TransactionDébut(sNomTables est une chaîne = "") : booléen	//tables séparées par des , (pour enlever des tables, mettre - devant)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer faux
+      
+      SI PAS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours ALORS
+      	si cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider dans (hAccèsHF7,hAccèsHFClientServeur) alors
+      		SI HTransactionDébut(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées,sNomTables) ALORS 
+      			cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Vrai
+      		SINON 
+      			m_pclErreur.AjouteErreurHF()
+      		FIN
+      	sinon
+      		m_pclErreur.AjouteErreur(<§$0008§>)
+      	fin
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0007§>)
+      FIN
+      RENVOYER cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours
+     type : 458752
+   -
+     name : TransactionFin
+     procedure_id : 2035785349077417950
+     type_code : 12
+     code : |1-
+      // Résumé : Termine une transaction débutée par TransactionDébut.
+      // Syntaxe : [ <Résultat> = ] TransactionFin ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Retourne Vrai si la transaction a bien été annulée, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCÉDURE VIRTUELLE TransactionFin() : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer faux
+      
+      SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours ALORS	//au cas où on aurait la merveilleuse idée de terminer une transaction qui n'a pas été ouverte
+      	SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider DANS (hAccèsHF7,hAccèsHFClientServeur) ALORS
+      		SI HTransactionFin(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées) ALORS 
+      			cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux
+      		SINON 
+      			m_pclErreur.AjouteErreurHF()
+      		FIN
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0008§>)
+      	FIN
+      SINON
+      	m_pclErreur.AjouteAvertissement(<§$0006§>)
+      FIN
+      RENVOYER (cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bTransactionEnCours=Faux)
+     type : 458752
+   -
+     name : SQLColonneMémoVide
+     procedure_id : 2036158091814266340
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Renvoie du code SQL d'une colonne binaire vide. Permet de récupérer un binaire vide dans le résultat plutôt que de charger le binaire dès le départ.
+      // Syntaxe : [ <Résultat> = ] SQLColonneMémoVide (<sNomColonne> est chaîne)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Le nom de la colonne mémo pour laquelle la vérification sera faite.
+      // Valeur de retour : chaîne UNICODE : Code SQL d'une colonne binaire vide
+      // Exemple :
+      //
+      PROCEDURE SQLColonneMémoVide(sNomColonne est une chaine) : chaine
+      RENVOYER "CAST('' AS BLOB) AS "+SQLAvantColonne()+sNomColonne+sqlaprèscolonne()
+     type : 458752
+   -
+     name : TableVersion
+     procedure_id : 2036158512729481967
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie la version d'une table passée en paramètre (voir HVersion).
+      // Syntaxe : [ <Résultat> = ] TableVersion (<sNomTable> est chaîne)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Le nom de la table pour laquelle l'on souhaite la version.
+      // Valeur de retour : entier : Numéro de version de la table
+      // Exemple :
+      //
+      PROCEDURE TableVersion(sNomTable est une chaine) : entier
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTable)
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer faux
+      renvoyer HVersion(sNomTable)
+     type : 458752
+   -
+     name : TableBloque
+     procedure_id : 2036159126910145580
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la class de la BD dont l'indice est passé au constructeur, qui bloque une table dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableBloque (<sNomTable> est chaîne)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Nom de la table que l'on souhaite bloquer.
+      //	sCléPrimaire (chaîne UNICODE optionnelle) : (utile uniquement pour SQLServer)
+      // Valeur de retour : booléen : Retourne Vrai si la table est bloquée dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE TableBloque(sNomTable est une chaine,sCléPrimaire est une chaine = "") : booleen	//sCléPrimaire inutile ici mais bien dans SQLServer
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTable)
+      m_pclErreur.raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer faux
+      RENVOYER HBloqueFichier(sNomTable)
+     type : 458752
+   -
+     name : SQLLimiteRequêteA
+     procedure_id : 2036165986062659851
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Génère les parties préliminaire et postliminaire d'une requête SQL destinés à limiter le nombre de résultats renvoyés.
+      // Syntaxe : [ <Résultat> = ] SQLLimiteRequêteA (<nNombre> est entier [, <bAvecWhere> est booléen])
+      // Paramètres :
+      //	nNombre (entier) : Le nombre maximum de résultats à renvoyer dans la requête.
+      // 	bAvecWhere (booléen optionnel) : Spécifie si la clause WHERE doit être incluse dans la requête générée. Par défaut, cette clause est absente.
+      // Valeur de retour : multi-valeur : Renvoie le code SQL des parties à intégrer dans une requête SQL pour limiter le nombre de résultats.
+      // Exemple :
+      //
+      PROCEDURE SQLLimiteRequêteA(nNombre est un entier,bAvecWhere est un booleen) : (chaine,chaine)
+      sPréLimite,sPostLimite sont des chaines
+      selon cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+      	cas hAccèsHF7,hAccèsHF5		: sPréLimite	= "TOP "+nNombre	//Limit x,y ne fonctionne pas
+      	CAS hAccèsHFClientServeur	: sPostLimite	= "LIMIT 0,"+nNombre
+      fin
+      renvoyer (sPréLimite,sPostLimite)
+     type : 458752
+   -
+     name : DateVersSQL
+     procedure_id : 2107403314278932480
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Transforme une date dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] DateVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	xDate : La date à convertir. Le type de cette valeur peut être date ou une chaine équivalente
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne représentant la date converties au format SQL.
+      // Exemple :
+      //
+      PROCEDURE DateVersSQL(xDate) : chaine
+      SI DateValide(xDate) ALORS RENVOYER "'"+xDate+"'" sinon	renvoyer "''"
+     type : 458752
+   -
+     name : DateHeureVersSQL
+     procedure_id : 2107403533322315105
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Transforme une dateheure dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] DateHeureVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	xDateHeure : La date et l'heure à convertir. Le type de cette valeur peut être dateheure ou une chaine équivalente
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne représentant la date et l'heure converties au format SQL.
+      // Exemple :
+      //
+      PROCEDURE DateHeureVersSQL(xDateHeure) : chaine
+      SI DateHeureValide(xDateHeure) ALORS RENVOYER "'"+xDateHeure+"'" sinon renvoyer "''"
+     type : 458752
+   -
+     name : SQLUnicodePréfixe
+     procedure_id : 2107403829675128308
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Récupère le préfixe d'une chaine Unicode à utiliser dans une requête SQL.
+      // Syntaxe : [ <Résultat> = ] SQLUnicodePréfixe ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Préfixe à ajouter à une chaine Unicode pour exécuter une requête dans la BD.
+      // Exemple :
+      //
+      PROCEDURE SQLUnicodePréfixe() : chaine
+      renvoyer ""
+     type : 458752
+   -
+     name : SQLUnicodeSuffixe
+     procedure_id : 2107403919869527496
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui récupère le suffixe d'une chaine Unicode à utiliser dans une requête SQL.
+      // Syntaxe : [ <Résultat> = ] SQLUnicodeSuffixe ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Suffixe à ajouter à une chaine Unicode pour exécuter une requête dans la BD.
+      // Exemple :
+      //
+      PROCEDURE SQLUnicodeSuffixe() : chaine
+      renvoyer ""
+     type : 458752
+   -
+     name : HeureVersSQL
+     procedure_id : 2107404856180284060
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Transforme une heure dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] DateHeureVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	xHeure : L'heure à convertir. Le type de cette valeur peut être heure ou une chaine équivalente
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne représentant l'heure converties au format SQL.
+      // Exemple :
+      //
+      PROCEDURE HeureVersSQL(xHeure) : chaine
+      SI HeureValide(xHeure) ALORS renvoyer "'"+xHeure+"'" sinon renvoyer "''"
+     type : 458752
+   -
+     name : SQLRetourIDAuto
+     procedure_id : 2190165293972382090
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Retourne le code SQL pour permettre la récupération de l'identifiant auto-incrémental en cas d'ajout d'enregistrement.
+      // Syntaxe : [ <Résultat> = ] SQLRetourIDAuto (<sNomColonneIDAuto> est chaîne)
+      // Paramètres :
+      //	sNomColonneIDAuto (chaîne UNICODE) : Nom de la colonne ou code SQL permettant de récupérer l'ID automatique
+      // Valeur de retour : chaîne UNICODE : Code SQL pour permettre la récupération de l'identifiant auto-incrémental.
+      // Exemple :
+      //
+      PROCEDURE SQLRetourIDAuto(sNomColonneIDAuto est une chaine) : chaine
+      Renvoyer ""	//ne pas mettre LAST_INSERT_ID() car ne doit pas faire partie de la requête mais être exécuté à part (et déjà programmé dans cSQL)
+     type : 458752
+   -
+     name : SQLAprèsColonne
+     procedure_id : 2200553626113123721
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Renvoi du SQL à mettre devant le nom d'une colonne (ex ] pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAprèsColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre après toute référence à une colonne lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAprèsColonne() : chaine
+      RENVOYER ""
+     type : 458752
+   -
+     name : SQLAprèsTable
+     procedure_id : 2200553630408158082
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Renvoi du SQL à mettre devant le nom d'une table (ex ] pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAprèsTable ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre après toute référence à une table lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAprèsTable() : chaîne
+      renvoyer ""
+     type : 458752
+   -
+     name : SQLAvantColonne
+     procedure_id : 2200553638998159333
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Renvoi du SQL à mettre devant le nom d'une colonne (ex [ pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAvantColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre devant toute référence à une colonne lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAvantColonne() : chaîne
+      RENVOYER ""
+     type : 458752
+   -
+     name : SQLAvantTable
+     procedure_id : 2200553643293193351
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Renvoi du SQL à mettre devant le nom d'une table (ex [ pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAvantTable ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre devant toute référence à une table lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAvantTable() : chaîne
+      renvoyer ""
+     type : 458752
+   -
+     name : TableLignesEtTaille
+     procedure_id : 2202409760086191259
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie les informations d'une table passée en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableLignesEtTaille (<sNomTable> est chaîne)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE optionnel) : Le nom de la table pour laquelle les informations doivent être récupérées. Si vide, renvoie les informations de toutes les tables.
+      // Valeur de retour : chaîne UNICODE : Liste séparée par RC : Nom de la table + TAB + Nombre de lignes actives + TAB + Nombre de lignes rayées + TAB + Nombre de lignes supprimées+ TAB + Taille totale réelle en octets
+      // Exemple :
+      //
+      PROCEDURE TableLignesEtTaille(sNomTable est une chaine) : chaine
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTable)
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer ""
+      
+      sRes,sTable,sAlias,sFichier,sNomUnique sont des chaines
+      nTaille,nActif,nSuppr sont des entiers
+      pour tout chaine sTable de sNomTable separee par rc
+      	sNomUnique=cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sTable)
+      	si cApplication.mg_taInfo[sNomUnique]<>null alors
+      		sAlias=cApplication.mg_taInfo[cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sTable)].m_sPremierAlias
+      		nActif=HNbEnr(sAlias,hEtatActif)
+      		nSuppr=HNbEnr(sAlias,hEtatSup)
+      		SELON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+      			CAS hAccèsHF7
+      				sRes+=[RC]+sTable+tab+nActif+tab+HNbEnr(sAlias,hEtatRayé)+tab+nSuppr+tab+HInfoFichier(cApplication.mg_taInfo[sNomUnique].m_sPremierAlias,hTailleTotale)+tab+0
+      			cas hAccèsHFClientServeur 
+      				sRes+=[RC]+sTable+tab+nActif+tab+HNbEnr(sAlias,hEtatRayé)+tab+nSuppr+tab+HInfoFichier(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées,cApplication.mg_taInfo[sNomUnique].m_sNomOriginal,hTailleTotale)+tab+0
+      			cas hAccèsHF5
+      				//HInfoFichier() pas supporté
+      				nTaille=0;sFichier=cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Serveur+["\"]+sTable
+      				si ffichierexiste(sFichier+".fic") alors nTaille+=ftaille(sFichier+".fic")
+      				si ffichierexiste(sFichier+".ndx") alors nTaille+=ftaille(sFichier+".ndx")
+      				si ffichierexiste(sFichier+".mmo") alors nTaille+=ftaille(sFichier+".mmo")
+      				sRes+=[RC]+sTable+tab+nActif+tab+(HNbEnr(sAlias,hEtatTous)-nActif-nSuppr)+tab+nSuppr+tab+nTaille+tab+0
+      		fin
+      	fin
+      FIN
+      renvoyer sRes
+     type : 458752
+   -
+     name : TableDateHeure
+     procedure_id : 2202468953526941135
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie la date et heure de modification ou de création d'une table passée en paramètre (voir HInfoPropriétéFichier) .
+      // Syntaxe : [ <Résultat> = ] TableDateHeure (<sNomTable> est chaîne [, <bCréation> est chaîne ])
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE optionnel) : Le nom de la table pour laquelle les informations doivent être récupérées. Si vide, renvoie les informations de toutes les tables.
+      //	bCréation (booléen optionnel) : Le nom de la table pour laquelle l'on souhaite la dateheure.
+      // Valeur de retour : chaîne UNICODE : Liste séparée par RC : Nom de la table + TAB + DateHeure de la table
+      // Exemple :
+      //
+      PROCEDURE TableDateHeure(sNomTable est une chaine,bCréation est un booleen = faux) : chaine
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTable,bCréation)
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer ""
+      
+      sRes,sTable sont des chaines
+      POUR TOUT CHAÎNE sTable de sNomTable separee par rc
+      	SELON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+      		CAS hAccèsHF7,hAccèsHF5
+      			sRes+=[rc]+sTable+tab+fDateheure(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Serveur+["\"]+sTable+".fic","",(bCréation ? fCréation sinon fmodification))
+      		CAS hAccèsHFClientServeur	: 
+      			sRes+=[rc]+sTable+tab+HInfoPropriétéFichier(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées,hDate,"",sTable)
+      	FIN
+      fin
+      renvoyer sRes
+     type : 458752
+   -
+     name : Liste
+     procedure_id : 2224687910113435872
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie la liste des bases de données présentes sur le serveur.
+      // Syntaxe : [ <Résultat> = ] Liste ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Liste des bases de données présentes sur le serveur séparés par RC
+      // Exemple :
+      //
+      PROCEDURE Liste() : chaine
+      m_pclErreur.Raz()
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer ""
+      renvoyer remplace(HListeBaseDeDonnées(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées,hLstNormal),tab,rc)
+     type : 458752
+   -
+     name : TransactionAnnuleSiInterrompue
+     procedure_id : 2268802975540230045
+     type_code : 12
+     code : |1-
+      // Résumé : Annule une transaction en cours si elle a été interrompue.
+      // Syntaxe : [ <Résultat> = ] TransactionAnnuleSiInterrompue ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Renvoie Vrai si l'annulation de la transaction a été effectuée avec succès, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE TransactionAnnuleSiInterrompue() : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$00ac§>);renvoyer faux
+      
+      SI HTransactionInterrompue("") ALORS 
+      	QUAND EXCEPTION DANS
+      		HTransactionAnnule(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées)
+      	FAIRE
+      		sFichier est une chaine
+      		sFichiersDeTransaction est une chaine = flistefichier(Complèterep(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Source)+"*_$$_TRSVAL.TRX")	//fonctionne pour l'instant avec les noms standard Windev
+      		pour toute chaine sFichier de sFichiersDeTransaction separee par rc
+      			sFichier=fExtraitChemin(sFichier,fFichier)
+      			SI PAS HTransactionLibère(gauche(sFichier,taille(sFichier)-10)) alors m_pclErreur.AjouteErreurHF();renvoyer faux
+      		fin
+      	FIN
+      fin
+      renvoyer vrai
+     type : 458752
+   -
+     name : BooléenVersSQL
+     procedure_id : 2301526923590433112
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Transforme un booléen dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] BooléenVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	nValeur : Valeur booléenne à transformer en SQL.
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne un booléen au format SQL.
+      // Exemple :
+      //
+      PROCEDURE BooléenVersSQL(nValeur) : chaine
+      renvoyer (nValeur="1" ? "1" sinon "0")
+     type : 458752
+   -
+     name : SQLBinaireÉcrit
+     procedure_id : 2301562537565913532
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Transforme une valeur hexadécimale en binaire dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] SQLBinaireÉcrit (<xValeur>)
+      // Paramètres :
+      // 	xValeur : Valeur à transformer en notation binaire
+      // Valeur de retour : chaîne UNICODE : Renvoie la valeur transformée en notation binaire.
+      // Exemple :
+      //
+      PROCEDURE SQLBinaireÉcrit(sValeur est une chaine) : chaine
+      renvoyer "wl.HexaVersBuffer('"+sValeur+"')"
+     type : 458752
+   -
+     name : SQLBinaireLit32
+     procedure_id : 2301584738261753867
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Renvoie le code SQL pour récupérer les 32 premiers bits d'un binaire (son hash)
+      // Syntaxe : [ <Résultat> = ] SQLBinaireLit32 (<sNomColonne> est chaîne [, <bEstBinaireImage> est booléen])
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Nom de la colonne depuis laquelle les 32 premiers bits seront récupérés.
+      // 	bEstBinaireImage (booléen optionnel) : n'est pas utilisé ici
+      // Valeur de retour : chaîne UNICODE : Le code SQL pour récupérer les 32 premiers octets d'un binaire.
+      // Exemple :
+      //
+      PROCEDURE SQLBinaireLit32(sNomColonne est une chaine,bEstBinaireImage est un booleen = faux) : chaine
+      renvoyer "CAST("+sNomColonne+" AS VARCHAR(16))"
+     type : 458752
+   -
+     name : SQLImageVersBinaire
+     procedure_id : 2301590918720017449
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Renvoie le code SQL pour convertir une image en chaine hexa (utilisant les caractères de 0 à F).
+      // Syntaxe : [ <Résultat> = ] SQLImageVersBinaire (<sNomColonne> est chaîne)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Nom de la colonne dont on souhaite appliquer la conversion en binaire.
+      // Valeur de retour : chaîne UNICODE : Résultat de la conversion en binaire de l'image.
+      // Exemple :
+      //
+      PROCEDURE SQLImageVersBinaire(sNomColonne est une chaine) : chaine
+      renvoyer sNomColonne
+     type : 458752
+   -
+     name : SQLTableAvantColonne
+     procedure_id : 1156814277357115827
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Indique si il faut ajouter le nom de la table devant le nom de la colonne lors d'une requête SQL.
+      // Syntaxe : [ <Résultat> = ] SQLTableAvantColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Vrai s'il faut ajouter le nom de la table devant le nom de la colonne, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE SQLTableAvantColonne() : booleen
+      renvoyer vrai
+     type : 458752
+   -
+     name : SQLTableForceIDauto
+     procedure_id : 1558667829591605975
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, de classe de la BD dont l'indice est passé au constructeur, qui retourne le code SQL permettant d'activer ou de désactive la gestion de l'identifiant auto-incrémental sur une table passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] SQLTableForceIDauto (<sNomTable> est chaîne, <bForce> est booléen)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Le nom de la table pour laquelle la contrainte doit être définie ou désactivée.
+      //	bForce (booléen) : Si vrai, la contrainte d'auto-incrémentation sera activée. Si faux, la contrainte sera désactivée.
+      // Valeur de retour : chaîne UNICODE : Contient le code SQL à utiliser pour activer ou désactiver la gestion de l'identifiant auto-incrémental. Chaine vide si en erreur ou si la fonction n'est pas supportée par la base de données cible.
+      // Exemple :
+      //
+      PROCEDURE SQLTableForceIDauto(sNomTable est une chaine,bForce est un booleen) : chaine
+      renvoyer ""
+     type : 458752
+  properties :
+   -
+     name : p_bEstConnecté
+     identifier : 0x1c5d990409f396e3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut de la connexion
+         PROCEDURE PUBLIQUE p_bEstConnecté() : booleen
+         renvoyer m_nIndiceDeConnexion>0
+        type : 1966080
+     template_refs : []
+   -
+     name : pg_taPays
+     identifier : 0x1ed7b9ca127cda8f
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le tableau associatif des noms de pays selon leur codes ISO2 (ceux pris en compte par Hyperfile). Sont chargés en mémoire à la première utilisation.
+         PROCEDURE PUBLIQUE GLOBALE pg_taPays() : tableau associatif de chaînes
+         SI mg_taPays.occurrence()=0 ALORS
+         	mg_taPays["AE"]=<§$000d§> 
+         	mg_taPays["AF"]="Afghanistan" 
+         	mg_taPays["AL"]=<§$000e§> 
+         	mg_taPays["AR"]=<§$000f§> 
+         	mg_taPays["AT"]=<§$0010§> 
+         	mg_taPays["AU"]=<§$0011§> 
+         	mg_taPays["BA"]=<§$0012§> 
+         	mg_taPays["BE"]=<§$0013§> 
+         	mg_taPays["BG"]=<§$0014§> 
+         	mg_taPays["BH"]=<§$0015§> 
+         	mg_taPays["BN"]=<§$0016§> 
+         	mg_taPays["BO"]=<§$0017§> 
+         	mg_taPays["BR"]=<§$0018§> 
+         	mg_taPays["BW"]=<§$0019§> 
+         	mg_taPays["BY"]=<§$001a§> 
+         	mg_taPays["CA"]=<§$001b§> 
+         	mg_taPays["CH"]=<§$001c§> 
+         	mg_taPays["CL"]=<§$001d§> 
+         	mg_taPays["CN"]=<§$001e§> 
+         	mg_taPays["CO"]=<§$001f§> 
+         	mg_taPays["CR"]=<§$0020§> 
+         	mg_taPays["CZ"]=<§$0021§> 
+         	mg_taPays["DE"]=<§$0022§>
+         	mg_taPays["DK"]=<§$0023§> 
+         	mg_taPays["DO"]=<§$0024§> 
+         	mg_taPays["DZ"]=<§$0025§> 
+         	mg_taPays["EC"]=<§$0026§> 
+         	mg_taPays["EE"]=<§$0027§> 
+         	mg_taPays["EG"]=<§$0028§> 
+         	mg_taPays["ES"]=<§$0029§> 
+         	mg_taPays["ET"]=<§$002a§> 
+         	mg_taPays["FI"]=<§$002b§> 
+         	mg_taPays["FO"]=<§$002c§> 
+         	mg_taPays["FR"]=<§$002d§> 
+         	mg_taPays["GB"]=<§$002e§>
+         	mg_taPays["GL"]=<§$002f§> 
+         	mg_taPays["GR"]=<§$0030§> 
+         	mg_taPays["GT"]=<§$0031§> 
+         	mg_taPays["HK"]=<§$0032§> 
+         	mg_taPays["HN"]=<§$0033§> 
+         	mg_taPays["HR"]=<§$0034§> 
+         	mg_taPays["HU"]=<§$0035§> 
+         	mg_taPays["ID"]=<§$0036§> 
+         	mg_taPays["IE"]=<§$0037§> 
+         	mg_taPays["IL"]=<§$0038§> 
+         	mg_taPays["IN"]=<§$0039§> 
+         	mg_taPays["IQ"]=<§$003a§> 
+         	mg_taPays["IR"]=<§$003b§> 
+         	mg_taPays["IS"]=<§$003c§> 
+         	mg_taPays["IT"]=<§$003d§> 
+         	mg_taPays["JO"]=<§$003e§> 
+         	mg_taPays["JP"]=<§$003f§> 
+         	mg_taPays["KE"]=<§$0040§> 
+         	mg_taPays["KR"]=<§$0041§> 
+         	mg_taPays["KW"]=<§$0042§> 
+         	mg_taPays["KZ"]=<§$0043§> 
+         	mg_taPays["LB"]=<§$0044§> 
+         	mg_taPays["LT"]=<§$0045§> 
+         	mg_taPays["LU"]="Luxembourg" 
+         	mg_taPays["LV"]=<§$0046§> 
+         	mg_taPays["LY"]=<§$0047§> 
+         	mg_taPays["MA"]=<§$0048§> 
+         	mg_taPays["MK"]=<§$0049§> 
+         	mg_taPays["MO"]=<§$004a§> 
+         	mg_taPays["MT"]=<§$004b§> 
+         	mg_taPays["MX"]=<§$004c§> 
+         	mg_taPays["MY"]=<§$004d§> 
+         	mg_taPays["NI"]="Nicaragua" 
+         	mg_taPays["NL"]=<§$004e§> 
+         	mg_taPays["NO"]=<§$004f§> 
+         	mg_taPays["NZ"]=<§$0050§> 
+         	mg_taPays["OM"]=<§$0051§> 
+         	mg_taPays["PA"]=<§$0052§> 
+         	mg_taPays["PE"]=<§$0053§> 
+         	mg_taPays["PH"]=<§$0054§> 
+         	mg_taPays["PL"]=<§$0055§> 
+         	mg_taPays["PR"]=<§$0056§> 
+         	mg_taPays["PT"]=<§$0057§> 
+         	mg_taPays["PY"]=<§$0058§> 
+         	mg_taPays["QA"]=<§$0059§> 
+         	mg_taPays["RO"]=<§$005a§> 
+         	mg_taPays["RU"]=<§$005b§> 
+         	mg_taPays["SA"]=<§$005c§> 
+         	mg_taPays["SD"]=<§$005d§> 
+         	mg_taPays["SE"]=<§$005e§> 
+         	mg_taPays["SG"]=<§$005f§> 
+         	mg_taPays["SI"]=<§$0060§> 
+         	mg_taPays["SK"]=<§$0061§> 
+         	mg_taPays["SV"]=<§$0062§> 
+         	mg_taPays["SY"]=<§$0063§> 
+         	mg_taPays["TH"]=<§$0064§>
+         	mg_taPays["TN"]=<§$0065§> 
+         	mg_taPays["TR"]=<§$0066§> 
+         	mg_taPays["TW"]=<§$0067§> 
+         	mg_taPays["UA"]=<§$0068§> 
+         	mg_taPays["US"]=<§$0069§> 
+         	mg_taPays["UY"]=<§$006a§> 
+         	mg_taPays["VE"]=<§$006b§> 
+         	mg_taPays["VI"]=<§$006c§> 
+         	mg_taPays["VN"]=<§$006d§> 
+         	mg_taPays["YE"]=<§$006e§> 
+         	mg_taPays["YU"]=<§$0012§> 
+         	mg_taPays["ZA"]=<§$006f§> 
+         	mg_taPays["ZW"]=<§$0070§> 
+         FIN
+         RENVOYER mg_taPays
+        type : 1966080
+     template_refs : []
+   -
+     name : pg_taLangue
+     identifier : 0x1ed7b9e5127d438e
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le tableau associatif des noms de langues selon leur codes ISO2 (ceux pris en compte par Hyperfile). Sont chargés en mémoire à la première utilisation.
+         PROCEDURE PUBLIQUE GLOBALE pg_taLangue() : tableau associatif de chaînes
+         SI mg_taLangue.Occurrence()=0 ALORS
+         	mg_taLangue["AR"]=<§$0071§>
+         	mg_taLangue["AS"]=<§$0072§>	
+         	mg_taLangue["BE"]=<§$0073§>
+         	mg_taLangue["BG"]=<§$0074§>
+         	mg_taLangue["CA"]=<§$0084§> 
+         	mg_taLangue["CS"]=<§$0076§> 
+         	mg_taLangue["DA"]=<§$0077§> 
+         	mg_taLangue["DE"]=<§$0078§> 
+         	mg_taLangue["EL"]=<§$0079§>
+         	mg_taLangue["EN"]=<§$007a§> 
+         	mg_taLangue["ES"]=<§$007b§> 
+         	mg_taLangue["ET"]=<§$007c§> 
+         	mg_taLangue["FA"]=<§$007d§> 
+         	mg_taLangue["FI"]=<§$007e§> 
+         	mg_taLangue["FO"]=<§$007f§> 
+         	mg_taLangue["FR"]=<§$0080§> 
+         	mg_taLangue["GA"]=<§$0081§> 
+         	mg_taLangue["GU"]=<§$0082§> 
+         	mg_taLangue["HE"]=<§$0083§> 
+         	mg_taLangue["HI"]=<§$0085§> 
+         	mg_taLangue["HR"]=<§$0075§> 
+         	mg_taLangue["HU"]=<§$008b§> 
+         	mg_taLangue["ID"]=<§$0097§> 
+         	mg_taLangue["IN"]=<§$0097§> 
+         	mg_taLangue["IS"]=<§$009a§> 
+         	mg_taLangue["IT"]=<§$0089§> 
+         	mg_taLangue["IW"]=<§$0083§>  
+         	mg_taLangue["JA"]=<§$008a§> 
+         	mg_taLangue["KK"]=<§$0086§> 
+         	mg_taLangue["KL"]=<§$008c§> 
+         	mg_taLangue["KN"]="Kannada" 
+         	mg_taLangue["KO"]=<§$008d§> 
+         	mg_taLangue["LT"]=<§$008e§> 
+         	mg_taLangue["LV"]=<§$008f§> 
+         	mg_taLangue["MK"]=<§$0090§> 
+         	mg_taLangue["MR"]=<§$0091§> 
+         	mg_taLangue["MS"]=<§$0092§> 
+         	mg_taLangue["MT"]=<§$0093§> 
+         	mg_taLangue["NB"]=<§$0094§>
+         	mg_taLangue["NL"]=<§$0095§>
+         	mg_taLangue["NN"]=<§$0096§>
+         	mg_taLangue["OM"]=<§$0087§>
+         	mg_taLangue["PA"]=<§$0098§>
+         	mg_taLangue["PL"]=<§$0099§>
+         	mg_taLangue["PS"]=<§$0088§>
+         	mg_taLangue["PT"]=<§$009b§>
+         	mg_taLangue["RO"]=<§$009c§>
+         	mg_taLangue["RU"]=<§$009d§>
+         	mg_taLangue["SH"]=<§$009e§>
+         	mg_taLangue["SK"]=<§$009f§>
+         	mg_taLangue["SL"]=<§$00a0§>
+         	mg_taLangue["SQ"]=<§$00a1§> 
+         	mg_taLangue["SR"]=<§$00a2§> 
+         	mg_taLangue["SV"]=<§$00a3§> 
+         	mg_taLangue["TA"]=<§$00a4§> 
+         	mg_taLangue["TE"]=<§$00a5§> 
+         	mg_taLangue["TH"]=<§$00a6§> 
+         	mg_taLangue["TR"]=<§$00a7§> 
+         	mg_taLangue["UK"]=<§$00a8§> 
+         	mg_taLangue["VI"]=<§$00a9§> 
+         	mg_taLangue["ZH"]=<§$00aa§>
+         FIN
+         RENVOYER mg_taLangue
+        type : 1966080
+     template_refs : []
+   -
+     name : pg_taVariant
+     identifier : 0x1ed7bde8105af1a8
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le tableau associatif des noms des variantes des langues (ceux pris en compte par Hyperfile). Sont chargés en mémoire à la première utilisation.
+         PROCEDURE PUBLIQUE GLOBALE pg_taVariant() : tableau associatif de chaînes
+         SI mg_taVariant.Occurrence()=0 ALORS
+         	mg_taVariant["PHONEBOOK"]	= "Phone book"		//variant pour l'allemand
+         	mg_taVariant["POSIX"]		= "Posix"			//variant pour l'anglais
+         	mg_taVariant["TRADITIONAL"]	= <§$000c§>	//variant pour l'espagnol
+         	mg_taVariant["DIRECT"]		= "Direct"			//variant pour le hindi
+         	mg_taVariant["STROKE"]		= "Stoke"			//variant pour le chinois de Taïwan
+         	mg_taVariant["PINYIN"]		= "Pinyin"			//variant pour le chinois
+         FIN
+         RENVOYER mg_taVariant
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1c3e48e2895d6777
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to open data connection (%1 - %2) : "
+      fr-CA : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-US : "Unable to open data connection (%1 - %2) : "
+     index : 0
+   -
+     text :
+      fr-FR : HyperFile Client/Serveur
+      en-GB : HyperFile Client/Server
+      fr-CA : HyperFile Client/Serveur
+      en-US : HyperFile Client/Server
+     index : 1
+   -
+     text :
+      fr-FR : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to close data connection (%1 - %2) : "
+      fr-CA : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-US : "Unable to close data connection (%1 - %2) : "
+     index : 2
+   -
+     text :
+      fr-FR : Le répertoire local est obligatoire
+      en-GB : The local directory is required
+      fr-CA : Le répertoire local est obligatoire
+      en-US : The local directory is required
+     index : 3
+   -
+     text :
+      fr-FR : Le répertoire de sauvegarde ne peut pas être le répertoire des données
+      en-GB : The backup directory can not be the data directory
+      fr-CA : Le répertoire de sauvegarde ne peut pas être le répertoire des données
+      en-US : The backup directory can not be the data directory
+     index : 4
+   -
+     text :
+      fr-FR : Le fichier %1 existe déjà dans la sauvegarde
+      en-GB : The file% 1 already exists in the backup
+      fr-CA : Le fichier %1 existe déjà dans la sauvegarde
+      en-US : The file% 1 already exists in the backup
+     index : 5
+   -
+     text :
+      fr-FR : Pas de transaction en cours
+      en-GB : No transaction in progress
+      fr-CA : Pas de transaction en cours
+      en-US : No transaction in progress
+     index : 6
+   -
+     text :
+      fr-FR : Une transaction est déjà en cours
+      en-GB : A transaction is already in progress
+      fr-CA : Une transaction est déjà en cours
+      en-US : A transaction is already in progress
+     index : 7
+   -
+     text :
+      fr-FR : Pas de transaction permise sur cette base de données
+      en-GB : No transaction allowed on this database
+      fr-CA : Pas de transaction permise sur cette base de données
+      en-US : No transaction allowed on this database
+     index : 8
+   -
+     text :
+      fr-FR : "Répertoire:"
+      en-GB : "Directory:"
+      fr-CA : "Répertoire:"
+      en-US : "Directory:"
+     index : 9
+   -
+     text :
+      fr-FR : "Analyse inexistante:"
+      en-GB : "Non-existent analysis:"
+      fr-CA : "Analyse inexistante:"
+      en-US : "Non-existent analysis:"
+     index : 10
+   -
+     text :
+      fr-FR : Plusieurs analyse dans le répertoire
+      en-GB : Several analyzes in the directory
+      fr-CA : Plusieurs analyse dans le répertoire
+      en-US : Several analyzes in the directory
+     index : 11
+   -
+     text :
+      fr-FR : Traditionnel
+      en-GB : Traditional
+      fr-CA : Traditionnel
+      en-US : Traditional
+     index : 12
+   -
+     text :
+      fr-FR : Émirats Arabes Unis
+      en-GB : United Arab Emirates
+      fr-CA : Émirats Arabes Unis
+      en-US : United Arab Emirates
+     index : 13
+   -
+     text :
+      fr-FR : Albanie
+      en-GB : Albania
+      fr-CA : Albanie
+      en-US : Albania
+     index : 14
+   -
+     text :
+      fr-FR : Argentine
+      en-GB : Argentina
+      fr-CA : Argentine
+      en-US : Argentina
+     index : 15
+   -
+     text :
+      fr-FR : Autriche
+      en-GB : Austria
+      fr-CA : Autriche
+      en-US : Austria
+     index : 16
+   -
+     text :
+      fr-FR : Australie
+      en-GB : Australia
+      fr-CA : Australie
+      en-US : Australia
+     index : 17
+   -
+     text :
+      fr-FR : Bosnie-Herzégovine
+      en-GB : Bosnia-Herzegovina
+      fr-CA : Bosnie-Herzégovine
+      en-US : Bosnia-Herzegovina
+     index : 18
+   -
+     text :
+      fr-FR : Belgique
+      en-GB : Belgium
+      fr-CA : Belgique
+      en-US : Belgium
+     index : 19
+   -
+     text :
+      fr-FR : Bulgarie
+      en-GB : Bulgaria
+      fr-CA : Bulgarie
+      en-US : Bulgaria
+     index : 20
+   -
+     text :
+      fr-FR : Bahreïn
+      en-GB : Bahrain
+      fr-CA : Bahreïn
+      en-US : Bahrain
+     index : 21
+   -
+     text :
+      fr-FR : Brunei
+      en-GB : Brunei
+      fr-CA : Brunei
+      en-US : Brunei
+     index : 22
+   -
+     text :
+      fr-FR : Bolivie
+      en-GB : Bolivia
+      fr-CA : Bolivie
+      en-US : Bolivia
+     index : 23
+   -
+     text :
+      fr-FR : Brésil
+      en-GB : Brazil
+      fr-CA : Brésil
+      en-US : Brazil
+     index : 24
+   -
+     text :
+      fr-FR : Botswana
+      en-GB : Botswana
+      fr-CA : Botswana
+      en-US : Botswana
+     index : 25
+   -
+     text :
+      fr-FR : Biélorussie
+      en-GB : Belarus
+      fr-CA : Biélorussie
+      en-US : Belarus
+     index : 26
+   -
+     text :
+      fr-FR : Canada
+      en-GB : Canada
+      fr-CA : Canada
+      en-US : Canada
+     index : 27
+   -
+     text :
+      fr-FR : Suisse
+      en-GB : Switzerland
+      fr-CA : Suisse
+      en-US : Switzerland
+     index : 28
+   -
+     text :
+      fr-FR : Chili
+      en-GB : Chile
+      fr-CA : Chili
+      en-US : Chile
+     index : 29
+   -
+     text :
+      fr-FR : Chine
+      en-GB : China
+      fr-CA : Chine
+      en-US : China
+     index : 30
+   -
+     text :
+      fr-FR : Colombie
+      en-GB : Colombia
+      fr-CA : Colombie
+      en-US : Colombia
+     index : 31
+   -
+     text :
+      fr-FR : Costa Rica
+      en-GB : Costa Rica
+      fr-CA : Costa Rica
+      en-US : Costa Rica
+     index : 32
+   -
+     text :
+      fr-FR : Tchéquie
+      en-GB : Czech Republic
+      fr-CA : Tchéquie
+      en-US : Czech Republic
+     index : 33
+   -
+     text :
+      fr-FR : Allemagne
+      en-GB : Germany
+      fr-CA : Allemagne
+      en-US : Germany
+     index : 34
+   -
+     text :
+      fr-FR : Danemark
+      en-GB : Denmark
+      fr-CA : Danemark
+      en-US : Denmark
+     index : 35
+   -
+     text :
+      fr-FR : République Dominicaine
+      en-GB : Dominican Republic
+      fr-CA : République Dominicaine
+      en-US : Dominican Republic
+     index : 36
+   -
+     text :
+      fr-FR : Algérie
+      en-GB : Algeria
+      fr-CA : Algérie
+      en-US : Algeria
+     index : 37
+   -
+     text :
+      fr-FR : Equateur
+      en-GB : Ecuador
+      fr-CA : Equateur
+      en-US : Ecuador
+     index : 38
+   -
+     text :
+      fr-FR : Estonie
+      en-GB : Estonia
+      fr-CA : Estonie
+      en-US : Estonia
+     index : 39
+   -
+     text :
+      fr-FR : Egypte
+      en-GB : Egypt
+      fr-CA : Egypte
+      en-US : Egypt
+     index : 40
+   -
+     text :
+      fr-FR : Espagne
+      en-GB : Spain
+      fr-CA : Espagne
+      en-US : Spain
+     index : 41
+   -
+     text :
+      fr-FR : Ethiopie
+      en-GB : Ethiopia
+      fr-CA : Ethiopie
+      en-US : Ethiopia
+     index : 42
+   -
+     text :
+      fr-FR : Finlande
+      en-GB : Finland
+      fr-CA : Finlande
+      en-US : Finland
+     index : 43
+   -
+     text :
+      fr-FR : Iles Féroé
+      en-GB : Faroe Islands
+      fr-CA : Iles Féroé
+      en-US : Faroe Islands
+     index : 44
+   -
+     text :
+      fr-FR : France
+      en-GB : France
+      fr-CA : France
+      en-US : France
+     index : 45
+   -
+     text :
+      fr-FR : Grande Bretagne
+      en-GB : Great Britain
+      fr-CA : Grande Bretagne
+      en-US : Great Britain
+     index : 46
+   -
+     text :
+      fr-FR : Groenland
+      en-GB : Greenland
+      fr-CA : Groenland
+      en-US : Greenland
+     index : 47
+   -
+     text :
+      fr-FR : Grèce
+      en-GB : Greece
+      fr-CA : Grèce
+      en-US : Greece
+     index : 48
+   -
+     text :
+      fr-FR : Guatemala
+      en-GB : Guatemala
+      fr-CA : Guatemala
+      en-US : Guatemala
+     index : 49
+   -
+     text :
+      fr-FR : Hong Kong
+      en-GB : Hong Kong
+      fr-CA : Hong Kong
+      en-US : Hong Kong
+     index : 50
+   -
+     text :
+      fr-FR : Honduras
+      en-GB : Honduras
+      fr-CA : Honduras
+      en-US : Honduras
+     index : 51
+   -
+     text :
+      fr-FR : Croatie
+      en-GB : Croatia
+      fr-CA : Croatie
+      en-US : Croatia
+     index : 52
+   -
+     text :
+      fr-FR : Hongrie
+      en-GB : Hungary
+      fr-CA : Hongrie
+      en-US : Hungary
+     index : 53
+   -
+     text :
+      fr-FR : Indonésie
+      en-GB : Indonesia
+      fr-CA : Indonésie
+      en-US : Indonesia
+     index : 54
+   -
+     text :
+      fr-FR : Irlande
+      en-GB : Ireland
+      fr-CA : Irlande
+      en-US : Ireland
+     index : 55
+   -
+     text :
+      fr-FR : Israël
+      en-GB : Israel
+      fr-CA : Israël
+      en-US : Israel
+     index : 56
+   -
+     text :
+      fr-FR : Inde
+      en-GB : India
+      fr-CA : Inde
+      en-US : India
+     index : 57
+   -
+     text :
+      fr-FR : Irak
+      en-GB : Iraq
+      fr-CA : Irak
+      en-US : Iraq
+     index : 58
+   -
+     text :
+      fr-FR : Iran
+      en-GB : Iran
+      fr-CA : Iran
+      en-US : Iran
+     index : 59
+   -
+     text :
+      fr-FR : Islande
+      en-GB : Iceland
+      fr-CA : Islande
+      en-US : Iceland
+     index : 60
+   -
+     text :
+      fr-FR : Italie
+      en-GB : Italy
+      fr-CA : Italie
+      en-US : Italy
+     index : 61
+   -
+     text :
+      fr-FR : Jordanie
+      en-GB : Jordan
+      fr-CA : Jordanie
+      en-US : Jordan
+     index : 62
+   -
+     text :
+      fr-FR : Japon
+      en-GB : Japan
+      fr-CA : Japon
+      en-US : Japan
+     index : 63
+   -
+     text :
+      fr-FR : Kenya
+      en-GB : Kenya
+      fr-CA : Kenya
+      en-US : Kenya
+     index : 64
+   -
+     text :
+      fr-FR : Corée du sud
+      en-GB : South Korea
+      fr-CA : Corée du sud
+      en-US : South Korea
+     index : 65
+   -
+     text :
+      fr-FR : Koweït
+      en-GB : Kuwait
+      fr-CA : Koweït
+      en-US : Kuwait
+     index : 66
+   -
+     text :
+      fr-FR : Kazakhstan
+      en-GB : Kazakhstan
+      fr-CA : Kazakhstan
+      en-US : Kazakhstan
+     index : 67
+   -
+     text :
+      fr-FR : Liban
+      en-GB : Lebanon
+      fr-CA : Liban
+      en-US : Lebanon
+     index : 68
+   -
+     text :
+      fr-FR : Lituanie
+      en-GB : Lithuania
+      fr-CA : Lituanie
+      en-US : Lithuania
+     index : 69
+   -
+     text :
+      fr-FR : Lettonie
+      en-GB : Latvia
+      fr-CA : Lettonie
+      en-US : Latvia
+     index : 70
+   -
+     text :
+      fr-FR : Libye
+      en-GB : Libya
+      fr-CA : Libye
+      en-US : Libya
+     index : 71
+   -
+     text :
+      fr-FR : Maroc
+      en-GB : Morocco
+      fr-CA : Maroc
+      en-US : Morocco
+     index : 72
+   -
+     text :
+      fr-FR : Macédoine
+      en-GB : Macedonia
+      fr-CA : Macédoine
+      en-US : Macedonia
+     index : 73
+   -
+     text :
+      fr-FR : Macao
+      en-GB : Macau
+      fr-CA : Macao
+      en-US : Macau
+     index : 74
+   -
+     text :
+      fr-FR : Malte
+      en-GB : Malta
+      fr-CA : Malte
+      en-US : Malta
+     index : 75
+   -
+     text :
+      fr-FR : Mexique
+      en-GB : Mexico
+      fr-CA : Mexique
+      en-US : Mexico
+     index : 76
+   -
+     text :
+      fr-FR : Malaisie
+      en-GB : Malaysia
+      fr-CA : Malaisie
+      en-US : Malaysia
+     index : 77
+   -
+     text :
+      fr-FR : Pays-Bas
+      en-GB : Netherlands
+      fr-CA : Pays-Bas
+      en-US : Netherlands
+     index : 78
+   -
+     text :
+      fr-FR : Norvège
+      en-GB : Norway
+      fr-CA : Norvège
+      en-US : Norway
+     index : 79
+   -
+     text :
+      fr-FR : Nouvelle-Zélande
+      en-GB : New Zealand
+      fr-CA : Nouvelle-Zélande
+      en-US : New Zealand
+     index : 80
+   -
+     text :
+      fr-FR : Oman
+      en-GB : Oman
+      fr-CA : Oman
+      en-US : Oman
+     index : 81
+   -
+     text :
+      fr-FR : Panama
+      en-GB : Panama
+      fr-CA : Panama
+      en-US : Panama
+     index : 82
+   -
+     text :
+      fr-FR : Pérou
+      en-GB : Peru
+      fr-CA : Pérou
+      en-US : Peru
+     index : 83
+   -
+     text :
+      fr-FR : Philippines
+      en-GB : Philippines
+      fr-CA : Philippines
+      en-US : Philippines
+     index : 84
+   -
+     text :
+      fr-FR : Pologne
+      en-GB : Poland
+      fr-CA : Pologne
+      en-US : Poland
+     index : 85
+   -
+     text :
+      fr-FR : Puerto Rico
+      en-GB : Puerto Rico
+      fr-CA : Puerto Rico
+      en-US : Puerto Rico
+     index : 86
+   -
+     text :
+      fr-FR : Portugal
+      en-GB : Portugal
+      fr-CA : Portugal
+      en-US : Portugal
+     index : 87
+   -
+     text :
+      fr-FR : Paraguay
+      en-GB : Paraguay
+      fr-CA : Paraguay
+      en-US : Paraguay
+     index : 88
+   -
+     text :
+      fr-FR : Qatar
+      en-GB : Qatar
+      fr-CA : Qatar
+      en-US : Qatar
+     index : 89
+   -
+     text :
+      fr-FR : Roumanie
+      en-GB : Romania
+      fr-CA : Roumanie
+      en-US : Romania
+     index : 90
+   -
+     text :
+      fr-FR : Russie
+      en-GB : Russia
+      fr-CA : Russie
+      en-US : Russia
+     index : 91
+   -
+     text :
+      fr-FR : Arabie Saoudite
+      en-GB : Saudi Arabia
+      fr-CA : Arabie Saoudite
+      en-US : Saudi Arabia
+     index : 92
+   -
+     text :
+      fr-FR : Soudan
+      en-GB : Sudan
+      fr-CA : Soudan
+      en-US : Sudan
+     index : 93
+   -
+     text :
+      fr-FR : Suède
+      en-GB : Sweden
+      fr-CA : Suède
+      en-US : Sweden
+     index : 94
+   -
+     text :
+      fr-FR : Singapour
+      en-GB : Singapore
+      fr-CA : Singapour
+      en-US : Singapore
+     index : 95
+   -
+     text :
+      fr-FR : Slovénie
+      en-GB : Slovenia
+      fr-CA : Slovénie
+      en-US : Slovenia
+     index : 96
+   -
+     text :
+      fr-FR : Slovaquie
+      en-GB : Slovakia
+      fr-CA : Slovaquie
+      en-US : Slovakia
+     index : 97
+   -
+     text :
+      fr-FR : Salvador
+      en-GB : El Salvadore
+      fr-CA : Salvador
+      en-US : El Salvadore
+     index : 98
+   -
+     text :
+      fr-FR : Syrie
+      en-GB : Syria
+      fr-CA : Syrie
+      en-US : Syria
+     index : 99
+   -
+     text :
+      fr-FR : Thaïlande
+      en-GB : Thailand
+      fr-CA : Thaïlande
+      en-US : Thailand
+     index : 100
+   -
+     text :
+      fr-FR : Tunisie
+      en-GB : Tunisia
+      fr-CA : Tunisie
+      en-US : Tunisia
+     index : 101
+   -
+     text :
+      fr-FR : Turquie
+      en-GB : Turkey
+      fr-CA : Turquie
+      en-US : Turkey
+     index : 102
+   -
+     text :
+      fr-FR : Taiwan
+      en-GB : Taiwan
+      fr-CA : Taiwan
+      en-US : Taiwan
+     index : 103
+   -
+     text :
+      fr-FR : Ukraine
+      en-GB : Ukraine
+      fr-CA : Ukraine
+      en-US : Ukraine
+     index : 104
+   -
+     text :
+      fr-FR : Etats-Unis
+      en-GB : Unites States
+      fr-CA : Etats-Unis
+      en-US : Unites States
+     index : 105
+   -
+     text :
+      fr-FR : Uruguay
+      en-GB : Uruguay
+      fr-CA : Uruguay
+      en-US : Uruguay
+     index : 106
+   -
+     text :
+      fr-FR : Venezuela
+      en-GB : Venezuela
+      fr-CA : Venezuela
+      en-US : Venezuela
+     index : 107
+   -
+     text :
+      fr-FR : Îles Vierges Des États-Unis
+      en-GB : Virgin Islands of the United States
+      fr-CA : Îles Vierges Des États-Unis
+      en-US : Virgin Islands of the United States
+     index : 108
+   -
+     text :
+      fr-FR : Vietnam
+      en-GB : Vietnam
+      fr-CA : Vietnam
+      en-US : Vietnam
+     index : 109
+   -
+     text :
+      fr-FR : Yémen
+      en-GB : Yemen
+      fr-CA : Yémen
+      en-US : Yemen
+     index : 110
+   -
+     text :
+      fr-FR : Afrique du sud
+      en-GB : South Africa
+      fr-CA : Afrique du sud
+      en-US : South Africa
+     index : 111
+   -
+     text :
+      fr-FR : Zimbabwe
+      en-GB : Zimbabwe
+      fr-CA : Zimbabwe
+      en-US : Zimbabwe
+     index : 112
+   -
+     text :
+      fr-FR : Arabe
+      en-GB : Arabic
+      fr-CA : Arabe
+      en-US : Arabic
+     index : 113
+   -
+     text :
+      fr-FR : Assamais
+      en-GB : Assamese
+      fr-CA : Assamais
+      en-US : Assamese
+     index : 114
+   -
+     text :
+      fr-FR : Biélorusse
+      en-GB : Byelorussian
+      fr-CA : Biélorusse
+      en-US : Byelorussian
+     index : 115
+   -
+     text :
+      fr-FR : Bulgare
+      en-GB : Bulgarian
+      fr-CA : Bulgare
+      en-US : Bulgarian
+     index : 116
+   -
+     text :
+      fr-FR : Croate
+      en-GB : Croatian
+      fr-CA : Croate
+      en-US : Croatian
+     index : 117
+   -
+     text :
+      fr-FR : Tchèque
+      en-GB : Czech
+      fr-CA : Tchèque
+      en-US : Czech
+     index : 118
+   -
+     text :
+      fr-FR : Danois
+      en-GB : Danish
+      fr-CA : Danois
+      en-US : Danish
+     index : 119
+   -
+     text :
+      fr-FR : Allemand
+      en-GB : German
+      fr-CA : Allemand
+      en-US : German
+     index : 120
+   -
+     text :
+      fr-FR : Grec moderne
+      en-GB : Modern Greek
+      fr-CA : Grec moderne
+      en-US : Modern Greek
+     index : 121
+   -
+     text :
+      fr-FR : Anglais
+      en-GB : English
+      fr-CA : Anglais
+      en-US : English
+     index : 122
+   -
+     text :
+      fr-FR : Espagnol
+      en-GB : Spanish
+      fr-CA : Espagnol
+      en-US : Spanish
+     index : 123
+   -
+     text :
+      fr-FR : Estonien
+      en-GB : Estonian
+      fr-CA : Estonien
+      en-US : Estonian
+     index : 124
+   -
+     text :
+      fr-FR : Persan
+      en-GB : Farsi
+      fr-CA : Persan
+      en-US : Farsi
+     index : 125
+   -
+     text :
+      fr-FR : Finnois
+      en-GB : Finnish
+      fr-CA : Finnois
+      en-US : Finnish
+     index : 126
+   -
+     text :
+      fr-FR : Féroïen
+      en-GB : Faroese
+      fr-CA : Féroïen
+      en-US : Faroese
+     index : 127
+   -
+     text :
+      fr-FR : Français
+      en-GB : French
+      fr-CA : Français
+      en-US : French
+     index : 128
+   -
+     text :
+      fr-FR : Irlandais
+      en-GB : Irish
+      fr-CA : Irlandais
+      en-US : Irish
+     index : 129
+   -
+     text :
+      fr-FR : Goudjrati
+      en-GB : Gujarati
+      fr-CA : Goudjrati
+      en-US : Gujarati
+     index : 130
+   -
+     text :
+      fr-FR : Hébreu
+      en-GB : Hebrew
+      fr-CA : Hébreu
+      en-US : Hebrew
+     index : 131
+   -
+     text :
+      fr-FR : Catalan
+      en-GB : Catalan
+      fr-CA : Catalan
+      en-US : Catalan
+     index : 132
+   -
+     text :
+      fr-FR : Hindi
+      en-GB : Hindi
+      fr-CA : Hindi
+      en-US : Hindi
+     index : 133
+   -
+     text :
+      fr-FR : Kazakh
+      en-GB : Kazakh
+      fr-CA : Kazakh
+      en-US : Kazakh
+     index : 134
+   -
+     text :
+      fr-FR : Galla
+      en-GB : Galla
+      fr-CA : Galla
+      en-US : Galla
+     index : 135
+   -
+     text :
+      fr-FR : Patcho
+      en-GB : Patcho
+      fr-CA : Patcho
+      en-US : Patcho
+     index : 136
+   -
+     text :
+      fr-FR : Italien
+      en-GB : Italian
+      fr-CA : Italien
+      en-US : Italian
+     index : 137
+   -
+     text :
+      fr-FR : Japonais
+      en-GB : Japanese
+      fr-CA : Japonais
+      en-US : Japanese
+     index : 138
+   -
+     text :
+      fr-FR : Hongrois
+      en-GB : Hungarian
+      fr-CA : Hongrois
+      en-US : Hungarian
+     index : 139
+   -
+     text :
+      fr-FR : Groenlandais
+      en-GB : Greenlandic
+      fr-CA : Groenlandais
+      en-US : Greenlandic
+     index : 140
+   -
+     text :
+      fr-FR : Coréen
+      en-GB : Korean
+      fr-CA : Coréen
+      en-US : Korean
+     index : 141
+   -
+     text :
+      fr-FR : Lituanien
+      en-GB : Lithuanian
+      fr-CA : Lituanien
+      en-US : Lithuanian
+     index : 142
+   -
+     text :
+      fr-FR : Letton
+      en-GB : Latvian
+      fr-CA : Letton
+      en-US : Latvian
+     index : 143
+   -
+     text :
+      fr-FR : Macédonien
+      en-GB : Macedonian
+      fr-CA : Macédonien
+      en-US : Macedonian
+     index : 144
+   -
+     text :
+      fr-FR : Marathe
+      en-GB : Marathi
+      fr-CA : Marathe
+      en-US : Marathi
+     index : 145
+   -
+     text :
+      fr-FR : Malais
+      en-GB : Malay
+      fr-CA : Malais
+      en-US : Malay
+     index : 146
+   -
+     text :
+      fr-FR : Maltais
+      en-GB : Maltese
+      fr-CA : Maltais
+      en-US : Maltese
+     index : 147
+   -
+     text :
+      fr-FR : Norvégien bokmål
+      en-GB : Norwegian bokmål
+      fr-CA : Norvégien bokmål
+      en-US : Norwegian bokmål
+     index : 148
+   -
+     text :
+      fr-FR : Néerlandais
+      en-GB : Dutch
+      fr-CA : Néerlandais
+      en-US : Dutch
+     index : 149
+   -
+     text :
+      fr-FR : Norvégien nynorsk
+      en-GB : Norwegian nynorsk
+      fr-CA : Norvégien nynorsk
+      en-US : Norwegian nynorsk
+     index : 150
+   -
+     text :
+      fr-FR : Indonésien
+      en-GB : Indonesian
+      fr-CA : Indonésien
+      en-US : Indonesian
+     index : 151
+   -
+     text :
+      fr-FR : Pendjabi
+      en-GB : Punjabi
+      fr-CA : Pendjabi
+      en-US : Punjabi
+     index : 152
+   -
+     text :
+      fr-FR : Polonais
+      en-GB : Polish
+      fr-CA : Polonais
+      en-US : Polish
+     index : 153
+   -
+     text :
+      fr-FR : Islandais
+      en-GB : Icelandic
+      fr-CA : Islandais
+      en-US : Icelandic
+     index : 154
+   -
+     text :
+      fr-FR : Portugais
+      en-GB : Portuguese
+      fr-CA : Portugais
+      en-US : Portuguese
+     index : 155
+   -
+     text :
+      fr-FR : Roumain
+      en-GB : Romanian
+      fr-CA : Roumain
+      en-US : Romanian
+     index : 156
+   -
+     text :
+      fr-FR : Russe
+      en-GB : Russian
+      fr-CA : Russe
+      en-US : Russian
+     index : 157
+   -
+     text :
+      fr-FR : Serbe latin
+      en-GB : Latin Serbian
+      fr-CA : Serbe latin
+      en-US : Latin Serbian
+     index : 158
+   -
+     text :
+      fr-FR : Slovaque
+      en-GB : Slovakian
+      fr-CA : Slovaque
+      en-US : Slovakian
+     index : 159
+   -
+     text :
+      fr-FR : Slovène
+      en-GB : Slovenian
+      fr-CA : Slovène
+      en-US : Slovenian
+     index : 160
+   -
+     text :
+      fr-FR : Albanais
+      en-GB : Albanian
+      fr-CA : Albanais
+      en-US : Albanian
+     index : 161
+   -
+     text :
+      fr-FR : Serbe
+      en-GB : Serbian
+      fr-CA : Serbe
+      en-US : Serbian
+     index : 162
+   -
+     text :
+      fr-FR : Suédois
+      en-GB : Swedish
+      fr-CA : Suédois
+      en-US : Swedish
+     index : 163
+   -
+     text :
+      fr-FR : Tamoul
+      en-GB : Tamil
+      fr-CA : Tamoul
+      en-US : Tamil
+     index : 164
+   -
+     text :
+      fr-FR : Télougou
+      en-GB : Telugu
+      fr-CA : Télougou
+      en-US : Telugu
+     index : 165
+   -
+     text :
+      fr-FR : Thaï
+      en-GB : Thai
+      fr-CA : Thaï
+      en-US : Thai
+     index : 166
+   -
+     text :
+      fr-FR : Turc
+      en-GB : Turkish
+      fr-CA : Turc
+      en-US : Turkish
+     index : 167
+   -
+     text :
+      fr-FR : Ukrainien
+      en-GB : Ukrainian
+      fr-CA : Ukrainien
+      en-US : Ukrainian
+     index : 168
+   -
+     text :
+      fr-FR : Vietnamien
+      en-GB : Vietnamese
+      fr-CA : Vietnamien
+      en-US : Vietnamese
+     index : 169
+   -
+     text :
+      fr-FR : Chinois
+      en-GB : Chinese
+      fr-CA : Chinois
+      en-US : Chinese
+     index : 170
+   -
+     text :
+      fr-FR : Le nom du serveur est obligatoire
+      en-GB : Server name is required
+      fr-CA : Le nom du serveur est obligatoire
+      en-US : Server name is required
+     index : 171
+   -
+     text :
+      fr-FR : Aucune connexion
+      en-GB : No connection
+      fr-CA : Aucune connexion
+      en-US : No connection
+     index : 172
+   -
+     text :
+      fr-FR : La base de données n'était pas connectée
+      en-GB : The database was not connected
+      fr-CA : La base de données n'était pas connectée
+      en-US : The database was not connected
+     index : 173
+   -
+     text :
+      fr-FR : La table %1 n'existe pas dans la base de données
+      en-GB : Table %1 does not exist in the database
+      fr-CA : La table %1 n'existe pas dans la base de données
+      en-US : Table %1 does not exist in the database
+     index : 174
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

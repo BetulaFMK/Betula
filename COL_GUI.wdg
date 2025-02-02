@@ -1,0 +1,3112 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_GUI
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1b742fd40b5394a7
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1+
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      EFenêtreOrganisation est une Enumération
+      	FenêtreEnCascade 			= 403
+      	MosaiqueHorizontale 		= 404
+      	MosaiqueVerticale 			= 405
+      FIN
+      EChampTxtMultiligneDéfilement est une énumération
+      	DéfilementParLigne
+      	DéfilementParPage
+      fin
+      
+      STElementWindows est une structure
+      	sTitre		est une chaine
+      	nGauche		est un entier
+      	nDroite		est un entier
+      	nHaut		est un entier
+      	nBas		est un entier
+      	nHauteur	est un entier
+      	nLargeur	est un entier
+      fin
+      
+      constante
+      	typDisposition 		= 126
+      	typFenêtreInterne 	= 31
+      	typOngletStatique 	= 57
+      fin
+      
+      coTypeChamps est une Combinaison	//un "e" a été ajouté à typ car sinon toute référence à un type de champs prend en priorité celui décrit dans cette combinaison et arrête le programme
+      	typeActiveX						
+      	typeAgenda                      
+      	typeAsc                         
+      	typeAttribut                    
+      	typeBandeauDéfilant             
+      	typeBarreDeNavigation           
+      	typeBarreOutils                 
+      	typeBoîteAOutils                
+      	typeBouton                      
+      	typeCalendrier                  
+      	typeCaptcha                     
+      	typeCarte                       
+      	typeCarrousel                   
+      	typeCaseBarreDeMessage          
+      	typeCellule                     
+      	typeCelluleDeBarreDeNavigation  
+      	typeCelluleDisposition          
+      	typeCelluleFlexBox              
+      	typeCelluleMiseEnPage           
+      	typeChampFormaté                
+      	typeChampHTML                   
+      	typeChampMenu                   
+      	typeChampMenuContextuel         
+      	typeCheminDeNavigation          
+      	typeClicage                     
+      	typeCodeBarres                  
+      	typeColonne                     
+      	typeComboAVS                    
+      	typeComboSNS					
+      	typeComposantWeb        		
+      	typeConférence          		
+      	typeConteneurNatif      		
+      	typeCube
+      	typeDate                		
+      	typeDisposition         		
+      	typeDurée               		
+      	typeEditeurDeDiagrammes 		
+      	typeEditeurHtml         		
+      	typeEditeurImages       		
+      	typeEditeurImagesMobile 		
+      	typeFen                 		
+      	typeFenêtreInterne      		
+      	typeFil                 		
+      	typeFlash               		
+      	typeFlex                		
+      	typeForme               		
+      	typeGantt               		
+      	typeGraphe              		
+      	typeGrp                 		
+      	typeHeure               		
+      	typeHTML                		
+      	typeIFrame              		
+      	typeImage               		
+      	typeInterr              		
+      	typeInterrupteurABascule		
+      	typeJauge               		
+      	typeJaugeInfinie				
+      	typeJava                        
+      	typeKanban                      
+      	typeLecteurPDF                  
+      	typeLibellé                     
+      	typeLibelléHTML                 
+      	typeLien                        
+      	typeLienSocial                  
+      	typeLigne                       
+      	typeListe                       
+      	typeListeImage                  
+      	typeListeKanban                 
+      	typeMapArea                     
+      	typeModèleDeChamp               
+      	typeMonétaire                   
+      	typeMultimédia                  
+      	typeNotation                    
+      	typeNoteRepositionnable         
+      	typeNum                         
+      	typeOle                         
+      	typeOnglet                      
+      	typeOptionInterrupteurABascule  
+      	typeOptionMenu                  
+      	typeOrganigramme                
+      	typePage                        
+      	typePageCornée                  
+      	typePageInterne                 
+      	typePanneau						
+      	typePlanDeBandeauDéfilant       
+      	typePlanDeSite                  
+      	typePlanning                    
+      	typePopup                       
+      	typePotentiomètre               
+      	typePotentiomètreIntervalle     
+      	typePotentiomètreRotatif        
+      	typeRangeSlider                 
+      	typeRéglette                    
+      	typeRegroupementRuban           
+      	typeRuban                       
+      	typeRupture                     
+      	typeSélect                      
+      	typeSéparateur                  
+      	typeSilverlight                 
+      	typeSpin                        
+      	typeSuperChamp                  
+      	typeTable                       
+      	typeTableauCroiséDynamique      
+      	typeTableauDeBord               
+      	typeTableHierarchique           
+      	typeTableur                     
+      	typeTexte                       
+      	typeTiroir                      
+      	typeTraitementDeTexte           
+      	typeTreeMap                     
+      	typeTreeView					
+      	typeUpload                      
+      	typeVidéo                       
+      	typeVignette                    
+      	typeWebCam                      
+      	typeXaml                        
+      	typeZoneMultiligne              
+      	typeZoneRépétée                 
+      	typeZoneRépétéeLinéaire         
+      	typeZoneTexteRiche        
+      	typeOngletDynamique      
+      FIN
+      
+      PRIVÉ
+      	CONSTANTE
+      		ErreurDeGUI	= 130
+      	FIN
+      gtaChampTxtMultiligneDéfilementParLigne est un tableau associatif d'entiers
+      gtaChampTxtMultiligneDéfilementParPage 	est un tableau associatif d'entiers
+      gnHandleDisp	est un entier système
+      gtaCellule		est un tableau associatif d'entier
+      gtabDisp 		est un tableau de STObjetEnfant
+     type : 720896
+   -
+     code : |1+
+      //
+      
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	POUR TOUT element nÉvenement de gtaChampTxtMultiligneDéfilementParLigne
+      		FinEvénement(nÉvenement)
+      	FIN
+      	POUR TOUT element nÉvenement de gtaChampTxtMultiligneDéfilementParPage
+      		FinEvénement(nÉvenement)
+      	FIN
+      	
+      <fin>
+      
+     type : 720898
+  procedures :
+   -
+     name : ListeInsèreEnBoucle
+     procedure_id : 1978258741272028708
+     type_code : 15
+     code : |1-
+      // Résumé : Permet d'insérer un élément dans une liste WinDev en respectant une limite spécifiée. Elle offre la possibilité d'ajouter un élément contenant la date et l'heure actuelles en option.
+      // Syntaxe : [ <Résultat> = ] ListeInsèreEnBoucle (xCombo est champ [, sContenu est chaine [, nLimite est entier [, bAvecDateHeure est booléen]]])
+      // Paramètres :
+      // 	xCombo (Champ): Le champ de type liste dans lequel l'insertion doit être effectuée.
+      // 	sContenu (Chaîne): Le contenu de l'élément à insérer dans la liste.
+      // 	nLimite (Entier optionnel): Limite d'occurrences dans la liste. Si la limite est atteinte, les éléments plus anciens seront supprimés, défaut = 0.
+      //	bAvecDateHeure (Booléen optionnel): Si vrai, la date et l'heure actuelles seront ajoutées au début du contenu de l'élément, défaut = Faux.
+      // Valeur de retour : booléen : Retourne Vrai si l'insertion a été réalisée avec succès.
+      // Exemple :
+      //	ListeInsèreEnBoucle(CHAMP_MaListe, "Nouvel élément", 10, Vrai)
+      //
+      
+      //fonction faite pour afficher un log dans un champ liste. On insère les lignes au début, on les supprime à la fin.
+      PROCEDURE ListeInsèreEnBoucle(xCombo est un champ,sContenu est une chaine,nLimite est un entier = 0,bAvecDateHeure est un booleen = faux) : booleen
+      si xCombo..type = typliste alors ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620001§>);RENVOYER Faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	SI nLimite>0 _ET_ xCombo..Occurrence>=nLimite ALORS
+      		//on enlève les lignes depuis la fin
+      		POUR nLigne = xCombo..Occurrence _à_ nLimite-1 pas -1 listesupprime(xCombo,nLigne)
+      	FIN
+      	ListeInsère(xCombo,(bAvecDateHeure ? DateVersChaîne(DateSys())+" - "+HeureVersChaîne(HeureSys()) SINON "")+sContenu,1)
+      	
+      <fin>
+      
+      
+      renvoyer vrai
+     type : 458752
+   -
+     name : ChampGroupeDéplace
+     procedure_id : 2014693375015048861
+     type_code : 15
+     group : 2
+     code : |1-
+      // Résumé : Cette fonction déplace un groupe de champs, identifié par le paramètre xGroupeChamp, selon des variations spécifiées en termes d'ajustements horizontaux (nVariationX) et verticaux (nVariationY). La fonction prend en compte la hiérarchie des onglets et des groupes pour déplacer les champs de manière appropriée.
+      // Syntaxe : [ <Résultat> = ] ChampGroupeDéplace (<xGroupeChamp> [, <nVariationX> est entier [, <nVariationY> est entier]])
+      // Paramètres :
+      // 	xGroupeChamp : Identifiant du groupe de champs à déplacer.
+      // 	nVariationX (entier optionnel) : Variation horizontale à appliquer au déplacement des champs, par défaut = 0.
+      // 	nVariationY (entier optionnel) : Variation verticale à appliquer au déplacement des champs, par défaut = 0.
+      // Valeur de retour : booléen : Renvoie Vrai si le déplacement a été effectué avec succès, sinon Faux.
+      // Exemple :
+      //	SI ChampGroupeDéplace(GRP_MonGroupe, 10, 5) ALORS
+      //		Info("Le groupe de champs a été déplacé avec succès.")
+      //	SINON
+      //		Erreur("Erreur lors du déplacement du groupe de champs.")
+      //	FIN
+      //
+      PROCEDURE ChampGroupeDéplace(xGroupeChamp,nVariationX est un entier = 0,nVariationY est un entier = 0) : booleen
+      SI xGroupeChamp..Type<>typGrp ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620067§>);renvoyer faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      	sNomGroupe,sNomParent,sNomChamp,sChamps sont des chaines
+      	tabParent est un tableau dynamique de 0 entiers
+      	n,nNiveau,nIndice sont des entiers
+      	
+      	sNomGroupe=NomComplet(xGroupeChamp)
+      	SI sNomGroupe="" ALORS RENVOYER Faux
+      	
+      	SI Position(sNomGroupe,".")=0 ALORS sNomParent = FenEnCours()
+      	
+      	n=Position(sNomGroupe,".",0,DepuisFin)
+      	SI n>0 ALORS 
+      		sNomParent	= Gauche(sNomGroupe,n-1)
+      		sNomGroupe	= Milieu(sNomGroupe,n+1)
+      	FIN
+      	
+      	SI {sNomParent+"."+sNomGroupe,indChamp}..Type=typGrp ALORS
+      		
+      		n=1;sNomChamp=EnumèreChamp(sNomParent,n,parAltitude)
+      		TANTQUE sNomChamp>""
+      			//		Trace(sNomParent,sNomChamp)
+      			SI {sNomChamp,indChamp}..Type = typOnglet ALORS
+      				nNiveau++;TableauAjoute(tabParent,n)		//on sauve l'indice
+      				sNomParent=sNomParent+"."+sNomChamp
+      				nIndice=1;n=1
+      				sNomChamp=EnumèreChamp({sNomParent,indChamp}[nIndice],n,parAltitude)
+      			SINON SI {sNomChamp,indChamp}..Type=typGrp ALORS
+      				nNiveau++;TableauAjoute(tabParent,n)		//on sauve l'indice
+      				sNomParent=sNomParent+"."+sNomChamp
+      				nIndice=1;n=1
+      				sNomChamp=EnumèreChamp(sNomParent,n,parAltitude)
+      			SINON
+      				//on mémorise les champs à déplacer selon leur altitude (si jamais certains champs en cachaient d'autres)
+      				SI Position({sNomChamp,indChamp}..Groupe,sNomGroupe)>0 ALORS sChamps+=(sChamps="" ? "" SINON TAB)+sNomParent+"."+sNomChamp+">"+{sNomChamp}..Altitude
+      				n++
+      				SI {sNomParent,indChamp}..Type=typOnglet ALORS
+      					sNomChamp=EnumèreChamp({sNomParent,indChamp}[nIndice],n,parAltitude)
+      				SINON
+      					sNomChamp=EnumèreChamp(sNomParent,n,parAltitude)
+      				FIN
+      			FIN
+      			SI sNomChamp="" ALORS
+      				SI {sNomParent,indChamp}..Type=typOnglet _ET_ nIndice<{sNomParent,indChamp}..Occurrence ALORS 
+      					nIndice++;n=1
+      					sNomChamp=EnumèreChamp({sNomParent,indChamp}[nIndice],n,parAltitude)
+      				SINON
+      					SI nNiveau>0 ALORS
+      						//on recule le parent
+      						n=Position(sNomParent,".",0,DepuisFin);sNomParent=Gauche(sNomParent,n-1)
+      						n=tabParent[nNiveau]+1;TableauSupprime(tabParent,nNiveau);nNiveau--
+      						sNomChamp=EnumèreChamp(sNomParent,n,parAltitude)
+      					FIN
+      				FIN
+      			FIN
+      		FIN
+      		
+      		//le traitement est à part car on y change l'altitude (ordre de lecture du traitement précédent)
+      		SI sChamps>"" ALORS 
+      			nNiveau=0
+      			//		SI nVariationX=0 OU nVariationY=0 ALORS {sNomGroupe,indChamp}..Visible=PAS (nVariationX=0 OU nVariationY=0)	//pour qu'il prennent ou pas la tabulation
+      			POUR TOUTE CHAÎNE sNomChamp DE sChamps SEPAREE PAR TAB
+      				nNiveau=Val(ExtraitChaîne(sNomChamp,2,">"));sNomChamp=ExtraitChaîne(sNomChamp,1,">")
+      				{sNomChamp,indChamp}..Y+=nVariationY
+      				{sNomChamp,indChamp}..X+=nVariationX
+      				SI {sNomChamp,indChamp}..X<>{sNomChamp,indChamp}..XInitial OU {sNomChamp,indChamp}..Y<>{sNomChamp,indChamp}..YInitial ALORS
+      					n=Position(sNomChamp,".",0,DepuisFin);sNomParent=Gauche(sNomChamp,n-1)
+      					{sNomChamp,indChamp}..Altitude=nNiveau
+      				FIN
+      			FIN
+      		FIN
+      		RENVOYER Vrai   
+      	SINON
+      		ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620002§>)
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER Faux	
+     type : 458752
+   -
+     name : NomComplet
+     procedure_id : 2014693375015114740
+     type_code : 15
+     group : 2
+     code : |1-
+      // Résumé : Renvoie le nom complet d'un champ spécifié en tant que paramètre. Si le paramètre est une champ ou une chaîne, elle renvoie le nom complet du champ. Utile en particulier lorsque des noms de colonnes identiques peuvent exister dans différentes tables.
+      // Syntaxe : [ <Résultat> = ] ChampNomComplet (<xChamp>)
+      // Paramètres :
+      // 	xChamp (chaîne ou champ) : Paramètre représentant soit le nom d'un champ (chaîne), soit le champ lui-même.
+      // Valeur de retour : chaîne UNICODE : Le nom complet du champ.
+      // Exemple :
+      //	sNomCompletChamp = NomComplet("Table1.Colonne1")
+      //	Info("Le nom complet du champ est : " + sNomCompletChamp)
+      //
+      PROCEDURE NomComplet(xChamp) : chaine	//on passe soit le champ soit une chaine
+      sNomChamp est une chaîne
+      SI TypeVar(xChamp)=wlChaîne _et_ xChamp<>"" ALORS
+      	sNomChamp=xChamp
+      SINON
+      	quand exception dans
+      		sNomChamp=xChamp..NomComplet		//..nom complet obligatoire sinon il pourrait se tromper si 2 tables ont le même nom de colonne combo
+      	faire
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteException()
+      	fin
+      FIN
+      RENVOYER sNomChamp
+     type : 458752
+   -
+     name : ColonneHauteurTitre
+     procedure_id : 2014693379310148087
+     type_code : 15
+     code : |1-
+      // Résumé : Retourne la hauteur du titre de colonne d'une table spécifiée. Elle est particulièrement utile pour obtenir la hauteur du titre de colonne d'une table ou d'une table hiérarchique.
+      // Syntaxe : [ <Résultat> = ] ColonneHauteurTitre (<xTable>)
+      // Paramètres :
+      // 	xTable (Champ) : Champ représentant la table pour laquelle la hauteur du titre de colonne doit être déterminée.
+      // Valeur de retour : entier : La hauteur du titre de colonne de la table spécifiée.
+      //
+      // Exemple :
+      //	nHauteurTitre = ColonneHauteurTitre(TABLE_MaTable)
+      //	Info("La hauteur du titre de colonne est : " + nHauteurTitre)
+      //
+      PROCEDURE ColonneHauteurTitre(xTable est un champ) : entier
+      //source : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/64380-hauteur-titre-colonne-table-64396/read.awp
+      nHauteurTitre 	est un entier
+      si pas xTable..type dans (typTable,typTableHierarchique) alors erreurdéclenche(ErreurDeGUI,<§@1b742fd00b5184620003§>);renvoyer 0
+      
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows ou CibleExécution=WindowsMobile>
+      	_RECT est une Structure
+      		iPosLeft 		est entier sur 4
+      		iPostop 		est entier sur 4
+      		iPosright 		est entier sur 4
+      		iPosbottom 		est entier sur 4
+      	FIN
+      	
+      	_WINDOWINFO est une Structure
+      		cbSize 			est entier sans signe sur 4
+      		rcWindow 		est _RECT
+      		rcClient 		est _RECT
+      		dwStyle 		est entier sans signe sur 4
+      		dwExStyle 		est entier sans signe sur 4
+      		dwWindowStatus 	est entier sans signe sur 4
+      		cxWindowBorders est entier sans signe sur 4
+      		cyWindowBorders est entier sans signe sur 4
+      		atomWindowType 	est entier sans signe sur 2
+      		wCreatorVersion est entier sans signe sur 2
+      	FIN
+      	nHwnd est un entier systeme = Handle(xTable)
+      	bRes est un booléen
+      	stWindowInfo est un _WINDOWINFO
+      	
+      	stWindowInfo.cbSize=Dimension(stWindowInfo)
+      	bRes=API("user32.dll","GetWindowInfo",nHwnd,&stWindowInfo)
+      	nHauteurTitre=stWindowInfo.rcClient.iPostop-stWindowInfo.rcWindow.iPostop
+      	
+      <fin>
+      
+      
+      renvoyer nHauteurTitre
+     type : 458752
+   -
+     name : ColonneOptimiseLargeur
+     procedure_id : 2014693379310279705
+     type_code : 15
+     code : |1-
+      // Résumé : Ajuste dynamiquement la largeur des colonnes d'une table pour optimiser l'espace en fonction de la taille du texte dans les colonnes.
+      // Syntaxe : [ <Résultat> = ] ColonneOptimiseLargeur (<xTable>, <xChampRéférenceTaille> [, <sColonnesConcernées> est chaîne [, <nAjoutePixelADroite> est entier [, <nLargeurMax> est entier [, <rFacteurÉlargissement> est réel]]]])
+      // Paramètres :
+      // 	xTable (Champ) : Champ représentant la table dont les colonnes doivent être redimensionnées.
+      // 	xChampRéférenceTaille (Champ) : Champ servant de référence pour calculer la largeur optimale des colonnes.
+      //	sColonnesConcernées (chaîne UNICODE optionnel) : Liste des colonnes spécifiques à considérer lors du redimensionnement (séparateur de votre choix). Si vide, toutes les colonnes sont prises en compte, par défaut = "".
+      // 	nAjoutePixelADroite (entier optionnel) : Nombre de pixels supplémentaires ajoutés à la largeur calculée pour chaque colonne.
+      // 	nLargeurMax (entier optionnel) : Largeur maximale autorisée pour chaque colonne. Si non spécifié (0), la largeur maximale n'est pas limitée.
+      // 	rFacteurÉlargissement (réel optionnel) : Facteur d'élargissement à appliquer (dans le cas où le calcul ne pas exactement le résultat attendu)
+      // Valeur de retour : booléen : Renvoie Vrai si le redimensionnement des colonnes est réussi, sinon Faux.
+      // Exemple :
+      //	SI ColonneOptimiseLargeur(TABLE_MaTable, CHAMP_Reference, "Colonne1 Colonne2", 15, 200) ALORS
+      //		Info("Les colonnes ont été redimensionnées avec succès.")
+      //	SINON
+      //		Erreur("Erreur lors du redimensionnement des colonnes.")
+      //	FIN
+      //
+      PROCEDURE ColonneOptimiseLargeur(xTable est un champ,xChampRéférenceTaille est un champ,sColonnesConcernées est une chaine = "",nAjoutePixelADroite est un entier = 10,nLargeurMax est un entier = 0,rFacteurÉlargissement est un reel = 1.0) : booleen
+      //à améliorer pour prendre en compte les colonnes fusionnées
+      //à améliorer pour détecter les colonnes hiérarchique (avec décalage selon les icônes et les +/-)
+      //à améliorer pour détecter les colonnes multi-lignes (à sortir du calcul)
+      SI PAS xTable..Type DANS (typTable,typTableHierarchique) ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620003§>);renvoyer faux
+      si xTable..occurrence=0 alors renvoyer vrai
+      SI PAS xChampRéférenceTaille..Type DANS (typTexte,typLibellé,typComboAVS,typComboSNS) ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620004§>);renvoyer faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	nTailleMax,nTailleTotale,n,nDécal,nDécalG,X	sont des entiers
+      	sNomColonne,sTexte,sContenus,sContenu		sont des chaines
+      	
+      	POUR nColonne = 1 _a_ TableOccurrence(xTable,toColonne)
+      		sNomColonne=TableEnumèreColonne(xTable,nColonne)
+      		SI (sColonnesConcernées="" _OU_ Position(sColonnesConcernées,sNomColonne,0,MotComplet+SansCasse+DepuisDébut)>0) ALORS
+      			sNomColonne=xTable..nomcomplet+"."+sNomColonne
+      			SI {sNomColonne,indChamp}..Visible ALORS	//on ne peut pas savoir si la colonne est redimensionnable, choisir les colonnes qu'on veut ajuster dans sColonnes
+      				nDécalG={sNomColonne,indChamp}..RetraitGauche
+      				nTailleMax=TexteLargeur(xChampRéférenceTaille,gVersTexte({sNomColonne,indChamp}..Titre))+({sNomColonne,indChamp}..Triable ? 16 SINON 0)+3*2	//5 pour l'espace entre le texte et la ligne gauche et droite
+      				SI {sNomColonne,indChamp}..Type DANS (typComboSNS,typComboAVS) _ET_ Position({sNomColonne,indChamp}[1]..Contenu,ESC+"X") ALORS
+      					sContenus={sNomColonne,indChamp}[1]..Contenu
+      					POUR nLigne = 1 _À_ xTable..Occurrence
+      						si xTable[nLigne]..hauteur>0 alors
+      							POUR TOUTE CHAÎNE sContenu DE sContenus SEPAREE PAR RC
+      								SI {sNomColonne,indChamp}[nLigne]..Valeur=ExtraitChaîne(sContenu,2,ESC+"K") ALORS
+      									X			= Val(Milieu(ExtraitChaîne(Milieu(sContenu,n),2,ESC),2))
+      									sContenu	= ExtraitChaîne(sContenu,1,ESC+"K")
+      									sTexte		= gVersTexte(Milieu(sContenu,Position(sContenu,ESC+"Y",0,DepuisFin)+6))
+      									nTailleMax	= Max(nTailleMax,nDécal+X+TexteLargeur(xChampRéférenceTaille,sTexte)+3*2+ChaîneOccurrence(sTexte,TAB)*8)
+      								FIN
+      							FIN
+      						fin
+      					FIN
+      				SINON
+      					POUR nLigne = 1 _À_ xTable..Occurrence
+      						SI xTable[nligne]..Hauteur>0 ALORS
+      							sTexte	= {sNomColonne,indChamp}[nLigne]..ValeurAffichée
+      							SI sTexte>"" ALORS
+      								nDécal=nDécalG;n=Position(sTexte,ESC+"X",0,DepuisFin);X=0	//exemple <ESC>X30<ESC>Y0000Ici Le texte
+      								SI n>0 ALORS	//décalage du texte par gCoord
+      									X			= Val(Milieu(ExtraitChaîne(Milieu(sTexte,n),2,ESC),2))
+      	//							SINON
+      	//								nTailleMax	= Max(nTailleMax,TexteLargeur(xChampRéférenceTaille,gVersTexte(sTexte))+3*2+ChaîneOccurrence(sTexte,TAB)*8)
+      								FIN
+      	//							sTexte		= gVersTexte(Milieu(sTexte,Position(sTexte,ESC+"Y",0,DepuisFin)+6))
+      								sTexte		= gVersTexte(sTexte,cgCoordonnées)
+      								nTailleMax	= Max(nTailleMax,nDécal+X+TexteLargeur(xChampRéférenceTaille,sTexte)+3*2+ChaîneOccurrence(sTexte,TAB)*8)
+      							FIN
+      						fin
+      					FIN
+      					sTexte={sNomColonne,indChamp}[ligneTotal]
+      					nTailleMax	= Max(nTailleMax,nDécal+X+TexteLargeur(xChampRéférenceTaille,sTexte)+3*2)
+      					sTexte={sNomColonne,indChamp}[ligneComptage]
+      					nTailleMax	= Max(nTailleMax,nDécal+X+TexteLargeur(xChampRéférenceTaille,sTexte)+3*2)
+      					sTexte={sNomColonne,indChamp}[ligneMaximum]
+      					nTailleMax	= Max(nTailleMax,nDécal+X+TexteLargeur(xChampRéférenceTaille,sTexte)+3*2)
+      					sTexte={sNomColonne,indChamp}[ligneMinimum]
+      					nTailleMax	= Max(nTailleMax,nDécal+X+TexteLargeur(xChampRéférenceTaille,sTexte)+3*2)
+      					sTexte={sNomColonne,indChamp}[ligneMoyenne]
+      					nTailleMax	= Max(nTailleMax,nDécal+X+TexteLargeur(xChampRéférenceTaille,sTexte)+3*2)
+      				FIN
+      				
+      				SI nTailleMax>0 ALORS 
+      					{sNomColonne,indChamp}..Largeur=(nLargeurMax=0 ? nTailleMax*rFacteurÉlargissement+nAjoutePixelADroite sinon min(nLargeurMax,nTailleMax*rFacteurÉlargissement+nAjoutePixelADroite))
+      					nTailleTotale+={sNomColonne,indChamp}..Largeur
+      				SINON
+      					{sNomColonne,indChamp}..Visible=Faux
+      				FIN
+      			FIN
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer vrai
+     type : 458752
+   -
+     name : ColonnePositionne
+     procedure_id : 2014693383605313145
+     type_code : 15
+     code : |1-
+      // Résumé : Positionne la barre de défilement horizontal d'une table de manière à rendre visible la colonne spécifiée. Cette fonction est utile pour amener une colonne particulière à la vue dans une table horizontale lorsque la table comporte des colonnes fixées et non fixées.
+      // Syntaxe : [ <Résultat> = ] ColonnePositionne (<xColonne>)
+      // Paramètres :
+      // 	xColonne (Champ) : Champ représentant la colonne à rendre visible dans la table.
+      // Valeur de retour : booléen : Renvoie Vrai si le positionnement de la colonne est réussi, sinon Faux.
+      // Exemple :
+      //	SI ColonnePositionne(COL_MaColonne) ALORS
+      //		Info("La colonne a été positionnée avec succès.")
+      //	SINON
+      //		Erreur("Erreur lors du positionnement de la colonne.")
+      //	FIN
+      //
+      PROCEDURE ColonnePositionne(xColonne est un champ) : booleen
+      SI xColonne..Type<>typColonne ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620000§>);renvoyer faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	sNomTable,sNomColonneEnCours 	sont des chaînes
+      	i,n,ePosition,wParam 			sont des entiers
+      	SB_THUMBPOSITION 				est un entier = 4
+      	
+      	sNomTable	= ParentObjet(xColonne)
+      	
+      	n=TableOccurrence(sNomTable,toColonne)
+      	i=1;sNomColonneEnCours=TableEnumèreColonne(sNomTable,i)
+      	TANTQUE sNomColonneEnCours>"" ET i<n
+      		SI sNomTable+"."+sNomColonneEnCours=xColonne..nomcomplet ALORS SORTIR
+      		//attention, le curseur ne vaut que pour les colonnes non fixée (cadenas) > enlever du déplacement ces colonnes
+      		SI PAS TableFixeColonne(sNomTable+"."+sNomColonneEnCours) ET {sNomTable+"."+sNomColonneEnCours,indChamp}..Visible ALORS ePosition+={sNomTable+"."+sNomColonneEnCours,indChamp}..Largeur
+      		i++;sNomColonneEnCours=TableEnumèreColonne(sNomTable,i)
+      	FIN
+      	wParam=SB_THUMBPOSITION+65536*(ePosition)
+      	SendMessage(Handle(sNomTable),276,wParam,0)
+      	RENVOYER Vrai
+      	
+      <fin>
+      
+      
+      renvoyer Faux
+     type : 458752
+   -
+     name : FenêtreDessusTout
+     procedure_id : 2014693387900346570
+     type_code : 15
+     group : 1
+     code : |1+
+      // Résumé : La fonction FenêtreDessusTout ajuste la position de la fenêtre spécifiée pour la placer en haut de toutes les autres fenêtres. Cela peut être utile pour rendre une fenêtre active et visible à l'utilisateur, par exemple, lorsque vous souhaitez attirer l'attention sur une fenêtre particulière.
+      // Syntaxe : FenêtreDessusTout (<nHandleDeLaFenêtre> est entier, <bActiver> est booléen)
+      // Paramètres :
+      //	nHandleDeLaFenêtre (entier) : Handle de la fenêtre à placer au-dessus de toutes les autres fenêtres.
+      //	bActiver (booléen) : Indique si la fenêtre doit également être activée. Si Vrai, la fenêtre sera activée ; sinon, elle restera inactive.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	FenêtreDessusTout(Handle(FEN_Principale), Vrai)
+      //
+      PROCEDURE FenêtreDessusTout(nHandleDeLaFenêtre est un entier,bActiver est un booleen)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	
+      	API("User32", "SetWindowPos", nHandleDeLaFenêtre, (bActiver ? -1 SINON -2), 0, 0, 0, 0, 0x2 + 0x10 + 0x1)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : FenêtreInvisible
+     procedure_id : 2014693387900412699
+     type_code : 15
+     group : 1
+     code : |1+
+      // Résumé : La fonction FenêtreInvisible rend une fenêtre spécifiée invisible en ajustant son style d'extension. La fenêtre est ensuite rendue visible et activée à nouveau. Cette fonction est utile pour masquer temporairement une fenêtre sans la fermer.
+      // Syntaxe : FenêtreOrganise (<eTypeOrganisation> est EFenêtreOrganisation)
+      // Paramètres :
+      //	nHandleDeLaFenêtre (Entier) : Handle de la fenêtre à rendre invisible
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	FenêtreInvisible(Handle(FEN_MaFenetre))
+      //
+      PROCEDURE FenêtreInvisible(nHandleDeLaFenêtre est un entier)		//Handle(MaFenêtre..Nom)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	GW_EXSTYLE est un entier 		= -20
+      	WS_EX_TOOLWINDOW est un entier 	= 0x80
+      	{FenEnCours()}..Etat			= Invisible
+      	api("user32.dll","SetWindowLongA",nHandleDeLaFenêtre,GW_EXSTYLE,WS_EX_TOOLWINDOW)
+      	{FenEnCours()}..Etat			= Actif
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : FenêtreOrganise
+     procedure_id : 2014693392195446108
+     type_code : 15
+     group : 1
+     code : |1+
+      // Résumé : La fonction FenêtreOrganise organise la barre des tâches de Windows en modifiant son agencement selon le type d'organisation spécifié. Cela peut être utilisé pour effectuer des actions telles que minimiser, restaurer ou basculer entre les fenêtres.
+      // Syntaxe : FenêtreOrganise (<eTypeOrganisation> est  EFenêtreOrganisation)
+      // Paramètres :
+      //	eTypeOrganisation (EFenêtreOrganisation) : Type d'organisation de la barre des tâches, spécifié à l'aide de l'énumération EFenêtreOrganisation.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	FenêtreOrganise(Minimiser)
+      //
+      PROCEDURE FenêtreOrganise(eTypeOrganisation est une EFenêtreOrganisation)		//Handle(MaFenêtre..Nom)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	nRéponse est un entier système = API("user32.dll","FindWindowA","Shell_TrayWnd",Null)
+      	SendMessage(nRéponse ,0x111,eTypeOrganisation,0)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : GoogleMapsAffiche
+     procedure_id : 2014693392195512237
+     type_code : 15
+     code : |1-
+      // Résumé : Ouvre l'application Google Maps avec une adresse spécifiée. Les paramètres de l'adresse, tels que le numéro, l'adresse, la ville, le code postal, la province et le pays, sont utilisés pour créer une URL qui est ensuite utilisée pour lancer l'application Google Maps.
+      // Syntaxe : GoogleMapsAffiche (<sNuméro> est chaîne, <sAdresse1> est chaîne, <sVille> est chaîne, <sCodePostal> est chaîne, <sProvince> est chaîne, <sPays> est chaîne)
+      // Paramètres :
+      //	sNuméro (chaîne UNICODE) : Numéro de rue ou d'appartement.
+      //	sAdresse1 (chaîne UNICODE) : Première ligne de l'adresse.
+      //	sVille (chaîne UNICODE) : Nom de la ville.
+      //	sCodePostal (chaîne UNICODE) : Code postal.
+      //	sProvince (chaîne UNICODE) : Nom de la province ou de l'État.
+      //	sPays (chaîne UNICODE) : Nom du pays.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	GoogleMapsAffiche("123", "Rue Principale", "Saint-Glinglin", "12345", "", "LaLaLand")
+      //
+      PROCEDURE GoogleMapsAffiche(sNuméro est une chaîne, sAdresse1 est une chaîne,sVille est une chaîne,sCodePostal est une chaîne,sProvince est une chaîne,sPays est une chaîne)
+      SI PAS LanceAppliAssociée("https://www.google.ca/maps/place/"+Remplace(sNuméro," ","+")+["+"]+Remplace(sAdresse1," ","+")+[",+"]+Remplace(sVille," ","+")+[",+"]+sProvince+["+"]+remplace(sCodePostal,[eSP," "],"")+[",+"]+sPays) ALORS
+      	erreurdeclenche(ErreurDeGUI,ErreurInfo(errMessage))
+      FIN
+     type : 458752
+   -
+     name : LignePosition
+     procedure_id : 2014693396490545303
+     type_code : 15
+     code : |1-
+      // Résumé : Renvoie position sous la ligne en cours d'une table ou de zone répétée par rapport au coin haut/gauche de la fenêtre
+      // Syntaxe : [ <Résultat> = ] LignePosition (<xTable> est champ, <nLigne> est entier)
+      // Paramètres :
+      //	xTable (champ) : Table ou zone répétée en référence
+      //	nLigne (entier) : Numéro de la ligne
+      // Valeur de retour : entier : Position Y de la ligne passée en paramètre
+      // Exemple :
+      //
+      PROCEDURE LignePosition(xTable est un champ, nLigne est un entier) : entier
+      //ref : code de Pascal Roy publié sur http://windev.dev4u.org
+      SI xTable..Type DANS (typTable,typTableHierarchique,typZoneRépétée) ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620003§>);renvoyer 0
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	RENVOYER xTable..Y + xTable..Hauteur - ( TableOccurrence(xTable, toVisible) * xTable..HauteurLigne) + ( nLigne * xTable..HauteurLigne)
+      	
+      <fin>
+      
+      
+      renvoyer 0
+     type : 458752
+   -
+     name : MailTo
+     procedure_id : 2014693396490611463
+     type_code : 15
+     code : |1-
+      // Résumé : Ouvre le client de messagerie par défaut de l'utilisateur avec un nouveau message prérempli. Les paramètres tels que le destinataire, le sujet et le corps du message sont utilisés pour construire l'URL mailto: qui est ensuite utilisée pour lancer l'application de messagerie par défaut.
+      // Syntaxe : MailTo (<sDestinataire> est chaîne, <sMessage> est chaîne [, <sSujet> est chaîne])
+      // Paramètres :
+      //	sDestinataire (chaîne UNICODE) : Adresse e-mail du destinataire.
+      //	sMessage (chaîne UNICODE) : Corps du message du courriel.
+      //	sSujet (chaîne UNICODE optionnelle) : Sujet du courriel (par défaut, "Message [Nom de l'Application]")
+      // Valeur de retour : booléen : Vrai si l'ouverture de l'application associée réussit, Faux sinon.
+      // Exemple :
+      //	MailTo("destinataire@example.com", "Bonjour,\n\nVoici un message de test.")
+      //
+      PROCEDURE MailTo(sDestinataire est une chaine,sMessage est une chaîne,sSujet est une chaine = "Message "+cApplication._Application.p_sNom) : booleen
+      renvoyer LanceAppliAssociée("mailto:"+sDestinataire+"?subject="+URLEncodeunicode(sSujet)+"&body="+URLEncodeUnicode(sMessage))
+     type : 458752
+   -
+     name : ToastErreur
+     procedure_id : 2014693400785644950
+     type_code : 15
+     group : 3
+     code : |1+
+      // Résumé : La fonction affiche un message d'erreur sous la forme d'un toast, une notification contextuelle généralement utilisée pour informer l'utilisateur d'une erreur ou d'un événement important
+      // Syntaxe : ToastErreur (<sMessage> est chaîne [, <nCouleur> est entier])
+      // Paramètres :
+      //	sMessage (chaîne UNICODE) : Message d'erreur à afficher dans le toast.
+      // 	nCouleur (entier optionnel) : Code couleur de la notification (par défaut, Rouge Pastel).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	ToastErreur("Erreur de connexion au serveur.")
+      //
+      PROCEDURE ToastErreur(sMessage est une chaine,nCouleur est un entier = RougePastel)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp>
+      	ToastAffiche(sMessage,toastCourt,cvMilieu,chCentre,nCouleur)
+      	
+      <sinon si CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=WindowsMobile>
+      	Erreur(sMessage)
+      	
+      <sinon si CibleExécution=Android>
+      	ToastAffiche(sMessage,toastCourt,cvMilieu,chCentre)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : ToastInfo
+     procedure_id : 2014693400785710720
+     type_code : 15
+     group : 3
+     code : |1+
+      // Résumé : La fonction affiche un message informatif sous la forme d'un toast, une notification contextuelle généralement utilisée pour informer l'utilisateur d'un événement ou d'une information importante.
+      // Syntaxe : ToastInfo (<sMessage> est chaîne [, <nCouleur> est entier])
+      // Paramètres :
+      //	sMessage (chaîne UNICODE) : Message informatif à afficher dans le toast.
+      // 	nCouleur (entier optionnel) : Code couleur de la notification (par défaut, Cyan Pastel).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	ToastInfo("Nouveau message reçu.")
+      //
+      PROCEDURE ToastInfo(sMessage est une chaine,nCouleur est un entier = CyanPastel)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp>
+      	ToastAffiche(sMessage,toastCourt,cvMilieu,chCentre,nCouleur)
+      	
+      <sinon si CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=WindowsMobile>
+      	Info(sMessage)
+      	
+      <sinon si CibleExécution=Android>
+      	ToastAffiche(sMessage,toastCourt,cvMilieu,chCentre)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : ToastValidé
+     procedure_id : 2014693400785776506
+     type_code : 15
+     group : 3
+     code : |1+
+      // Résumé : La fonction ToastValidé affiche un message de validation sous la forme d'un toast, une notification contextuelle généralement utilisée pour informer l'utilisateur d'une action réussie ou d'une validation.
+      // Syntaxe : ToastValidé (<sMessage> est chaîne [, <nCouleur> est entier])
+      // Paramètres :
+      //	sMessage (chaîne UNICODE) : Message de validation à afficher dans le toast.
+      // 	nCouleur (entier optionnel ) : Code couleur de la notification (par défaut, Vert Pastel).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	ToastValidé("Enregistrement réussi.")
+      //
+      PROCEDURE ToastValidé(sMessage est une chaine,nCouleur est un entier = VertPastel)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp>
+      	ToastAffiche(sMessage,toastCourt,cvMilieu,chCentre,nCouleur)
+      	
+      <sinon si CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=WindowsMobile>
+      	Info(sMessage)
+      	
+      <sinon si CibleExécution=Android>
+      	ToastAffiche(sMessage,toastCourt,cvMilieu,chCentre)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : ChampTxtMultiligneDéfilement
+     procedure_id : 2014709202200039928
+     type_code : 15
+     code : |1+
+      // Résumé : Gère l'événement de défilement pour un champ texte multiligne en fonction du mode de défilement spécifié (par ligne ou par page).
+      // Syntaxe : ChampTxtMultiligneDéfilement (<xChamp>, <eChampTxtMultiligneDéfilement> est COL_GUI.EChampTxtMultiligneDéfilement)
+      // Paramètres :
+      // 	xChamp (texte ou champ) : Champ texte multiligne pour lequel l'événement de défilement est géré.
+      //	eChampTxtMultiligneDéfilement (COL_GUI.EChampTxtMultiligneDéfilement) : Mode de défilement, soit par ligne (DéfilementParLigne) soit par page (DéfilementParPage)
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	ChampTxtMultiligneDéfilement(MonChampTexte, DéfilementParLigne)
+      //
+      PROCEDURE ChampTxtMultiligneDéfilement(xChamp,eChampDéfilement est un EChampTxtMultiligneDéfilement)
+      sNomChamp est une chaine = NomComplet(xChamp)
+      si sNomChamp="" ALORS retour
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	
+      	selon eChampDéfilement
+      		CAS DéfilementParLigne
+      			SI PAS gtaChampTxtMultiligneDéfilementParligne[sNomChamp]..Existe ALORS Evénement("ChampTxtMultiligneDéfilementÉvenement",sNomChamp,0x20A) // WM_MOOUSEWHEEL = 0x020A
+      		CAS DéfilementParPage
+      			SI PAS gtaChampTxtMultiligneDéfilementParPage[sNomChamp]..Existe ALORS Evénement("ChampTxtMultiligneDéfilementÉvenement",sNomChamp,0x20A) // WM_MOOUSEWHEEL = 0x020A
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : ChampTxtMultiligneDéfilementÉvenement
+     procedure_id : 2014709605928501379
+     type_code : 15
+     code : |1+
+      // Résumé : La fonction ChampTxtMultiligneDéfilementÉvenement gère l'événement de défilement (molette de la souris) pour un champ texte multiligne en déplaçant le contenu vers le haut ou vers le bas, selon le mode de défilement spécifié.
+      // Syntaxe : ChampTxtMultiligneDéfilementÉvenement (<Message>,<wParam>,<lPara>)
+      // Paramètres :
+      // 	Message (Entier) : Message de l'événement à gérer.
+      // 	Param (Entier) : Paramètre de l'événement contenant des informations supplémentaires.
+      // 	lPara (Entier) : Paramètre de l'événement contenant des informations supplémentaires.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	Cette procédure privée est utilisée par ChampTxtMultiligneDéfilement
+      //
+      PROCEDURE privé ChampTxtMultiligneDéfilementÉvenement(Message,wParam,lParam)
+      //ref : code publié par Emmanuel Haefelé sur dev4u.org
+      //Source d'information : http://groups.google.fr/group/fr.comp.developpement.agl.windev/
+      
+      SB_LINEUP		est un entier = 0
+      SB_LINEDOWN		est un entier = 1
+      SB_PAGEUP		est un entier = 2
+      SB_PAGEDOWN		est un entier = 3
+      WM_VSCROLL		est un entier = 277
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	sChampSurvol 	est une chaine = ChampSurvol() 
+      	nSens			est un entier
+      	
+      	SI gtaChampTxtMultiligneDéfilementParPage[sChampSurvol]>0 ALORS
+      		SI wParam > 0 ALORS	nSens = SB_PAGEUP SINON nSens = SB_PAGEDOWN
+      		SendMessage(Handle(sChampSurvol),WM_VSCROLL,nSens,0)
+      	FIN
+      	SI gtaChampTxtMultiligneDéfilementParLigne[sChampSurvol]>0 ALORS
+      		SI wParam > 0 ALORS	nSens = SB_LINEUP SINON nSens = SB_LINEDOWN
+      		SendMessage(Handle(sChampSurvol),WM_VSCROLL,nSens,0)
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : ComboUnité
+     procedure_id : 2015064291823886740
+     type_code : 15
+     code : |1-
+      // Résumé : Rempli une combo-box (liste déroulante) avec les unités d'une catégorie spécifiée. L'utilisateur a la possibilité de filtrer les unités à afficher en fonction d'un critère donné.
+      // Syntaxe : ComboUnité (<xChamp>)
+      // Paramètres :
+      // 	xChamp (Champ) : Champ de type combo-box à remplir.
+      //	xUnité : Unité à afficher. Cette unité peut être de différentes catégories telles que l'accélération, l'angle, la durée, la force, la fréquence, la masse, la pression, la puissance, la surface, la température, l'énergie, l'informatique, la vitesse, le volume, ou la longueur.
+      //	sFiltre (Chaîne) : Filtre facultatif permettant de restreindre les unités affichées en fonction d'un critère (séparer les unités par un caractère spécial comme ;). Si non spécifié, toutes les unités de la catégorie sont affichées.
+      // Valeur de retour : booléen : Vrai : Si la combo-box a été remplie avec succès.
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //	ComboUnité(MaCombo, EUnitéLongueur, EUnitéLongueur.Mètre..nom)
+      //
+      PROCEDURE ComboUnité(xCombo est un champ,xUnité,sFiltre est une chaine = "") : booleen
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	SI xCombo..Type DANS (typComboAVS,typComboSNS) ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620006§>);renvoyer faux
+      	
+      	bgLienActif est un booleen = gLienActive(xCombo)
+      	ListeSupprimeTout(xCombo)
+      	SI xUnité DANS (EUnitéAccélération,EUnitéAngle,EUnitéDurée,EUnitéForce,EUnitéFréquence,EUnitéMasse,EUnitéPression,EUnitéPuissance,EUnitéSurface,EUnitéTempérature,EUnitéÉnergie,EUnitéInformatique,EUnitéVitesse,EUnitéVolume,EUnitéLongueur) ALORS
+      		POUR TOUT eUnité de xUnité
+      			SI sFiltre="" _OU_ Position(sFiltre,eUnité..Nom,0,MotComplet)>0 ALORS ListeAjoute(xCombo,UnitéVersNom(eUnité)+(bgLienActif ? gLien(eUnité..Nom) SINON ""))
+      		FIN
+      		RENVOYER Vrai
+      	SINON
+      		ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620005§>)
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : ComboMultiplicateur
+     procedure_id : 2015477411941612049
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction permet de remplir une combo-box (liste déroulante) avec les multiplicateurs disponibles d'une catégorie spécifiée. L'utilisateur a la possibilité de filtrer les multiplicateurs à afficher en fonction d'un critère donné.
+      // Syntaxe : ComboMultiplicateur (<xChamp>)
+      // Paramètres :
+      // 	xCombo (Champ) : Champ de type combo-box à remplir.
+      //	xMultiplicateur : Multiplicateur à afficher. Ce multiplicateur peut être de différentes catégories telles que les multiplicateurs standards ou les multiplicateurs informatiques.
+      //	sFiltre (Chaîne) : Filtre facultatif permettant de restreindre les multiplicateurs affichés en fonction d'un critère (séparer les multiplicateurs par un caractère spécial comme ;). Si non spécifié, tous les multiplicateurs de la catégorie sont affichés.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	ComboMultiplicateur(MaCombo, EMultiplicateur, EMultiplicateur.kilo..nom+";"+EMultiplicateur.mega..nom+";"+EMultiplicateur.giga..nom)
+      //
+      PROCEDURE ComboMultiplicateur(xCombo est un champ,xMultiplicateur,sFiltre est une chaine = "") : booleen
+      SI xCombo..Type DANS (typComboAVS,typComboSNS) ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620006§>);renvoyer faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	ListeSupprimeTout(xCombo)
+      	SI xMultiplicateur DANS (EMultiplicateur,EMultiInformatique) ALORS
+      		POUR TOUT eUnMultiplicateur de xMultiplicateur
+      			SI sFiltre="" _OU_ Position(sFiltre,eUnMultiplicateur..Nom,0,MotComplet)>0 ALORS
+      				ListeAjoute(xCombo,MultiplicateurVersNom(eUnMultiplicateur)+(gLienActive(xCombo) ? gLien(eUnMultiplicateur..Nom) SINON ""))
+      			FIN
+      		FIN
+      		RENVOYER Vrai
+      	SINON
+      		ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620007§>)
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : PoliceZoom
+     procedure_id : 2018032998838400730
+     type_code : 15
+     code : |1-
+      // Résumé : Évite que les tailles de polices utilisé dans une application WD s'agrandissent quand l’utilisateur à son écran réglé sur "agrandissement à 125%" dans la résolution
+      // Syntaxe : PoliceZoom (<xChamp>)
+      // Paramètres :
+      // 	xChamp (champ ou chaîne) : Champ dans lequel la police doit être zoomée.
+      //	bSansZoom (booléen) : vrai pour bloquer la taille des caractères (faux remet la taille selon le standard Windows)
+      // Valeur de retour : Aucune : La fonction n'a pas de valeur de sortie explicite. Elle agit directement sur le champ spécifié en ajustant le zoom de la police.
+      // Exemple :
+      //	PoliceZoom(MonChamp)
+      //
+      PROCEDURE PoliceZoom(xChamp, bSansZoom = Vrai)
+      //ref : https://www.developpez.net/forums/d1386767/environnements-developpement/windev/eviter-agrandissement-police-ecran-125-a/
+      sChamp 	est une chaine = NomComplet(xChamp)
+      SI sChamp>""
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      		nDpiX	est entier systeme
+      		SI PAS bSansZoom ALORS
+      			SendMessage(Handle(sChamp), 0x400 + 225, 0, 0)	// EM_SETZOOM
+      			RETOUR
+      		FIN
+      		
+      		nHdc est entier système = API("user32", "GetDC", 0)
+      		SI nHdc <> 0 ALORS
+      			nDpiX = API("gdi32", "GetDeviceCaps", nHdc, 88)	// LOGPIXELSX
+      			API("user32", "ReleaseDC", 0, nHdc)
+      		FIN
+      		SendMessage(Handle(sChamp), 0x400 + 225, 100 * 96 / nDpiX, 100)	// EM_SETZOOM
+      	
+      <fin>
+      
+      
+      FIN
+     type : 458752
+   -
+     name : ToastAvertissement
+     procedure_id : 2042928944620011037
+     type_code : 15
+     group : 3
+     code : |1+
+      // Résumé : La fonction ToastAvertissement affiche un message d'avertissement sous forme de toast, un petit message contextuel, dans l'interface de l'application.
+      // Syntaxe : ToastAvertissement (<sMessage> est chaîne [, <nCouleur> est entier])
+      // Paramètres :
+      //	sMessage (chaîne UNICODE) : Chaîne de caractères contenant le message d'avertissement à afficher.
+      // 	nCouleur (entier optionnel) : Entier représentant la couleur du toast (optionnel, par défaut JaunePastel).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	ToastAvertissement("Opération non autorisée dans cet état.")
+      //
+      PROCEDURE ToastAvertissement(sMessage est une chaine,nCouleur est un entier = JaunePastel)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp>
+      	ToastAffiche(sMessage,toastCourt,cvMilieu,chCentre,nCouleur)
+      	
+      <sinon si CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=WindowsMobile>
+      	Avertissement(sMessage)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : TypeChampVersNom
+     procedure_id : 2045526072649733834
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction TypeChampVersNom convertit un code numérique de type de champ WinDev en une chaîne de caractères représentant le nom du type de champ correspondant. A été utilisé pour personnaliser les fenêtres du groupware utilisateur.
+      // Syntaxe : [ <Résultat> = ] TypeChampVersNom (<nType> est entier)
+      // Paramètres :
+      //	nType (entier) : code numérique du type de champ WinDev.
+      // Valeur de retour : chaîne UNICODE : La fonction renvoie une chaîne de caractères représentant le nom du type de champ correspondant au code numérique spécifié.
+      //
+      // Exemple :
+      //	sNomTypeChamp = TypeChampVersNom(typBouton)
+      //	sNomTypeChamp contiendra maintenant la chaîne "Bouton" en français ou "Button" en anglais
+      //
+      PROCEDURE TypeChampVersNom(nType est un entier)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	selon nType
+      	CAS typActiveX					: RENVOYER "ActiveX"
+      	CAS typAgenda					: RENVOYER <§@1b742fd00b5184620008§>
+      	CAS typAsc						: RENVOYER <§@1b742fd00b518462000a§>
+      	CAS typBarreOutils				: RENVOYER <§@1b742fd00b518462000b§>
+      	CAS typBoîteAOutils				: RENVOYER <§@1b742fd00b518462000c§>
+      	CAS typBouton					: RENVOYER <§@1b742fd00b518462000d§>
+      	CAS typCalendrier				: RENVOYER <§@1b742fd00b518462000e§>
+      	CAS typCarrousel				: RENVOYER <§@1b742fd00b518462000f§>
+      	CAS typCarte					: RENVOYER <§@1b742fd00b5184620010§>
+      	CAS typCaseBarreDeMessage		: RENVOYER <§@1b742fd00b5184620011§>
+      	CAS typCelluleDisposition		: RENVOYER <§@1b742fd00b5184620012§>
+      	CAS typClicage					: RENVOYER <§@1b742fd00b5184620013§>
+      	CAS typCodeBarres				: RENVOYER <§@1b742fd00b5184620014§>	
+      	CAS typColonne					: RENVOYER <§@1b742fd00b5184620015§>
+      	CAS typComboAVS					: RENVOYER <§@1b742fd00b5184620016§>
+      	CAS typComboSNS					: RENVOYER <§@1b742fd00b5184620017§>
+      	CAS typConférence				: RENVOYER <§@1b742fd00b5184620018§>
+      	CAS typConteneurNatif			: RENVOYER <§@1b742fd00b5184620019§>
+      	CAS typCube						: RENVOYER "Cube"
+      	CAS typDate						: RENVOYER "Date"
+      	CAS typDisposition				: RENVOYER "Disposition"
+      	CAS typDurée					: RENVOYER <§@1b742fd00b518462001a§>
+      	CAS typEditeurImages			: RENVOYER <§@1b742fd00b518462001b§>
+      	CAS typFen						: RENVOYER <§@1b742fd00b518462001c§>
+      	CAS typFenêtreInterne			: RENVOYER <§@1b742fd00b518462001d§>
+      	CAS typFil						: RENVOYER <§@1b742fd00b518462001e§>
+      	CAS typForme					: RENVOYER <§@1b742fd00b5184620020§>
+      	CAS typGraphe					: RENVOYER <§@1b742fd00b5184620021§>
+      	CAS typGrp						: RENVOYER <§@1b742fd00b5184620022§>
+      	CAS typHeure					: RENVOYER <§@1b742fd00b5184620023§>
+      	CAS typHTML						: RENVOYER "HTML"
+      	CAS typImage					: RENVOYER "Image"
+      	CAS typInterr					: RENVOYER <§@1b742fd00b5184620024§>
+      	CAS typJauge					: RENVOYER <§@1b742fd00b5184620025§>
+      	CAS typJaugeInfinie				: RENVOYER <§@1b742fd00b5184620026§>
+      	CAS typLecteurPDF				: RENVOYER <§@1b742fd00b5184620027§>
+      	CAS typLibellé					: RENVOYER <§@1b742fd00b5184620028§>
+      	CAS typListeImage				: RENVOYER <§@1b742fd00b5184620029§>
+      	CAS typModèleDeChamp			: RENVOYER <§@1b742fd00b518462002a§>
+      	CAS typMonétaire				: RENVOYER <§@1b742fd00b518462002b§>
+      	CAS typMultimédia				: RENVOYER <§@1b742fd00b518462002c§>
+      	CAS typNotation					: RENVOYER <§@1b742fd00b518462002d§>
+      	CAS typNoteRepositionnable		: RENVOYER <§@1b742fd00b518462002e§>
+      	CAS typNum						: RENVOYER <§@1b742fd00b518462002f§>
+      	CAS typOle						: RENVOYER "Ole"
+      	CAS typOnglet					: RENVOYER <§@1b742fd00b5184620030§>
+      	CAS typOptionMenu				: RENVOYER <§@1b742fd00b5184620031§>
+      	CAS typOrganigramme				: RENVOYER <§@1b742fd00b5184620032§>
+      	CAS typPlanning					: RENVOYER <§@1b742fd00b5184620033§>
+      	CAS typPotentiomètre			: RENVOYER <§@1b742fd00b5184620034§>
+      	CAS typPotentiomètreRotatif		: RENVOYER <§@1b742fd00b5184620035§>
+      	CAS typRegroupementRuban		: RENVOYER <§@1b742fd00b5184620036§>
+      	CAS typRuban					: RENVOYER <§@1b742fd00b5184620037§>
+      	CAS typSélect					: RENVOYER <§@1b742fd00b5184620038§>
+      	CAS typSéparateur				: RENVOYER <§@1b742fd00b5184620039§>
+      	CAS typSpin						: RENVOYER <§@1b742fd00b518462003a§>
+      	CAS typSuperChamp				: RENVOYER <§@1b742fd00b518462003b§>
+      	CAS typTable					: RENVOYER "Table"
+      	CAS typTableauCroiséDynamique	: RENVOYER <§@1b742fd00b518462003c§>
+      	CAS typTableauDeBord			: RENVOYER <§@1b742fd00b518462003d§>
+      	CAS typTableHierarchique		: RENVOYER <§@1b742fd00b518462003e§>
+      	CAS typTableur					: RENVOYER <§@1b742fd00b518462003f§>
+      	CAS typTexte					: RENVOYER <§@1b742fd00b5184620040§>
+      	CAS typTiroir					: RENVOYER <§@1b742fd00b5184620041§>
+      	CAS typTraitementDeTexte		: RENVOYER <§@1b742fd00b5184620042§>
+      	CAS typTreeMap					: RENVOYER "Treemap"
+      	CAS typTreeView					: RENVOYER <§@1b742fd00b5184620043§>
+      	CAS typWebCam					: RENVOYER "Webcam"
+      	CAS typXaml						: RENVOYER "XAML"
+      	CAS typZoneMultiligne			: RENVOYER <§@1b742fd00b5184620044§>
+      	CAS typZoneRépétée				: RENVOYER <§@1b742fd00b5184620045§>
+      	fin
+      	
+      <sinon si CibleExécution=Java ou CibleExécution=Android>
+      	SELON nType
+      	CAS typActiveX					: RENVOYER "ActiveX"
+      	//CAS typAgenda					: RENVOYER <§@1b742fd00b5184620008§>
+      	CAS typAsc						: RENVOYER <§@1b742fd00b518462000a§>
+      	CAS typBarreOutils				: RENVOYER <§@1b742fd00b518462000b§>
+      	CAS typBoîteAOutils				: RENVOYER <§@1b742fd00b518462000c§>
+      	CAS typBouton					: RENVOYER <§@1b742fd00b518462000d§>
+      	CAS typCalendrier				: RENVOYER <§@1b742fd00b518462000e§>
+      	//CAS typCarrousel				: RENVOYER <§@1b742fd00b518462000f§>
+      	//CAS typCarte					: RENVOYER <§@1b742fd00b5184620010§>
+      	CAS typCaseBarreDeMessage		: RENVOYER <§@1b742fd00b5184620011§>
+      	//CAS typCelluleDisposition		: RENVOYER <§@1b742fd00b5184620012§>
+      	CAS typClicage					: RENVOYER <§@1b742fd00b5184620013§>
+      	CAS typCodeBarres				: RENVOYER <§@1b742fd00b5184620014§>	
+      	//CAS typColonne					: RENVOYER <§@1b742fd00b5184620015§>
+      	CAS typComboAVS					: RENVOYER <§@1b742fd00b5184620016§>
+      	CAS typComboSNS					: RENVOYER <§@1b742fd00b5184620017§>
+      	//CAS typConférence				: RENVOYER <§@1b742fd00b5184620018§>
+      	//CAS typConteneurNatif			: RENVOYER <§@1b742fd00b5184620019§>
+      	//CAS typCube						: RENVOYER "Cube"
+      	CAS typDate						: RENVOYER "Date"
+      	//CAS typDisposition				: RENVOYER "Disposition"
+      	//CAS typDurée					: RENVOYER <§@1b742fd00b518462001a§>
+      	//CAS typEditeurImages			: RENVOYER <§@1b742fd00b518462001b§>
+      	CAS typFen						: RENVOYER <§@1b742fd00b518462001c§>
+      	CAS typFenêtreInterne			: RENVOYER <§@1b742fd00b518462001d§>
+      	//CAS typFil						: RENVOYER <§@1b742fd00b518462001e§>
+      	CAS typForme					: RENVOYER <§@1b742fd00b5184620020§>
+      	CAS typGraphe					: RENVOYER <§@1b742fd00b5184620021§>
+      	CAS typGrp						: RENVOYER <§@1b742fd00b5184620022§>
+      	CAS typHeure					: RENVOYER <§@1b742fd00b5184620023§>
+      	CAS typHTML						: RENVOYER "HTML"
+      	CAS typImage					: RENVOYER "Image"
+      	CAS typInterr					: RENVOYER <§@1b742fd00b5184620024§>
+      	CAS typJauge					: RENVOYER <§@1b742fd00b5184620025§>
+      	//CAS typJaugeInfinie				: RENVOYER <§@1b742fd00b5184620026§>
+      	//CAS typLecteurPDF				: RENVOYER <§@1b742fd00b5184620027§>
+      	CAS typLibellé					: RENVOYER <§@1b742fd00b5184620028§>
+      	CAS typListeImage				: RENVOYER <§@1b742fd00b5184620029§>
+      	//CAS typModèleDeChamp			: RENVOYER <§@1b742fd00b518462002a§>
+      	CAS typMonétaire				: RENVOYER <§@1b742fd00b518462002b§>
+      	//CAS typMultimédia				: RENVOYER <§@1b742fd00b518462002c§>
+      	//CAS typNotation					: RENVOYER <§@1b742fd00b518462002d§>
+      	//CAS typNoteRepositionnable		: RENVOYER <§@1b742fd00b518462002e§>
+      	CAS typNum						: RENVOYER <§@1b742fd00b518462002f§>
+      	CAS typOle						: RENVOYER "Ole"
+      	CAS typOnglet					: RENVOYER <§@1b742fd00b5184620030§>
+      	CAS typOptionMenu				: RENVOYER <§@1b742fd00b5184620031§>
+      	//CAS typOrganigramme				: RENVOYER <§@1b742fd00b5184620032§>
+      	//CAS typPlanning					: RENVOYER <§@1b742fd00b5184620033§>
+      	CAS typPotentiomètre			: RENVOYER <§@1b742fd00b5184620034§>
+      	CAS typPotentiomètreRotatif		: RENVOYER <§@1b742fd00b5184620035§>
+      	//CAS typRegroupementRuban		: RENVOYER <§@1b742fd00b5184620036§>
+      	//CAS typRuban					: RENVOYER <§@1b742fd00b5184620037§>
+      	CAS typSélect					: RENVOYER <§@1b742fd00b5184620038§>
+      	CAS typSéparateur				: RENVOYER <§@1b742fd00b5184620039§>
+      	CAS typSpin						: RENVOYER <§@1b742fd00b518462003a§>
+      	CAS typSuperChamp				: RENVOYER <§@1b742fd00b518462003b§>
+      	CAS typTable					: RENVOYER "Table"
+      	//CAS typTableauCroiséDynamique	: RENVOYER <§@1b742fd00b518462003c§>
+      	//CAS typTableauDeBord			: RENVOYER <§@1b742fd00b518462003d§>
+      	CAS typTableHierarchique		: RENVOYER <§@1b742fd00b518462003e§>
+      	//CAS typTableur					: RENVOYER <§@1b742fd00b518462003f§>
+      	CAS typTexte					: RENVOYER <§@1b742fd00b5184620040§>
+      	//CAS typTiroir					: RENVOYER <§@1b742fd00b5184620041§>
+      	//CAS typTraitementDeTexte		: RENVOYER <§@1b742fd00b5184620042§>
+      	//CAS typTreeMap					: RENVOYER "Treemap"
+      	CAS typTreeView					: RENVOYER <§@1b742fd00b5184620043§>
+      	CAS typWebCam					: RENVOYER "Webcam"
+      	//CAS typXaml						: RENVOYER "XAML"
+      	//CAS typZoneMultiligne			: RENVOYER <§@1b742fd00b5184620044§>
+      	CAS typZoneRépétée				: RENVOYER <§@1b742fd00b5184620045§>
+      	FIN
+      	
+      <sinon si CibleExécution=ApplicationLinux64>
+      	SELON nType
+      	CAS typActiveX					: RENVOYER "ActiveX"
+      	CAS typAgenda					: RENVOYER <§@1b742fd00b5184620008§>
+      	CAS typAsc						: RENVOYER <§@1b742fd00b518462000a§>
+      	CAS typBarreOutils				: RENVOYER <§@1b742fd00b518462000b§>
+      	CAS typBoîteAOutils				: RENVOYER <§@1b742fd00b518462000c§>
+      	CAS typBouton					: RENVOYER <§@1b742fd00b518462000d§>
+      	CAS typCalendrier				: RENVOYER <§@1b742fd00b518462000e§>
+      	CAS typCarrousel				: RENVOYER <§@1b742fd00b518462000f§>
+      	CAS typCarte					: RENVOYER <§@1b742fd00b5184620010§>
+      	CAS typCaseBarreDeMessage		: RENVOYER <§@1b742fd00b5184620011§>
+      	CAS typCelluleDisposition		: RENVOYER <§@1b742fd00b5184620012§>
+      	CAS typClicage					: RENVOYER <§@1b742fd00b5184620013§>
+      	CAS typCodeBarres				: RENVOYER <§@1b742fd00b5184620014§>	
+      	CAS typColonne					: RENVOYER <§@1b742fd00b5184620015§>
+      	CAS typComboAVS					: RENVOYER <§@1b742fd00b5184620016§>
+      	CAS typComboSNS					: RENVOYER <§@1b742fd00b5184620017§>
+      	CAS typConférence				: RENVOYER <§@1b742fd00b5184620018§>
+      	CAS typConteneurNatif			: RENVOYER <§@1b742fd00b5184620019§>
+      	CAS typCube						: RENVOYER "Cube"
+      	CAS typDate						: RENVOYER "Date"
+      	CAS typDisposition				: RENVOYER "Disposition"
+      	CAS typDurée					: RENVOYER <§@1b742fd00b518462001a§>
+      	//CAS typEditeurImages			: RENVOYER <§@1b742fd00b518462001b§>
+      	CAS typFen						: RENVOYER <§@1b742fd00b518462001c§>
+      	CAS typFenêtreInterne			: RENVOYER <§@1b742fd00b518462001d§>
+      	CAS typFil						: RENVOYER <§@1b742fd00b518462001e§>
+      	CAS typForme					: RENVOYER <§@1b742fd00b5184620020§>
+      	CAS typGraphe					: RENVOYER <§@1b742fd00b5184620021§>
+      	CAS typGrp						: RENVOYER <§@1b742fd00b5184620022§>
+      	CAS typHeure					: RENVOYER <§@1b742fd00b5184620023§>
+      	CAS typHTML						: RENVOYER "HTML"
+      	CAS typImage					: RENVOYER "Image"
+      	CAS typInterr					: RENVOYER <§@1b742fd00b5184620024§>
+      	CAS typJauge					: RENVOYER <§@1b742fd00b5184620025§>
+      	CAS typJaugeInfinie				: RENVOYER <§@1b742fd00b5184620026§>
+      	//CAS typLecteurPDF				: RENVOYER <§@1b742fd00b5184620027§>
+      	CAS typLibellé					: RENVOYER <§@1b742fd00b5184620028§>
+      	CAS typListeImage				: RENVOYER <§@1b742fd00b5184620029§>
+      	CAS typModèleDeChamp			: RENVOYER <§@1b742fd00b518462002a§>
+      	CAS typMonétaire				: RENVOYER <§@1b742fd00b518462002b§>
+      	CAS typMultimédia				: RENVOYER <§@1b742fd00b518462002c§>
+      	CAS typNotation					: RENVOYER <§@1b742fd00b518462002d§>
+      	CAS typNoteRepositionnable		: RENVOYER <§@1b742fd00b518462002e§>
+      	CAS typNum						: RENVOYER <§@1b742fd00b518462002f§>
+      	CAS typOle						: RENVOYER "Ole"
+      	CAS typOnglet					: RENVOYER <§@1b742fd00b5184620030§>
+      	CAS typOptionMenu				: RENVOYER <§@1b742fd00b5184620031§>
+      	CAS typOrganigramme				: RENVOYER <§@1b742fd00b5184620032§>
+      	CAS typPlanning					: RENVOYER <§@1b742fd00b5184620033§>
+      	CAS typPotentiomètre			: RENVOYER <§@1b742fd00b5184620034§>
+      	CAS typPotentiomètreRotatif		: RENVOYER <§@1b742fd00b5184620035§>
+      	CAS typRegroupementRuban		: RENVOYER <§@1b742fd00b5184620036§>
+      	CAS typRuban					: RENVOYER <§@1b742fd00b5184620037§>
+      	CAS typSélect					: RENVOYER <§@1b742fd00b5184620038§>
+      	CAS typSéparateur				: RENVOYER <§@1b742fd00b5184620039§>
+      	CAS typSpin						: RENVOYER <§@1b742fd00b518462003a§>
+      	CAS typSuperChamp				: RENVOYER <§@1b742fd00b518462003b§>
+      	CAS typTable					: RENVOYER "Table"
+      	//CAS typTableauCroiséDynamique	: RENVOYER <§@1b742fd00b518462003c§>
+      	CAS typTableauDeBord			: RENVOYER <§@1b742fd00b518462003d§>
+      	CAS typTableHierarchique		: RENVOYER <§@1b742fd00b518462003e§>
+      	//CAS typTableur					: RENVOYER <§@1b742fd00b518462003f§>
+      	CAS typTexte					: RENVOYER <§@1b742fd00b5184620040§>
+      	CAS typTiroir					: RENVOYER <§@1b742fd00b5184620041§>
+      	CAS typTraitementDeTexte		: RENVOYER <§@1b742fd00b5184620042§>
+      	CAS typTreeMap					: RENVOYER "Treemap"
+      	CAS typTreeView					: RENVOYER <§@1b742fd00b5184620043§>
+      	CAS typWebCam					: RENVOYER "Webcam"
+      	CAS typXaml						: RENVOYER "XAML"
+      	CAS typZoneMultiligne			: RENVOYER <§@1b742fd00b5184620044§>
+      	CAS typZoneRépétée				: RENVOYER <§@1b742fd00b5184620045§>
+      	FIN
+      	
+      <sinon si CibleExécution=Site>
+      	selon nType
+      		CAS	typAttribut						: RENVOYER <§@1b742fd00b5184620046§>
+      		CAS typBandeauDéfilant				: RENVOYER <§@1b742fd00b5184620047§>
+      		CAS typBarreDeNavigation			: RENVOYER <§@1b742fd00b5184620048§>
+      		CAS typCaptcha						: RENVOYER "Captcha"	
+      		CAS typCellule						: RENVOYER <§@1b742fd00b5184620049§>
+      		CAS typCelluleDeBarreDeNavigation	: RENVOYER <§@1b742fd00b518462004a§>
+      		CAS typCelluleMiseEnPage			: RENVOYER <§@1b742fd00b518462004b§>
+      		CAS typChampFormaté					: RENVOYER <§@1b742fd00b518462004c§>
+      		CAS typChampHTML					: RENVOYER <§@1b742fd00b518462004d§>
+      		CAS typChampMenu					: RENVOYER <§@1b742fd00b518462004e§>
+      		CAS typCheminDeNavigation			: RENVOYER <§@1b742fd00b518462004f§>
+      		CAS typComposantWeb					: RENVOYER <§@1b742fd00b5184620050§>
+      		CAS typFlash						: RENVOYER "Flash"
+      		CAS typFlex							: RENVOYER "Flex"
+      		CAS typIFrame						: RENVOYER "Frame"
+      		CAS typJava							: RENVOYER <§@1b742fd00b5184620051§>
+      		CAS typLibelléHTML					: RENVOYER <§@1b742fd00b5184620052§>
+      		CAS typLien							: RENVOYER <§@1b742fd00b5184620053§>
+      		CAS typLienSocial					: RENVOYER <§@1b742fd00b5184620054§>
+      		CAS typMapArea						: RENVOYER "Map area"
+      		CAS typPage							: RENVOYER "Page"
+      		CAS typPageCornée					: RENVOYER <§@1b742fd00b5184620055§>
+      		CAS typPageInterne					: RENVOYER <§@1b742fd00b5184620056§>
+      		CAS typPlanDeBandeauDéfilant		: RENVOYER <§@1b742fd00b5184620057§>
+      		CAS typPlanDeSite					: RENVOYER <§@1b742fd00b5184620058§>
+      		CAS typPopup						: RENVOYER "Popup"
+      		CAS typPotentiomètreIntervalle		: RENVOYER <§@1b742fd00b5184620059§>
+      		CAS typRéglette						: RENVOYER <§@1b742fd00b518462005a§>
+      		CAS typRupture						: RENVOYER <§@1b742fd00b518462005b§>
+      		CAS typSilverlight					: RENVOYER "Silverlight"
+      		CAS typUpload						: RENVOYER <§@1b742fd00b518462005c§>
+      		CAS typVidéo						: RENVOYER <§@1b742fd00b518462005d§>
+      		CAS typVignette						: RENVOYER <§@1b742fd00b518462005e§>
+      		CAS typZoneRépétéeLinéaire			: RENVOYER <§@1b742fd00b5184620060§>
+      		CAS typZoneTexteRiche				: RENVOYER <§@1b742fd00b5184620061§>		
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER "Champ inconnu"
+     type : 458752
+   -
+     name : EstComboOuverte
+     procedure_id : 2220675098330942855
+     type_code : 15
+     code : |1-
+      // Résumé : Détermine si une combo (liste déroulante) associée à un champ donné est actuellement ouverte.
+      // Syntaxe : [ <Résultat> = ] EstComboOuverte (<xChamp>)
+      // Paramètres :
+      // 	xChamp (Champ) : le champ dont la combo associée doit être vérifiée.
+      // Valeur de retour : booléen : La fonction renvoie un booléen indiquant si la combo associée au champ est actuellement ouverte (Vrai) ou fermée (Faux).
+      // Exemple :
+      //	SI EstComboOuverte(MonChamp) ALORS
+      //		// Traitement spécifique lorsque la combo est ouverte
+      //	FIN
+      //
+      PROCEDURE EstComboOuverte(xChamp est un champ) : booléen
+      SI pas xChamp..Type dans (typComboAVS,typComboSNS) ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620006§>);renvoyer faux
+      		
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows ou CibleExécution=WindowsMobile>
+      	RENVOYER (SendMessage(Handle(xChamp),343 ,0,0))
+      	
+      <fin>
+      
+      		
+     type : 458752
+   -
+     name : FenêtreBoutonIcônise
+     procedure_id : 2233253286059980513
+     type_code : 15
+     code : |1+
+      // Résumé : La fonction FenêtreBoutonIcônise permet de modifier la présence du bouton d'icône (minimiser) sur la barre de titre d'une fenêtre WinDev.
+      // Syntaxe : FenêtreBoutonIcônise (<nHandleDeLaFenêtre> est entier, <bAffiche> est booléen)
+      // Paramètres :
+      //	nHandleDeLaFenêtre (entier) : représentant le handle (identifiant) de la fenêtre.
+      //	bAffiche (booléen) : spécifiant si le bouton d'icône doit être affiché (Vrai) ou caché (Faux).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	FenêtreBoutonIcônise(Handle(MaFenêtre), Vrai)
+      //
+      PROCEDURE FenêtreBoutonIcônise(local nHandleDeLaFenêtre est un entier,bAffiche est un booléen)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	SI bAffiche ALORS
+      		nHandleDeLaFenêtre=(HiWord(nHandleDeLaFenêtre)+0x2)*65536+LoWord(nHandleDeLaFenêtre)	// +0x2 ajoute le bouton iconise
+      	SINON
+      		nHandleDeLaFenêtre=(HiWord(nHandleDeLaFenêtre)-0x2)*65536+LoWord(nHandleDeLaFenêtre)	// -0x2 enlève le bouton iconise (grisé sous Win95)
+      	FIN
+      	API("User32","SetWindowLongA",nHandleDeLaFenêtre,-16,nHandleDeLaFenêtre)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : TableSélectionne
+     procedure_id : 1178260214482054916
+     type_code : 15
+     code : |1+
+      // Résumé : Sélectionne une ligne spécifique dans une table WinDev. Il choisira une autre ligne si la ligne souhaitée n'existe pas (ou a été supprimée).
+      // Syntaxe : TableSélectionne (<xTable>, <nLigne> est entier)
+      // Paramètres :
+      // 	xTable : représentant la table dans laquelle la sélection doit être effectuée.
+      //	nLigne (entier) : spécifiant le numéro de ligne à sélectionner.
+      // Valeur de retour : Aucune
+      // Exemple : 
+      // 	// Pour sélectionner la cinquième ligne de la table AutreTable
+      //	TableSélectionne(AutreTable, 5)
+      //
+      PROCEDURE TableSélectionne(xTable est un champ,nLigne est un entier)
+      SI PAS xTable..Type DANS (typTable,typTableHierarchique) ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620003§>);retour
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	SI nLigne<=0 ALORS
+      		// Pas de ligne sélectionnée
+      		SI xTable..Occurrence <> 0 ALORS TableSelectPlus(xTable,1)
+      	SINON SI nLigne> xTable..Occurrence 
+      		// En-dehors	
+      		TableSelectPlus(xTable,xTable..Occurrence)
+      	SINON
+      		TableSelectPlus(xTable,nLigne)
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : FenêtreFixe
+     procedure_id : 1249110815115881440
+     type_code : 15
+     group : 1
+     code : |1+
+      // Résumé : La fonction ajuste la position et les dimensions de la fenêtre en exécution en utilisant des événements spécifiques et en fixant ses propriétés.
+      // Syntaxe : FenêtreFixe ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	FenêtreFixe()
+      //
+      PROCEDURE FenêtreFixe()
+      //ref : https://softwd.wordpress.com/2012/07/27/interdire-le-deplacement-dune-fenetre/
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	
+      	entBooge est un entier = 0X0216
+      	
+      	strDimention est une Structure
+      		entX 		est un entier
+      		entY 		est un entier
+      		entLargeur 	est un entier
+      		entHauteur 	est un entier
+      	FIN
+      	
+      	strMaDimention 	est une strDimention
+      	sNomFenetre 	est une chaîne = FenEnExécution()
+      	pcdFixeFenetre 	est une procédure = compile("Transfert(_EVE.lParam,&strMaDimention,16)")
+      	
+      	strMaDimention.entX			= {sNomFenetre,indFenêtre}..X
+      	strMaDimention.entY			= {sNomFenetre,indFenêtre}..Y
+      	strMaDimention.entLargeur	= {sNomFenetre,indFenêtre}..X+{sNomFenetre,indFenêtre}..Largeur
+      	strMaDimention.entHauteur	= {sNomFenetre,indFenêtre}..Y+{sNomFenetre,indFenêtre}..Hauteur
+      	
+      	Evénement(pcdFixeFenetre,sNomFenetre,entBooge)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : MoisEnCours
+     procedure_id : 1296751143206017123
+     type_code : 15
+     code : |1-
+      // Résumé : Retourne le numéro du mois en cours à partir de la date système.
+      // Syntaxe : [ <Résultat> = ] MoisEnCours ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : entier : La fonction retourne un entier représentant le numéro du mois en cours.
+      // Exemple :
+      //	nMois := MoisEnCours()
+      //	Info("Le mois en cours est : " + nMois)
+      //
+      PROCEDURE MoisEnCours() : entier	//n'existe qu'à partir de Wx24
+      dEnCours est une date
+      renvoyer dEnCours..mois
+     type : 458752
+   -
+     name : ExplorerAvecSélection
+     procedure_id : 1337767775260530335
+     type_code : 15
+     code : |1-
+      // Résumé : Ouvre l'Explorateur de fichiers de Windows avec un répertoire spécifié et un fichier sélectionné, si fourni.
+      // Syntaxe : ExplorerAvecSélection (<sRépertoire> est champ , <sFichierSélectionné> est chaîne)
+      // Paramètres :
+      //	sRépertoire (chaîne) : Le chemin du répertoire à ouvrir dans l'Explorateur de fichiers.
+      //	sFichierSélectionné (chaîne) : Le nom du fichier à sélectionner dans l'Explorateur de fichiers. Si vide, aucun fichier ne sera sélectionné.
+      // Valeur de retour : aucune
+      // Exemple :
+      //	ExplorerAvecSélection("C:\MonRépertoire\", "MonFichier.txt")
+      //
+      PROCEDURE ExplorerAvecSélection(sRépertoire est une chaine, sFichierSélectionné est une chaine)
+      //ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/257616-ouvrir-explorateur-fichier-sur-emplacement-fichier/read.awp
+      si sRépertoire~="" alors 
+      	ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620068§>);retour
+      sinon si pas frepexiste(sRépertoire) alors
+      	ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620069§>);retour
+      FIN
+      si sFichierSélectionné~="" 	alors ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b518462006a§>);retour
+      szRootPath 			est une chaîne ASCIIZ sur 260 = sRépertoire
+      szInputPathName 	est une chaîne ASCIIZ sur 260 = sFichierSélectionné
+      szOutputPathBuffer 	est une chaîne ASCIIZ sur 260
+      nRetVal 			est un entier systeme = api("imagehlp.dll", "SearchTreeForFile", &szRootPath, &szInputPathName, &szOutputPathBuffer)
+      LanceAppli("Explorer.exe /select, " + szOutputPathBuffer)
+     type : 458752
+   -
+     name : TableListeAjoute
+     procedure_id : 1412365334929026820
+     type_code : 15
+     code : |1-
+      // Résumé : La fonction est utilisée pour ajouter un contenu spécifié à une colonne de type liste dans une table. Cette fonction est utile lorsque vous avez besoin de remplir une colonne de type liste avec des valeurs différentes pour chaque ligne de la table.
+      // Syntaxe : TableListeAjoute (<xChampRef> est champ, <indice> est entier, <sContenu> est chaîne)
+      // Paramètres :
+      //	xColonne (Champ) : La colonne de type liste à laquelle ajouter le contenu.
+      //	nIndice (entier) : L'indice de la ligne dans laquelle ajouter le contenu. L'indice commence à 1.
+      //	sContenu (chaîne) : Le contenu à ajouter à la colonne de type liste.
+      // Valeur de retour : aucune
+      // Exemple :
+      //	TableListeAjoute(MaTable.ColonneListe, 3, "Valeur1"+RC+"Valeur2"+RC+"Valeur3")
+      //
+      PROCEDURE TableListeAjoute(xColonne est un champ, nIndice est un entier, sContenu est une chaine)
+      //ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/197661-chargement-combos-dans-table-avec-contenu-different-chaque/read.awp
+      SI xColonne..Type<>typColonne ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620065§>) sinon xColonne[nIndice]..Contenu=sContenu	
+     type : 458752
+   -
+     name : NumOngletDuChamp
+     procedure_id : 1460393983028595839
+     type_code : 15
+     code : |1-
+      // Résumé : Détermine le numéro de l'onglet auquel appartient un champ spécifié dans un contexte d'interface graphique WinDev. Cette fonction est utile dans la classe cFormulaireValide.
+      // Syntaxe : [ <Résultat> = ] NumOngletDuChamp (<xChampRef> est champ)
+      // Paramètres :
+      //	xChampRef (Champ) : Le champ pour lequel vous souhaitez déterminer le numéro de l'onglet parent.
+      // Valeur de retour : entier : renvoie un entier représentant le numéro de l'onglet auquel le champ appartient. Si le champ n'est pas situé dans un onglet, la fonction renvoie 0.
+      // Exemple :
+      //	nNumOnglet est un entier = NumOngletDuChamp(MonChamp)
+      //
+      PROCEDURE NumOngletDuChamp(xChampRef est un champ) : entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      	sChampOnglet est une chaine = OngletDuChamp(xChampRef)
+      	SI sChampOnglet="" ALORS RENVOYER 0			//n'est pas dans un onglet
+      	SI {sChampOnglet,indChamp}..Type<>typOnglet ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b5184620066§>);renvoyer 0
+      	
+      	nChamp est un entier
+      	sChamp est une chaîne
+      	POUR nOnglet  = 1 _a_ {sChampOnglet,indChamp}..occurrence
+      		nChamp=1;sChamp = EnumèreChamp({sChampOnglet,indChamp}[nOnglet],nChamp)
+      		TANTQUE sChamp <> ""
+      			SI {sChampOnglet,indChamp}..NomComplet+"."+sChamp=xChampRef..NomComplet ALORS RENVOYER nOnglet
+      			nChamp++;sChamp = EnumèreChamp({sChampOnglet,indChamp}[nOnglet],nChamp)
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer 0
+     type : 458752
+   -
+     name : Contraste
+     procedure_id : 1460667032496348267
+     type_code : 15
+     code : |1+
+      // Résumé : Calcule le rapport de contraste entre deux couleurs données en utilisant la formule spécifiée dans les recommandations d'accessibilité Web Content Accessibility Guidelines (WCAG). Le contraste est un aspect crucial pour garantir une lisibilité optimale, en particulier pour les personnes ayant des limitations visuelles.
+      // Syntaxe : [ <Résultat> = ] Contraste ( <nCouleur1> est entier , <nCouleur2> est entier)
+      // Paramètres :
+      //	nCouleur1 (entier) : La première couleur à comparer.
+      // 	nCouleur2 (entier) : La deuxième couleur à comparer.
+      // Valeur de retour : réel : La fonction renvoie un nombre réel représentant le rapport de contraste entre les deux couleurs. Un rapport de contraste de 1 indique un contraste minimum, tandis qu'un rapport plus élevé indique un contraste plus fort.
+      // Exemple :
+      //	rRatioContraste est un réel = Contraste(RVB(255, 255, 255), RVB(0, 0, 0))
+      //	rRatioContraste contiendra la valeur 21
+      //
+      //Les coefficients dans le formule ci-dessous reflètent la sensibilité de l'œil humain à une composante colorée particulière : l'œil humain ressent la composante verte comme la plus lumineuse, la rouge un peu moins et la bleue est la moins lumineuse des trois.
+      //Pour être facilement lisible, le rapport de contraste des couleurs du texte et de l'arrière-plan doit être de 7:1. Le rapport de contraste doit être d'au moins 4,5 pour les gros textes ou les images de logo.
+      PROCEDURE Contraste(nCouleur1 est un entier,nCouleur2 est un entier) : reel
+      //ref : https://www.w3.org/TR/WCAG20-TECHS/G17.html#G17-tests
+      //test : https://fr.planetcalc.com/7779/
+      rL1 est un réel = 0.2126*PortionCouleur(RVBRouge(nCouleur1)) + 0.7152*PortionCouleur(RVBvert(nCouleur1)) + 0.0722*PortionCouleur(RVBBleu(nCouleur1))
+      rL2 est un réel = 0.2126*PortionCouleur(RVBRouge(nCouleur2)) + 0.7152*PortionCouleur(RVBvert(nCouleur2)) + 0.0722*PortionCouleur(RVBBleu(nCouleur2))
+      SI rL1>rL2 ALORS renvoyer ((rL1+0.05)/(rL2+0.05)) SINON renvoyer ((rL2+0.05)/(rL1+0.05))
+      
+      	PROCÉDURE INTERNE PortionCouleur(nCouleur)
+      	SI (nCouleur/255)<0.03928 ALORS RENVOYER (nCouleur/255)/12.92 SINON RENVOYER Puissance(((nCouleur/255)+0.055)/1.055,2.4)	
+      	FIN
+     type : 458752
+   -
+     name : ChampNomComplet
+     procedure_id : 1485125384216039131
+     type_code : 15
+     code : |1-
+      // Résumé : Nom complet d'un champ en spécifiant son nom abrégé. Cette fonction prend en charge la recherche dans des structures imbriquées telles que les dispositions, les onglets, les fenêtres internes, les modèles de champ, etc. Elle peut également prendre en compte le plan du champ.
+      //	Cette fonction est plus avancées que NomComplet standard qui ne fait que détecter si le paramètre est une chaine ou un champ et de renvoyer la propriété ..NomComplet
+      // Syntaxe : [ <Résultat> = ] ChampNomComplet ( [<sNomComplet> est chaîne [, <bAvecPlan> est booléen]])
+      // Paramètres :
+      //	sNomComplet (chaîne UNICODE) : Le nom abrégé du champ pour lequel le nom complet doit être obtenu.
+      // 	bAvecPlan (booléen optionnel) : Indique si le plan du champ doit être inclus dans le nom complet (par défaut, Faux).
+      // Valeur de retour : chaîne UNICODE : La fonction renvoie le nom complet du champ spécifié. Si le champ n'est pas trouvé, la fonction renvoie une chaîne vide.
+      // Exemple :
+      //	sNomComplet est une chaîne = ChampNomComplet("MaDisposition.MonChamp", Vrai)
+      //
+      PROCEDURE ChampNomComplet(LOCAL sNomComplet est une chaine = moimeme..NomComplet,bAvecPlan est un booleen = faux) : chaine
+      si sNomComplet~="" alors ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b518462006c§>);renvoyer ""
+      si pas champexiste(sNomComplet) alors ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b518462006d§>);renvoyer ""
+      x,y,nLigne 	sont des entiers
+      sNom 		est une chaine
+      (sNom,x,y,nLigne)=Champinfo(sNomComplet)
+      RENVOYER (bAvecPlan ? "plan["+{sNomComplet,indchamp}..plan+"]." SINON "")+sNom+(nLigne = 0 ? "" SINON "["+nLigne+"]")
+     type : 458752
+   -
+     name : DispCelluleDuChamp
+     procedure_id : 1485136675846876406
+     type_code : 15
+     code : |1-
+      // Résumé : Détermine la cellule d'une disposition dans laquelle se trouve un champ spécifié.
+      // Syntaxe : [ <Résultat> = ] DispCelluleDuChamp (<champDisposition> est champ, <champAVérifier> est champ)
+      // Paramètres :
+      //	champDisposition (champ) : La disposition parente dans laquelle la recherche de la cellule est effectuée.
+      //	champAVérifier (champ) : Le champ pour lequel on souhaite déterminer la cellule dans la disposition.
+      // Valeur de retour : entier : La fonction renvoie un entier représentant la cellule dans laquelle se trouve le champ spécifié dans la disposition parente.
+      // Exemple :
+      //	champDisposition est un champ = MaFenêtre.DISP_MaDisposition
+      //	champAVérifier est un champ = MaFenêtre.SAI_MonChamp
+      //	nCellule est un entier = DispCelluleDuChamp(champDisposition, champAVérifier)
+      //
+      PROCEDURE DispCelluleDuChamp(champDisposition est un champ,champAVérifier est un champ) : entier
+      SI PAS ChampExiste(champDisposition..nomcomplet) ALORS 	//ChampExiste(champDisposition) fait une erreur !  Vous avez appelé la fonction 'ChampExiste'. Le passage du paramètre 1 a provoqué une erreur. Vous avez demandé la valeur de DISP_SansNom1. DISP_SansNom1 est de type Champ Layout. Les objets de type Champ Layout ne possèdent pas de valeur.
+      	ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b518462006d§>);renvoyer 0
+      sinon 
+      	si champDisposition..type<>typDisposition alors ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b518462006b§>);renvoyer 0
+      FIN
+      SI PAS ChampExiste(champAVérifier..nomcomplet) ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b518462006d§>);renvoyer 0
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	
+      	gnHandleDisp=Handle(champDisposition);TableauSupprimeTout(gtabDisp);gtaCellule[gnHandleDisp]=0
+      	nIndice 	est un entier systeme = api("User32","EnumChildWindows",gnHandleDisp,&EnumèreDispEnfants,0)
+      	nHandle 	est un entier systeme = handle(champAVérifier)
+      	stUnEnfant 	est un STobjetEnfant
+      	POUR TOUT ÉLÉMENT stUnEnfant DE gtabDisp
+      		SI nHandle=stUnEnfant.nHandle ALORS RENVOYER stUnEnfant.nCellule
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER 0
+     type : 458752
+   -
+     name : ChampPosition
+     procedure_id : 1485590904608827685
+     type_code : 15
+     code : |1-
+      // Résumé : Détermine la position absolue d'un champ par rapport à la fenêtre en prenant en compte sa hiérarchie dans la structure de l'interface utilisateur. Attention, ne fonctionne pas si la barre de titre est personnalisée.
+      // Syntaxe : [ <Résultat> = ] ChampPosition ( [<sNomComplet> est chaîne])
+      // Paramètres :
+      //	sNomComplet (chaîne UNICODE) : Le nom complet du champ pour lequel on souhaite obtenir la position. Si non spécifié, la fonction utilise le nom complet du champ en cours.
+      // Valeur de retour : multi-valeur : La position absolue (en x et y) par rapport au coin supérieur gauche de la fenêtre du champ passé en paramètre et numéro de ligne dans le cas d'une table ou d'une zone répétée
+      // Exemple :
+      //	x,y,nLigne sont des entiers
+      //	(x,y,nLigne) = ChampPosition(MonFormulaire.MonChamp..nomComplet)
+      //
+      PROCEDURE ChampPosition(sNomComplet est une chaine = moimeme..NomComplet) : (entier,entier,entier)
+      SI sNomComplet~="" ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b518462006c§>);renvoyer (0,0,0)
+      SI PAS ChampExiste(sNomComplet) ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b518462006d§>);renvoyer (0,0,0)
+      x,y,nLigne 	sont des entiers
+      sNom 		est une chaine
+      (sNom,x,y,nLigne)=ChampInfo(sNomComplet)	//on ne préoccupe pas ici du nom 
+      RENVOYER (x,y,nLigne)
+     type : 458752
+   -
+     name : EnumèreDispEnfants
+     procedure_id : 1526493607936726561
+     type_code : 15
+     code : |1-
+      // Résumé : Fonction privée utilisée par DispCelluleDuChamp
+      PROCEDURE privé EnumèreDispEnfants(nHandleEnfant est un entier système, nLParam est un entier = Null)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	
+      	stWindowInfo	est un stWINDOWINFO
+      	API("User32.dll", "GetWindowInfo",nHandleEnfant, &stWindowInfo)
+      	
+      	stUnEnfant 		est un STObjetEnfant
+      	stUnEnfant.nLargeur = stWindowInfo.rcClient.nDroite-stWindowInfo.rcClient.nGauche
+      	stUnEnfant.nHauteur = stWindowInfo.rcClient.nBas-stWindowInfo.rcClient.nHaut
+      	stUnEnfant.nHandle	= nHandleEnfant
+      	SI api("User32.dll", "GetParent", nHandleEnfant)=gnHandleDisp ALORS //les cellules de disp et fenêtre internes sont 49737 > il faut vérifier que le parent est bien le champ disposition
+      		gtaCellule[gnHandleDisp]++
+      	SINON
+      		nHandleCase est un entier systeme = api("User32.dll", "GetParent", nHandleEnfant)
+      		SI nHandleCase>0 _ET_ api("User32.dll", "GetParent", nHandleCase)=gnHandleDisp ALORS stUnEnfant.nCellule=gtaCellule[gnHandleDisp];gtabDisp.Ajoute(stUnEnfant)
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER Vrai	//pour passer au champ suivant
+     type : 458752
+   -
+     name : EstVoletStatique
+     procedure_id : 1570471417707595846
+     type_code : 15
+     code : |1-
+      // Résumé : Vérifie qu'un volet d'un champ "onglet dynamique" est statique.
+      // Syntaxe : [ <Résultat> = ] EstVoletStatique (<champOnglet> est champ, <sAlias> est chaîne)
+      // Paramètres :
+      //	champOnglet (champ) : Champ "onglet dynamique" à vérifier
+      //	sAlias (chaîne UNICODE) : Alias du champ "onglet dynamique" à vérifier
+      // Valeur de retour : booléen : Vrai si le volet est dynamique, faux sinon
+      // Exemple :
+      //	SI EstVoletStatique(ONG_SansNom1,"ALIAS_S_1") ALORS
+      //		//traitement
+      //	FIN
+      //
+      PROCEDURE EstVoletStatique(champOnglet est un champ,sAlias est une chaine) : booleen
+      champStat 	est un champ <- champOnglet[sAlias]
+      RENVOYER (champStat>0)	//Le champ vaut 1 pour le 1er onglet statique (ex "ALIAS_S_1"), 2 pour le 2nd onglet statique (ex "ALIAS_S_2") et 0 pour les onglets dynamique (ex : "ALIAS_1")
+     type : 458752
+   -
+     name : ChampInfo
+     procedure_id : 1570473625320840691
+     type_code : 15
+     code : |1+
+      // Résumé : Procédure privée qui analyse tous les champs de la fenêtre. Est utilisée dans ChampPosition et ChampNomComplet.
+      PROCEDURE PRIVÉ ChampInfo(LOCAL sNomRéférence est une chaine = moimeme..NomComplet) :(chaine,entier,entier,entier)
+      sRes 		est une chaine
+      nX,nY,nL	sont des entiers
+      taDisp		est un tableau associatif de chaines
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      TrouveChamps()
+      <fin>
+      RENVOYER (sRes,nX,nY,nL)
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	PROCÉDURE INTERNE TrouveChamps(sPère est une chaine = MaFenêtre..NomComplet,sPèreComplet est une chaine = MaFenêtre..NomComplet)
+      	
+      
+      	
+      		x,y,xPlus,yPlus,nCell,nDernier sont des entiers
+      		sNomC,sCol 	sont des chaines
+      		nChamp		est un entier = 1
+      		sChamp		est une chaine = Enumèrechamp(sPère,nChamp)
+      		bDispo 		est un booleen = ({sPère,indChamp}..Type=typDisposition)
+      		bOngDyn		est un booleen = ({sPère,indChamp}..Type=typOnglet _et_ {sPère,indChamp}..OngletDynamique)
+      		TANTQUE sChamp>""
+      			SI bDispo ALORS nCell=DispCelluleDuChamp({sPère,indChamp},{sPère+"."+sChamp,indChamp})
+      			si pas (bDispo _et_ nCell>0 _et_ pas {sPère,indChamp}[nCell]..visible) alors
+      				sNomC=sPèreComplet+(bDispo ? "["+nCell+"]"+"."+sChamp SINON (bOngDyn ? "["+sChamp+"]" SINON "."+sChamp))
+      				SI bDispo _ET_ taDisp[sPèreComplet+"["+nCell+"]"]..Existe ALORS 
+      					x = Val(ExtraitChaîne(taDisp[sPèreComplet+"["+nCell+"]"],1,","))+{sPère+"."+sChamp,indChamp}..X
+      					y = Val(ExtraitChaîne(taDisp[sPèreComplet+"["+nCell+"]"],2,","))+{sPère+"."+sChamp,indChamp}..Y
+      				SINON SI bOngDyn ALORS
+      					x={sPère,indChamp}..X;y={sPère,indChamp}..Y
+      				SINON SI taDisp[sPèreComplet]..Existe ALORS
+      					x = Val(ExtraitChaîne(taDisp[sPèreComplet],1,","))+{sPère+"."+sChamp,indChamp}..X
+      					y = Val(ExtraitChaîne(taDisp[sPèreComplet],2,","))+{sPère+"."+sChamp,indChamp}..Y
+      				SINON
+      					x={sPère+"."+sChamp,indChamp}..X;y={sPère+"."+sChamp,indChamp}..Y
+      				FIN
+      	//			Trace("WD:"+TAB+{sPère+"."+sChamp,indChamp}..NomComplet+TAB+"("+(Droite(sNomC,1)="]" ? 0 SINON {sPère+"."+sChamp,indChamp}..X)+","+(Droite(sNomC,1)="]" ? 0 SINON {sPère+"."+sChamp,indChamp}..Y)+")")
+      	//			Trace("Betula:"+TAB+sNomC+tab+"("+x+","+y+")")
+      				SI {sPère+"."+sChamp,indChamp}..NomComplet=sNomRéférence ALORS sRes=sNomC;nX=x;nY=y;SORTIR
+      				SELON {sPère+"."+sChamp,indChamp}..Type
+      					CAS typDisposition
+      						SI {sPère+"."+sChamp,indChamp}..Occurrence>1 ALORS
+      							xPlus=x;yPlus=y;nDernier=0
+      							POUR nDisp = 1 _a_ {sPère+"."+sChamp,indChamp}..occurrence
+      								SI {sPère+"."+sChamp,indChamp}[nDisp]..Visible ALORS
+      									SI nDernier>0 _ET_ {sPère+"."+sChamp,indChamp}[nDernier]..Visible ALORS
+      										SI {sPère+"."+sChamp,indChamp}..Disposition=dispEmpilementHorizontal ALORS 
+      											xPlus+={sPère+"."+sChamp,indChamp}[nDernier]..Largeur+{sPère+"."+sChamp,indChamp}..MargeInterCellules
+      										SINON
+      											yPlus+={sPère+"."+sChamp,indChamp}[nDernier]..Hauteur+{sPère+"."+sChamp,indChamp}..MargeInterCellules
+      										FIN
+      									FIN
+      	//								Trace("Betula:"+TAB+sNomC+"["+nDisp+"]"+TAB+"("+xPlus+","+yPlus+")")
+      									taDisp[sNomC+"["+nDisp+"]"]=xPlus+","+yPlus;nDernier=nDisp
+      								FIN
+      							FIN
+      							TrouveChamps(sPère+"."+sChamp,sNomC)
+      						FIN
+      					CAS 57
+      						TrouveChamps(sPère+"."+sChamp,sNomC)
+      					CAS typModèleDeChamp
+      						taDisp[sNomC]=x+","+y
+      						TrouveChamps(sPère+"."+sChamp,sNomC)
+      					CAS typFenêtreInterne
+      						SI Position(sPère,".")>0 _ET_ {sPère,indChamp}..Type<>57 _ET_ {sPère,indChamp}..Type<>typOnglet ALORS taDisp[sNomC]=x+","+y
+      						TrouveChamps(sPère+"."+sChamp,{sPère,indChamp}..Type=typOnglet _ET_ {sPère,indChamp}..OngletDynamique ? sPèreComplet+"["+sChamp+"]" SINON sNomC)
+      					CAS typOnglet
+      						SI {sPère+"."+sChamp,indChamp}..OngletDynamique ALORS
+      							TrouveChamps(sPère+"."+sChamp,sNomC)
+      						SINON
+      							POUR nOnglet = 1 _a_ {sPère+"."+sChamp,indChamp}..occurrence 
+      								TrouveChamps(sPère+"."+sChamp+"["+nOnglet+"]",sNomC+"["+nOnglet+"]")
+      							FIN
+      						FIN
+      					CAS typTable
+      						nLigne est un entier = TableInfoXY(sPère+"."+sChamp,tiNumLigne+tiOrigineEcran,PoidsFaible(CurseurPos()),PoidsFort(CurseurPos()))
+      						SI nLigne>0 ALORS
+      							POUR nColonne = 1 _a_ TableOccurrence(sPère+"."+sChamp,tocolonne)
+      								sCol=TableEnumèreColonne(sPère+"."+sChamp,nColonne)
+      								SI {sPère+"."+sChamp+"."+sCol,indChamp}..Visible _ET_ {sPère+"."+sChamp+"."+sCol,indChamp}..NomComplet=sNomRéférence ALORS 
+      									sRes=sNomC+"."+sCol;nL=nLigne
+      									SI {sPère+"."+sChamp,indChamp}..Vertical ALORS
+      										nX=x+{sPère+"."+sChamp+"."+sCol,indChamp}[nLigne]..X
+      										nY=y+{sPère+"."+sChamp+"."+sCol,indChamp}[nLigne]..Y+{sPère+"."+sChamp,indChamp}[nLigne]..Hauteur	//si la table possède un titre, ajouter sa hauteur dans le code appelant
+      									SINON
+      										nX=x+{sPère+"."+sChamp+"."+sCol,indChamp}[nLigne]..X+{sPère+"."+sChamp,indChamp}[nLigne]..Hauteur	//si la table possède un titre, ajouter sa hauteur dans le code appelant
+      										nY=y+{sPère+"."+sChamp+"."+sCol,indChamp}[nLigne]..Y
+      									FIN
+      									SORTIR
+      								FIN
+      							FIN
+      						FIN
+      					CAS typZoneRépétée
+      						nLigne 		est un entier	= ZonerepeteeInfoXY(sPère+"."+sChamp,tiNumLigne+tiOrigineEcran,PoidsFaible(CurseurPos()),PoidsFort(CurseurPos()))
+      						m 			est un entier 	= 1
+      						sSousChamp 	est une chaine 	= Enumèrechamp(sPère+"."+sChamp,m)
+      						SI nLigne>0 ALORS
+      							TANTQUE sSousChamp>""
+      								SI {sPère+"."+sChamp+"["+nLigne+"]"+"."+sSousChamp,indChamp}..Visible _ET_ {sPère+"."+sChamp+"."+sSousChamp,indChamp}..NomComplet=sNomRéférence ALORS 
+      									sRes=sNomC+"."+sSousChamp;nL=nLigne
+      									SI {sPère+"."+sChamp,indChamp}..Vertical ALORS
+      										nX=x+{sPère+"."+sChamp+"."+sSousChamp,indChamp}..X
+      										nY=y+{sPère+"."+sChamp,indChamp}[nLigne]..Y+{sPère+"."+sChamp+"."+sSousChamp,indChamp}..Y+{sPère+"."+sChamp+"."+sSousChamp,indChamp}..Hauteur
+      									SINON
+      										nX=x+{sPère+"."+sChamp,indChamp}[nLigne]..X+{sPère+"."+sChamp+"."+sSousChamp,indChamp}..Y+{sPère+"."+sChamp+"."+sSousChamp,indChamp}..Hauteur
+      										nY=y+{sPère+"."+sChamp+"."+sSousChamp,indChamp}..Y
+      									FIN
+      									SORTIR
+      								FIN
+      								m++;sSousChamp = EnumèreChamp(sPère+"."+sChamp,m)
+      							FIN
+      						FIN
+      				FIN
+      			fin
+      			SI sRes>"" ALORS SORTIR SINON nChamp++;sChamp = EnumèreChamp(sPère,nChamp)
+      		FIN
+      	FIN
+      <fin>
+     type : 458752
+   -
+     name : TrimestreEnCours
+     procedure_id : 1585327877606033294
+     type_code : 15
+     code : |1-
+      // Résumé : Détermine le trimestre en cours en fonction du mois actuel.
+      // Syntaxe : [ <Résultat> = ] TrimestreEnCours ()
+      // Paramètres : Aucun
+      // Valeur de retour : entier : Le trimestre en cours. Si le mois actuel est janvier, février ou mars, la fonction renvoie 1 ; si le mois actuel est avril, mai ou juin, elle renvoie 2 ; si le mois actuel est juillet, août ou septembre, elle renvoie 3 ; sinon, elle renvoie 4.
+      // Exemple :
+      //	nTrimestre est un entier = TrimestreEnCours()
+      //	Résultat: (par exemple, si nous sommes en avril) nTrimestre = 2
+      //
+      PROCEDURE TrimestreEnCours() : entier
+      SELON MoisEnCours()
+      	CAS 1,2,3	: RENVOYER 1
+      	CAS 4,5,6	: RENVOYER 2
+      	CAS 7,8,9	: RENVOYER 3
+      	CAS 10,11,12: RENVOYER 4
+      FIN
+      renvoyer 0
+     type : 458752
+   -
+     name : InterrupteurColonne
+     procedure_id : 1585333319509318464
+     type_code : 15
+     code : |1-
+      // Résumé : Met à jour un champ de type interrupteur (xCoche) en fonction de l'état des cases à cocher d'une colonne (xColonne) dans une table (xTable). Elle vérifie si toutes les cases à cocher sont cochées, toutes décochées ou dans un état mixte, et met à jour l'interrupteur en conséquence.
+      // Syntaxe : InterrupteurColonne (<xCoche> est champ, <xTable> est champ, <xColonne> est champ)
+      // Paramètres :
+      //	xCoche (champ) : Champ de type interrupteur à mettre à jour.
+      //	xTable (champ) : Champ de type table contenant les données.
+      //	xColonne (champ) : Champ de type colonne dans la table contenant les cases à cocher.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	InterrupteurColonne(INT_SelectGénéral, TABLE_Facture, TABLE_Facture.COL_Select)
+      //
+      PROCEDURE InterrupteurColonne(xCoche est un Champ,xTable est un Champ,xColonne est un Champ)
+      nSelect est un entier
+      <SI CibleExécution=ApplicationWindows OU CibleExécution=AssemblageDotNet>
+      xCoche..TroisEtats=Vrai 	//forcer le 3eme état possible
+      <fin>
+      POUR TOUTE LIGNE nLigne DE xTable
+      	SI xColonne[nLigne] ALORS nSelect++
+      FIN
+      SI nSelect=xTable..Occurrence ALORS
+      	xCoche=Vrai
+      SINON SI nSelect=0 ALORS
+      	xCoche=Faux
+      SINON
+      	xCoche=-1
+      FIN
+     type : 458752
+   -
+     name : CoordonnéesAffiche
+     procedure_id : 1585334208567625336
+     type_code : 15
+     code : |1-
+      // Résumé : Convertit les coordonnées géographiques données en décimales en un format sexagésimal plus convivial. Elle renvoie une chaîne de caractères représentant la longitude et la latitude sous forme de degrés, minutes et secondes, avec les directions cardinales (N, S, E, O).
+      // Syntaxe : [ <Résultat> = ] CoordonnéesAffiche (<rLongitude> est réel, <rLatitude> est réel)
+      // Paramètres :
+      //	rLongitude (réel) : Nombre réel représentant la longitude en décimales.
+      //	rLatitude (réel) : Nombre réel représentant la latitude en décimales.
+      // Valeur de retour : chaîne UNICODE : Valeurs converties avec les directions cardinales, séparées par "/"
+      // Exemple :
+      //	CoordonnéesAffiche(48.8566, 2.3522) // Renvoie "48°51'24 N / 2°21'8 E"
+      //
+      PROCEDURE CoordonnéesAffiche(rLongitude est un réel,rLatitude est un réel) : chaîne
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	RENVOYER DécimalVersSexagésimal(Abs(rLongitude))+" "+(rLongitude>0 ? "N" SINON "S")+" / "+DécimalVersSexagésimal(Abs(rLatitude))+" "+(rLatitude>0 ? "E" SINON <§@1b742fd00b518462006e§>)
+      	
+      <fin>
+      
+      
+      renvoyer ""
+     type : 458752
+   -
+     name : Hachurage
+     procedure_id : 1682356127750425669
+     type_code : 15
+     code : |1-
+      // Résumé : Dessine des hachure, du coin supérieur gauche vers le coin inférieur droit, dans un champ image. Attention, mettre dDébutDessin(VotreChampImage) avant
+      // Syntaxe : Hachurage (<xChampImage> est champ, <nXdébut> est entier, <nYdébut> est entier, <nXfin> est entier, <nYfin> est entier[, <nCouleur> est entier[, <nLargeurTrait> est entier[, <nEcart> est entier]]])
+      // Paramètres :
+      //	xChampImage (champ) : Champ image dans lequel les hachure vont être dessinées
+      //	nXdébut (entier) : Position X du début
+      //	nYdébut (entier) : Position Y du début
+      //	nXfin (entier) : Position X de fin
+      //	nYfin (entier) : Position Y de fin
+      //  nCouleur (entier) : couleur de la hachure (par défaut noir)
+      //  nLargeurTrait (entier) : largeur du trait en pixel (par défaut 1 pixel)
+      //  nEcart (entier) : écart entre 2 lignes en pixel (par défaut 10 pixels)
+      // Valeur de retour : booléen : vrai si le dessin a été fait, faux dans le cas contraire (vérifier ErreurInfo())
+      // Exemple :
+      //	Hachurage(IMG_Hachure,20,20,150,150,VertClair,3,25)
+      //
+      PROCEDURE Hachurage(xChampImage est un champ,nXdébut est un entier, nYdébut est un entier, nXfin est un entier, nYfin est un entier, nCouleur est un entier = noir, nLargeurTrait est un entier = 1, nEcart est un entier = 10) : booléen
+      //ref : https://www.developpez.net/forums/d925551/environnements-developpement/windev/contribuez/hachurer-champ-image/
+      SI xChampImage..Type<>typImage ALORS ErreurDéclenche(ErreurDeGUI,<§@1b742fd00b518462006f§>);renvoyer faux
+      si nXdébut>nXfin ou nYdébut>nYfin alors erreurdéclenche(ErreurDeGUI,<§@1b742fd00b5184620070§>);renvoyer faux
+      // Hachurage de la zone
+      i est un entier
+      nMaxix, nMaxiY est un entier
+      nMaxix = (nXfin - nXdébut) / nEcart
+      nMaxiY = (nYfin - nYdébut) / nEcart
+      nLX0, nLX1, nLY0, nLY1 sont des entiers
+      
+      SI (nXfin - nXdébut) > (nYfin - nYdébut) ALORS	// Cas où la largeur de l'aire est plus grande que la hauteur
+      	POUR i = 0 À nMaxiY
+      		nLX0 = nXdébut
+      		nLY0 = nYfin - i*nEcart
+      		nLX1 = nYfin - i*nEcart - nYdébut + nXdébut
+      		nLY1 = nYdébut
+      		dLigne(nLX0, nLY0, nLX1, nLY1, nCouleur,nLargeurTrait)
+      	FIN
+      	POUR i = 1 À nMaxix
+      		nLX0 = nXdébut + i*nEcart
+      		nLY0 = nYfin
+      		
+      		SI (nXdébut + i*nEcart) < (nXfin - nYfin + nYdébut) ALORS
+      			nLX1 = nXdébut + nYfin - nYdébut + i*nEcart
+      			nLY1 = nYdébut
+      		SINON
+      			nLX1 = nXfin
+      			nLY1 = nYfin - (nXfin - (nXdébut + i*nEcart))
+      		FIN
+      		dLigne(nLX0, nLY0, nLX1, nLY1, nCouleur,nLargeurTrait)
+      	FIN
+      SINON		// Cas où la hauteur de l'aire est plus grande que la largeur	
+      	POUR i = 0 À nMaxiY
+      		nLX0 = nXdébut
+      		nLY0 = nYfin - i*nEcart
+      		SI (nYfin - (nXfin - nXdébut) - i*nEcart) > nYdébut ALORS
+      			nLX1 = nXfin
+      			nLY1 = nYfin - (nXfin - nXdébut) - i*nEcart
+      		SINON
+      			nLX1 = nXdébut + (nYfin - (nYdébut + i*nEcart))
+      			nLY1 = nYdébut				
+      		FIN
+      		dLigne(nLX0, nLY0, nLX1, nLY1, nCouleur,nLargeurTrait)
+      	FIN
+      	POUR i = 1 À nMaxix
+      		nLX0 = nXdébut + i*nEcart
+      		nLY0 = nYfin
+      		nLX1 = nXfin 
+      		nLY1 = nYfin - (nXfin - nXdébut) + i*nEcart
+      		dLigne(nLX0, nLY0, nLX1, nLY1, nCouleur,nLargeurTrait)
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : LuminanceRelative
+     procedure_id : 1682896907220700736
+     type_code : 15
+     code : |1+
+      // Résumé : Calcule la luminance relative d'une couleur. Est notamment utilisé dans CouleurTexteSelonFond.
+      // Syntaxe : [ <Résultat> = ] LuminanceRelative ( <nCouleur> est entier)
+      // Paramètres :
+      //	nCouleur (entier) : La couleur dont on veut la luminance relative
+      // Valeur de retour : réel : La fonction renvoie un nombre réel représentant la luminance relative.
+      // Exemple :
+      //	rRésultat est un réel = LuminanceRelative(RougeClair)
+      //	rRésultat contiendra la valeur 0.2126
+      //
+      PROCEDURE LuminanceRelative(local nCouleur est une Entier) : reel	//le type Couleur pas disponible sur toutes les plateformes
+      //ref : https://www.linkedin.com/posts/franck-masseboeuf-a15b43231_windev-programmation-chatgpt-activity-7265243789181571072-7wms
+      renvoyer 0.2126*RVBLinéaire(RVBRouge(nCouleur))+0.7152*RVBLinéaire(rvbvert(nCouleur))+0.0722*RVBLinéaire(rvbbleu(nCouleur))
+      
+      	procédure interne RVBLinéaire(rCouleur est un réel) : réel
+      	rCouleur=rCouleur/255
+      	si rCouleur>0.03928 alors renvoyer puissance((rCouleur+0.055)/1.055,2.4) sinon renvoyer rCouleur/12.92
+      	FIN
+     type : 458752
+   -
+     name : CouleurTexteSelonFond
+     procedure_id : 1682903555830246110
+     type_code : 15
+     code : |1-
+      // Résumé : Calcule le la luminance relative. Est utilisé dans CouleurTexteSelonFond
+      // Syntaxe : [ <Résultat> = ] CouleurTexteSelonFond ( <nCouleurFond> est entier)
+      // Paramètres :
+      //	nCouleurFond (entier) : La couleur de fond que l'on veut vérifier
+      // Valeur de retour : entier : Renvoie la couleur blanche ou noire selon la couleur de fond passée en paramètre
+      // Exemple :
+      //	nRésultat est un entier = CouleurTexteSelonFond(VertFoncé)
+      //	nRésultat contiendra la valeur Blanc
+      //
+      PROCEDURE CouleurTexteSelonFond(nCouleurFond est un entier) : entier	//le type Couleur pas disponible sur toutes les plateformes
+      //ref : https://www.linkedin.com/posts/franck-masseboeuf-a15b43231_windev-programmation-chatgpt-activity-7265243789181571072-7wms
+      rLuminanceFond 		est un réel = LuminanceRelative(nCouleurFond)
+      rLuminanceBlanc		est un réel	= LuminanceRelative(blanc)
+      rLuminanceNoir		est un réel	= LuminanceRelative(noir)
+      rContrasteAvecBlanc est un réel = (rLuminanceBlanc + 0.05) / (rLuminanceFond + 0.05)
+      rContrasteAvecNoir 	est un réel = (rLuminanceFond + 0.05) / (rLuminanceNoir + 0.05)
+      renvoyer (rContrasteAvecBlanc > rContrasteAvecNoir ? blanc sinon noir)
+     type : 458752
+   -
+     name : ListeChamp
+     procedure_id : 1696658417339553629
+     type_code : 15
+     code : |1+
+      // Résumé : Récupère la liste de champs, visibles ou invisibles, présents dans une fenêtre (ou une page) en cours d'exécution dans une application WinDev. Cette méthode parcourt de manière récursive les éléments de la fenêtre et retourne les noms des champs, en prenant en compte un filtre optionnel pour sélectionner les types de champs à inclure.
+      // Syntaxe : [ <Résultat> = ] ListeChamp ( [<coFiltre> est COL_GUI.coTypeChamps])
+      // Paramètres :
+      //	coFiltre (COL_GUI.coTypeChamps) : combinaison de type de champ
+      // Valeur de retour : chaine : nom complet des champs séparés par des retour chariot
+      // Exemple :
+      //	sChamps est une chaine = ListeChamp()
+      //
+      PROCEDURE ListeChamp(LOCAL coFiltre est une coTypeChamps = null) : chaîne ANSI
+      sRes 	est une chaine
+      bTrace 	est un booleen = false	//mettre à true pour du debug
+      
+      <si CibleExécution=Site ou CibleExécution=SitePHP>
+      	ListeChamps(PageCourante(),PageCourante())
+      <fin>
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	ListeChamps(FenEnExécution(),FenEnExécution())
+      	
+      <sinon si CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	ListeChamps(FenEnExécution(),FenEnExécution())
+      	
+      <fin>
+      
+      
+      RENVOYER sRes
+      
+      <SI CibleExécution<>Webservice>
+      
+      	PROCÉDURE INTERNE ListeChamps(sPère est une chaine,sPèreComplet est une chaine)
+      	nChamp	est un entier = 1
+      	nCell 	est un entier
+      	sNomC	est une chaine
+      	sChamp	est une chaine = Enumèrechamp(sPère,nChamp)
+      	bDispo 	est un booleen = ({sPère,indChamp}..Type=typDisposition)
+      	bOngDyn	est un booleen = ({sPère,indChamp}..Type=typOnglet _et_ {sPère,indChamp}..OngletDynamique)
+      	TANTQUE sChamp>""
+      		
+      		SI coFiltre=Null _OU_ coFiltre[TypVersType({sPère+"."+sChamp,indChamp}..Type)] ALORS
+      			SI bTrace ALORS 
+      				SI bDispo ALORS nCell=DispCelluleDuChamp({sPère,indChamp},{sPère+"."+sChamp,indChamp})
+      				SI bDispo _ET_ nCell>0 ALORS
+      					sNomC=sPèreComplet+(bDispo ? "["+nCell+"]"+"."+sChamp SINON (bOngDyn ? "["+sChamp+"]" SINON "."+sChamp))
+      				SINON
+      					sNomC=sPèreComplet+"."+sChamp
+      				FIN	
+      				WL.Trace(sNomC)
+      			FIN
+      			sRes+=[RC]+sPère+"."+sChamp
+      		FIN
+      		
+      		//voir si il y a des champs dans le champ
+      		SELON {sPère+"."+sChamp,indChamp}..Type
+      			CAS 126,43,31,87,30,77,57,34,125,88 //typDisposition,typModèleDeChamp,typFenêtreInterne,typRuban,typZoneRépétée,typZoneRépétéeLinéaire,typOngletStatique,typTiroir,typConteneurNatif,typRegroupementRuban
+      				ListeChamps(sPère+"."+sChamp,sNomC)
+      			CAS typOnglet
+      				SI {sPère+"."+sChamp,indChamp}..OngletDynamique ALORS
+      					ListeChamps(sPère+"."+sChamp,sNomC)
+      				SINON
+      					POUR nOnglet = 1 _a_ {sPère+"."+sChamp,indChamp}..occurrence 
+      						ListeChamps(sPère+"."+sChamp+"["+nOnglet+"]",sNomC+"["+nOnglet+"]")
+      					FIN
+      				FIN
+      			CAS typTable
+      				ListeColonnes(sPère+"."+sChamp,sNomC)
+      			CAS 32	//typBarreOutils
+      				ListeSousÉléments(sPère+"."+sChamp,sNomC)
+      			CAS 29	//typBoîteAOutils
+      				POUR nOnglet = 1 _a_ {sPère+"."+sChamp,indChamp}..occurrence 
+      					ListeBAO(sPère+"."+sChamp+"["+nOnglet+"]",sNomC+"["+nOnglet+"]")
+      				FIN
+      			AUTRE CAS
+      		FIN
+      		nChamp++;sChamp = EnumèreChamp(sPère,nChamp)
+      	FIN
+      	FIN
+      
+      	PROCÉDURE INTERNE ListeColonnes(sTable est une chaine,sNomComplet est une chaine)
+      	sColonne	est une chaine
+      	nLignes		est un entier = TableOccurrence(sTable)
+      	POUR nColonne = 1 _a_ TableOccurrence(sTable,toColonne)
+      		sColonne=TableEnumèreColonne(sTable,nColonne)
+      		SI coFiltre=Null _OU_ coFiltre[TypVersType({sTable+"."+sColonne,indChamp}..Type)] ALORS
+      			sRes+=RC+sTable+"."+sColonne
+      			SI bTrace ALORS WL.Trace(sNomComplet+"."+sColonne)
+      		FIN
+      		//voir si c'est une colonne conteneur et creuse d'avantage
+      		SI {sTable+"."+sColonne,indChamp}..Type=typSuperChamp _ET_ nLignes>0 ALORS 
+      			ListeSousÉléments(sTable+"."+sColonne,sNomComplet+"."+sColonne)
+      		FIN
+      	FIN
+      	FIN
+      
+      	PROCÉDURE INTERNE ListeSousÉléments(sChampBarre est une chaine,sNomComplet est une chaine)
+      
+      
+      //<si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64>
+      	
+      		sElement est une chaine = EnumèreSousElément(sChampBarre, enumPremier )
+      		TANTQUE sElement<>"" 
+      			SI coFiltre=Null _OU_ coFiltre[TypVersType({sChampBarre+"."+sElement,indChamp}..Type)] ALORS
+      				sRes+=RC+sChampBarre+"."+sElement
+      				SI bTrace ALORS WL.Trace(sNomComplet+"."+sElement)
+      			FIN
+      			sElement = EnumèreSousElément(sChampBarre)
+      	FIN
+      	
+      //<fin>
+      
+      
+      	FIN
+      
+      	PROCÉDURE INTERNE ListeBAO(sChampBAO est une chaine,sNomComplet est une chaine)
+      	nÉlément	est un entier = 1
+      	sElement	est une chaine = Enumèrechamp(sChampBAO,nÉlément)
+      	TANTQUE sElement>""
+      		SI coFiltre=Null _OU_ coFiltre[TypVersType({sChampBAO+"."+sElement,indChamp}..Type)] ALORS
+      			sRes+=RC+sChampBAO+"."+sElement
+      			SI bTrace ALORS WL.Trace(sNomComplet+"."+sElement)
+      		FIN
+      		nÉlément++;sElement = EnumèreChamp(sChampBAO,nÉlément)
+      	FIN
+      	FIN
+      
+      <fin>
+      
+      	PROCÉDURE INTERNE TypVersType(nType est un entier) 
+      	//liste de Wx28
+      	//les cas sont en numérique, car en utilisant des constantes (genre typBouton) ça affiche beaucoup d'avertissements puisque certaines ne sont pas compatibles avec tous les environnements
+      	//(sans compter celle qui ne sont pas dispo en Wx23 comme typCelluleFlexBox)
+      	SELON nType
+      		CAS 17					: RENVOYER typeActiveX
+      		CAS 76					: RENVOYER typeAgenda
+      		CAS 18					: RENVOYER typeAsc
+      		CAS 41					: RENVOYER typeAttribut
+      		CAS 122					: RENVOYER typeBandeauDéfilant
+      		CAS 117					: RENVOYER typeBarreDeNavigation
+      		CAS 22					: RENVOYER typeBarreOutils
+      		CAS 29					: RENVOYER typeBoîteAOutils
+      		CAS 4					: RENVOYER typeBouton
+      		CAS 47					: RENVOYER typeCalendrier
+      		CAS 82					: RENVOYER typeCaptcha
+      		CAS 92					: RENVOYER typeCarte
+      		CAS 37					: RENVOYER typeCarrousel
+      		CAS 40002				: RENVOYER typeCaseBarreDeMessage
+      		CAS 50014				: RENVOYER typeCellule
+      		CAS 115					: RENVOYER typeCelluleDeBarreDeNavigation
+      		CAS 127					: RENVOYER typeCelluleDisposition
+      		CAS 139					: RENVOYER typeCelluleFlexBox
+      		CAS 84					: RENVOYER typeCelluleMiseEnPage
+      		CAS 50001				: RENVOYER typeChampFormaté
+      		CAS 50002				: RENVOYER typeChampHTML
+      		CAS 50007				: RENVOYER typeChampMenu
+      		CAS 141					: RENVOYER typeChampMenuContextuel
+      		CAS 50011				: RENVOYER typeCheminDeNavigation
+      		CAS 30001				: RENVOYER typeClicage
+      		CAS 26					: RENVOYER typeCodeBarres
+      		CAS 56					: RENVOYER typeColonne
+      		CAS 10001				: RENVOYER typeComboAVS
+      		CAS 10002				: RENVOYER typeComboSNS
+      		CAS 121					: RENVOYER typeComposantWeb
+      		CAS 25					: RENVOYER typeConférence
+      		CAS 125					: RENVOYER typeConteneurNatif
+      		CAS 38					: RENVOYER typeCube
+      		cas 20002				: renvoyer typeDate
+      		CAS 126					: RENVOYER typeDisposition
+      		CAS 20006				: RENVOYER typeDurée
+      		CAS 130					: RENVOYER typeEditeurDeDiagrammes
+      		CAS 134					: RENVOYER typeEditeurHtml
+      		CAS 124					: RENVOYER typeEditeurImages
+      		CAS 138					: RENVOYER typeEditeurImagesMobile
+      		CAS 1					: RENVOYER (EnModeWeb() ? typePage sinon typeFen)
+      		CAS 31					: RENVOYER (EnModeWeb() ? typePageInterne sinon typeFenêtreInterne)
+      		CAS 118					: RENVOYER typeFil
+      		CAS 50008				: RENVOYER typeFlash
+      		CAS 48					: RENVOYER typeFlex
+      		CAS 20					: RENVOYER typeForme
+      		CAS 110					: RENVOYER typeGantt
+      		CAS 33					: RENVOYER typeGraphe
+      		CAS 58					: RENVOYER typeGrp
+      		CAS 20003				: RENVOYER typeHeure
+      		CAS 23					: RENVOYER typeHTML
+      		CAS 50013				: RENVOYER typeIFrame
+      		CAS 8					: RENVOYER typeImage
+      		CAS 5					: RENVOYER typeInterr
+      		CAS 132					: RENVOYER typeInterrupteurABascule
+      		CAS 10					: RENVOYER typeJauge
+      		CAS 113					: RENVOYER typeJaugeInfinie
+      		CAS 50004				: RENVOYER typeJava
+      		CAS 140					: RENVOYER typeKanban
+      		CAS 128					: RENVOYER typeLecteurPDF
+      		CAS 3					: RENVOYER typeLibellé
+      		CAS 50006				: RENVOYER typeLibelléHTML
+      		CAS 50005				: RENVOYER typeLien
+      		CAS 103					: RENVOYER typeLienSocial
+      		CAS 50003				: RENVOYER typeLigne
+      		CAS 7					: RENVOYER typeListe
+      		CAS 27					: RENVOYER typeListeImage
+      		CAS 142					: RENVOYER typeListeKanban
+      		CAS 50010				: RENVOYER typeMapArea
+      		CAS 43					: RENVOYER typeModèleDeChamp
+      		CAS 20005				: RENVOYER typeMonétaire
+      		CAS 39					: RENVOYER typeMultimédia
+      		CAS 85					: RENVOYER typeNotation
+      		CAS 119					: RENVOYER typeNoteRepositionnable
+      		CAS 20004				: RENVOYER typeNum
+      		CAS 15					: RENVOYER typeOle
+      		CAS 16					: RENVOYER typeOnglet
+      		CAS 133					: RENVOYER typeOptionInterrupteurABascule
+      		CAS 40001				: RENVOYER typeOptionMenu
+      		CAS 86					: RENVOYER typeOrganigramme
+      		CAS 79					: RENVOYER typePageCornée
+      		CAS 131					: RENVOYER typePanneau
+      		CAS 123					: RENVOYER typePlanDeBandeauDéfilant
+      		CAS 45					: RENVOYER typePlanDeSite
+      		CAS 80					: RENVOYER typePlanning
+      		CAS 90					: RENVOYER typePopup
+      		CAS 12					: RENVOYER typePotentiomètre
+      		CAS 72					: RENVOYER (enmodeweb ? typeRangeSlider sinon typePotentiomètreIntervalle)
+      		CAS 13					: RENVOYER typePotentiomètreRotatif
+      		CAS 50009				: RENVOYER typeRéglette
+      		CAS 88					: RENVOYER typeRegroupementRuban
+      		CAS 87					: RENVOYER typeRuban
+      		CAS 65					: RENVOYER typeRupture
+      		CAS 6					: RENVOYER typeSélect
+      		CAS 28					: RENVOYER typeSéparateur
+      		CAS 46					: RENVOYER typeSilverlight
+      		CAS 11					: RENVOYER typeSpin
+      		CAS 40					: RENVOYER typeSuperChamp
+      		CAS 9					: RENVOYER typeTable
+      		CAS 102					: RENVOYER typeTableauCroiséDynamique
+      		CAS 111					: RENVOYER typeTableauDeBord
+      		CAS 35					: RENVOYER typeTableHierarchique
+      		CAS 114					: RENVOYER typeTableur
+      		CAS 20001				: RENVOYER typeTexte
+      		CAS 34					: RENVOYER typeTiroir
+      		CAS 120					: RENVOYER typeTraitementDeTexte
+      		CAS 74					: RENVOYER typeTreeMap
+      		CAS 19					: RENVOYER typeTreeView
+      		CAS 73					: RENVOYER typeUpload
+      		CAS 78					: RENVOYER typeVidéo
+      		CAS 50012				: RENVOYER typeVignette
+      		CAS 24					: RENVOYER typeWebCam
+      		CAS 36					: RENVOYER typeXaml
+      		CAS 97              	: RENVOYER typeZoneMultiligne
+      		CAS 30                 	: RENVOYER typeZoneRépétée
+      		CAS 77         			: RENVOYER typeZoneRépétéeLinéaire
+      		CAS 109              	: RENVOYER typeZoneTexteRiche
+      		CAS typOngletStatique	: RENVOYER typeOngletDynamique
+      		autres cas 				: renvoyer 0
+      	FIN
+      	FIN
+     type : 458752
+   -
+     name : ListePlan
+     procedure_id : 1696658778116889915
+     type_code : 15
+     code : |1-
+      // Résumé : utilisée pour récupérer une liste de champs présents dans une fenêtre (ou une page) en cours d'exécution dans une application WinDev. Cette méthode parcourt de manière récursive les éléments de la fenêtre et retourne les noms des champs, en prenant en compte un filtre optionnel pour sélectionner les types de champs à inclure.
+      // Syntaxe : [ <Résultat> = ] ListePlan ()
+      // Paramètres : aucun
+      // Valeur de retour : chaine : numéro des plans dans lesquels se trouve au moins un champ
+      // Exemple :
+      //	sPlans est une chaine = ListeChamp()
+      //	sPlans contient par exemple "0"+TAB+"1" (le plan 0 est le plan par défaut)
+      PROCEDURE ListePlan() : chaine
+      sChamps est une chaine = ListeChamp()
+      sRes 	est une chaine
+      nPlan	est un entier
+      POUR TOUTE CHAÎNE sChamp de sChamps séparée par RC
+      	QUAND EXCEPTION DANS
+      		nPlan = {sChamp,indChamp}..Plan
+      	FAIRE
+      		//rien
+      	sinon
+      		si position(sRes,nPlan,0,MotComplet)<1 alors sRes+=[tab]+nPlan
+      	FIN
+      FIN
+      RENVOYER sRes
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1b742fd00b518462
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : L'objet n'est pas une colonne de table
+      en-GB : The object is not a table column
+      fr-CA : L'objet n'est pas une colonne de table
+      en-US : The object is not a table column
+     index : 0
+   -
+     text :
+      fr-FR : L'objet n'est pas une liste
+      en-GB : The object is not a list
+      fr-CA : L'objet n'est pas une liste
+      en-US : The object is not a list
+     index : 1
+   -
+     text :
+      fr-FR : L'objet n'est pas un groupe de champs
+      en-GB : The object is not a group of fields
+      fr-CA : L'objet n'est pas un groupe de champs
+      en-US : The object is not a group of fields
+     index : 2
+   -
+     text :
+      fr-FR : L'objet n'est pas une table ou une zone répétée
+      en-GB : The object is not a table or looper
+      fr-CA : L'objet n'est pas une table ou une zone répétée
+      en-US : The object is not a table or looper
+     index : 3
+   -
+     text :
+      fr-FR : "L'objet de référence n'est ni un champ de saisie texte, ni un libellé, ni une combo"
+      en-GB : "The reference object is neither a text input field, nor a label, nor a combo"
+      fr-CA : "L'objet de référence n'est ni un champ de saisie texte, ni un libellé, ni une combo"
+      en-US : "The reference object is neither a text input field, nor a label, nor a combo"
+     index : 4
+   -
+     text :
+      fr-FR : L'unité n'est pas reconnue
+      en-GB : The unit is not recognized
+      fr-CA : L'unité n'est pas reconnue
+      en-US : The unit is not recognized
+     index : 5
+   -
+     text :
+      fr-FR : Le champ n'est pas une combo
+      en-GB : The field is not a combo
+      fr-CA : Le champ n'est pas une combo
+      en-US : The field is not a combo
+     index : 6
+   -
+     text :
+      fr-FR : Le type de multiplicateur n'est pas reconnu
+      en-GB : The multiplier type is not recognized
+      fr-CA : Le type de multiplicateur n'est pas reconnu
+      en-US : The multiplier type is not recognized
+     index : 7
+   -
+     text :
+      fr-FR : Agenda
+      en-GB : Diary
+      fr-CA : Agenda
+      en-US : Diary
+     index : 8
+   -
+     text :
+      fr-FR : Ascenseur
+      en-GB : Ascenseur
+      fr-CA : Ascenseur
+      en-US : Ascenseur
+     index : 9
+   -
+     text :
+      fr-FR : Ascenseur
+      en-GB : Scroll bar
+      fr-CA : Ascenseur
+      en-US : Scroll bar
+     index : 10
+   -
+     text :
+      fr-FR : Barre d'outils
+      en-GB : Tool bar
+      fr-CA : Barre d'outils
+      en-US : Tool bar
+     index : 11
+   -
+     text :
+      fr-FR : Boîte à outils
+      en-GB : Toolbox
+      fr-CA : Boîte à outils
+      en-US : Toolbox
+     index : 12
+   -
+     text :
+      fr-FR : Bouton
+      en-GB : Button
+      fr-CA : Bouton
+      en-US : Button
+     index : 13
+   -
+     text :
+      fr-FR : Calendrier
+      en-GB : Calendar
+      fr-CA : Calendrier
+      en-US : Calendar
+     index : 14
+   -
+     text :
+      fr-FR : Carrousel
+      en-GB : Carousel
+      fr-CA : Carrousel
+      en-US : Carousel
+     index : 15
+   -
+     text :
+      fr-FR : Carte
+      en-GB : Map
+      fr-CA : Carte
+      en-US : Map
+     index : 16
+   -
+     text :
+      fr-FR : Barre de message
+      en-GB : Message bar
+      fr-CA : Barre de message
+      en-US : Message bar
+     index : 17
+   -
+     text :
+      fr-FR : Cellule disposition
+      en-GB : Cell layout
+      fr-CA : Cellule disposition
+      en-US : Cell layout
+     index : 18
+   -
+     text :
+      fr-FR : Image cliquable
+      en-GB : Clickable image
+      fr-CA : Image cliquable
+      en-US : Clickable image
+     index : 19
+   -
+     text :
+      fr-FR : Code-barres
+      en-GB : Bar code
+      fr-CA : Code-barres
+      en-US : Bar code
+     index : 20
+   -
+     text :
+      fr-FR : Colonne
+      en-GB : Column
+      fr-CA : Colonne
+      en-US : Column
+     index : 21
+   -
+     text :
+      fr-FR : Combo avec saisie
+      en-GB : Combo with input
+      fr-CA : Combo avec saisie
+      en-US : Combo with input
+     index : 22
+   -
+     text :
+      fr-FR : Combo sans saisie
+      en-GB : Combo without input
+      fr-CA : Combo sans saisie
+      en-US : Combo without input
+     index : 23
+   -
+     text :
+      fr-FR : Conférence
+      en-GB : Conference
+      fr-CA : Conférence
+      en-US : Conference
+     index : 24
+   -
+     text :
+      fr-FR : Conteneur natif
+      en-GB : Native container
+      fr-CA : Conteneur natif
+      en-US : Native container
+     index : 25
+   -
+     text :
+      fr-FR : Durée
+      en-GB : Duration
+      fr-CA : Durée
+      en-US : Duration
+     index : 26
+   -
+     text :
+      fr-FR : Éditeur d'images
+      en-GB : Image Editor
+      fr-CA : Éditeur d'images
+      en-US : Image Editor
+     index : 27
+   -
+     text :
+      fr-FR : Fenêtre
+      en-GB : Window
+      fr-CA : Fenêtre
+      en-US : Window
+     index : 28
+   -
+     text :
+      fr-FR : Fenêtre interne
+      en-GB : Internal window
+      fr-CA : Fenêtre interne
+      en-US : Internal window
+     index : 29
+   -
+     text :
+      fr-FR : Fil
+      en-GB : Wire
+      fr-CA : Fil
+      en-US : Wire
+     index : 30
+   -
+     text :
+      fr-FR : Forme
+      en-GB : Forme
+      fr-CA : Forme
+      en-US : Forme
+     index : 31
+   -
+     text :
+      fr-FR : Forme
+      en-GB : Shape
+      fr-CA : Forme
+      en-US : Shape
+     index : 32
+   -
+     text :
+      fr-FR : Graphe
+      en-GB : Graph
+      fr-CA : Graphe
+      en-US : Graph
+     index : 33
+   -
+     text :
+      fr-FR : Groupe de champs
+      en-GB : Group of controls
+      fr-CA : Groupe de champs
+      en-US : Group of controls
+     index : 34
+   -
+     text :
+      fr-FR : Heure
+      en-GB : Hour
+      fr-CA : Heure
+      en-US : Hour
+     index : 35
+   -
+     text :
+      fr-FR : Interrupteur
+      en-GB : Check box
+      fr-CA : Interrupteur
+      en-US : Check box
+     index : 36
+   -
+     text :
+      fr-FR : Jauge
+      en-GB : Gauge
+      fr-CA : Jauge
+      en-US : Gauge
+     index : 37
+   -
+     text :
+      fr-FR : Jauge infinie
+      en-GB : Infinite gauge
+      fr-CA : Jauge infinie
+      en-US : Infinite gauge
+     index : 38
+   -
+     text :
+      fr-FR : Lecteur PDF
+      en-GB : PDF reader
+      fr-CA : Lecteur PDF
+      en-US : PDF reader
+     index : 39
+   -
+     text :
+      fr-FR : Libellé
+      en-GB : Static
+      fr-CA : Libellé
+      en-US : Static
+     index : 40
+   -
+     text :
+      fr-FR : Liste image
+      en-GB : List image
+      fr-CA : Liste image
+      en-US : List image
+     index : 41
+   -
+     text :
+      fr-FR : Modèle de champ
+      en-GB : Control template
+      fr-CA : Modèle de champ
+      en-US : Control template
+     index : 42
+   -
+     text :
+      fr-FR : Monétaire
+      en-GB : Currency
+      fr-CA : Monétaire
+      en-US : Currency
+     index : 43
+   -
+     text :
+      fr-FR : Multimédia
+      en-GB : Multimedia
+      fr-CA : Multimédia
+      en-US : Multimedia
+     index : 44
+   -
+     text :
+      fr-FR : Notation
+      en-GB : Notation
+      fr-CA : Notation
+      en-US : Notation
+     index : 45
+   -
+     text :
+      fr-FR : Note repositionnable
+      en-GB : Repositionable note
+      fr-CA : Note repositionnable
+      en-US : Repositionable note
+     index : 46
+   -
+     text :
+      fr-FR : Numérique
+      en-GB : Numeric
+      fr-CA : Numérique
+      en-US : Numeric
+     index : 47
+   -
+     text :
+      fr-FR : Onglet
+      en-GB : Tab
+      fr-CA : Onglet
+      en-US : Tab
+     index : 48
+   -
+     text :
+      fr-FR : Option de menu
+      en-GB : Menu option
+      fr-CA : Option de menu
+      en-US : Menu option
+     index : 49
+   -
+     text :
+      fr-FR : Organigramme
+      en-GB : Organizational chart
+      fr-CA : Organigramme
+      en-US : Organizational chart
+     index : 50
+   -
+     text :
+      fr-FR : Planning
+      en-GB : Scheduler
+      fr-CA : Planning
+      en-US : Scheduler
+     index : 51
+   -
+     text :
+      fr-FR : Potentiomètre
+      en-GB : Slider
+      fr-CA : Potentiomètre
+      en-US : Slider
+     index : 52
+   -
+     text :
+      fr-FR : Potentiomètre rotatif
+      en-GB : Rotative slider
+      fr-CA : Potentiomètre rotatif
+      en-US : Rotative slider
+     index : 53
+   -
+     text :
+      fr-FR : Regroupement de ruban
+      en-GB : Ribbon group
+      fr-CA : Regroupement de ruban
+      en-US : Ribbon group
+     index : 54
+   -
+     text :
+      fr-FR : Ruban
+      en-GB : Ribbon
+      fr-CA : Ruban
+      en-US : Ribbon
+     index : 55
+   -
+     text :
+      fr-FR : Sélecteur
+      en-GB : Selector
+      fr-CA : Sélecteur
+      en-US : Selector
+     index : 56
+   -
+     text :
+      fr-FR : Séparateur
+      en-GB : Splitter
+      fr-CA : Séparateur
+      en-US : Splitter
+     index : 57
+   -
+     text :
+      fr-FR : Spin
+      en-GB : Spin
+      fr-CA : Spin
+      en-US : Spin
+     index : 58
+   -
+     text :
+      fr-FR : Superchamp
+      en-GB : Supercontrol
+      fr-CA : Superchamp
+      en-US : Supercontrol
+     index : 59
+   -
+     text :
+      fr-FR : Tableau croisé dynamique
+      en-GB : Pivot table
+      fr-CA : Tableau croisé dynamique
+      en-US : Pivot table
+     index : 60
+   -
+     text :
+      fr-FR : Tableau de bord
+      en-GB : Dashboard
+      fr-CA : Tableau de bord
+      en-US : Dashboard
+     index : 61
+   -
+     text :
+      fr-FR : Table hiérarchique
+      en-GB : Treeview table
+      fr-CA : Table hiérarchique
+      en-US : Treeview table
+     index : 62
+   -
+     text :
+      fr-FR : Tableur
+      en-GB : Spreadsheet
+      fr-CA : Tableur
+      en-US : Spreadsheet
+     index : 63
+   -
+     text :
+      fr-FR : Texte
+      en-GB : Text
+      fr-CA : Texte
+      en-US : Text
+     index : 64
+   -
+     text :
+      fr-FR : Tiroir
+      en-GB : Hide show
+      fr-CA : Tiroir
+      en-US : Hide show
+     index : 65
+   -
+     text :
+      fr-FR : Traitement de texte
+      en-GB : Word processing
+      fr-CA : Traitement de texte
+      en-US : Word processing
+     index : 66
+   -
+     text :
+      fr-FR : Arbre
+      en-GB : Treeview
+      fr-CA : Arbre
+      en-US : Treeview
+     index : 67
+   -
+     text :
+      fr-FR : Zone multiligne
+      en-GB : Multiline zone
+      fr-CA : Zone multiligne
+      en-US : Multiline zone
+     index : 68
+   -
+     text :
+      fr-FR : Zone répétée
+      en-GB : Looper
+      fr-CA : Zone répétée
+      en-US : Looper
+     index : 69
+   -
+     text :
+      fr-FR : Attribut
+      en-GB : Attribute
+      fr-CA : Attribut
+      en-US : Attribute
+     index : 70
+   -
+     text :
+      fr-FR : Bandeau défilant
+      en-GB : Scrolling banner
+      fr-CA : Bandeau défilant
+      en-US : Scrolling banner
+     index : 71
+   -
+     text :
+      fr-FR : Barre de navigation
+      en-GB : Navigation bar
+      fr-CA : Barre de navigation
+      en-US : Navigation bar
+     index : 72
+   -
+     text :
+      fr-FR : Cellule
+      en-GB : Cell
+      fr-CA : Cellule
+      en-US : Cell
+     index : 73
+   -
+     text :
+      fr-FR : Cellule de barre de navigation
+      en-GB : Navigation bar cell
+      fr-CA : Cellule de barre de navigation
+      en-US : Navigation bar cell
+     index : 74
+   -
+     text :
+      fr-FR : Cellule de mise en page
+      en-GB : Cell page layout
+      fr-CA : Cellule de mise en page
+      en-US : Cell page layout
+     index : 75
+   -
+     text :
+      fr-FR : Champ formaté
+      en-GB : Formatted control
+      fr-CA : Champ formaté
+      en-US : Formatted control
+     index : 76
+   -
+     text :
+      fr-FR : Champ HTML
+      en-GB : HTML control
+      fr-CA : Champ HTML
+      en-US : HTML control
+     index : 77
+   -
+     text :
+      fr-FR : Champ menu
+      en-GB : Menu control
+      fr-CA : Champ menu
+      en-US : Menu control
+     index : 78
+   -
+     text :
+      fr-FR : Chemin de navigation
+      en-GB : Site map path
+      fr-CA : Chemin de navigation
+      en-US : Site map path
+     index : 79
+   -
+     text :
+      fr-FR : Composant web
+      en-GB : Web component
+      fr-CA : Composant web
+      en-US : Web component
+     index : 80
+   -
+     text :
+      fr-FR : Applet Java
+      en-GB : Java applet
+      fr-CA : Applet Java
+      en-US : Java applet
+     index : 81
+   -
+     text :
+      fr-FR : Libellé HTML
+      en-GB : HTML label
+      fr-CA : Libellé HTML
+      en-US : HTML label
+     index : 82
+   -
+     text :
+      fr-FR : Lien
+      en-GB : Link
+      fr-CA : Lien
+      en-US : Link
+     index : 83
+   -
+     text :
+      fr-FR : Lien social
+      en-GB : Social link
+      fr-CA : Lien social
+      en-US : Social link
+     index : 84
+   -
+     text :
+      fr-FR : Page cornée
+      en-GB : Peeling corner
+      fr-CA : Page cornée
+      en-US : Peeling corner
+     index : 85
+   -
+     text :
+      fr-FR : Page interne
+      en-GB : Internal page
+      fr-CA : Page interne
+      en-US : Internal page
+     index : 86
+   -
+     text :
+      fr-FR : Plan de bandeau défilant
+      en-GB : Scrolling banner plane
+      fr-CA : Plan de bandeau défilant
+      en-US : Scrolling banner plane
+     index : 87
+   -
+     text :
+      fr-FR : Plan de site
+      en-GB : Site map
+      fr-CA : Plan de site
+      en-US : Site map
+     index : 88
+   -
+     text :
+      fr-FR : Potentiomètre d'intervalle
+      en-GB : Range slider
+      fr-CA : Potentiomètre d'intervalle
+      en-US : Range slider
+     index : 89
+   -
+     text :
+      fr-FR : Réglette
+      en-GB : Pager
+      fr-CA : Réglette
+      en-US : Pager
+     index : 90
+   -
+     text :
+      fr-FR : Rupture
+      en-GB : Break
+      fr-CA : Rupture
+      en-US : Break
+     index : 91
+   -
+     text :
+      fr-FR : Téléversement
+      en-GB : Upload
+      fr-CA : Téléversement
+      en-US : Upload
+     index : 92
+   -
+     text :
+      fr-FR : Vidéo
+      en-GB : Video
+      fr-CA : Vidéo
+      en-US : Video
+     index : 93
+   -
+     text :
+      fr-FR : Vignette
+      en-GB : Thumbnail
+      fr-CA : Vignette
+      en-US : Thumbnail
+     index : 94
+   -
+     text :
+      fr-FR : Zone répétée linéaire
+      en-GB : Zone répétée linéaire
+      fr-CA : Zone répétée linéaire
+      en-US : Zone répétée linéaire
+     index : 95
+   -
+     text :
+      fr-FR : Zone répétée linéaire
+      en-GB : Horizontal looper
+      fr-CA : Zone répétée linéaire
+      en-US : Horizontal looper
+     index : 96
+   -
+     text :
+      fr-FR : Zone texte riche
+      en-GB : Rich text area
+      fr-CA : Zone texte riche
+      en-US : Rich text area
+     index : 97
+   -
+     text :
+      fr-FR : Le champ n'existe pas
+      en-GB : The field does not exist
+      fr-CA : Le champ n'existe pas
+      en-US : The field does not exist
+     index : 99
+   -
+     text :
+      fr-FR : Le champ de référence n'existe pas
+      en-GB : The reference field does not exist
+      fr-CA : Le champ de référence n'existe pas
+      en-US : The reference field does not exist
+     index : 100
+   -
+     text :
+      fr-FR : L'objet n'est pas une colonne de table
+      en-GB : Object is not a table column
+      fr-CA : L'objet n'est pas une colonne de table
+      en-US : Object is not a table column
+     index : 101
+   -
+     text :
+      fr-FR : L'objet n'est pas un onglet
+      en-GB : Object is not a tab
+      fr-CA : L'objet n'est pas un onglet
+      en-US : Object is not a tab
+     index : 102
+   -
+     text :
+      fr-FR : L'objet n'est pas un groupe de champs
+      en-GB : Object is not a field group
+      fr-CA : L'objet n'est pas un groupe de champs
+      en-US : Object is not a field group
+     index : 103
+   -
+     text :
+      fr-FR : Le répertoire est obligatoire
+      en-GB : Directory is mandatory
+      fr-CA : Le répertoire est obligatoire
+      en-US : Directory is mandatory
+     index : 104
+   -
+     text :
+      fr-FR : Le répertoire n'existe pas
+      en-GB : The directory does not exist
+      fr-CA : Le répertoire n'existe pas
+      en-US : The directory does not exist
+     index : 105
+   -
+     text :
+      fr-FR : Le fichier à sélectionner est obligatoire
+      en-GB : The file to select is mandatory
+      fr-CA : Le fichier à sélectionner est obligatoire
+      en-US : The file to select is mandatory
+     index : 106
+   -
+     text :
+      fr-FR : Le champs n'est pas une disposition
+      en-GB : The field is not a layout
+      fr-CA : Le champs n'est pas une disposition
+      en-US : The field is not a layout
+     index : 107
+   -
+     text :
+      fr-FR : Le champ est obligatoire
+      en-GB : The field is mandatory
+      fr-CA : Le champ est obligatoire
+      en-US : The field is mandatory
+     index : 108
+   -
+     text :
+      fr-FR : Le champ passé en paramètre doit exister
+      en-GB : The field passed as a parameter must exist
+      fr-CA : Le champ passé en paramètre doit exister
+      en-US : The field passed as a parameter must exist
+     index : 109
+   -
+     text :
+      fr-FR : O
+      en-GB : W
+      fr-CA : O
+      en-US : W
+     index : 110
+   -
+     text :
+      fr-FR : Le champ n'est pas une image
+      en-GB : The field is not an image
+      fr-CA : Le champ n'est pas une image
+      en-US : The field is not an image
+     index : 111
+   -
+     text :
+      fr-FR : Les coordonnées de début doivent être inférieures aux coordonnées de fin
+      en-GB : Start coordinates must be less than end coordinates
+      fr-CA : Les coordonnées de début doivent être inférieures aux coordonnées de fin
+      en-US : Start coordinates must be less than end coordinates
+     index : 112
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

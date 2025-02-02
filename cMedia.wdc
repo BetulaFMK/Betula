@@ -1,0 +1,405 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cMedia
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12bfa0730673542e
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe est générique pour le traitement de divers type de fichier audio et vidéo (voir cFichierMP3)
+      //ref : code adapté de : https://www.developpez.net/forums/d1602769/environnements-developpement/windev/tags-d-fichier-audio/#post8744161
+      //et https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev.old/19197-dll-mediainfo-demande-aide-19206/read.awp
+      //téléchargez d'abord MediaInfo sur https://mediaarea.net/en/MediaInfo/Download/Windows sans installeur (copiez juste mediainfo.dll du zip pour le mettre dans le rep exe). 
+      //téléchargez ensuite AudioGenie3 sur https://sourceforge.net/projects/audiogenie/
+      //Renommez les, éventuellement, avec _32 ou _64 à la fin du nom pour permettre l'exécution en 32 et 64 bits depuis le même répertoire d'exécution
+      
+      constante
+      	AUDIO_UNKNOWN   = 0
+      	AUDIO_MPEG      = 1
+      	AUDIO_WMA       = 2
+      	AUDIO_MONKEY    = 3
+      	AUDIO_FLAC      = 4
+      	AUDIO_WAV       = 5
+      	AUDIO_OGGVORBIS = 6
+      	AUDIO_MPEGPLUS  = 7
+      	AUDIO_AAC       = 8
+      	AUDIO_MP4M4A    = 9
+      	AUDIO_TTA       = 10
+      	AUDIO_WAVPACK   = 11
+      fin
+      
+      cMedia est une Classe
+      	hérite de cGénérique
+      
+      public
+      	m_bLectureSeule				est un booleen
+      protége
+      	m_bOuvertAudioGenie3		est un booleen
+      	m_bOuvertMediaInfo			est un booleen
+      	m_nInstanceAppelMediaInfo	est un entier systeme
+      	m_taBalisesLues				est un tableau associatif de chaines	//pour ne pas lire plusieurs fois la même balise
+      	m_taBalisesModifiées		est un tableau associatif de chaines	//pour n'écrire que les balises modifiées (une à la fois selon leur fonction correspondantes)
+      global public constant
+      	mg_nInstanceMediaInfo		est un entier système
+      	mg_sMediaInfoDétecté		est une chaine
+      	mg_sAttributsMediaInfo		est une chaine
+      
+      	mg_nInstanceAudioGenie		est un entier système
+      	mg_sAudioGenie3Détecté		est une chaine
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1350974829124408366
+     type_code : 27
+     code : |1-
+      // Résumé : initialise les membres de la classe et configure les constantes associées aux types de fichiers audio et vidéo.
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1350974829124473902
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : AudioGenieAnalyseFichier
+     procedure_id : 1350974829124670510
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui analyse le fichier audio passé en paramètre dans AudioGenie (s'il est détecté)
+      PROCEDURE privé AudioGenieAnalyseFichier(sCheminFichierAudio est une chaine) 	//: entier sur 2 octets (type de valeur de retour interdit !?)
+      nRet est un entier sur 2 octets
+      OuvreAudioGenie3()
+      si mg_nInstanceAudioGenie>0 alors
+      	sType 				est une chaîne ANSI 	= "AUDIOAnalyzeFileW"
+      	nAdresseProcéure 	est un entier système 	= DLLAdresseProcédure(mg_nInstanceAudioGenie, sType) 
+      	si nAdresseProcéure>0 alors nRet = API(nAdresseProcéure, sCheminFichierAudio) sinon m_pclErreur.AjouteErreur(<§$0002§>)
+      sinon
+      	m_pclerreur.AjouteErreur(<§$0003§>)
+      fin
+      renvoyer nRet
+     type : 458752
+   -
+     name : OuvreAudio
+     procedure_id : 1350974829124736046
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ouvrir un fichier audio spécifié et d'initialiser les librairies AudioGenie3 et MediaInfo pour l'analyse du fichier audio. Doit être appelé depuis une classe dérivée (voir cFichierMP3)
+      // Syntaxe : [ <Résultat> = ] OuvreAudio (<sCheminFichier> est chaîne [, <bLectureSeule> est booléen])
+      // Paramètres :
+      //	sCheminFichier (chaîne UNICODE) : Le chemin complet du fichier audio à ouvrir.
+      // 	bLectureSeule (booléen optionnel) : indiquant si le fichier audio doit être ouvert en mode lecture seule. Par défaut, la valeur est Vrai.
+      // Valeur de retour : booléen : renvoie un booléen indiquant si l'ouverture du fichier audio a été réalisée avec succès. Elle retourne Vrai en cas de succès, sinon Faux.
+      // Exemple :
+      //
+      PROCEDURE protégée OuvreAudio(sCheminFichier est une chaine,bLectureSeule est un booleen = vrai) : booleen
+      m_pclErreur.Raz()
+      
+      SI sCheminFichier~="" 					ALORS m_pclErreur.AjouteErreur(<§$0004§>);renvoyer faux
+      si pas ffichierexiste(sCheminFichier) 	alors m_pclerreur.ajouteerreur(<§$0005§>);renvoyer Faux
+      
+      DétecteAudioGenie()
+      si pas mg_sAudioGenie3Détecté~="" alors 
+      	m_bOuvertAudioGenie3=(AudioGenieAnalyseFichier(sCheminFichier)>0)
+      FIN
+      DétecteMediaInfo()
+      si pas mg_sMediaInfoDétecté~="" alors 
+      	m_bOuvertMediaInfo=OuvreMediaInfo(sCheminFichier)
+      	si PAS bLectureSeule _et_ m_bOuvertMediaInfo alors m_pclErreur.AjouteAvertissement(<§$0007§>);bLectureSeule=vrai
+      FIN
+      SI mg_sAudioGenie3Détecté~="" _et_ mg_sMediaInfoDétecté~=""	alors 
+      	m_pclErreur.AjouteErreur(<§$0006§>)
+      sinon si m_bOuvertAudioGenie3 _ou_ m_bOuvertMediaInfo alors
+      	RENVOYER Vrai
+      FIN
+      
+      RENVOYER faux
+     type : 458752
+   -
+     name : DétecteAudioGenie
+     procedure_id : 1350977599378828059
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui détecte si la dll de AudioGenie est présent dans le répertoire d'exécution ou dans le répertoire de Windows
+      PROCEDURE PRIVÉE DétecteAudioGenie(sDLLperso est une chaine = "")
+      si mg_sAudioGenie3Détecté~="" alors
+      	si pas sDLLperso~="" _et_ ffichierexiste(sDLLperso) 								alors mg_sAudioGenie3Détecté=sDLLperso;retour
+      	si ffichierexiste(fRepExe()+["\"]+"AudioGenie3_"+ExeInfo(exeMode)+".dll") 			alors mg_sAudioGenie3Détecté=fRepExe()+["\"]+"AudioGenie3_"+ExeInfo(exeMode)+".dll";retour
+      	si ffichierexiste(frepexe()+["\"]+"AudioGenie3.dll") 								alors mg_sAudioGenie3Détecté=fRepExe()+["\"]+"AudioGenie3.dll";retour
+      	si ffichierexiste(SysRep(srWindows)+["\"]+"AudioGenie3_"+ExeInfo(exeMode)+".dll") 	alors mg_sAudioGenie3Détecté=SysRep(srWindows)+["\"]+"AudioGenie3_"+ExeInfo(exeMode)+".dll";retour
+      	si ffichierexiste(SysRep(srWindows)+["\"]+"AudioGenie3.dll") 						alors mg_sAudioGenie3Détecté=SysRep(srWindows)+["\"]+"AudioGenie3.dll";retour
+      FIN
+     type : 458752
+   -
+     name : DétecteMediaInfo
+     procedure_id : 1350977638033608323
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui détecte si la dll de MediaInfo est présent dans le répertoire d'exécution ou dans le répertoire de Windows
+      PROCEDURE privé DétecteMediaInfo(sDLLperso est une chaine = "")
+      SI mg_smediainfoDétecté~="" ALORS
+      	SI PAS sDLLperso~="" _ET_ fFichierExiste(sDLLperso) 							ALORS mg_sMediaInfoDétecté=sDLLperso;RETOUR
+      	SI fFichierExiste(fRepExe()+["\"]+"MediaInfo_"+ExeInfo(exeMode)+".dll") 		ALORS mg_sMediaInfoDétecté=fRepExe()+["\"]+"MediaInfo_"+ExeInfo(exeMode)+".dll";RETOUR
+      	SI fFichierExiste(fRepExe()+["\"]+"MediaInfo.dll") 								ALORS mg_sMediaInfoDétecté=fRepExe()+["\"]+"MediaInfo.dll";RETOUR
+      	SI fFichierExiste(SysRep(srWindows)+["\"]+"MediaInfo_"+ExeInfo(exeMode)+".dll") ALORS mg_sMediaInfoDétecté=SysRep(srWindows)+["\"]+"MediaInfo_"+ExeInfo(exeMode)+".dll";RETOUR
+      	SI fFichierExiste(SysRep(srWindows)+["\"]+"MediaInfo.dll") 						ALORS mg_sMediaInfoDétecté=SysRep(srWindows)+["\"]+"MediaInfo.dll";RETOUR
+      FIN
+     type : 458752
+   -
+     name : OuvreMediaInfo
+     procedure_id : 1350984325297737492
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui récupère les informations "média" du fichier
+      PROCEDURE PRIVÉE OuvreMediaInfo(sCheminFichier est une chaine) : booleen
+      
+      SI mg_nInstanceMediaInfo=0 ALORS
+      	mg_nInstanceMediaInfo = ChargeDLL(mg_sMediaInfoDétecté)
+      	SI mg_nInstanceMediaInfo=0 ALORS m_pclErreur.AjouteErreurwx();RENVOYER faux
+      FIN
+      
+      SI mg_nInstanceMediaInfo<>0 ALORS
+      	nHandleAppel,nAdresseInfo 	sont des entiers système
+      	sAttributs,sLigne	 		sont des chaînes
+      	sInfoDemandée,sAttribut		sont des chaîne ANSI
+      	
+      	sFicANSI est une chaine ansi= UnicodeVersAnsi(sCheminFichier)
+      	m_nInstanceAppelMediaInfo 	= API(mg_sMediaInfoDétecté, "MediaInfoA_New")
+      	SI m_nInstanceAppelMediaInfo=0 ALORS m_pclerreur.AjouteErreurWx();RENVOYER faux
+      	
+      	nHandleAppel				= API(mg_sMediaInfoDétecté, "MediaInfoA_Open", m_nInstanceAppelMediaInfo, &sFicANSI)
+      	SI nHandleAppel=0 ALORS m_pclErreur.AjouteErreur(<§$0009§>);RENVOYER faux
+      	
+      	si mg_sAttributsMediaInfo~="" alors
+      		sInfoDemandée 	= "Info_Parameters"
+      		nAdresseInfo 	= API(mg_sMediaInfoDétecté, "MediaInfoA_Option", 0, sInfoDemandée, "")
+      		QUAND EXCEPTION DANS
+      			sAttributs = ChaîneRécupère(nAdresseInfo,crAdresseASCIIZ)
+      		FAIRE
+      			m_pclErreur.AjouteException();RENVOYER faux
+      		FIN
+      		
+      		nSection est un entier = 0
+      		POUR TOUTE CHAÎNE sLigne DE sAttributs SÉPARÉE PAR RC
+      			sLigne = SansEspace(sLigne)
+      			SI sLigne = "" ALORS 
+      				nSection++;SI nSection=3 ALORS SORTIR
+      				CONTINUER
+      			FIN
+      			
+      			sAttribut = SansEspace(ExtraitChaîne(sLigne, 1, ":"))
+      			SI sAttribut=EOT _OU_ sAttribut="" ALORS CONTINUER sinon mg_sAttributsMediaInfo+=[rc]+nSection+":"+sAttribut
+      		fin
+      	fin
+      FIN
+      renvoyer vrai
+     type : 458752
+   -
+     name : LireAttributMediaInfo
+     procedure_id : 1351154135419870106
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de lire la valeur d'un attribut spécifique d'un fichier audio à l'aide de la librairie MediaInfo.
+      // Syntaxe : [ <Résultat> = ] LireAttributMediaInfo (<sBalise> est chaîne)
+      // Paramètres :
+      //	sBalise (chaîne UNICODE) : La balise de l'attribut à lire au format "Section:Attribut".
+      // Valeur de retour : chaîne UNICODE : renvoie la valeur de l'attribut spécifié. Si l'attribut n'est pas trouvé, elle renvoie une chaîne vide.
+      // Exemple :
+      //
+      PROCEDURE protégé LireAttributMediaInfo(sBalise est une chaine) : chaine
+      si m_nInstanceAppelMediaInfo>0 alors
+      	nSection est un entier				= Val(ExtraitChaîne(sBalise,1,":"))
+      	sAttributANSI est une chaine ansi 	= UnicodeVersAnsi(ExtraitChaîne(sBalise,2,":"))
+      	nAdresseInfo est un entier système 	= API(mg_sMediaInfoDétecté, "MediaInfoA_Get", m_nInstanceAppelMediaInfo, nSection, Null, &sAttributANSI, 1, Null)
+      	QUAND EXCEPTION DANS
+      		renvoyer ChaîneRécupère(nAdresseInfo,crAdresseASCIIZ)
+      	FAIRE
+      		//rien, on passe
+      	fin
+      sinon
+      	m_pclerreur.ajouteerreur(<§$000b§>)
+      fin
+      renvoyer ""
+     type : 458752
+   -
+     name : OuvreAudioGenie3
+     procedure_id : 1351159993766324580
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui charge en mémoire la DDL de AudioGenie3 si elle ne l'était pas. Utilisé dans OuvreAudioGenie3.
+      PROCEDURE PRIVÉE OuvreAudioGenie3() : booleen
+      si mg_nInstanceAudioGenie=0 alors 
+      	mg_nInstanceAudioGenie = chargedll(mg_sAudioGenie3Détecté)
+      	SI mg_nInstanceAudioGenie=0 ALORS m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      FIN
+      renvoyer vrai
+     type : 458752
+  properties :
+   -
+     name : p_sMediaInfo
+     identifier : 0x12bfa0ba067a6a7b
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le chemin de la DLL MediaInfo détectée ou spécifiée par l'affectation de cette propriété
+         PROCEDURE PUBLIQUE p_sMediaInfo() : chaine
+         renvoyer mg_sMediaInfoDétecté
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : permet de spécifier le chemin de la DLL MediaInfo
+         PROCEDURE PUBLIQUE p_sMediaInfo(Valeur)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(Valeur)
+         DétecteMediaInfo(Valeur)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sAudioGenie3
+     identifier : 0x12bfa1ec067b154b
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le chemin de la DLL AudioGenie détectée ou spécifiée par l'affectation de cette propriété
+         PROCEDURE PUBLIQUE p_sAudioGenie3() : chaine
+         renvoyer mg_sAudioGenie3Détecté
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : permet de spécifier le chemin de la DLL AudioGenie
+         PROCEDURE PUBLIQUE p_sAudioGenie3(Valeur)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(Valeur)
+         DétecteAudioGenie(Valeur)
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x12bae1340199450f
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le fichier AudioGenie3.dll n'existe pas à l'emplacement indiqué
+      en-GB : The AudioGenie3.dll file does not exist in the specified location
+      fr-CA : Le fichier AudioGenie3.dll n'existe pas à l'emplacement indiqué
+      en-US : The AudioGenie3.dll file does not exist in the specified location
+     index : 0
+   -
+     text :
+      fr-FR : Le chemin de AudioGenie3.dll est obligatoire
+      en-GB : The path of AudioGenie3.dll is mandatory
+      fr-CA : Le chemin de AudioGenie3.dll est obligatoire
+      en-US : The path of AudioGenie3.dll is mandatory
+     index : 1
+   -
+     text :
+      fr-FR : La procédure AUDIOAnalyzeFileW n'a pas été trouvée dans la DLL AudioGenie
+      en-GB : AUDIOAnalyzeFileW procedure not found in AudioGenie DLL
+      fr-CA : La procédure AUDIOAnalyzeFileW n'a pas été trouvée dans la DLL AudioGenie
+      en-US : AUDIOAnalyzeFileW procedure not found in AudioGenie DLL
+     index : 2
+   -
+     text :
+      fr-FR : L'instance de AudioGenie3 n'existe pas
+      en-GB : Instance of AudioGenie3 does not exist
+      fr-CA : L'instance de AudioGenie3 n'existe pas
+      en-US : Instance of AudioGenie3 does not exist
+     index : 3
+   -
+     text :
+      fr-FR : Le chemin du fichier audio est obligatoire
+      en-GB : Audio file path is required
+      fr-CA : Le chemin du fichier audio est obligatoire
+      en-US : Audio file path is required
+     index : 4
+   -
+     text :
+      fr-FR : Le fichier audio n'existe pas
+      en-GB : Audio file does not exist
+      fr-CA : Le fichier audio n'existe pas
+      en-US : Audio file does not exist
+     index : 5
+   -
+     text :
+      fr-FR : Aucune librairie détecté
+      en-GB : No library detected
+      fr-CA : Aucune librairie détecté
+      en-US : No library detected
+     index : 6
+   -
+     text :
+      fr-FR : Ouverture avec MediaInfo en lecture seule
+      en-GB : Opening with MediaInfo read-only
+      fr-CA : Ouverture avec MediaInfo en lecture seule
+      en-US : Opening with MediaInfo read-only
+     index : 7
+   -
+     text :
+      fr-FR : "\r\n"
+      en-GB : "\r\n"
+      fr-CA : "\r\n"
+      en-US : "\r\n"
+     index : 8
+   -
+     text :
+      fr-FR : Erreur durant l'ouverture du fichier media
+      en-GB : Error opening media file
+      fr-CA : Erreur durant l'ouverture du fichier media
+      en-US : Error opening media file
+     index : 9
+   -
+     text :
+      fr-FR : Erreur durant la récupération des attributs
+      en-GB : Error while retrieving attributes
+      fr-CA : Erreur durant la récupération des attributs
+      en-US : Error while retrieving attributes
+     index : 10
+   -
+     text :
+      fr-FR : Aucune instance de fichier ouverte
+      en-GB : No File Instance Opened
+      fr-CA : Aucune instance de fichier ouverte
+      en-US : No File Instance Opened
+     index : 11
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

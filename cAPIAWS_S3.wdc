@@ -1,0 +1,270 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cAPIAWS_S3
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1578f57c27378a1c
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet d'accéder aux service S3 de AWS. Elle est basée sur cAPIAWS, elle-même héritant de cHTTPAPI (qui contient l'authentification à AWS)
+      //La classe ne va travailler que dans un bucket S3 passé en paramètre (la classe ne fait pas d'action sur les bucket S3 eux-même)
+      
+      cAPIAWS_S3 est une Classe
+      	hérite de capiaws
+      public constant
+      	m_sBucket 	est une chaîne			//Nom du bucket dans lequel vont être exécutées les autres méthodes
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1547256385584531996
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe cAPIAWS_S3.
+      // Syntaxe : Constructeur (<eRégion> est cAPIAWS.EAWSRégion, <sAccessKey> est chaîne, <sAccessSecret> est chaîne, <sBucket> est chaîne)
+      // Paramètres :
+      //	eRégion (cAPIAWS.EAWSRégion) : Région AWS pour l'authentification.
+      //	sAccessKey (chaîne UNICODE) : Clé d'accès AWS.
+      //	sAccessSecret (chaîne UNICODE) : Secret d'accès AWS.
+      //	sBucket (chaîne UNICODE) : Nom du bucket S3.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(eRégion est un capiaws.EAWSRégion,sAccessKey est une chaine,sAccessSecret est une chaine,sBucket est une chaine)
+      cAPIAWS.constructeur(cAPIAWS.EAWSService.s3,eRégion,sAccessKey,sAccessSecret)
+      m_sBucket = sBucket
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1547256385584597532
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres :	Aucun
+      // Valeur de retour : Aucune
+      // Exemple : 
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : ListeFichier
+     procedure_id : 1547257536635904252
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère la liste des fichiers dans le bucket S3.
+      // Syntaxe : [ <Résultat> = ] ListeFichier ( [<sRépertoireDuBucket> est chaîne])
+      // Paramètres :
+      //	sRépertoireDuBucket (chaîne UNICODE optionnelle) : Répertoire du bucket S3
+      // Valeur de retour : chaîne UNICODE : Chaîne contenant la liste des fichiers avec leurs informations
+      // Exemple :
+      //	clS3 est un cAPIAWS_S3(cAPIAWS.CanadaCentre,VotresAccessKey,VotreAccessSecret,"MonBucket")
+      //	POUR TOUTE CHAINE sFichier DE ListeFichier() SÉPARÉE PAR RC
+      //		//ici le traitement
+      //	FIN
+      //
+      PROCEDURE ListeFichier(sRépertoireDuBucket est une chaine = "") : chaine
+      m_pclErreur.RAZ()
+      sRes,sDateHeure sont des chaines
+      si m_sbucket>"" alors
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      		VariableRAZ(m_stRequêteHTTPAPI)
+      		m_stRequêteHTTPAPI.eMéthode=cHTTP.HTTP_GET
+      		SI AWSRestExécute(Vrai,m_sBucket) ALORS	//Appel ajoute l'authentification AWS à la requête avant d'être exécutée
+      			xmlRéponse est un xmlDocument = XMLOuvre(m_stReponseHTTPAPI.bufContenu,depuisChaîne)
+      			SI sRépertoireDuBucket>"" _ET_ Droite(sRépertoireDuBucket,1)<>"/" ALORS sRépertoireDuBucket+="/"
+      			POUR TOUT xmlContent de xmlRéponse.ListBucketResult
+      				SI xmlContent..Nom="Contents" ALORS
+      					SI Droite(xmlContent.Key..Texte,1)<>"/" _ET_ ((sRépertoireDuBucket="" _ET_ Position(xmlContent.Key..Texte,"/")<1) _OU_ (sRépertoireDuBucket<>"" _ET_ Gauche(xmlContent.Key..Texte,Taille(sRépertoireDuBucket))=sRépertoireDuBucket)) ALORS
+      						sDateHeure=xmlContent.LastModified..Texte
+      						sRes+=[RC]+Milieu(xmlContent.Key..Texte,Taille(sRépertoireDuBucket)+1)+TAB+ISO8601VersDateHeure(sDateHeure)+TAB+xmlContent.Size..Texte
+      					FIN
+      				FIN
+      			FIN
+      		SINON
+      			//erreur déjà géré par cAPI
+      		FIN
+      	
+      <fin>
+      
+      	
+      sinon
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      fin
+      renvoyer sRes
+     type : 458752
+   -
+     name : FichierTéléverse
+     procedure_id : 1547592977446636338
+     type_code : 12
+     code : |1-
+      // Résumé : Téléverse un fichier dans le bucket S3.
+      // Syntaxe : [ <Résultat> = ] FichierTéléverse (<sCheminDuFichier> est chaîne [, <sRépertoireDuBucket> est chaîne])
+      // Paramètres :
+      //	sCheminDuFichier (chaîne UNICODE) : Chemin du fichier local à téléverser.
+      //	sRépertoireDuBucket (chaîne UNICODE optionnelle) : Sous-répertoire du bucket S3
+      // Valeur de retour : booléen : Indique le succès de l'opération.
+      // Exemple :
+      //	clS3 est un cAPIAWS_S3(cAPIAWS.CanadaCentre,VotresAccessKey,VotreAccessSecret,"MonBucket")
+      // 	clS3.FichierTéléverse("C:\Temp\testAWS1.txt")
+      //
+      PROCEDURE FichierTéléverse(sCheminDuFichierLocal est une chaine,sRépertoireDuBucket est une chaine = "") : booleen
+      m_pclErreur.Raz()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	SI fFichierExiste(sCheminDuFichierLocal) ALORS
+      		bufFichier est un buffer= fChargeBuffer(sCheminDuFichierLocal)
+      		ancetre.raz()
+      		m_stRequêteHTTPAPI.eMéthode	= cHTTP.HTTP_put
+      		m_stRequêteHTTPAPI.sContenu	= bufFichier
+      		SI AWSRestExécute(Vrai,m_sBucket+["/"]+sRépertoireDuBucket+["/"]+fExtraitChemin(sCheminDuFichierLocal,fFichier+fExtension)) ALORS //Appel ajoute l'authentification AWS à la requête avant d'être exécutée
+      			RENVOYER Vrai
+      		SINON
+      			//erreur déjà géré par cAPI
+      		FIN
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0001§>)
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : FichierTélécharge
+     procedure_id : 1547592998921543682
+     type_code : 12
+     code : |1-
+      // Résumé : Télécharge un fichier depuis le bucket S3.
+      // Syntaxe : [ <Résultat> = ] FichierTélécharge (<sRépertoireLocal> est chaîne , <sNomDuFichierDansLeBucket> est chaîne [, <sRépertoireDuBucket> est chaîne }) 
+      // Paramètres :
+      //	sRépertoireLocal (chaîne UNICODE) : Chemin du répertoire local dans lequel télécharger le fichier
+      //	sNomDuFichierDansLeBucket (chaine UNICODE) : Nom du fichier à télécharger depuis le bucket S3
+      //	sRépertoireDuBucket (chaîne UNICODE) : Sous-répertoire du bucket S3 dans lequel se trouve le fichier
+      // Valeur de retour : booléen : Indique le succès de l'opération.
+      // Exemple :
+      //	clS3 est un cAPIAWS_S3(cAPIAWS.CanadaCentre,VotresAccessKey,VotreAccessSecret,"MonBucket")
+      // 	clS3.FichierTélécharge("C:\Temp","testAWS1.txt")
+      //
+      PROCEDURE FichierTélécharge(sRépertoireLocal est une chaine,sNomDuFichierDansLeBucket est une chaine,sRépertoireDuBucket est une chaine = "") : booleen
+      m_pclErreur.Raz()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	Ancêtre.RAZ()
+      	m_stRequêteHTTPAPI.eMéthode=cHTTP.HTTP_GET
+      	SI AWSRestExécute(Vrai,m_sBucket+["/"]+sRépertoireDuBucket+["/"]+sNomDuFichierDansLeBucket) ALORS //Appel ajoute l'authentification AWS à la requête avant d'être exécutée
+      		fSauveBuffer(sRépertoireLocal+["\"]+sNomDuFichierDansLeBucket,m_stReponseHTTPAPI.bufcontenu)
+      		RENVOYER Vrai
+      	SINON
+      		//erreur déjà géré par cAPI
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : ListeRépertoire
+     procedure_id : 1547593183605180770
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère la liste des répertoires dans le bucket S3.
+      // Syntaxe : [ <Résultat> = ] ListeRépertoire ( [<sRépertoireDuBucket> est chaîne])
+      // Paramètres :
+      //	sRépertoireDuBucket (chaîne UNICODE, optionnel) : Sous-répertoire du bucket S3
+      // Valeur de retour : chaîne UNICODE : Contenant la liste des répertoires.
+      // Exemple :
+      //	clS3 est un cAPIAWS_S3(cAPIAWS.CanadaCentre,VotresAccessKey,VotreAccessSecret,"MonBucket")
+      //	POUR TOUTE CHAINE sFichier DE ListeRépertoire() SÉPARÉE PAR RC
+      //		//ici le traitement
+      //	FIN
+      //
+      PROCEDURE ListeRépertoire(sRépertoireDuBucket est une chaine = "") : chaine
+      m_pclErreur.Raz()
+      sRes,sDateHeure sont des chaines
+      SI m_sBucket>"" ALORS
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      		Ancêtre.raz()
+      		m_stRequêteHTTPAPI.eMéthode=cHTTP.HTTP_GET
+      		SI AWSRestExécute(Vrai,m_sBucket) ALORS	//Appel ajoute l'authentification AWS à la requête avant d'être exécutée
+      			xmlRéponse est un xmlDocument = XMLOuvre(m_stReponseHTTPAPI.bufContenu,depuisChaîne)
+      			SI sRépertoireDuBucket>"" _ET_ Droite(sRépertoireDuBucket,1)<>"/" ALORS sRépertoireDuBucket+="/"
+      			POUR TOUT xmlContent de xmlRéponse.ListBucketResult
+      				SI xmlContent..Nom="Contents" ALORS
+      					SI Droite(xmlContent.Key..Texte,1)="/" _ET_ xmlContent.Key..Texte<>sRépertoireDuBucket _ET_ (sRépertoireDuBucket="" _OU_ Gauche(xmlContent.Key..Texte,Taille(sRépertoireDuBucket))=sRépertoireDuBucket) ALORS
+      						sDateHeure=xmlContent.LastModified..Texte
+      						sRes+=[RC]+Milieu(xmlContent.Key..Texte,Taille(sRépertoireDuBucket)+1)+TAB+ISO8601VersDateHeure(sDateHeure)
+      					FIN
+      				FIN
+      			FIN
+      		SINON
+      			//erreur déjà géré par cAPI
+      		FIN
+      	
+      <fin>
+      
+      	
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      FIN
+      RENVOYER sRes
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1578f573273166d5
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le nom du bucket S3 est obligatoire
+      en-GB : The S3 bucket name is required
+      fr-CA : Le nom du bucket S3 est obligatoire
+      en-US : The S3 bucket name is required
+     index : 0
+   -
+     text :
+      fr-FR : Le fichier n'existe pas
+      en-GB : The file does not exist
+      fr-CA : Le fichier n'existe pas
+      en-US : The file does not exist
+     index : 1
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

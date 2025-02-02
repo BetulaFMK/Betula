@@ -1,0 +1,1766 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cTable
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1c3e3f7386138e48
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe fait le lien entre la base de données d'un côté et les classe cColonne et cIndex de l'autre. Elle permet de gérer les valeurs par défaut et la suppression en cascade.
+      
+      ETableChargement est une énumération
+      	TableDétailNonChargé		= 0
+      	TableDétailBasiqueChargé	= 1
+      	TableDétailCompletChargé	= 2
+      fin
+      ETableSource est une Enumération
+      	TablePhysique				= 0
+      	Vue							= 1
+      	ProcédureStockée			= 2
+      FIN
+      
+      cTable est une Classe
+      	hérite de cGénérique
+      
+      public	
+      	m_sMotDePasse					est une chaine 			<serialise = faux>							//Mot de passe permettant d'ouvrir un fichier Hyperfile
+      	m_sAnalyse						est une chaine 			<serialise = faux>							//Chemin du fichier d'analyse pour ouvrir un fichier Hyperfile 5
+      	m_sMotDePasseAnalyse			est une chaine 			<serialise = faux>							//Mot de passe pour l'ouverture du fichier d'analyse
+      PUBLIC CONSTANT                                   			
+      	m_sNom							est une chaine			<Sérialise = Faux>							//Nom en minuscule de la table
+      	m_sNomOriginal					est une chaine			<Sérialise = Faux>							//Nom original de la table dans la BD
+      	m_sNomLogique					est une chaine			<Sérialise = Faux>							//Nom logique du fichier Hyperfile 5
+      	m_sNomUnique					est une chaine			<Sérialise = Faux>							//Nom unique de la colonne dans l'application
+      	m_sNomSQL						est une chaine			<serialise = faux>							//Nom SQL de la table
+      	m_nIndiceDeConnexion			est un entier			<serialise = faux>							//Indice de connexion à la BD
+      	m_sPremierAlias 				est une chaine			<Sérialise = Faux>							//Nom du premier alias (juste pour une utilisation dans cette classe)
+      	m_nTailleEnregistrement			est un entier 			<serialise = faux>							//Taille d'un enregistrement (en octets)
+      	m_eSource						est un ETableSource		<Sérialise = Faux>							//Source de la "table" : peut être une table physique, une vue ou le résultat d'une procédure stockée
+      privé	                                          	
+      	m_pclBaseDeDonnées				est un cBaseDeDonnées dynamique <Sérialise = faux>					//Objet de base de données auquel est relié la table
+      
+      	m_eColonnesChargées				est un ETableChargement	<serialise = faux>							//Indique le niveau de chargement des colonnes
+      	m_tabColonnes					est un tableau 			<serialise = faux> de ccolonne dynamique	//Tableau contenant les colonnes de la table
+      	m_sToutesLesColonnesNonMémo		est une chaine 			<Sérialise = Faux>							//Toutes les colonnes non mémo séparées par des virgules, utile pour les requêtes
+      	m_sToutesLesColonnesMémoBinaire	est une chaine 			<Sérialise = Faux>                  		//Toutes les colonnes mémo binaire séparées par des virgules, utile pour les requêtes
+      	m_sToutesLesColonnesMémoTexte	est une chaine 			<Sérialise = Faux>                  		//Toutes les colonnes mémo texte séparées par des virgules, utile pour les requêtes
+      	m_sToutesLesColonnes			est une chaine			<Sérialise = Faux>                  		//Toutes les colonnes séparées par des virgules
+      	m_sToutesLesColonnesSQL			est une chaine			<Sérialise = Faux>							//Toutes les colonnes au format SQL
+      
+      	m_eIndexesChargés				est un ETableChargement	<serialise = faux>							//Indique le niveau de chargement des indexes
+      	m_tabIndexes					est un tableau			<Sérialise = faux> de cIndex dynamique		//Tableau contenant les indexes (clés) de la table
+      	m_sTousLesIndexes				est une chaine			<serialise = faux>                  		//Tous les indexes séparés par des virgules
+      	m_sNomCléPrimaire				est une chaine			<Sérialise = Faux>							//Nom de la colonne qui est identifiée comme clé primaire			
+      	m_sColonnesCléPrimaire			est une chaine			<Sérialise = Faux>                  		//Nom des colonnes qui composent la clé primaire
+      	m_sColonneAutomatique			est une chaine			<Sérialise = Faux>                  		//Nom de la colonne ayant un identifiant automatique
+      	m_sToutesLesColonnesCléComposé 	est une chaine			<Sérialise = Faux>                  		//Nom des clés composées séparées par des virgules
+      	
+      	m_taCaractéristiques			est un tableau associatif <Sérialise = Faux> de chaines 			//Tableau des autres caractéristiques de la table
+      
+      	m_bDroitModification			est un booleen			<Sérialise = Faux>							//Indique que l'utilisateur courant a le droit en modification
+      	m_bDroitAjout					est un booleen			<Sérialise = Faux>							//Indique que l'utilisateur courant a le droit en ajout
+      	m_bDroitSuppression				est un booleen			<Sérialise = Faux>							//Indique que l'utilisateur courant a le droit en suppression
+      	                                                		
+      	m_bGérerIntégrité				est un booleen			<Sérialise = Faux>							//Indique qu'il faut gérer l'intégrité de cette table avec ses tables dépendantes (enclenchera la suppression en cascade)
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035133847021719112
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe, configure les propriétés en fonction des paramètres fournis, et effectue des vérifications telles que l'existence de la table dans la base de données.
+      // Syntaxe :
+      //[ <Résultat> = ] Constructeur (<nIndiceDeConnexion> est entier [, <sNomDeLaTable> est chaîne [, <xChaineCryptage> [, <sAnalyse55> est chaîne [, <sMDPAnalyse55> est chaîne [, <bVérifieTableExiste> est booléen]]]]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indice de connexion vers la base de données.
+      //	sNomDeLaTable (chaîne UNICODE - valeur par défaut="") : Le nom de la table à manipuler.
+      //	xChaineCryptage (valeur par défaut=0) : La chaîne de cryptage
+      //	sAnalyse55 (chaîne UNICODE - valeur par défaut="") : Le chemin de l'analyse associée au fichier Hyperfile 5.
+      //	sMDPAnalyse55 (chaîne UNICODE - valeur par défaut="") : Le mot de passe de l'analyse associée au fichier Hyperfile 5.
+      //	bVérifieTableExiste (booléen - valeur par défaut=1) : Indique si la vérification de l'existence de la table doit être effectuée.
+      // Valeur de retour :
+      // 	booléen : 
+      // Exemple :
+      //// Traitement automatique des erreurs :   exécuter le bloc de code CAS ERREUR
+      //
+      // Traitement automatique des exceptions :   exécuter le bloc de code CAS EXCEPTION:
+      //
+      
+      PROCÉDURE Constructeur(local nIndiceDeConnexion est un entier,local sNomDeLaTable est une chaîne = "",xChaineCryptage = null,local sAnalyse55 est une chaine = "",local sMDPAnalyse55 est une chaine = "",bVérifieTableExiste est un booleen = vrai) 
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIndiceDeConnexion,sNomDeLaTable,xChaineCryptage,sAnalyse55,sMDPAnalyse55)
+      
+      si sNomDeLaTable>"" alors
+      	si nIndiceDeConnexion=0 _ou_ (nIndiceDeConnexion>0 _et_ nIndiceDeConnexion>cBaseDeDonnées.mg_tabConnexion..occurrence) alors 
+      		m_pclErreur.AjouteErreur(chaineconstruit(<§$000a§>,nIndiceDeConnexion,cBaseDeDonnées.mg_tabConnexion..Occurrence))
+      	sinon
+      		sMDP					est une chaine
+      
+      		m_nIndiceDeConnexion	= nIndiceDeConnexion
+      		m_pclBaseDeDonnées 		= allouer un cBaseDeDonnées(m_nIndiceDeConnexion)
+      		
+      		selon cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider	
+      			cas cBaseDeDonnéesHyperFile.hAccèsHF5 //trouver le nom logique dans l'analyse	
+      				SI sAnalyse55="" ALORS sAnalyse55 = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sAnalyse
+      				SI fFichierExiste(sAnalyse55) ALORS m_sNomLogique = TableLogique(sAnalyse55,sNomDeLaTable) SINON m_pclErreur.AjouteErreur(<§$001a§>)
+      			CAS hAccèsNatifOracle
+      				sNomDeLaTable	= majuscule(sNomDeLaTable) 
+      				m_sNomLogique	= sNomDeLaTable
+      			autres cas
+      				m_sNomLogique	= sNomDeLaTable
+      		FIN
+      		
+      		SI bVérifieTableExiste _ET_ Position(cApplication.mg_sTablesAnalyse,sNomDeLaTable,0,MotComplet+SansCasse+DepuisDébut)<1 _ET_ PAS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider DANS (cBaseDeDonnéesHyperFile.hAccèsHF5,hAccèsHF7,hAccèsHFClientServeur) _ET_ PAS EstTable() _ET_ PAS EstVue() _ET_ PAS EstProcédureStockée() ALORS //on peut créer ci-dessous les fichier HF, les autres doivent déjà exister
+      			m_pclErreur.AjouteErreur(<§$0009§>)
+      		sinon
+      			m_sNomOriginal		= sNomDeLaTable
+      			
+      			SI m_sNomOriginal>"" ALORS
+      				m_sNom			= Minuscule(m_sNomOriginal)
+      				m_sNomUnique 	= cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].sNomUnique+cGénérique._Sep+m_sNom
+      				si cApplication.mg_taInfo[m_sNomUnique]=null alors 
+      					m_sNomSQL	= SQLEncadreNom()
+      					
+      					SI objet..Classe="cTable" ALORS //au cas ou cTable serait hérité, on mettra bien un cTable dans cApplication.mg_taInfo[m_sNomUnique]
+      						p_eColonnesChargées	= cTable.TableDétailNonChargé
+      						p_eIndexesChargées	= cTable.TableDétailNonChargé
+      						pclTable est un cTable dynamique <- objet
+      						cApplication.mg_taInfo[m_sNomUnique] = pclTable 
+      					FIN
+      					
+      					m_sPremierAlias	= m_sNom	//par défaut
+      					SI Position(cApplication.mg_sTablesAnalyse,m_sNomOriginal,0,MotComplet+SansCasse)<1 ALORS
+      						//on déclare la table elle-même
+      						Selon cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+      							cas cBaseDeDonnéesHyperFile.hacceshf5
+      								m_sPremierAlias	= cBaseDeDonnées.AliasUnique(m_sNom,vrai)
+      								SI sMDPAnalyse55="" 	ALORS sMDPAnalyse55	= (cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasseAnalyse>"" ? cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasseAnalyse SINON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sMotDePasseAnalyse)
+      	 	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=WindowsMobile>
+      	
+      									SI PAS HDéclare(m_sNomLogique,sAnalyse55,sMDPAnalyse55,m_sPremierAlias) _OU_ PAS HChangeNom(m_sPremierAlias,m_sNomOriginal) _OU_ PAS HChangeRep(m_sPremierAlias,cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].cnxDonnées..Serveur) ALORS 
+      										m_pclErreur.AjouteErreurHF()
+      									SINON
+      										cApplication.mg_taInfo[m_sNomUnique].m_sAnalyse				= sAnalyse55
+      										cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasseAnalyse	= sMDPAnalyse55
+      									FIN
+      	
+      <fin>
+      
+      	 	
+      							cas hAccèsHF7
+      								m_sPremierAlias	= cBaseDeDonnées.AliasUnique(m_sNom,Faux)
+      								sMDP=(xChaineCryptage=Null ? (cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasse>"" ? cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasse sinon cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sMotDePasseFichier) SINON xChaineCryptage)
+      								HPasse(m_sPremierAlias,sMDP)
+      								SI pas HDéclareExterne(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Serveur+[fSep()]+m_sNomOriginal+".fic",m_sPremierAlias,cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].cnxDonnées) ALORS //le fichier doit déjà exister
+      									m_pclErreur.AjouteErreurHF()
+      								sinon
+      									cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasse=sMDP
+      								FIN
+      							cas hAccèsHFClientServeur
+      								m_sPremierAlias	= cBaseDeDonnées.AliasUnique(m_sNom,Faux)
+      								sMDP=(xChaineCryptage=Null ? (cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasse>"" ? cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasse SINON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sMotDePasseFichier) SINON xChaineCryptage)
+      								HPasse(m_sPremierAlias,sMDP)
+      								SI pas HDéclareExterne(".\"+m_sNomOriginal+".fic",m_sPremierAlias,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées) ALORS
+      									m_pclErreur.AjouteErreurHF()
+      								sinon
+      									cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasse=sMDP
+      								FIN
+      							cas cBaseDeDonnéesExcel.hAccèsNatifExcel
+      								cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.p_sFeuilleEnCours=sNomDeLaTable
+      							autres cas
+      								
+      						FIN
+      					sinon
+      						m_sNomSQL = SQLEncadreNom()
+      						sMDP=(xChaineCryptage=Null ? (cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasse>"" ? cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasse SINON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sMotDePasseFichier) SINON xChaineCryptage)
+      						SELON cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+      							CAS hAccèsHF7
+      								SI HChangeRep(m_sNomOriginal,cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].cnxDonnées..Serveur) alors
+      									si m_pclBaseDeDonnées.TableExiste(sNomDeLaTable) alors 
+      										SI HOuvre(m_sNomOriginal,sMDP) ALORS cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasse=sMDP SINON m_pclErreur.AjouteErreurHF()
+      									sinon
+      										si pas hcreation(m_sNomOriginal,sMDP) alors m_pclErreur.AjouteErreurHF()
+      									fin
+      								sinon
+      									m_pclErreur.AjouteErreurHF()
+      								fin	
+      							CAS hAccèsHFClientServeur
+      								SI m_pclBaseDeDonnées.TableExiste(sNomDeLaTable) ALORS 
+      									SI HOuvre(m_sNomOriginal,sMDP) ALORS cApplication.mg_taInfo[m_sNomUnique].m_sMotDePasse=sMDP SINON m_pclErreur.AjouteErreurHF()
+      								SINON
+      									SI PAS HCréation(m_sNomOriginal,sMDP) ALORS m_pclErreur.AjouteErreurHF()
+      								FIN
+      						fin
+      					fin
+      				fin
+      				si p_sColonnesCléPrimaire="" alors 
+      					m_pclErreur.AjouteAvertissement(<§$001c§>)
+      				sinon
+      					SI cApplication.mg_taInfo[m_sNomUnique].p_sToutesLesColonnesMémoBinaire>"" alors
+      						si cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider DANS (hAccèsHFClientServeur,hAccèsHF7) ALORS
+      							//Force la gestion des mémos à hMémoOui = Lecture des mémos texte à chaque lecture de l'enregistrement. Lecture des mémos binaires uniquement lors de l'accès à la rubrique.
+      							hGèreMémo((m_sPremierAlias>"" ? m_sPremierAlias sinon m_sNomOriginal),"*",hMémoOui)
+      						fin
+      						SI PAS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sRépertoireCache~="" _ET_ PAS fRepCrée(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sRépertoireCache) ALORS 
+      							m_pclErreur.AjouteAvertissement(<§$0008§>+cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sRépertoireCache);cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sRépertoireCache="";renvoyer faux
+      						FIN
+      					FIN
+      				FIN
+      			SINON
+      				m_pclErreur.AjouteErreur(<§$001b§>)
+      			FIN
+      		FIN
+      	FIN
+      fin
+      
+      	procédure interne TableLogique(sCheminAnalyse est une chaine,sNomOriginal est une chaine) : chaine
+      	sAnalyse est une chaine = fChargeTexte(sCheminAnalyse) 		//HOuvreAnalyse ne peut plus ouvrir
+      	nOffset est un entier 	= 383								//les descriptions des tables commencent à 17E
+      	nTableMax est un entier = Asc(sAnalyse[15])					//le nombre de tables se trouve à 0E
+      	sBloc,sLogique,sPhysique sont des chaines
+      	POUR nTable = 1 _a_ nTableMax
+      		sBloc	 	= Milieu(sAnalyse,nOffset,904)
+      		sLogique	= ExtraitChaîne(sBloc[1 À 8],1,Caract(0))	//nom logique max 8 caractères
+      		sPhysique	= ExtraitChaîne(sBloc[32 À 32+256],1,Caract(0))
+      		SI sNomOriginal~=sPhysique _OU_ sNomOriginal~=sLogique ALORS RENVOYER sLogique
+      		nOffset+=904
+      	FIN
+      	renvoyer ""
+      	FIN
+      
+      	PROCÉDURE INTERNE EstTable() : booléen
+      	SI m_pclBaseDeDonnées.TableExiste(sNomDeLaTable) ALORS m_eSource=TablePhysique;RENVOYER Vrai SINON RENVOYER Faux
+      	FIN
+      
+      	PROCÉDURE INTERNE EstVue() : booléen
+      	SI m_pclBaseDeDonnées.VueExiste(sNomDeLaTable) ALORS m_eSource=Vue;RENVOYER Vrai SINON RENVOYER Faux
+      	FIN
+      
+      	PROCÉDURE INTERNE EstProcédureStockée() : booléen
+      	SI m_pclBaseDeDonnées.ProcédureExiste(sNomDeLaTable) ALORS m_eSource=ProcédureStockée;RENVOYER Vrai SINON RENVOYER Faux
+      	FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2035133847021784648
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      QUAND EXCEPTION DANS
+      	//SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(m_sPremierAlias)		//ne fonctionne pas si Betula est en WD26+
+      FAIRE
+      	//rien, cApplication n'est plus dispo
+      FIN
+     type : 655360
+   -
+     name : CléPrimaire
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2035133847021915720
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie le contenu de la clé primaire associée à une source de données. La construction de la clé dépend de la structure de la clé primaire définie pour la table.
+      // Syntaxe : [ <Résultat> = ] CléPrimaire (<sdSource>)
+      // Paramètres :
+      // 	sdSource : Source de données pour laquelle la clé primaire doit être construite.
+      // Valeur de retour : Type indéterminé : Entier ou chaîne de caractères selon le type de la clé primaire dans la table
+      // Exemple :
+      //
+      PROCEDURE CléPrimaire(sdSource)
+      sClé,sColonne sont des chaines
+      Indexes()
+      nIndice est un entier = TableauCherche(cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes,tcLinéaire,"m_sNom",m_sNomCléPrimaire)
+      si cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes[nIndice].p_bEstComposé alors
+      	nPosition est un entier
+      	POUR TOUTE CHAÎNE sColonne DE cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes[nIndice].p_sComposantes SEPAREE PAR ","
+      		nPosition++;SI nPosition>1 ALORS sClé+=cGénérique._Sep
+      		SI PAS {sdSource+"."+sColonne}..Null ALORS sClé+={sdSource+"."+sColonne}
+      	FIN
+      	renvoyer sClé
+      sinon si cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes[nIndice].m_bEstAutomatique alors		//clé ID automatique
+      	sColonne=cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes[nIndice].p_sComposantes
+      	rENVOYER {sdSource+"."+sColonne}				
+      sinon													//clé simple non-automatique										
+      	RENVOYER {sdSource+"."+m_sColonnesCléPrimaire}
+      FIN
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException("colonne : "+m_sNomCléPrimaire);RENVOYER null
+     type : 458752
+   -
+     name : TimeStampVersDateHeure
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2035133847022177864
+     type_code : 12
+     code : |1-
+      // Résumé : Converti un timestamp donné en une valeur de type DateHeure locale.
+      // Syntaxe : [ <Résultat> = ] TimeStampVersDateHeure (<nTimeStamp> est réel)
+      // Paramètres :
+      //	nTimeStamp (réel) : Réel représentant le timestamp à convertir en date et heure.
+      // Valeur de retour : dateheure : Date et l'heure obtenues à partir du timestamp converti.
+      // Exemple :
+      //
+      PROCEDURE TimeStampVersDateHeure(LOCAL nTimeStamp est un réel) : dateheure
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nTimeStamp)
+      m_pclErreur.Raz()
+      
+      dhDateHeure est une DateHeure
+      nOffSet est un entier 		= DateVersEntier("19700101")
+      
+      nEntierDate est un entier 	= PartieEntière(nTimeStamp / 86400)
+      nEntierHeure est un entier 	= (nTimeStamp-(nEntierDate * 86400)) * 100
+      	
+      dhDateHeure..PartieDate 	= EntierVersDate(nOffSet + nEntierDate)
+      dhDateHeure..PartieHeure 	= EntierVersHeure(nEntierHeure)
+      
+      dhDateHeure 				= DateHeureUTCVersLocale(dhDateHeure)
+      
+      RENVOYER dhDateHeure
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER ""
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER ""
+     type : 458752
+   -
+     name : LignesEtTaille
+     procedure_id : 2035133847022440008
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie les informations sur le nombre de lignes et la taille de la table dans la base de données.
+      // Syntaxe : [ <Résultat> = ] LignesEtTaille ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : voir la méthode correspondante dans la classe cBaseDeDonnéesxxx
+      // Exemple :
+      //
+      PROCEDURE LignesEtTaille()
+      renvoyer m_pclBaseDeDonnées.TableLignesEtTaille(m_sNomOriginal)
+     type : 458752
+   -
+     name : ExtVersTypeMémo
+     procedure_id : 2035133847022505544
+     type_code : 12
+     code : |1-
+      // Résumé : Détermine le type de mémo associé à une extension de fichier donnée. 
+      // Syntaxe : [ <Résultat> = ] ExtVersTypeMémo (<sExt> est chaîne)
+      // Paramètres :
+      //	sExt (chaîne UNICODE) : L'extension de fichier dont on veut connaître le type de mémo.
+      // Valeur de retour : entier : Type de mémo (par exemple, hMémoImg ou hMémoBin).
+      // Exemple :
+      //
+      PROCEDURE globale ExtVersTypeMémo(local sExt est une chaîne)
+      SI Position(cgenerique.p_sExtensionImage,Majuscule(sExt)) ALORS RENVOYER hMémoImg sinon RENVOYER hMémoBin
+     type : 458752
+   -
+     name : ColonnesCléVersClé
+     procedure_id : 2035133847022571080
+     type_code : 12
+     code : |1-
+      // Résumé : Converti une chaîne spécifiant une clé ou des colonnes de clé en nom de colonne type clé composée Hyperfile
+      // Syntaxe : [ <Résultat> = ] ColonnesCléVersClé (<sCléOuColonnesClé> est chaîne)
+      // Paramètres :
+      //	sCléOuColonnesClé (chaîne UNICODE) : Représente une clé ou des colonnes de clé.
+      // Valeur de retour : chaîne UNICODE : Nom de colonne type clé composée Hyperfile
+      // Exemple :
+      //
+      PROCEDURE ColonnesCléVersClé(local sCléOuColonnesClé est une chaine) : chaine
+      Indexes()
+      sCléOuColonnesClé=Minuscule(sCléOuColonnesClé)
+      nIndice est un entier = TableauCherche(m_tabIndexes,tcLinéaire,"m_sNom",sCléOuColonnesClé)
+      sClé 	est une chaine
+      SI nIndice<1 ALORS
+      	POUR TOUT pclUneClé de cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes
+      		SI pclUneClé.p_sComposantes=sCléOuColonnesClé _et_ pclUneClé.p_bEstComposé ALORS sClé=pclUneClé.m_sNom;SORTIR
+      	FIN
+      	SI sClé="" ALORS sClé=sCléOuColonnesClé
+      SINON
+      	sClé=sCléOuColonnesClé
+      FIN
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(sCléOuColonnesClé,sClé)
+      renvoyer sClé
+     type : 458752
+   -
+     name : CléVersColonnesClé
+     procedure_id : 2035133847022636616
+     type_code : 12
+     code : |1-
+      // Résumé : Converti le nom de colonne type clé composée Hyperfile en une chaîne spécifiant une clé ou des colonnes de clé
+      // Syntaxe : [ <Résultat> = ] CléVersColonnesClé (<sCléOuColonnesClé> est chaîne)
+      // Paramètres :
+      //	sCléOuColonnesClé (chaîne UNICODE) : Nom de colonne type clé composée Hyperfile
+      // Valeur de retour : chaîne UNICODE : Représente une clé ou des colonnes de clé.
+      // Exemple :
+      //
+      PROCEDURE CléVersColonnesClé(local sCléOuColonnesClé est une chaine) : chaine
+      Indexes()
+      sCléOuColonnesClé=minuscule(sCléOuColonnesClé)
+      nIndice 		est un entier = TableauCherche(cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes,tcLinéaire,"m_sNom",sCléOuColonnesClé)
+      sColonnesClé 	est une chaine
+      
+      quand exception dans
+      	SI nIndice<1 ALORS
+      		POUR TOUT pclUneClé de cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes
+      			SI pclUneClé.p_sComposantes~=sCléOuColonnesClé ALORS sColonnesClé=pclUneClé.p_sComposantes;SORTIR
+      		FIN
+      		SI sColonnesClé="" ALORS sColonnesClé=sCléOuColonnesClé
+      	SINON
+      		sColonnesClé=cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes[nIndice].p_sComposantes
+      	FIN
+      faire
+      	sColonnesClé=sCléOuColonnesClé
+      fin
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(sCléOuColonnesClé,sColonnesClé)
+      RENVOYER sColonnesClé
+     type : 458752
+   -
+     name : CléValeur
+     procedure_id : 2035133847023226440
+     type_code : 12
+     code : |1+
+      // Résumé : Renvoie la valeur d'une clé (reconstitue les clés composées Hyperfile)
+      // Syntaxe : [ <Résultat> = ] CléValeur ( [<xValeurClé> [, <sNomOuStructureClé> est chaîne [, <eAccèsForcé> est cBaseDeDonnées.ETypeAccès]]])
+      // Paramètres :
+      // 	xValeurClé : Valeur de chaque colonne de la clé séparée par cGénérique._Sep
+      //	sNomOuStructureClé (chaîne UNICODE) : Nom de la clé ou noms de colonnes constituant la clé
+      //	eAccèsForcé (cBaseDeDonnées.ETypeAccès) : Permet d'imposer un type de traitement. Par exemple, en mode FonctionsH, on peut imposer ici RequêteSQL.
+      // Valeur de retour : Type indéterminé : Valeur de la clé
+      // Exemple :
+      //
+      PROCEDURE CléValeur(xValeurClé = "",sNomOuStructureClé est une chaine = cApplication.mg_taInfo[m_sNomUnique].p_sColonnesCléPrimaire,eAccèsForcé est un cBaseDeDonnées.ETypeAccès = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès) //ne pas typer xValeurClé car peut recevoir des chaines, des entiers, des dates,... et ne pas typer la valeur retour car c'est soit un buffer (FonctionH), soit une chaine (RequêteSQL et ODBC)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(xValeurClé,sNomOuStructureClé,eAccèsForcé..nom)
+      
+      sClé,sColonnesClé,sColonneClé sont des chaines
+      bufClé 	est un buffer
+      nIndice	est un entier
+      
+      sColonnesClé=CléVersColonnesClé(sNomOuStructureClé)
+      si ChaîneOccurrence(xValeurClé,cGénérique._Sep)<=chaineoccurrence(sColonnesClé,",") alors
+      	SI Contient(sColonnesClé,",") ALORS
+      		SELON eAccèsForcé
+      			CAS cBaseDeDonnées.FonctionsH
+      				//A FAIRE : Vérifier avec des entiers et des chaines
+      				pour toute chaine sValeur de xValeurClé separee par cGénérique._Sep
+      					sColonneClé	= ExtraitChaîne(sColonnesClé,nIndice)
+      					nIndice		= tableaucherche(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonneClé)
+      					SI nIndice<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0018§>,sColonneClé,m_sNom));renvoyer ""
+      					SI cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstNullable _ET_ (cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstNumérique _ou_ cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstBooléen ? sValeur="0" sinon sValeur="") ALORS
+      						bufClé+=repete(Caract(0),cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_nTaille)
+      					SINON
+      						si cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstUnicode alors
+      							bufClé+=complete(sValeur,cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_nTaille,caract(0))	//conversion rapide, le composant est déjà en unicode
+      						sinon
+      							sClé=""
+      							SI cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstNumérique _OU_ cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstBooléen ALORS
+      								sClé+=HexaInverse(NumériqueVersChaîne(Val(sValeur),"0"+cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_nTaille*2+"x"))
+      							SINON
+      								//on ne fait à priori pas de recherche sur des mémos, si recherche sur des réels ou des monétaires : améliorer cette partie
+      								POUR nChar = 1 _a_ cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_nTaille
+      									SI nChar<=Taille(sValeur) ALORS sClé+=NumériqueVersChaîne(Asc(sValeur[[nChar]]),"02x") SINON sClé+="00"
+      								FIN
+      							fin
+      							bufClé+=HexaVersBuffer(sClé)
+      						fin
+      					fin
+      				fin
+      				renvoyer bufClé
+      			cas cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC
+      				//la valeur est séparée par par _SepClé
+      				POUR TOUTE CHAÎNE sColonneClé,nPosition,nOccurrence de sColonnesClé separee par ","
+      					nIndice=TableauCherche(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonneClé)
+      					si nIndice<1 alors m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0018§>,sColonneClé,m_sNom));renvoyer ""
+      					SI cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstNullable _ET_ ExtraitChaîne(xValeurClé,nOccurrence,cgenerique._Sep) DANS ((cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstNumérique _OU_ cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstBooléen ? "0" SINON ""),EOT) ALORS
+      						sClé+=[" AND "]+ cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_sNomSQL+" IS NULL"
+      					SINON
+      						si ExtraitChaîne(xValeurClé,nOccurrence,cGénérique._Sep)<>EOT alors
+      							selon Vrai
+      								cas cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstDate
+      									sClé+=[" AND "]+cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_sNomSQL+"="+m_pclBaseDeDonnées.DateVersSQL(ExtraitChaîne(xValeurClé,nOccurrence,cGénérique._Sep))
+      								cas cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstDateHeure
+      									sClé+=[" AND "]+cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_sNomSQL+"="+m_pclBaseDeDonnées.DateHeureVersSQL(ExtraitChaîne(xValeurClé,nOccurrence,cGénérique._Sep))
+      								cas cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstheure
+      									sClé+=[" AND "]+cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_sNomSQL+"="+m_pclBaseDeDonnées.HeureVersSQL(ExtraitChaîne(xValeurClé,nOccurrence,cGénérique._Sep))
+      								cas cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstTexte
+      									sClé+=[" AND "]+cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_sNomSQL+"='"+remplacE(ExtraitChaîne(xValeurClé,nOccurrence,cGénérique._Sep),"'","''")+"'"
+      								cas cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstBinaire	//cas des clés composées par exemple
+      									sClé+=[" AND "]+cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_sNomSQL+"=wl.HexaVersBuffer('"+ExtraitChaîne(xValeurClé,nOccurrence,cGénérique._Sep)+"')"
+      								AUTRE CAS
+      									sClé+=[" AND "]+cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_sNomSQL+"="+ExtraitChaîne(xValeurClé,nOccurrence,cGénérique._Sep)
+      							FIN
+      						FIN
+      					fin
+      				fin
+      				si sClé="" alors //on essaye avec le paramètre passé à la fonction
+      					nIndice=TableauCherche(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sNomOuStructureClé)
+      					SI nIndice<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0018§>,sNomOuStructureClé,m_sNom));renvoyer ""
+      					sClé=cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_sNomSQL+"="+(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstTexte ? "'"+Remplace(xValeurClé,"'","''")+"'" SINON xValeurClé)
+      				FIN
+      		fin
+      	SINON
+      		nIndice=TableauCherche(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonnesClé)
+      		SI nIndice<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0018§>,sColonnesClé,m_sNom));renvoyer ""
+      		SELON eAccèsForcé
+      			CAS cBaseDeDonnées.FonctionsH
+      				sClé=xValeurClé
+      			CAS cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC
+      				sClé=cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].m_sNomSQL+"="+(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_bEstTexte ? "'"+Remplace(xValeurClé,"'","''")+"'" SINON xValeurClé)
+      		fin
+      	FIN
+      	si m_pclErreur.p_sErreur="" alors renvoyer sClé sinon renvoyer ""
+      sinon
+      	m_pclErreur.AjouteErreur(<§$0002§>);renvoyer ""
+      fin
+      
+      	PROCÉDURE INTERNE HexaInverse(sChaineHexa est une chaine) : chaine
+      	sRes est une chaine
+      	POUR n=1 _a_ taille(sChaineHexa) pas 2
+      		sRes=Milieu(sChaineHexa,n,2)+sRes
+      	FIN		
+      	RENVOYER sRes
+      	FIN
+     type : 458752
+   -
+     name : Débloque
+     procedure_id : 2035133847023357512
+     type_code : 12
+     code : |1-
+      // Résumé : Débloque la table en cours.
+      // Syntaxe : [ <Résultat> = ] Débloque ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Retourne Vrai si la table est débloquée dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE Débloque() : booleen
+      renvoyer m_pclBaseDeDonnées.TableDéBloque(cApplication.mg_taInfo[m_sNomUnique].m_sNomOriginal)
+     type : 458752
+   -
+     name : Bloque
+     procedure_id : 2035133847023423048
+     type_code : 12
+     code : |1-
+      // Résumé : Bloque la table en cours.
+      // Syntaxe : [ <Résultat> = ] Bloque ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Retourne Vrai si la table est bloquée dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE Bloque() : booleen
+      renvoyer m_pclBaseDeDonnées.TableBloque(cApplication.mg_taInfo[m_sNomUnique].m_sNomOriginal,cApplication.mg_taInfo[m_sNomUnique].p_sCléPrimaire)
+     type : 458752
+   -
+     name : SQLColonneMémoVide
+     procedure_id : 2035133847023554120
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie du code SQL d'une colonne binaire vide. Permet de récupérer un binaire vide dans le résultat plutôt que de charger le binaire dès le départ.
+      // Syntaxe : [ <Résultat> = ] SQLColonneMémoVide (<sNomColonne> est chaîne)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Le nom de la colonne mémo pour laquelle la vérification sera faite.
+      // Valeur de retour : chaîne UNICODE : Code SQL d'une colonne binaire vide
+      // Exemple :
+      //
+      PROCEDURE SQLColonneMémoVide(sNomColonne est une chaine) : chaine
+      renvoyer m_pclBaseDeDonnées.SQLColonneMémoVide(sNomColonne)
+     type : 458752
+   -
+     name : Version
+     procedure_id : 2035867889690050949
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie la version d'une table en cours (voir HVersion).
+      // Syntaxe : [ <Résultat> = ] Version ()
+      // Paramètres : Aucun
+      // Valeur de retour : entier : Numéro de version de la table
+      // Exemple :
+      //
+      PROCEDURE Version() : entier
+      renvoyer m_pclBaseDeDonnées.TableVersion(cApplication.mg_taInfo[m_sNomUnique].m_sNomOriginal)
+     type : 458752
+   -
+     name : SQLTableForceIDauto
+     procedure_id : 2036207466738077445
+     type_code : 12
+     code : |1-
+      // Résumé : Retourne le code SQL permettant d'activer ou de désactive la gestion de l'identifiant auto-incrémental sur la table en cours.
+      // Syntaxe : [ <Résultat> = ] SQLTableForceIDauto ( <bForce> est booléen)
+      // Paramètres :
+      //	bForce (booléen) : Si vrai, la contrainte d'auto-incrémentation sera activée. Si faux, la contrainte sera désactivée.
+      // Valeur de retour : chaîne UNICODE : Contient le code SQL à utiliser pour activer ou désactiver la gestion de l'identifiant auto-incrémental. Chaine vide si en erreur ou si la fonction n'est pas supportée par la base de données cible.
+      // Exemple :
+      //
+      PROCEDURE SQLTableForceIDauto(bForce est un booleen) : booleen
+      renvoyer m_pclBaseDeDonnées.SQLTableForceIDauto(cApplication.mg_taInfo[m_sNomUnique].m_sNomOriginal,bForce)
+     type : 458752
+   -
+     name : SéquenceOracleAjoute
+     procedure_id : 2038830451215743092
+     type_code : 12
+     code : |1-
+      // Résumé : Associer une séquence Oracle à une colonne spécifiée
+      // Syntaxe : [ <Résultat> = ] SéquenceOracleAjoute (<sNomColonne> est chaîne, <sNomSéquence> est chaîne)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Nom de la colonne à laquelle associer la séquence Oracle. Il doit être fourni en tant que chaîne non vide.
+      //	sNomSéquence (chaîne UNICODE) : Nom de la séquence Oracle à associer à la colonne. Il doit être fourni en tant que chaîne non vide.
+      // Valeur de retour : booléen : Vrai si l'association de la séquence à la colonne est réussie. En cas d'échec, elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE SéquenceOracleAjoute(sNomColonne est une chaine,sNomSéquence est une chaine) : booleen
+      si sNomColonne~="" alors m_pclErreur.AjouteErreur(<§$0010§>)
+      si sNomSéquence~="" alors m_pclErreur.AjouteErreur(<§$0011§>)
+      	
+      si m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider dans (hAccèsNatifOracle,hOledbOracle) alors
+      	sNomColonne=Minuscule(sNomColonne)
+      	nIndice est un entier = TableauCherche(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sNomColonne)
+      	SI nIndice<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0013§>,sNomColonne)) sinon cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_sSéquenceOracle=sNomSéquence;renvoyer vrai
+      sinon
+      	m_pclErreur.AjouteErreur(<§$0014§>)
+      fin
+      renvoyer faux
+     type : 458752
+   -
+     name : SéquenceOracleSupprime
+     procedure_id : 2038830592949697088
+     type_code : 12
+     code : |1-
+      // Résumé : Supprime l'association d'une séquence Oracle préalablement définie avec une colonne spécifiée
+      // Syntaxe : [ <Résultat> = ] SéquenceOracleSupprime (<sNomColonne> est chaîne)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : nom de la colonne à partir de laquelle supprimer l'association de séquence Oracle. Il doit être fourni en tant que chaîne non vide.
+      // Valeur de retour : booléen : Vrai si la suppression de l'association de séquence est réussie. En cas d'échec ou si la colonne spécifiée n'existe pas, elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE SéquenceOracleSupprime(local sNomColonne est une chaine) : booleen
+      SI sNomColonne~="" ALORS m_pclErreur.AjouteErreur(<§$0010§>);renvoyer faux
+      
+      SI m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider DANS (hAccèsNatifOracle,hOledbOracle) ALORS
+      	sNomColonne=minuscule(sNomColonne)
+      	nIndice est un entier = TableauCherche(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sNomColonne)
+      	SI nIndice<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0013§>,sNomColonne)) sinon cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndice].p_sSéquenceOracle="";renvoyer vrai
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0014§>)
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : CascadeAjoute
+     procedure_id : 2056194788633645224
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute une relation de cascade entre la table courante et une table en cascade. Cette relation de cascade s'effectue sur une clé spécifiée, assurant que les modifications ou suppressions effectuées sur la clé primaire de la table principale sont répercutées sur les enregistrements liés dans la table en cascade.
+      // Syntaxe : [ <Résultat> = ] CascadeAjoute (<sNomTableCascade> est chaîne, <sNomCléCascade> est chaîne [, <sNomClé> est chaîne])
+      // Paramètres :
+      //	sNomTableCascade (chaîne UNICODE) : Nom de la table en cascade.
+      //	sNomCléCascade (chaîne UNICODE) : Nom de la clé étrangère dans la table en cascade.
+      //	sNomClé (chaîne UNICODE optionnelle) : Nom de la clé primaire dans la table courante. Par défaut, la clé primaire de la table courante est utilisée.
+      // Valeur de retour : booléen : Indique si l'ajout de la cascade a réussi (Vrai) ou échoué (Faux).
+      // Exemple :
+      //
+      PROCEDURE CascadeAjoute(sNomTableCascade est une chaine,sNomCléCascade est une chaine,local sNomClé est une chaine = cApplication.mg_taInfo[m_sNomUnique].p_sColonnesCléPrimaire) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTableCascade,sNomCléCascade,sNomClé)
+      m_pclErreur.RAZ()
+      
+      SI sNomTableCascade~="" ALORS m_pclErreur.AjouteErreur(<§$0015§>)
+      SI sNomCléCascade~="" 	ALORS m_pclErreur.AjouteErreur(<§$0016§>)
+      Indexes()
+      
+      sNomClé=Minuscule(sNomClé)
+      nIndice est un entier = tableaucherche(capplication.mg_taInfo[m_sNomUnique].m_tabIndexes,tcLinéaire,"m_sNom",sNomClé)
+      SI nIndice<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0017§>,sNomClé));renvoyer faux
+      
+      //on ne peut pas savoir ici si la table ou la clé cascade existent car on n'y a peut être pas encore accédé (et elle n'est donc pas encore dans cTable.mg_taInfo)
+      sNomUniqueCascade est une chaine = ExtraitChaîne(m_sNomUnique,1,cGénérique._Sep)+cGénérique._Sep+ExtraitChaîne(m_sNomUnique,2,cGénérique._Sep)+cGénérique._Sep+minuscule(sNomTableCascade)	//la table en cascade doit être sur le même serveur et la même base
+      SI TableauCherche(cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes[nIndice].m_tabLienIntégrité,tcLinéaire,sNomUniqueCascade+"."+Minuscule(sNomCléCascade))=-1 ALORS
+      	TableauAjoute(cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes[nIndice].m_tabLienIntégrité,sNomUniqueCascade+"."+Minuscule(sNomCléCascade))
+      FIN
+      m_bGérerIntégrité=Vrai
+      RENVOYER Vrai
+     type : 458752
+   -
+     name : SupprimeTout
+     procedure_id : 2056195866670490512
+     type_code : 12
+     code : |1-
+      // Résumé : Supprime tous les enregistrements d'une table en tenant compte des relations de cascade définies (voir CascadeAjoute) et d'une condition.
+      // Syntaxe : [ <Résultat> = ] SupprimeTout (<sCondition> est chaîne)
+      // Paramètres :
+      //	sCondition (chaîne UNICODE) : Condition spécifiant les enregistrements à supprimer. En cas de chaîne vide, supprime tous les enregistrements de la table.
+      // Valeur de retour : booléen : Indique si la suppression a réussi (Vrai) ou échoué (Faux).
+      // Exemple :
+      //
+      PROCEDURE SupprimeTout(sCondition est une chaine) : booleen	//ne pas mettre "" comme condition par défaut, ainsi il faut explicitement passer "" pour supprimer tous les enregistrements de la table
+      sTableColonne,sConditionCascade,sColonnesClé,sColonnesCléCascade,sColonneCascade,sColonne sont des chaines
+      nIndice,nIndiceCascade sont des entiers
+      //A FAIRE : vérifier les clés primaires composées
+      
+      clSQL est un csql(m_nIndiceDeConnexion,m_sNom,m_sMotDePasse,m_sAnalyse,m_sMotDePasseAnalyse)
+      si m_bGérerIntégrité alors
+      	//parcours d'abord les enregistrements 1 a 1 pour supprimer ceux qui sont liés en cascade
+      	si clSQL.requete("SELECT "+SQLEncadreColonnes(cApplication.mg_taInfo[m_sNomUnique].m_sColonnesCléPrimaire)+" FROM "+m_sNomSQL+[" WHERE "]+sCondition) alors
+      		pour tout clSQL.m_sd		
+      			POUR TOUT pclUneClé de cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes
+      				sColonnesClé=CléVersColonnesClé(pclUneClé.m_snom)
+      				POUR TOUT sCascade de pclUneClé.m_tabLienIntégrité
+      					sTableColonne = ExtraitChaîne(sCascade,3,cGénérique._Sep)
+      					clTableCascade est un cTable(m_nIndiceDeConnexion,extraitchaine(sTableColonne,1,"."))
+      					nIndice = tableaucherche(cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes,tcLinéaire,"m_sNom",ExtraitChaîne(sTableColonne,2,"."))
+      					si nIndice>0 alors
+      						sColonnesCléCascade=cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes[nIndice].p_sComposantes
+      						sConditionCascade=""
+      						POUR TOUTE CHAÎNE sColonne,nPosition,nIndice de pclUneClé.p_sComposantes separee par ","
+      							sColonneCascade=ExtraitChaîne(sColonnesCléCascade,nIndice,",")
+      							nIndiceCascade=TableauCherche(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonneCascade)
+      							si nIndiceCascade>0 alors
+      								sConditionCascade+=[" AND "]+(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndiceCascade].m_sNomSQL+"=")
+      								sConditionCascade+=(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndiceCascade].p_bEstNumérique _ou_ cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndiceCascade].p_bEstBooléen ? "" SINON "'")
+      								sConditionCascade+=Remplace({clSQL.m_sd+"."+sColonne,indRubrique},"'","''")
+      								sConditionCascade+=(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndiceCascade].p_bEstNumérique _OU_ cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes[nIndiceCascade].p_bEstBooléen ? "" SINON "'")
+      							fin
+      						FIN
+      						SI PAS clTableCascade.Supprimetout(sConditionCascade) ALORS	m_pclErreur.AjouteErreur(clTableCascade.p_sErreur) //pas renvoyer faux car des relations 0,1 pourraient faire qu'il n'y a pas d'erreur de laisser traîner du détail sans entête
+      					fin
+      				FIN
+      			FIN
+      		fin
+      	fin
+      fin
+      
+      RENVOYER clSQL.Requête("DELETE FROM "+m_sNomSQL+(sCondition="" ? "" sinon " WHERE "+sCondition))
+     type : 458752
+   -
+     name : CascadeSupprimeTout
+     procedure_id : 2056204417951974954
+     type_code : 12
+     code : |1-
+      // Résumé : Supprime toutes les cascades ajoutées par CascadeAjoute()
+      // Syntaxe : [ <Résultat> = ] CascadeSupprimeTout (<sNomClé> est chaîne)
+      // Paramètres :
+      //	sNomClé (chaîne UNICODE) : nom de la clé étrangère qui a été ajoutée dans la cascade.
+      // Valeur de retour : booléen : Indique si la suppression en cascade a réussi (Vrai) ou échoué (Faux).
+      // Exemple :
+      //
+      PROCEDURE CascadeSupprimeTout(local sNomClé est une chaine) : booleen
+      sNomClé = Minuscule(sNomClé)
+      Indexes()
+      nIndice est un entier = TableauCherche(cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes,tcLinéaire,"m_sNom",sNomClé)
+      SI nIndice<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0017§>,sNomClé));renvoyer faux
+      
+      TableauSupprimeTout(cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes[nIndice].m_tabLienIntégrité)
+      m_bGérerIntégrité=faux
+      renvoyer vrai
+     type : 458752
+   -
+     name : SQLEncadreNom
+     procedure_id : 2200247291734602655
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie le nom de la table encadrées par les caractères contenus dans cBaseDeDonnées.SQLAvantTable et BaseDeDonnées.SQLAprèsTable afin d'être compatible avec SQL.
+      // Syntaxe : [ <Résultat> = ] SQLEncadreNom ()
+      // Paramètres :	Aucun
+      // Valeur de retour : chaîne UNICODE : Nom de la table compatible avec SQL
+      // Exemple :
+      //
+      procédure SQLEncadreNom() : chaine
+      RENVOYER m_pclBaseDeDonnées.SQLAvantTable()+(m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider=cBaseDeDonnéesHyperFile.hAccèsHF5 ? m_sPremierAlias SINON m_sNomLogique)+m_pclBaseDeDonnées.SQLAprèsTable()
+     type : 458752
+   -
+     name : SQLEncadreColonnes
+     procedure_id : 2200262710678846539
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie le nom d'une colonne encadrées par les caractères contenus dans cBaseDeDonnées.SQLAvantColonne et BaseDeDonnées.SQLAprèsColonne afin d'être compatible avec SQL.
+      // Syntaxe : [ <Résultat> = ] SQLEncadreColonnes (<sNomColonne> est chaîne)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Nom de la colonne à transformer.
+      // Valeur de retour : chaîne UNICODE : Nom de la table compatible avec SQL
+      // Exemple :
+      //
+      PROCEDURE SQLEncadreColonnes(sNomColonne est une chaine) : chaine	//pour mettre le nom des colonnes (qui sont des mots réservés) entre [ ] ou "" etc
+      sRes,sNom est une chaîne
+      POUR TOUTE CHAÎNE sNom DE sNomColonne SEPAREE PAR ","
+      	sNom=Remplace(Remplace(sNom,SQLEncadreNom(),"",SansCasse+MotComplet),cApplication.mg_taInfo[m_sNomUnique].m_sNomSQL+".","",SansCasse+MotComplet)
+      	sRes+=[","]+(m_pclBaseDeDonnées.sqlTableAvantColonne() ? SQLEncadreNom()+"." SINON "")+m_pclBaseDeDonnées.SQLAvantColonne()+sNom+m_pclBaseDeDonnées.SQLAprèsColonne()
+      FIN
+      RENVOYER sRes
+     type : 458752
+   -
+     name : SQLColonnes
+     procedure_id : 2202051916193231514
+     type_code : 12
+     code : |1-
+      // Résumé : Liste des colonnes sous forme de chaîne pour une utilisation dans une requête SQL. Elle permet de spécifier les colonnes et les colonnes de type mémo à inclure.
+      // Syntaxe : [ <Résultat> = ] SQLColonnes ( [<sColonnes> est chaîne [, <sColonnesMémo> est chaîne]])
+      // Paramètres :
+      // 	sColonnes (chaîne UNICODE optionnelle) : Liste des colonnes à inclure dans la requête SQL. Par défaut, toutes les colonnes sont incluses si sColonnes est égal à "*".
+      //	sColonnesMémo (chaîne UNICODE optionnelle) : Liste des colonnes de type mémo à inclure dans la requête SQL. Par défaut, aucune les colonnes mémo sont incluses.
+      // Valeur de retour : chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      // Exemple :
+      //
+      PROCEDURE SQLColonnes(local sColonnes est une chaîne = "*",local sColonnesMémo est une chaîne = "") : chaîne
+      colonnes()
+      si sColonnes="*" _Et_ sColonnesMémo="" _et_ cApplication.mg_taInfo[m_sNomUnique].m_sToutesLesColonnesSQL>"" alors renvoyer cApplication.mg_taInfo[m_sNomUnique].m_sToutesLesColonnesSQL
+      sRes 			est une chaîne
+      sColonnes		= minuscule(sColonnes)
+      sColonnesMémo	= minuscule(sColonnesMémo)
+      
+      pour tout pclColonne de cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes
+      	si pas pclColonne.p_bEstMémoBinaire alors
+      		SI sColonnes="*" _OU_ Position(sColonnes,pclColonne.m_sNom,0,MotComplet+SansCasse)>0 ALORS sRes+=[","]+pclColonne.p_sNomSQL
+      	sinon 
+      		si sColonnesMémo="*" _OU_ Position(sColonnesMémo,pclColonne.m_sNom,0,MotComplet+SansCasse)>0 alors
+      			sRes+=[","]+pclColonne.p_sNomSQL
+      		sinon
+      			sRes+=[","]+SQLColonneMémoVide(pclColonne.m_sNom)		//pas p_sNomSQL car renvoie un "AS NomDeLaColonne"
+      		FIN
+      	FIN
+      FIN
+      
+      SI sColonnes="*" _ET_ sColonnesMémo="" alors cApplication.mg_taInfo[m_sNomUnique].m_sToutesLesColonnesSQL=sRes
+      RENVOYER sRes
+     type : 458752
+   -
+     name : DateHeure
+     procedure_id : 2202474214915270920
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie la date et heure de modification ou de création d'une table en cours (voir HInfoPropriétéFichier) .
+      // Syntaxe : [ <Résultat> = ] TableDateHeure ([ <bCréation> est chaîne ])
+      // Paramètres :
+      //	bCréation (booléen optionnel) : Le nom de la table pour laquelle l'on souhaite la dateheure.
+      // Valeur de retour : chaîne UNICODE : Nom de la table + TAB + DateHeure de la table
+      // Exemple :
+      //
+      PROCEDURE DateHeure(bCréation est un booleen = faux) : dateheure
+      RENVOYER m_pclBaseDeDonnées.TableDateHeure(cApplication.mg_taInfo[m_sNomUnique].m_sNomOriginal,bCréation)
+     type : 458752
+   -
+     name : Indexes
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2203483639303633916
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les index de la table.
+      // Syntaxe : [ <Résultat> = ] Indexes ( [<bDescriptionComplète> est booléen [, <bForceRechargement> est booléen]])
+      // Paramètres :
+      // 	bDescriptionComplète (booléen optionnel) : Indique si une description complète des index doit être chargée, par défaut Faux.
+      // 	bForceRechargement (booléen optionnel) : Force le rechargement des index même si une version précédente est déjà chargée.
+      // Valeur de retour : booléen : Renvoie Vrai si les index sont chargés avec succès, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Indexes(bDescriptionComplète est un booleen=faux,bForceRechargement est un booleen = faux) : booleen
+      m_pclErreur.Raz()
+      
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	colonnes()
+      	
+      	//attention, clé et index sont la même chose en HyperFileSQL !
+      	SI m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider DANS (hAccèsHF7,hAccèsHFClientServeur,cBaseDeDonnéesHyperFile.hAccèsHF5) ALORS
+      		SI (cApplication.mg_taInfo[m_sNomUnique].p_eIndexesChargées=cTable.TableDétailCompletChargé _OU_ (PAS bDescriptionComplète _ET_ cApplication.mg_taInfo[m_sNomUnique].p_eIndexesChargées=cTable.TableDétailBasiqueChargé)) _ET_ PAS bForceRechargement ALORS RENVOYER PAS cApplication.mg_taInfo[m_sNomUnique].p_eIndexesChargées=cTable.TableDétailNonChargé
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bDescriptionComplète,bForceRechargement)		//ici pour ne pas avoir trop de trace inutiles
+      		SI bForceRechargement ALORS cApplication.mg_taInfo[m_sNomUnique].p_eIndexesChargées=cTable.TableDétailNonChargé
+      		cApplication.mg_taInfo[m_sNomUnique].p_eIndexesChargées=(bDescriptionComplète ? cTable.TableDétailCompletChargé sinon cTable.TableDétailBasiqueChargé)
+      	
+      		sIndexes,sComposantes,sNomIndex			sont des chaines
+      		bCasse,bAccent,bPonctuation,bAscendante	sont des booleen
+      		nIndice,nStatEnreg,nStatDoublon			est un entier
+      		dhStat									est une dateheure
+      		pclIndex 								est un cIndex dynamique
+      		
+      		sIndexes = HListeClé(cApplication.mg_taInfo[m_sNomUnique].m_sPremierAlias,hLstDétail)
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteTexte("Indexes="+sIndexes)
+      		
+      		POUR TOUTE CHAÎNE sIndex,nPosition,nIndice de sIndexes separee par rc
+      			sNomIndex		= ExtraitChaîne(sIndex,1)
+      			SI m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider=hAccèsNatifSQLite ET sNomIndex="ROWID" ALORS CONTINUER	//ATTENTION : en SQLLite, le ROWID : on ne prend pas en compte cette rubrique	
+      			sComposantes= Remplace(ExtraitChaîne(sIndex,4),"+",tab)
+      			SI m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider<>cBaseDeDonnéesHyperFile.hAccèsHF5 alors
+      				bAscendante	= {cApplication.mg_taInfo[m_sNomUnique].m_sPremierAlias+"."+Minuscule(sNomIndex),indRubrique}..TypeTri=hCroissant
+      				SI bDescriptionComplète ALORS
+      					SI m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider DANS (hAccèsHF7,hAccèsHFClientServeur) alors
+      						
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      							bCasse		= {cApplication.mg_taInfo[m_sNomUnique].m_sPremierAlias+"."+Minuscule(sNomIndex),indRubrique}..SensibleCasse
+      							bAccent		= {cApplication.mg_taInfo[m_sNomUnique].m_sPremierAlias+"."+Minuscule(sNomIndex),indRubrique}..SensibleAccentuation
+      							bPonctuation= {cApplication.mg_taInfo[m_sNomUnique].m_sPremierAlias+"."+Minuscule(sNomIndex),indRubrique}..SensiblePonctuation
+      	
+      <sinon si CibleExécution=Java>
+      	
+      	bCasse=faux;bAccent=faux;bPonctuation=faux
+      	
+      <fin>
+      
+      						
+      						dhStat		= HStatDate(cApplication.mg_taInfo[m_sNomUnique].m_sPremierAlias,sNomIndex)+HStatheure(cApplication.mg_taInfo[m_sNomUnique].m_sPremierAlias,sNomIndex)
+      						nStatDoublon= HStatNbDoublon(cApplication.mg_taInfo[m_sNomUnique].m_sPremierAlias,sNomIndex)
+      						nStatEnreg	= HStatNbEnr(cApplication.mg_taInfo[m_sNomUnique].m_sPremierAlias,sNomIndex)
+      						pclIndex 	= allouer un cIndex(m_nIndiceDeConnexion,m_sNomUnique,sNomIndex,ExtraitChaîne(sIndex,5)="1",bAscendante,bCasse,bAccent,bPonctuation)
+      					sinon
+      						pclIndex 	= allouer un cIndex(m_nIndiceDeConnexion,m_sNomUnique,sNomIndex,ExtraitChaîne(sIndex,5)="1",bAscendante)
+      					fin
+      				sinon
+      					pclIndex = allouer un cIndex(m_nIndiceDeConnexion,m_sNomUnique,sNomIndex,ExtraitChaîne(sIndex,5)="1",bAscendante)
+      				fin
+      				pour nComposante  = 1 _a_ {cApplication.mg_taInfo[m_sNomUnique].m_sPremierAlias+"."+sNomIndex,indRubrique}..NbComposante
+      					pclIndex.ComposanteAjoute(extraitchaine(sComposantes,nComposante),{cApplication.mg_taInfo[m_sNomUnique].m_sPremierAlias+"."+sNomIndex,indRubrique}[nComposante]..TypeTri=hCroissant)
+      				FIN
+      			sinon
+      				pclIndex = allouer un cIndex(m_nIndiceDeConnexion,m_sNomUnique,sNomIndex,ExtraitChaîne(sIndex,5)="1",bAscendante)
+      			fin
+      			tableauajoute(m_tabIndexes,pclIndex)
+      			
+      			SI pclIndex.m_bEstAutomatique alors
+      				si m_sColonneAutomatique= "" alors cApplication.mg_taInfo[m_sNomUnique].m_sColonneAutomatique=pclIndex.m_snom //il ne peut en avoir qu'une, sinon s'il y a plusieurs ID auto (WTF!?) on prend le premier
+      				m_sNomCléPrimaire											= pclIndex.m_sNom
+      				cApplication.mg_taInfo[m_sNomUnique].m_sNomCléPrimaire		= pclIndex.m_sNom
+      				cApplication.mg_taInfo[m_sNomUnique].m_sColonnesCléPrimaire	= pclIndex.p_sComposantes
+      			FIN
+      			SI pclIndex.m_bEstUnique _ET_ m_sNomCléPrimaire="" alors 
+      				cApplication.mg_taInfo[m_sNomUnique].m_sNomCléPrimaire		= pclIndex.m_sNom
+      				cApplication.mg_taInfo[m_sNomUnique].m_sColonnesCléPrimaire	= pclIndex.p_sComposantes
+      			FIN
+      		FIN
+      		
+      		SI m_sNomCléPrimaire="" _Et_ m_sColonneAutomatique>"" ALORS	
+      			//cas où un champ a été identifié comme automatique mais qu'aucun index n'y est rattaché (et oui, ça existe)
+      			nIndice = tableaucherche(cApplication.mg_taInfo[m_sNomUnique].p_tabIndexes,tcLinéaire,"m_sNom",m_sColonneAutomatique)
+      			si nIndice<1 alors 
+      				//on rajoute une "clé primaire virtuelle" pour faciliter la suite des traitements
+      				pclIndex = allouer un cIndex(m_nIndiceDeConnexion,m_sNomUnique,p_tabColonnes[nIndice].m_sNomOriginal,vrai,{cApplication.mg_taInfo[m_sNomUnique].m_sPremierAlias+"."+sNomIndex,indRubrique}..TypeTri=hCroissant)
+      				pclIndex.ComposanteAjoute(sNomIndex,{cApplication.mg_taInfo[m_sNomUnique].m_sNomOriginal+"."+sNomIndex,indRubrique}[1]..TypeTri=hCroissant)
+      				TableauAjoute(cApplication.mg_taInfo[m_sNomUnique].p_tabIndexes,pclIndex)
+      			sinon
+      				cApplication.mg_taInfo[m_sNomUnique].p_tabIndexes[nIndice].m_bEstPrimaire=vrai
+      				m_sNomCléPrimaire = pclIndex.m_sNom
+      				cApplication.mg_taInfo[m_sNomUnique].m_sColonnesCléPrimaire=pclIndex.p_sComposantes
+      			FIN
+      		FIn
+      	SINON SI m_eSource=TablePhysique ALORS
+      		m_sTousLesIndexes=m_pclBaseDeDonnées.tableIndexes(m_sNomUnique)	//colonnes récupérées via les fonctions de la base de données
+      		SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur);RENVOYER faux
+      	FIN
+      	renvoyer vrai
+      SINON
+      	m_pclErreur.AjouteErreur(<§$000e§>)
+      FIN
+      RENVOYER faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER faux
+     type : 458752
+   -
+     name : Droits
+     procedure_id : 2203541217690553967
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui permet de déterminer les droits d'accès (ajout, modification, suppression) pour la table actuelle en fonction du type de base de données.
+      PROCEDURE PRIVÉE Droits()
+      sDroits est une chaine
+      SELON m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider
+      	CAS hAccèsHF7
+      		cApplication.mg_taInfo[m_sNomUnique].m_bDroitAjout=Contient(fAttribut(m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Serveur+[fSep()]+m_sNomOriginal+".fic"),"R")
+      		cApplication.mg_taInfo[m_sNomUnique].m_bDroitModification=cApplication.mg_taInfo[m_sNomUnique].m_bDroitAjout
+      		cApplication.mg_taInfo[m_sNomUnique].m_bDroitSuppression=cApplication.mg_taInfo[m_sNomUnique].m_bDroitAjout
+      	CAS hAccèsHFClientServeur
+      		sDroits=HInfoDroitFichier(m_pclBaseDeDonnées.m_stConnexion.cnxDonnées,m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Utilisateur,hDroitTous,m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..BaseDeDonnées,m_sNomOriginal+".fic",hEffectif)
+      		cApplication.mg_taInfo[m_sNomUnique].m_bDroitAjout=Contient(sDroits,hDroitAjout,MotComplet)
+      		cApplication.mg_taInfo[m_sNomUnique].m_bDroitModification=Contient(sDroits,hDroitModification,MotComplet)
+      		cApplication.mg_taInfo[m_sNomUnique].m_bDroitSuppression=Contient(sDroits,hDroitSuppression,MotComplet)
+      	CAS hAccèsNatifSQLServer
+      		clSQL	est un csql(m_nIndiceDeConnexion,m_sNomOriginal,m_sMotDePasse,m_sAnalyse,m_sMotDePasseAnalyse)
+      		//ref : https://stackoverflow.com/questions/1987190/scripting-sql-server-permissions
+      		sReq 	est une chaine = [
+      		SELECT<§cs:6§>
+      			dp.state_desc,dp.permission_name collate latin1_general_cs_as AS GRANT_STMT<§cs:6§>
+      		FROM <§cs:6§>
+      			sys.database_permissions AS dp<§cs:6§>
+      		INNER JOIN <§cs:6§>
+      			sys.objects AS o ON dp.major_id = o.object_id<§cs:6§>
+      		INNER JOIN <§cs:6§>
+      			sys.schemas AS s ON o.schema_id = s.schema_id<§cs:6§>
+      		INNER JOIN <§cs:6§>
+      			sys.database_principals AS dpr ON dp.grantee_principal_id=dpr.principal_id<§cs:6§>
+      		WHERE <§cs:6§>
+      			dpr.name = CURRENT_USER AND o.name='%1'<§cs:6§>
+      		]
+      		cApplication.mg_taInfo[m_sNomUnique].m_bDroitAjout=Vrai
+      		cApplication.mg_taInfo[m_sNomUnique].m_bDroitModification=Vrai
+      		cApplication.mg_taInfo[m_sNomUnique].m_bDroitSuppression=Vrai	//si pas de retour, alors on a le droit
+      		SI clSQL.Requête(ChaîneConstruit(sReq,m_sNomOriginal)) ALORS
+      			POUR TOUT clSQL.m_sd 
+      				SI clSQL.m_sd.state_desc="REVOKE" ALORS
+      					SI clSQL.m_sd.permission_name="INSERT" ALORS cApplication.mg_taInfo[m_sNomUnique].m_bDroitAjout=Faux
+      					SI clSQL.m_sd.permission_name="UPDATE" ALORS cApplication.mg_taInfo[m_sNomUnique].m_bDroitModification=Faux
+      					SI clSQL.m_sd.permission_name="DELETE" ALORS cApplication.mg_taInfo[m_sNomUnique].m_bDroitModification=Faux
+      				FIN
+      			FIN
+      		FIN
+      FIN
+     type : 458752
+   -
+     name : ValeurDéfaut
+     procedure_id : 2203603353037786447
+     type_code : 12
+     code : |1-
+      // Résumé : Défini une valeur par défaut pour une colonne spécifique, éventuellement associée à un groupe de valeurs (ex : un groupe "devis" et "facture"). Voir cEnregistrement.RazDéfaut
+      // Syntaxe : [ <Résultat> = ] ValeurDéfaut (<xValeur>, <sNomColonne> est chaîne [, <sNomGroupeDeValeur> est chaîne])
+      // Paramètres :
+      // 	xValeur : La valeur par défaut à définir.
+      //	sNomColonne (chaîne UNICODE) : Le nom de la colonne pour laquelle la valeur par défaut sera définie.
+      //	sNomGroupeDeValeur (chaîne UNICODE optionnelle) : Le nom du groupe de valeurs auquel la valeur par défaut est associée. Par défaut, il est vide.
+      // Valeur de retour : booléen : Renvoie Vrai si la définition de la valeur par défaut est réussie, sinon Faux.
+      // Exemple :
+      //
+      PROCEDURE ValeurDéfaut(xValeur,sNomColonne est une chaine,sNomGroupeDeValeur est une chaine = "") : booleen
+      colonnes()
+      nIndice est un entier = TableauCherche(cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sNomColonne)
+      SI nIndice>0 ALORS 
+      	capplication.mg_taValeurParDéfaut[sNomColonne+["."]+sNomGroupeDeValeur]=xValeur;RENVOYER Vrai
+      SINON 
+      	m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0018§>,sNomColonne,m_sNom));renvoyer faux
+      FIN
+     type : 458752
+   -
+     name : Colonnes
+     procedure_id : 2207192291976539730
+     type_code : 12
+     code : |1+
+      // Résumé : Charge les informations sur les colonnes de la table, en récupérant leurs propriétés depuis la base de données.
+      // Syntaxe : [ <Résultat> = ] Colonnes ( [<bDescriptionComplète> est booléen [, <bForceRechargement> est booléen]])
+      // Paramètres :
+      // 	bDescriptionComplète (booléen optionnel) : Indique si une description complète des colonnes doit être chargée. Par défaut, la valeur est Faux.
+      // 	bForceRechargement (booléen optionnel) : Indique si le rechargement des informations des colonnes doit être forcé, même si elles ont déjà été chargées précédemment. Par défaut, la valeur est Faux.
+      // Valeur de retour : booléen : Renvoie Vrai si les informations sur les colonnes ont été chargées avec succès, sinon Faux.
+      // Exemple :
+      //
+      PROCEDURE Colonnes(bDescriptionComplète est un booleen = faux,bForceRechargement est un booleen = faux) : booleen
+      m_pclErreur.Raz()
+      
+      si m_pclBaseDeDonnées<>null alors
+      	SI (cApplication.mg_taInfo[m_sNomUnique].p_eColonnesChargées=cTable.TableDétailCompletChargé _OU_ (PAS bDescriptionComplète _ET_ cApplication.mg_taInfo[m_sNomUnique].p_eColonnesChargées=cTable.TableDétailBasiqueChargé)) _ET_ PAS bForceRechargement ALORS RENVOYER PAS cApplication.mg_taInfo[m_sNomUnique].p_eColonnesChargées=cTable.TableDétailNonChargé
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bDescriptionComplète,bForceRechargement)		//ici pour ne pas avoir trop de trace inutiles
+      	
+      	SI m_eSource<>ProcédureStockée ALORS	//les colonnes d'une procédure stockée ne sont connues qu'après l'exécution de celle-ci
+      		si m_pclBaseDeDonnées.m_stConnexion.eAccès=cBaseDeDonnées.FonctionsH _ou_ m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider dans (hAccèsHF7,hAccèsHFClientServeur,cBaseDeDonnéesHyperFile.hAccèsHF5) alors
+      			clSQL est un csql(m_nIndiceDeConnexion,m_sNomOriginal,m_sMotDePasse,m_sAnalyse,m_sMotDePasseAnalyse)
+      			si pas clSQL.Colonnes(bDescriptionComplète,bForceRechargement) alors renvoyer faux
+      		sinon si m_pclBaseDeDonnées.m_stConnexion.eAccès=cBaseDeDonnées.RequêteSQL alors
+      			SI cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes..Occurrence=0 _et_ PAS m_pclBaseDeDonnées.TableColonnes(m_sNomUnique,bDescriptionComplète,bForceRechargement) ALORS RENVOYER Faux	//colonnes récupérées via les fonctions de la base de données
+      		sinon
+      			SI cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes..Occurrence=0 _ET_ m_pclBaseDeDonnées.TableColonnes(m_sNomUnique,bDescriptionComplète,bForceRechargement) ALORS RENVOYER Faux	//colonnes récupérées via les fonctions de la base de données
+      //			SI Position(sColonnes,"<cast",0,SansCasse)>0 ALORS STOP		//mis en commentaire car plantage bizarre ici
+      			POUR TOUTE CHAÎNE sExt de cBaseDeDonnéesHyperFile._ExtensionHyperFileSQL5
+      				SI fFichierExiste(cApplication._Application.p_sRépertoireTemporaire+["\"]+m_sPremierAlias+"."+sExt) ALORS 
+      					//enlève le fichier physique de l'exécution précédente (au cas où la structure aurait changé entre-temps)
+      					si pas fSupprime(cApplication._Application.p_sRépertoireTemporaire+["\"]+m_sPremierAlias+"."+sExt) alors m_pclErreur.ajouteerreurwx();renvoyer faux
+      				FIN
+      			FIN
+      			//crée un fichier physique sur lequel sera basé la requête vide
+      			si pas StructureInit() alors renvoyer faux
+      		FIN
+      	fin
+      FIN		
+      renvoyer vrai
+      
+      	PROCÉDURE INTERNE StructureInit() : booleen	//initialiser la structure de la source de donnée : requête qui ne renvoie aucun résultat (utile en cas d'ajout qui n'est pas précédé d'une recherche)
+      	SI PAS HFichierExiste(m_sPremierAlias) ALORS
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute("Création d'un fichier fantôme : "+cApplication._Application.p_sRépertoireTemporaire+m_sPremierAlias+".fic")
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=WindowsMobile>
+      	
+      			//en ODBC ou pour les fichier Excel, obligation de refaire la structure à la main et de créer un fichier vide temporaire
+      			//la structure est déjà en mémoire, on l'impose à la source de données (pour être compatible avec le code existant et le mapping)
+      			drRubrique 				est une Description de Rubrique
+      			dfFichier 				est une Description de fichier
+      			nColonne				est un entier
+      			dfFichier..Nom 			= m_sPremierAlias
+      			dfFichier..Type 		= hFichierNormal
+      			dfFichier..NullSupporté	= Vrai
+      			POUR TOUT pclUneColonne de cApplication.mg_taInfo[m_sNomUnique].p_tabColonnes
+      				nColonne++
+      				si m_pclBaseDeDonnées.m_stConnexion.cnxDonnées..Provider=cBaseDeDonnéesExcel.hAccèsNatifExcel alors
+      					drRubrique..Nom 		= cFichierExcel.numColonneVersLettre(nColonne,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.m_eFormat) 
+      				sinon 
+      					drRubrique..Nom 		= pclUneColonne.m_sNomOriginal
+      				fin
+      				drRubrique..Type 			= pclUneColonne.m_nTypeWD
+      				SI drRubrique..Type DANS (hRubMémoBinaire,hRubMémoTexte,hRubMémoUnicode) ALORS
+      					drRubrique..Taille 		= 8
+      				SINON
+      					drRubrique..Taille		= pclUneColonne.m_nTaille
+      				FIN
+      				drRubrique..NullAutorisé	= pclUneColonne.p_bEstNullable
+      				drRubrique..ValeurParDéfaut	= pclUneColonne.m_sValeurDéfaut
+      				drRubrique..TypeClé 		= hNonClé
+      				//pas de gestion de partie décimale ou entière car pas de type "numérique" ici
+      				HDécritRubrique(dfFichier,drRubrique)
+      			FIN
+      			SI PAS HDécritFichier(dfFichier) _OU_ PAS HChangeRep(m_sPremierAlias,cApplication._Application.p_sRépertoireTemporaire) _OU_ PAS HCréation(m_sPremierAlias) ALORS 
+      				m_pclErreur.AjouteErreurHF();renvoyer faux
+      		FIN
+      	
+      <fin>
+      
+      	
+      	renvoyer vrai
+      	FIN
+      	FIN
+     type : 458752
+  properties :
+   -
+     name : p_bDroitModification
+     identifier : 0x1e945409041bc996
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur qui précise si l'utilisateur dispose des droits de modification sur la table.
+         PROCEDURE PUBLIQUE p_bDroitModification() : booleen
+         Droits()	//exécution systématique car peut changer
+         renvoyer cApplication.mg_taInfo[m_sNomUnique].m_bDroitModification
+        type : 1966080
+     template_refs : []
+   -
+     name : p_tabIndexes
+     identifier : 0x1e946eff081c195d
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le tableau des indexes
+         PROCEDURE PUBLIQUE p_tabIndexes()
+         renvoyer cApplication.mg_taInfo[m_sNomUnique].m_tabIndexes
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bDroitSuppression
+     identifier : 0x1e948dff08613420
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur qui précise si l'utilisateur dispose des droits de suppression sur la table. 
+         PROCEDURE PUBLIQUE p_bDroitSuppression() : booleen
+         Droits()	//exécution systématique car peut changer
+         RENVOYER cApplication.mg_taInfo[m_sNomUnique].m_bDroitSuppression
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bDroitAjout
+     identifier : 0x1e948e4808625018
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur qui précise si l'utilisateur dispose des droits d'ajouter des enregistrement dans la table. 
+         PROCEDURE PUBLIQUE p_bDroitAjout() : booleen
+         Droits()	//exécution systématique car peut changer
+         RENVOYER cApplication.mg_taInfo[m_sNomUnique].m_bDroitAjout
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sTousLesIndexes
+     identifier : 0x1e96fa861eaa236f
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie tous les indexes séparés par des virgules
+         PROCEDURE PUBLIQUE p_sTousLesIndexes() : chaine
+         renvoyer cApplication.mg_taInfo[m_sNomUnique].m_sTousLesIndexes
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Ajoute un nouvel index à la liste des indexes de la table
+         PROCEDURE PUBLIQUE p_sTousLesIndexes(Valeur)
+         cApplication.mg_taInfo[m_sNomUnique].m_sTousLesIndexes+=[","]+Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sToutesLesColonnes
+     identifier : 0x1e9ede24695da741
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie toute les colonnes séparées par des virgules
+         PROCEDURE p_sToutesLesColonnes() : chaîne
+         RENVOYER m_sToutesLesColonnes
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Ajoute un nouvel index à la liste des indexes de la table
+         PROCEDURE p_sToutesLesColonnes(Valeur est une chaîne)
+         cApplication.mg_taInfo[m_sNomUnique].m_sToutesLesColonnes+=[","]+Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sToutesLesColonnesMémoBinaire
+     identifier : 0x1e9ede4f69b850b9
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie toutes les colonnes mémo binaire séparées par des virgules
+         PROCEDURE p_sToutesLesColonnesMémoBinaire() : chaîne
+         RENVOYER cApplication.mg_taInfo[m_sNomUnique].m_sToutesLesColonnesMémoBinaire
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Ajoute une nouvelle colonne "mémo binaire" à la liste des colonnes mémo binaire
+         PROCEDURE p_sToutesLesColonnesMémoBinaire(Valeur est une chaîne)
+         cApplication.mg_taInfo[m_sNomUnique].m_sToutesLesColonnesMémoBinaire+=[","]+Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sToutesLesColonnesMémoTexte
+     identifier : 0x1e9ede5169d758a5
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie toutes les colonnes mémo texte séparées par des virgules
+         PROCEDURE p_sToutesLesColonnesMémoTexte() : chaîne
+         RENVOYER cApplication.mg_taInfo[m_sNomUnique].m_sToutesLesColonnesMémoTexte
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Ajoute une nouvelle colonne "mémo texte" à la liste des colonnes mémo texte
+         PRoCEDURE p_sToutesLesColonnesMémoTexte(Valeur est une chaîne)
+         cApplication.mg_taInfo[m_sNomUnique].m_sToutesLesColonnesMémoTexte+=[","]+Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sToutesLesColonnesNonMémo
+     identifier : 0x1e9ede5169d859cd
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie toutes les colonnes non mémo séparées par des virgules
+         PROCEDURE p_sToutesLesColonnesNonMémo() : chaîne
+         RENVOYER m_sToutesLesColonnesNonMémo
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Ajoute une nouvelle colonne "non texte" à la liste des colonnes non mémo
+         PROCEDURE p_sToutesLesColonnesNonMémo(Valeur est une chaîne)
+         cApplication.mg_taInfo[m_sNomUnique].m_sToutesLesColonnesNonMémo+=[","]+Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_tabColonnes
+     identifier : 0x1e9edf5a6a776320
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le tableau contenant les colonnes de la table
+         PROCEDURE PUBLIQUE p_tabColonnes()
+         RENVOYER m_tabColonnes
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Ajoute un objet cColonne au tableau des colonnes de la table
+         PROCEDURE PUBLIQUE p_tabColonnes(Valeur)
+         si tableaucherche(m_tabColonnes,tcLinéaire,"m_sNom",Valeur.m_sNom)<1 alors TableauAjoute(m_tabColonnes,Valeur)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sCléPrimaire
+     identifier : 0x1ea44a3739ce9717
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom de la colonne qui est la clé primaire
+         PROCEDURE PUBLIQUE p_sCléPrimaire() : chaine
+         SI cApplication.mg_taInfo[m_sNomUnique].m_sTousLesIndexes="" ALORS Indexes()
+         renvoyer m_sNomCléPrimaire
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie le nom de la colonne "clé primaire"
+         PROCEDURE PUBLIQUE p_sCléPrimaire(Valeur)
+         cApplication.mg_taInfo[m_sNomUnique].m_sNomCléPrimaire=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sColonneAutomatique
+     identifier : 0x1ea44b1a3a290d9d
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom de la colonne ayant un identifiant automatique
+         PROCEDURE PUBLIQUE p_sColonneAutomatique() : chaine
+         Indexes()
+         renvoyer cApplication.mg_taInfo[m_sNomUnique].m_sColonneAutomatique
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie le nom de la colonne ayant un identifiant automatique
+         PROCEDURE PUBLIQUE p_sColonneAutomatique(Valeur)
+         cApplication.mg_taInfo[m_sNomUnique].m_sColonneAutomatique=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sColonnesCléPrimaire
+     identifier : 0x1ea44b763a2a7268
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom de la colonne clé primaire
+         PROCEDURE PUBLIQUE p_sColonnesCléPrimaire() : chaine
+         Indexes()
+         renvoyer cApplication.mg_taInfo[m_sNomUnique].m_sColonnesCléPrimaire
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie le nom de la colonne "clé primaire"
+         PROCEDURE PUBLIQUE p_sColonnesCléPrimaire(Valeur)
+         cApplication.mg_taInfo[m_sNomUnique].m_sColonnesCléPrimaire = Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sToutesLesColonnesCléComposé
+     identifier : 0x1ea44bbc3a2b857a
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie les noms des clés composées séparées par des virgules
+         PROCEDURE PUBLIQUE p_sToutesLesColonnesCléComposé() : chaine
+         Indexes()
+         renvoyer cApplication.mg_taInfo[m_sNomUnique].m_sToutesLesColonnesCléComposé
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Ajoute une nouvelle colonne à la liste des colonnes à clés composées
+         PROCEDURE PUBLIQUE p_sToutesLesColonnesCléComposé(Valeur)
+         si pas contient(cApplication.mg_taInfo[m_sNomUnique].m_sToutesLesColonnesCléComposé,Valeur) alors cApplication.mg_taInfo[m_sNomUnique].m_sToutesLesColonnesCléComposé+=[","]+Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_eColonnesChargées
+     identifier : 0x1eb0317c44272a93
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut de chargement des détails de colonnes
+         PROCEDURE PUBLIQUE p_eColonnesChargées() : ETableChargement
+         RENVOYER m_eColonnesChargées
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie un statut de chargement des détails des colonnes
+         PROCEDURE PUBLIQUE p_eColonnesChargées(Valeur)
+         m_tabColonnes.SupprimeTout()
+         m_eColonnesChargées=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_eIndexesChargées
+     identifier : 0x1ec19e2e0cd086ec
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut de chargement des détails de indexes
+         PROCEDURE PUBLIQUE p_eIndexesChargées() : ETableChargement
+         renvoyer m_eIndexesChargés
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie un statut de chargement des détails des indexes
+         PROCEDURE PUBLIQUE p_eIndexesChargées(Valeur)                   
+         SI m_eIndexesChargés<>Valeur ALORS m_tabIndexes.SupprimeTout()
+         m_eIndexesChargés=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_taCaractéristiques
+     identifier : 0x1ec32b2b2cc04451
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le tableau des caractéristiques d'un fichier Hyperfile
+         PROCEDURE PUBLIQUE p_taCaractéristiques() : tableau associatif de chaines
+         selon cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+         	cas cBaseDeDonnéesHyperFile.hAccèsHF5
+         		m_taCaractéristiques["ABREVIATION"]		= {m_sPremierAlias,indFichier}..Abréviation
+         		m_taCaractéristiques["CRYPTAGE_FIC"]	= {m_sPremierAlias,indFichier}..CryptageFic		
+         		m_taCaractéristiques["CRYPTAGE_MMO"]	= {m_sPremierAlias,indFichier}..CryptageMmo		
+         		m_taCaractéristiques["CRYPTAGE_NDX"]	= {m_sPremierAlias,indFichier}..CryptageNdx		
+         		m_taCaractéristiques["NOM_LOGIQUE"]		= {m_sPremierAlias,indFichier}..NomDécrit		
+         		m_taCaractéristiques["NOM_PHYSIQUE"]	= {m_sPremierAlias,indFichier}..NomPhysiqueDécrit		
+         		m_taCaractéristiques["NULL"]			= {m_sPremierAlias,indFichier}..NullSupporté		
+         		m_taCaractéristiques["INALTÉRABLE"]		= {m_sPremierAlias,indFichier}..Inaltérable		
+         		m_taCaractéristiques["LIBELLÉ"]			= {m_sPremierAlias,indFichier}..Libellé
+         			
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp>
+         			
+         			m_taCaractéristiques["ALPHABET"]		= {m_sPremierAlias,indFichier}..Alphabet		
+         			m_taCaractéristiques["COMPRESSION_MMO"]	= {m_sPremierAlias,indFichier}..CompressionMmo 		
+         			m_taCaractéristiques["TRANSACTION"]		= {m_sPremierAlias,indFichier}..FichierTransaction 		
+         			m_taCaractéristiques["GROS_FICHIER"]	= {m_sPremierAlias,indFichier}..GrosFichier 		
+         			m_taCaractéristiques["JOURNALISATION"]	= {m_sPremierAlias,indFichier}..Journalisation		
+         			m_taCaractéristiques["JOURNAL"]			= {m_sPremierAlias,indFichier}..FichierJournal	
+         			m_taCaractéristiques["SECURISÉ"]		= {m_sPremierAlias,indFichier}..Sécurisé		
+         			m_taCaractéristiques["COMPLÉTÉ"]		= {m_sPremierAlias,indFichier}..RubriqueTexteComplétée		
+         			m_taCaractéristiques["GUID_FICHIER"]	= {m_sPremierAlias,indFichier}..GUIDFichier		
+         			m_taCaractéristiques["GUID_ANALYSE"]	= {m_sPremierAlias,indFichier}..GUIDAnalyse		
+         			m_taCaractéristiques["REP"]				= {m_sPremierAlias,indFichier}..RépertoireDécrit 	
+         			m_taCaractéristiques["REP_JOURNAL"]		= {m_sPremierAlias,indFichier}..RépertoireJournal		
+         			m_taCaractéristiques["REP_JOURNAL_OPER"]= {m_sPremierAlias,indFichier}..RépertoireJournalOpération		
+         			m_taCaractéristiques["REP_JOURNAL_SAUV"]= {m_sPremierAlias,indFichier}..RépertoireSauvegardeJournal		
+         			m_taCaractéristiques["REP_RÉPLICATION"]	= {m_sPremierAlias,indFichier}..RépertoireRéplication		
+         			m_taCaractéristiques["FORMAT"]			= {m_sPremierAlias,indFichier}..Format		
+         			m_taCaractéristiques["ALPHABET"]		= {m_sPremierAlias,indFichier}..Alphabet		
+         			m_taCaractéristiques["TAILLE"]			= {m_sPremierAlias,indFichier}..TailleEnregistrement	//bizarrement pas = à la somme des tailles des rubriques
+         			m_taCaractéristiques["RÉPLICATION"]		= {m_sPremierAlias,indFichier}..Réplication
+         	
+         <fin>
+         
+         	
+         		//..nom55 et wdd55
+         	cas hAccèsHF7
+         		m_taCaractéristiques["ABREVIATION"]		= {m_sPremierAlias,indFichier}..Abréviation
+         		m_taCaractéristiques["CRYPTAGE_FIC"]	= {m_sPremierAlias,indFichier}..CryptageFic		
+         		m_taCaractéristiques["CRYPTAGE_MMO"]	= {m_sPremierAlias,indFichier}..CryptageMmo		
+         		m_taCaractéristiques["CRYPTAGE_NDX"]	= {m_sPremierAlias,indFichier}..CryptageNdx		
+         		m_taCaractéristiques["NOM_LOGIQUE"]		= {m_sPremierAlias,indFichier}..NomDécrit		
+         		m_taCaractéristiques["NOM_PHYSIQUE"]	= {m_sPremierAlias,indFichier}..NomPhysiqueDécrit		
+         		m_taCaractéristiques["NULL"]			= {m_sPremierAlias,indFichier}..NullSupporté		
+         		m_taCaractéristiques["INALTÉRABLE"]		= {m_sPremierAlias,indFichier}..Inaltérable		
+         		m_taCaractéristiques["LIBELLÉ"]			= {m_sPremierAlias,indFichier}..Libellé
+         		
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp>
+         			
+         			m_taCaractéristiques["ALPHABET"]		= {m_sPremierAlias,indFichier}..Alphabet		
+         			m_taCaractéristiques["COMPRESSION_MMO"]	= {m_sPremierAlias,indFichier}..CompressionMmo 		
+         			m_taCaractéristiques["TRANSACTION"]		= {m_sPremierAlias,indFichier}..FichierTransaction 		
+         			m_taCaractéristiques["GROS_FICHIER"]	= {m_sPremierAlias,indFichier}..GrosFichier 		
+         			m_taCaractéristiques["RÉPLICATION_MIN"]	= {m_sPremierAlias,indFichier}..IdAutoMin 		
+         			m_taCaractéristiques["RÉPLICATION_MAX"]	= {m_sPremierAlias,indFichier}..IdAutoMax		
+         			m_taCaractéristiques["JOURNALISATION"]	= {m_sPremierAlias,indFichier}..Journalisation		
+         			m_taCaractéristiques["JOURNAL"]			= {m_sPremierAlias,indFichier}..FichierJournal	
+         			m_taCaractéristiques["SECURISÉ"]		= {m_sPremierAlias,indFichier}..Sécurisé		
+         			m_taCaractéristiques["MDP"]				= {m_sPremierAlias,indFichier}..ProtégéParMotDePasse
+         			m_taCaractéristiques["COMPLÉTÉ"]		= {m_sPremierAlias,indFichier}..RubriqueTexteComplétée		
+         			m_taCaractéristiques["GÉNÉRATION"]		= {m_sPremierAlias,indFichier}..NuméroGénération		
+         			m_taCaractéristiques["GUID_FICHIER"]	= {m_sPremierAlias,indFichier}..GUIDFichier		
+         			m_taCaractéristiques["GUID_ANALYSE"]	= {m_sPremierAlias,indFichier}..GUIDAnalyse		
+         			m_taCaractéristiques["REP"]				= {m_sPremierAlias,indFichier}..RépertoireDécrit 	
+         			m_taCaractéristiques["REP_JOURNAL"]		= {m_sPremierAlias,indFichier}..RépertoireJournal		
+         			m_taCaractéristiques["REP_JOURNAL_OPER"]= {m_sPremierAlias,indFichier}..RépertoireJournalOpération		
+         			m_taCaractéristiques["REP_JOURNAL_SAUV"]= {m_sPremierAlias,indFichier}..RépertoireSauvegardeJournal		
+         			m_taCaractéristiques["REP_RÉPLICATION"]	= {m_sPremierAlias,indFichier}..RépertoireRéplication		
+         			m_taCaractéristiques["FORMAT"]			= {m_sPremierAlias,indFichier}..Format		
+         			m_taCaractéristiques["ALPHABET"]		= {m_sPremierAlias,indFichier}..Alphabet		
+         			m_taCaractéristiques["TAILLE"]			= {m_sPremierAlias,indFichier}..TailleEnregistrement	//bizarrement pas = à la somme des tailles des rubriques
+         			m_taCaractéristiques["RÉPLICATION"]		= {m_sPremierAlias,indFichier}..Réplication
+         	
+         <fin>
+         
+         		
+         	cas hAccèsHFClientServeur  
+         		m_taCaractéristiques["ABREVIATION"]		= {m_sPremierAlias,indFichier}..Abréviation
+         		m_taCaractéristiques["ACCÈS"]			= cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Accès
+         		m_taCaractéristiques["BORNE_MIN"]		= {m_sPremierAlias,indFichier}..BorneMin
+         		m_taCaractéristiques["BORNE_MAX"]		= {m_sPremierAlias,indFichier}..BorneMax
+         		m_taCaractéristiques["CRYPTAGE_FIC"]	= {m_sPremierAlias,indFichier}..CryptageFic		
+         		m_taCaractéristiques["CRYPTAGE_MMO"]	= {m_sPremierAlias,indFichier}..CryptageMmo		
+         		m_taCaractéristiques["CRYPTAGE_NDX"]	= {m_sPremierAlias,indFichier}..CryptageNdx		
+         		m_taCaractéristiques["INALTÉRABLE"]		= {m_sPremierAlias,indFichier}..Inaltérable		
+         		m_taCaractéristiques["LIBELLÉ"]			= {m_sPremierAlias,indFichier}..Libellé
+         		m_taCaractéristiques["NULL"]			= {m_sPremierAlias,indFichier}..Nullsupporté
+         				
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp>
+         	
+         			m_taCaractéristiques["ALPHABET"]		= {m_sPremierAlias,indFichier}..Alphabet		
+         			m_taCaractéristiques["COMPRESSION_MMO"]	= {m_sPremierAlias,indFichier}..CompressionMmo 		
+         			m_taCaractéristiques["JOURNAL"]			= {m_sPremierAlias,indFichier}..FichierJournal	
+         			m_taCaractéristiques["GÉNÉRATION"]		= {m_sPremierAlias,indFichier}..NuméroGénération		
+         			m_taCaractéristiques["JOURNALISATION"]	= {m_sPremierAlias,indFichier}..Journalisation		
+         			m_taCaractéristiques["REP_JOURNAL"]		= {m_sPremierAlias,indFichier}..RépertoireJournal		
+         			m_taCaractéristiques["REP_JOURNAL_OPER"]= {m_sPremierAlias,indFichier}..RépertoireJournalOpération		
+         			m_taCaractéristiques["REP_JOURNAL_SAUV"]= {m_sPremierAlias,indFichier}..RépertoireSauvegardeJournal		
+         			//		m_taCaractéristiques["REP_RÉPLICATION"]	= {m_sPremierAlias,indFichier}..RépertoireRéplication		
+         			m_taCaractéristiques["RÉPLICATION_MIN"]	= {m_sPremierAlias,indFichier}..IdAutoMin 		
+         			m_taCaractéristiques["RÉPLICATION_MAX"]	= {m_sPremierAlias,indFichier}..IdAutoMax		
+         			m_taCaractéristiques["TRANSACTION"]		= {m_sPremierAlias,indFichier}..FichierTransaction 		
+         			m_taCaractéristiques["FORMAT"]			= {m_sPremierAlias,indFichier}..Format		
+         			m_taCaractéristiques["GROS_FICHIER"]	= {m_sPremierAlias,indFichier}..GrosFichier 		
+         			m_taCaractéristiques["GUID_FICHIER"]	= {m_sPremierAlias,indFichier}..GUIDFichier		
+         			m_taCaractéristiques["GUID_ANALYSE"]	= {m_sPremierAlias,indFichier}..GUIDAnalyse		
+         			m_taCaractéristiques["MDP"]				= {m_sPremierAlias,indFichier}..ProtégéParMotDePasse
+         			m_taCaractéristiques["REPEAT"]			= {m_sPremierAlias,indFichier}..RepeatableReadSupporté 		
+         			m_taCaractéristiques["TAILLE"]			= {m_sPremierAlias,indFichier}..TailleEnregistrement	//bizarrement pas = à la somme des tailles des rubriques
+         			m_taCaractéristiques["RÉPLICATION"]		= {m_sPremierAlias,indFichier}..Réplication
+         	
+         <fin>
+         
+         		
+         	cas haccesnatifmysql
+         		//..tailleCache	
+         	AUTRE CAS
+         		
+         FIN
+         renvoyer m_taCaractéristiques
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1aa9809c046f8700
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Aucune clé primaire (%1)
+      en-GB : No primary key (%1)
+      fr-CA : Aucune clé primaire (%1)
+      en-US : No primary key (%1)
+     index : 0
+   -
+     text :
+      fr-FR : <vide>
+      en-GB : <empty>
+      fr-CA : <vide>
+      en-US : <empty>
+     index : 1
+   -
+     text :
+      fr-FR : Le nombre de valeurs ne correspond pas au nombre de colonnes de la clé
+      en-GB : The number of values does not match the number of columns in the key
+      fr-CA : Le nombre de valeurs ne correspond pas au nombre de colonnes de la clé
+      en-US : The number of values does not match the number of columns in the key
+     index : 2
+   -
+     text :
+      fr-FR : Plusieurs colonnes binaires dans la table
+      en-GB : Several binaries in the table
+      fr-CA : Plusieurs colonnes binaires dans la table
+      en-US : Several binaries in the table
+     index : 3
+   -
+     text :
+      fr-FR : Aucune colonne binaire dans la table
+      en-GB : No binary column in the table
+      fr-CA : Aucune colonne binaire dans la table
+      en-US : No binary column in the table
+     index : 4
+   -
+     text :
+      fr-FR : La colonne n'est pas binaire
+      en-GB : The column is not binary
+      fr-CA : La colonne n'est pas binaire
+      en-US : The column is not binary
+     index : 5
+   -
+     text :
+      fr-FR : La colonne Hash binaire n'existe pas
+      en-GB : The binary Hash column does not exist
+      fr-CA : La colonne Hash binaire n'existe pas
+      en-US : The binary Hash column does not exist
+     index : 6
+   -
+     text :
+      fr-FR : "Impossible de mettre les données binaire en cache : "
+      en-GB : "Can not cache binary data : "
+      fr-CA : "Impossible de mettre les données binaire en cache : "
+      en-US : "Can not cache binary data : "
+     index : 7
+   -
+     text :
+      fr-FR : "Répertoire cache inexistant ou invalide : "
+      en-GB : "Missing or invalid cache directory : "
+      fr-CA : "Répertoire cache inexistant ou invalide : "
+      en-US : "Missing or invalid cache directory : "
+     index : 8
+   -
+     text :
+      fr-FR : La table n'existe pas dans cette base de données
+      en-GB : The table does not exist in this database
+      fr-CA : La table n'existe pas dans cette base de données
+      en-US : The table does not exist in this database
+     index : 9
+   -
+     text :
+      fr-FR : "L'indice de connexion n'est pas valide (%1,%2)"
+      en-GB : "The connection index is not valid (%1,%2)"
+      fr-CA : "L'indice de connexion n'est pas valide (%1,%2)"
+      en-US : "The connection index is not valid (%1,%2)"
+     index : 10
+   -
+     text :
+      fr-FR : "Aucune clé unique dans la table "
+      en-GB : "No unique key in the table "
+      fr-CA : "Aucune clé unique dans la table "
+      en-US : "No unique key in the table "
+     index : 11
+   -
+     text :
+      fr-FR : Aucune colonne dans la table
+      en-GB : No columns in the table
+      fr-CA : Aucune colonne dans la table
+      en-US : No columns in the table
+     index : 12
+   -
+     text :
+      fr-FR : La table %1 n'existe pas
+      en-GB : The table %1 does not exist
+      fr-CA : La table %1 n'existe pas
+      en-US : The table %1 does not exist
+     index : 13
+   -
+     text :
+      fr-FR : Aucune connexion
+      en-GB : No connection
+      fr-CA : Aucune connexion
+      en-US : No connection
+     index : 14
+   -
+     text :
+      fr-FR : La méthode n'est pas disponible
+      en-GB : The method is not available
+      fr-CA : La méthode n'est pas disponible
+      en-US : The method is not available
+     index : 15
+   -
+     text :
+      fr-FR : Le nom de la colonne est obligatoire
+      en-GB : The name of the column is required
+      fr-CA : Le nom de la colonne est obligatoire
+      en-US : The name of the column is required
+     index : 16
+   -
+     text :
+      fr-FR : Le nom de la séquence est obligatoire
+      en-GB : The name of the sequence is required
+      fr-CA : Le nom de la séquence est obligatoire
+      en-US : The name of the sequence is required
+     index : 17
+   -
+     text :
+      fr-FR : La colonne était déjà liée à la séquence %1
+      en-GB : The column was already linked to the %1 sequence
+      fr-CA : La colonne était déjà liée à la séquence %1
+      en-US : The column was already linked to the %1 sequence
+     index : 18
+   -
+     text :
+      fr-FR : La colonne %1 n'existe pas
+      en-GB : The column %1 does not exist
+      fr-CA : La colonne %1 n'existe pas
+      en-US : The column %1 does not exist
+     index : 19
+   -
+     text :
+      fr-FR : Les séquences ne sont utiles que pour les bases de données Oracle
+      en-GB : Sequences are only useful for Oracle databases
+      fr-CA : Les séquences ne sont utiles que pour les bases de données Oracle
+      en-US : Sequences are only useful for Oracle databases
+     index : 20
+   -
+     text :
+      fr-FR : Le nom de la table cascade est obligatoire
+      en-GB : The name of the cascade table is required
+      fr-CA : Le nom de la table cascade est obligatoire
+      en-US : The name of the cascade table is required
+     index : 21
+   -
+     text :
+      fr-FR : Le nom de la clé cascade est obligatoire
+      en-GB : The name of the cascade key is required
+      fr-CA : Le nom de la clé cascade est obligatoire
+      en-US : The name of the cascade key is required
+     index : 22
+   -
+     text :
+      fr-FR : La clé %1 n'existe pas dans cette table
+      en-GB : Key %1 does not exist in this table
+      fr-CA : La clé %1 n'existe pas dans cette table
+      en-US : Key %1 does not exist in this table
+     index : 23
+   -
+     text :
+      fr-FR : La colonne %1 n'existe pas dans la table %2
+      en-GB : Column %1 does not exist in table %2
+      fr-CA : La colonne %1 n'existe pas dans la table %2
+      en-US : Column %1 does not exist in table %2
+     index : 24
+   -
+     text :
+      fr-FR : La colonne %1 de la clé %2 n'a pas été trouvée dans la table %3
+      en-GB : The column %1 of the key %2 was not found in the table %3
+      fr-CA : La colonne %1 de la clé %2 n'a pas été trouvée dans la table %3
+      en-US : The column %1 of the key %2 was not found in the table %3
+     index : 25
+   -
+     text :
+      fr-FR : Le fichier d'analyse n'existe pas
+      en-GB : Analysis file does not exist
+      fr-CA : Le fichier d'analyse n'existe pas
+      en-US : Analysis file does not exist
+     index : 26
+   -
+     text :
+      fr-FR : Le nom de la table est vide
+      en-GB : The table name is empty
+      fr-CA : Le nom de la table est vide
+      en-US : The table name is empty
+     index : 27
+   -
+     text :
+      fr-FR : La table ne possède pas de clé primaire
+      en-GB : The table does not have a primary key
+      fr-CA : La table ne possède pas de clé primaire
+      en-US : The table does not have a primary key
+     index : 28
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,189 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cOpenAI_TextGeneration
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1637962f7e9328a0
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet d'utilise ChatGPT (conversation) en héritant de cOpenAPI. Attention, les modèles peuvent évoluer dans le temps.
+      //ref : https://platform.openai.com/docs/api-reference/chat/streaming
+      
+      EChatGPTModel est une énumération
+      	GPT40				= "gpt-4"
+      	GPT40Turbo			= "gpt-4-turbo-preview"
+      	GPT35Turbo			= "gpt-3.5-turbo"
+      	//plus anciens
+      	GPT35TurboInstrct	= "gpt-3.5-turbo-instruct"
+      	Babbage002			= "babbage-002"
+      	DaVinci002			= "davinci-002"
+      fin
+      EChatGPTRole est une énumération
+      	RoleSystème			= "system"
+      	RoleUtilisateur		= "user"
+      fin
+      EChatGPTTempérature est une énumération		//détermine la "créativité" de la réponse
+      	//0 à 0.3 : la réponse sera plus concentrée, cohérente et conservatrice.
+      	Précis4				= "0"
+      	Précis3				= "0.1"
+      	Précis2				= "0.2"
+      	Précis1				= "0.3"
+      	//0.4 à 0.7	: les réponses de l’IA équilibreront cohérence et créativité.
+      	Neutre0				= "0.4"
+      	Neutre1				= "0.5"
+      	Neutre2				= "0.6"
+      	//0.7 à 1 : le résultat sera axé sur la créativité et risque donc de ne pas être cohérent.
+      	Créatif1			= "0.7"
+      	Créatif2			= "0.8"
+      	Créatif3			= "0.9"
+      	Créatif4			= "1"
+      fin
+      cOpenAI_TextGeneration est une Classe
+      hérite de copenai
+      public constant
+      	m_eModèle			est un EChatGPTModel	<serialise = faux>	//modèle conversationnel à utiliser
+      privé
+      	m_sRôle				est une chaine			<serialise = faux>	//rôle assigné à ChatGPT
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1600913323284768928
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe cOpenAI.
+      // Syntaxe : Constructeur (<sCléAPI> est chaîne, <eModèle> est cOpenAI_TextGeneration.EChatGPTModel [, <duTimeOut> est durée])
+      // Paramètres :
+      //	sCléAPI (chaîne UNICODE) : La clé API pour permettre l'accès au service
+      //	eModèle (cOpenAI_TextGeneration.EChatGPTModel) : Modèle à utiliser pour l'appel du serice
+      //	duTimeOut (durée - valeur par défaut=0000005000) : Durée après laquelle le timeout se déclenche, par défaut : 5 secondes
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(sCléAPI est une chaine,eModèle est un EChatGPTModel,duTimeOut est une durée = 5s)
+      cOpenAI.Constructeur(sCléAPI,duTimeOut)
+      m_eModèle	= eModèle
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1600913323284834464
+     type_code : 28
+     code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // Destructeur ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : MessageEnvoi
+     procedure_id : 1600918090699184537
+     type_code : 12
+     code : |1-
+      // Résumé : Envoie un message à un modèle conversationnel GPT (Generative Pre-trained Transformer) de OpenAI. Ce message est envoyé pour obtenir une réponse générée par le modèle en fonction des paramètres fournis.
+      // Syntaxe : [ <Résultat> = ] MessageEnvoi (<sMessage> est chaîne [, <eRole> est cOpenAI_TextGeneration.EChatGPTRole [, <eCohérence> est cOpenAI_TextGeneration.EChatGPTTempérature]])
+      // Paramètres :
+      //	sMessage (chaîne UNICODE) : Une chaîne représentant le message à envoyer au modèle conversationnel.
+      //	eRole (cOpenAI_TextGeneration.EChatGPTRole) : Spécifie le rôle assigné au modèle, pouvant être "system" (système) ou "user" (utilisateur). Par défaut, le rôle est défini comme "utilisateur".
+      //	eCohérence (cOpenAI_TextGeneration.EChatGPTTempérature) : Détermine la "créativité" de la réponse générée par le modèle. Il peut prendre des valeurs entre "Précis4" (0) et "Créatif4" (1), par défaut, réglée sur "Créatif1" (0.7).
+      // Valeur de retour : chaîne UNICODE : réponse générée par le modèle conversationnel GPT en fonction du message envoyé et des paramètres spécifiés. Si la requête vers l'API OpenAI est réussie et qu'une réponse est obtenue, cette réponse est renvoyée. Sinon, la méthode renvoie une chaîne vide.
+      // Exemple :
+      //	clGPT est un cOpenAI_TextGeneration("iciVotreCléAPI",cOpenAI_TextGeneration.GPT40Turbo)
+      //	sRéponse est une chaine = clGPT.MessageEnvoi("En quelle année est né Neil Armstrong ?")
+      //	SI sRéponse="" ALORS Erreur(clGPT.p_serreur) SINON Info(sRéponse)
+      //
+      PROCEDURE MessageEnvoi(sMessage est une chaine,eRole est un EChatGPTRole = RoleUtilisateur,eCohérence est un EChatGPTTempérature = Créatif1) : chaine
+      m_pclErreur.Raz();Ancêtre.Raz()
+      si sMessage~="" alors m_pclErreur.AjouteErreur(<§$0001§>);renvoyer ""
+      sRequête est une chaine = [
+      {
+      "model": "%1",
+      "messages" : [%5{"role":"%2","content":"%3"}],
+      "temperature": %4
+      }
+      ]
+      m_stRequêteHTTPAPI.sURL		= m_sURLdeBase+["/"]+"v1/chat/completions"
+      m_stRequêteHTTPAPI.sContenu = ChaîneConstruit(sRequête,m_eModèle..valeur,eRole..Valeur,JSONEncode(sMessage),eCohérence..Valeur,m_sRôle)
+      si OpenAIRestExecute() alors renvoyer JSONDécode(m_vRéponse.choices[1].message.content)
+      renvoyer ""
+     type : 458752
+   -
+     name : AssigneRôle
+     procedure_id : 1600922454386056176
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour assigner un rôle au modèle conversationnel GPT. Le rôle sera pris en compte dans la méthode MessageEnvoi()
+      // Syntaxe : AssigneRôle (<sDescriptionDuRôle> est chaîne)
+      // Paramètres :
+      //	sDescriptionDuRôle (chaîne UNICODE) : Description du rôle à assigner au modèle. Si cette chaîne est vide, aucun rôle n'est assigné au modèle.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	clGPT est un cOpenAI_TextGeneration("iciVotreCléAPI",cOpenAI_TextGeneration.GPT40Turbo)
+      //	clGPT.Rôle("Tu est un spécialiste de l'histoire spatiale")
+      //
+      PROCEDURE AssigneRôle(sDescriptionDuRôle est une chaine)
+      si sDescriptionDuRôle="" alors
+      	m_sRôle=""
+      sinon
+      	m_sRôle = [
+      	{"role": "system","content": "%1"},
+      	]
+      	m_sRôle = ChaîneConstruit(m_sRôle,JSONEncode(sDescriptionDuRôle))
+      FIN
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x163796247e8d00e4
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : La clé API est obligatoire
+      en-GB : API key is mandatory
+      fr-CA : La clé API est obligatoire
+      en-US : API key is mandatory
+     index : 0
+   -
+     text :
+      fr-FR : Message vide
+      en-GB : Empty message
+      fr-CA : Message vide
+      en-US : Empty message
+     index : 1
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

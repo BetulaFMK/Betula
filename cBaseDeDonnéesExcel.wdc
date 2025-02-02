@@ -1,0 +1,490 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cBaseDeDonnéesExcel
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12a9c56b16fe6436
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet d'utiliser Excel comme une base de données. Les feuilles sont des tables, les colonnes Excel sont les colonne de tables, les cellules sont les données.
+      //Attention, les feuilles du fichier Excel doivent avoir un nom et la première ligne de chaque feuille doit contenir le nom des colonnes
+      //Le nom du fichier Excel ou les noms des feuilles qu'il contient ne doit pas contenir le caractère cGénérique._Sep	: "•"	//caractère 149
+      
+      constante
+      	hAccèsNatifExcel	= "WinDevExcel"
+      fin
+      cBaseDeDonnéesExcel est une Classe
+      	hérite de cGénérique
+      	m_bTraceColonnesModifiées	est un booleen			<sérialise = faux>								//Renvoi ou permet de modifier le statut permettant la trace des colonnes modifiés lors de l'utilisation de la fonction cEnregistrement.Écrit() 
+      PUBLIC CONSTANT LOCAL
+      	m_nIndiceDeConnexion	est un entier 				<serialise = faux>								//Indice de la connexion en cours
+      global privé
+      	mg_taFichierOuvert		est un tableau associatif 	<serialise = faux> de cFichierExcel dynamique	//pour garder les fichiers ouverts si nécessaire
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1344823027484812342
+     type_code : 27
+     code : |1-
+      // Résumé : Permet d'initialiser la classe. Si un indice de connexion est passé en paramètre, récupère toutes les informations d'une précédente connexion qui avait renvoyé ledit indice.
+      // Syntaxe : Constructeur ( [<nIndiceDeConnexionExistant> est entier])
+      // Paramètres :
+      // 	nIndiceDeConnexionExistant (entier optionnel): L'indice de connexion existant à associer à l'instance de la classe. Par défaut, il est initialisé à zéro.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexionExistant est un entier = 0)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIndiceDeConnexionExistant)
+      m_pclErreur.Raz()
+      
+      m_nIndiceDeConnexion=nIndiceDeConnexionExistant
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1344823027484877878
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe. Ferme le fichier Excel le cas échéant.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      //SI p_bEstConnecté ALORS Déconnecte()		//WD23 20140118 : crée des erreur GPF
+     type : 655360
+   -
+     name : Connecte
+     procedure_id : 1344824053984070852
+     type_code : 12
+     code : |1+
+      // Résumé : Utilisée pour ouvrir un fichier Excel en utilisant les paramètres fournis. Tous les paramètres de la méthode peuvent être récupérés des paramètres de l'application avec le nom de section "Excel".
+      // Syntaxe : [ <Résultat> = ] Connecte ( [<sCheminFichierExcel> est chaîne [, <sFeuilles> est chaîne [, <sEmplacementDesMémos> est chaîne [, <bResterConnecté> est booléen]]]])
+      // Paramètres :
+      //	sCheminFichierExcel (chaîne UNICODE) : Chemin du fichier Excel à utiliser. Paramètre "File".
+      //	sFeuilles (chaîne UNICODE) : Liste des feuilles à considérer.  Paramètre "Group", par défaut : toutes les feuilles sont incluses (*).
+      //	sEmplacementDesMémos (chaîne UNICODE) : Emplacement des mémos. Paramètre "PathMemos".
+      //	bResterConnecté (booléen) :  Indique si la connexion doit être maintenue ou non. Paramètre "StayConnected", par défaut Vrai.
+      // Valeur de retour : entier : Indice de la connexion établie. En cas d'échec, renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE Connecte(sCheminFichierExcel est une chaine=cApplication._Application.m_pclParamètres.Lit("Excel","File"),
+      			LOCAL sFeuilles est une chaine = cApplication._Application.m_pclParamètres.Lit("Excel","Group",Faux,"*"),
+      			sEmplacementDesMémos est une chaine = cApplication._Application.m_pclParamètres.Lit("Excel","PathMemos"),
+      			bResterConnecté est un booleen = cApplication._Application.m_pclParamètres.Lit("Excel","StayConnected",faux,vrai)) : entier
+      
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCheminFichierExcel,sEmplacementDesMémos,bResterConnecté)
+      m_pclErreur.Raz()
+      
+      si sCheminFichierExcel~="" alors m_pclErreur.AjouteErreur(<§$0001§>);renvoyer 0
+      
+      cnxDonnées 		est une Connexion
+      pclExcel		est un cFichierExcel dynamique = allouer un cFichierExcel
+      
+      stUneConnexion 	est un cBaseDeDonnées.STConnexion
+      sClé			est une chaine = Minuscule(sCheminFichierExcel)
+      sTables			est une chaine
+      
+      m_nIndiceDeConnexion = TableauCherche(cBaseDeDonnées.mg_tabConnexion,tcLinéaire,"sCLé",sClé)
+      SI m_nIndiceDeConnexion>0 _ET_ cBaseDeDonnées.mg_taUtilisationServeur[sClé]>0 ALORS cBaseDeDonnées.ConnexionAjoute(sClé);RENVOYER m_nIndiceDeConnexion	//la connexion existe déjà, renvoyer l'indice pour minimiser le nombre de connexions faites par l'appli
+      
+      SI pclExcel.Ouvre(sCheminFichierExcel,cFichier.foLectureEcriture,cFichier.foNePasCréer) _et_ ChangeConnexion() ALORS
+      	cBaseDeDonnées.ConnexionAjoute(sClé)
+      	SI m_nIndiceDeConnexion<1 ALORS
+      		cnxDonnées..serveur					= sCheminFichierExcel
+      		cnxDonnées..Provider				= hAccèsNatifExcel
+      		stUneConnexion.sNomUnique			= sClé
+      		stUneConnexion.cnxDonnées			= cnxDonnées
+      		stUneConnexion.clFichier			= pclExcel
+      		stUneConnexion.sMotDePasse			= ""
+      		stUneConnexion.bConnecté			= Vrai
+      		stUneConnexion.sClé					= sClé
+      		stUneConnexion.eAccès				= cBaseDeDonnées.ETypeAccès.ODBC	//pour créer, dans cTable.Colonnes, une table "virtuelle"
+      		stUneConnexion.sRépertoireCache		= ""
+      		stUneConnexion.sEmplacementDesMémos	= ComplèteRep(sEmplacementDesMémos)
+      		stUneConnexion.eVersionDuServeur	= cBaseDeDonnées.Inconnu
+      		stUneConnexion.bResterConnecté		= bResterConnecté
+      		m_nIndiceDeConnexion=TableauAjoute(cBaseDeDonnées.mg_tabConnexion,stUneConnexion)			//ne pas faire TableauAjouteTrié car il peut prendre un indice déjà utilisé par une autre connexion
+      		SI sTables>"" ALORS TableColonnes(sTables)
+      		RENVOYER m_nIndiceDeConnexion
+      	SINON
+      		cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté	= Vrai
+      	FIN
+      SINON 
+      //	m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0004§>,"Excel",sCheminFichierExcel)+" "+pclExcel.p_sErreur) 
+      	m_pclErreur.AjouteErreur(pclExcel.p_sErreur)
+      FIN
+      
+      RENVOYER 0
+      
+      	PROCÉDURE INTERNE ChangeConnexion() : booléen
+      	SI sFeuilles<>"*" ALORS
+      		POUR TOUTE CHAÎNE sFeuille de sFeuilles separee par [rc,tab]
+      			POUR TOUT element stUneFeuille de pclExcel.m_tabFeuille
+      				SI stUneFeuille.sNom~=sFeuille ALORS sTables+=[TAB]+sFeuille
+      			FIN
+      		FIN
+      	sinon
+      		POUR TOUT element stUneFeuille de pclExcel.m_tabFeuille
+      			sTables+=[TAB]+stUneFeuille.sNom
+      		FIN
+      	FIN	
+      	RENVOYER Vrai
+      	FIN
+     type : 458752
+   -
+     name : Déconnecte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1344825552927743690
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de fermer le fichier Excel. Si la connexion est la dernière connexion active sur le serveur et que l'option bResterConnecté est désactivée, la méthode supprime également toutes les connexions associées à ce serveur.
+      // Syntaxe : [ <Résultat> = ] Déconnecte ( [<bForce> est booléen])
+      // Paramètres :
+      // 	bForce (booléen optionnel) : Indique si la déconnexion doit être forcée même si d'autres connexions sont actives sur le même fichier. Par défaut : Faux.
+      // Valeur de retour : booléen : Indique si la déconnexion a été réalisée avec succès (Vrai) ou s'il y a eu des erreurs (Faux).
+      // Exemple :
+      //
+      PROCEDURE Déconnecte(bForce est un booleen = faux) : booléen
+      m_pclErreur.Raz()
+      
+      SI m_nIndiceDeConnexion>0 ALORS
+      	sClé 			est une chaine 	= cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé
+      	nUtilisation 	est un entier 	= cBaseDeDonnées.mg_taUtilisationServeur[sClé]
+      	SI ((PAS cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bResterConnecté _ET_ nUtilisation=1) OU bForce) ALORS	//nUtilisation=1 ALORS c'est la dernière connexion active sur ce serveur
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bForce)
+      		cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.Ferme()
+      		cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bConnecté=Faux
+      		cBaseDeDonnées.ConnexionSupprimeTout(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)
+      		m_nIndiceDeConnexion=0;nUtilisation=0
+      	FIN
+      	SI nUtilisation>1 ALORS cBaseDeDonnées.ConnexionSupprime(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé)
+      SINON
+      	m_pclErreur.AjouteAvertissement(<§$0003§>)
+      FIN
+      RENVOYER Vrai
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Tables
+     procedure_id : 1344853886935762840
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie l'ensemble des nom de "table" (feuilles).
+      // Syntaxe : [ <Résultat> = ] Tables ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Retourne la liste des tables sous forme de chaine séparée par des RC.
+      // Exemple :
+      //
+      PROCEDURE Tables() : chaine
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0005§>);renvoyer ""
+      
+      sRes 	est une chaine
+      POUR TOUT stUneFeuille de cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.m_tabFeuille
+      	sRes+=[RC]+stUneFeuille.sNom
+      FIN
+      RENVOYER sRes
+     type : 458752
+   -
+     name : TableExiste
+     procedure_id : 1344854861896383781
+     type_code : 12
+     code : |1-
+      // Résumé : Vérifie l'existence d'une table (feuille) dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableExiste (<sNomTable> est chaîne)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Nom de la table dont on souhaite vérifier l'existence.
+      // Valeur de retour : booléen : Retourne Vrai si la table existe dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE TableExiste(sNomTable est une chaîne) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTable)
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0005§>);renvoyer Faux
+      SI cApplication.mg_taInfo[cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sNomTable)]<>Null ALORS RENVOYER Vrai
+      
+      POUR TOUT stUneFeuille de cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.m_tabFeuille
+      	si stUneFeuille.sNom~=sNomTable alors renvoyer vrai
+      FIN
+      renvoyer faux
+     type : 458752
+   -
+     name : TableColonnes
+     procedure_id : 1344855514731499275
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les colonnes d'une table (feuille) passée en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableColonnes (<sNomTableUnique> est chaîne [, <bDescriptionComplète> est booléen [, <bForceRechargement> est booléen]])
+      // Paramètres :
+      //	sNomTableUnique (chaîne UNICODE) : Le nom unique de la table pour laquelle les informations sur les colonnes doivent être récupérées.
+      // 	bDescriptionComplète (booléen optionnel) : pas utilisé ici
+      // 	bForceRechargement (booléen optionnel) : Force le rechargement de la description même si celle-ci est déjà en mémoire
+      // Valeur de retour : booléen : Vrai si les informations de la table ont été mémorisées dans cApplication.mg_taInfo[sNomTableUnique].p_tabColonnes, Faux en cas d'erreur.
+      // Exemple :
+      //
+      PROCEDURE TableColonnes(LOCAL sNomTableUnique est une chaine,bDescriptionComplète est un booleen = faux,bForceRechargement est un booleen = faux) : booleen
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0005§>);renvoyer faux
+      
+      sNomTable,sTablesACharger sont des chaines
+      
+      SI Position(sNomTableUnique,cGénérique._Sep)>0 ALORS
+      	sNomTable = cApplication.mg_taInfo[sNomTableUnique].m_sNomOriginal
+      	SI PAS TableExiste(sNomTable) ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0006§>,sNomTable));renvoyer faux
+      	
+      	SI (cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailCompletChargé _OU_ (PAS bDescriptionComplète _ET_ cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailBasiqueChargé)) _ET_ PAS bForceRechargement ALORS RENVOYER PAS cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailNonChargé
+      	SI bForceRechargement ALORS cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailNonChargé
+      	cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=(bDescriptionComplète ? cTable.TableDétailCompletChargé SINON cTable.TableDétailBasiqueChargé)
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTableUnique,bDescriptionComplète,bForceRechargement)
+      SINON
+      	sTable 	est une chaine
+      	sTables est une chaine = tables()
+      	sNomTable=Remplace(sNomTableUnique,[RC,",",";"],TAB)	//on remplace tout séparateur pour être un tab standard	
+      	POUR TOUT CHAÎNE sTable de sNomTable
+      		SI Position(sTables,sTable,0,MotComplet+SansCasse)<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0006§>,sTable));continue
+      		sNomTableUnique = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sTable)	//refaire la variable au cas où on envoie plusieurs tables dans cette méthode
+      		SI cApplication.mg_taInfo[sNomTableUnique]=Null ALORS 
+      			pclTable est un cTable dynamique = allouer un ctable(m_nIndiceDeConnexion,sTable,*,*,*,faux)
+      			cApplication.mg_taInfo[sNomTableUnique] = pclTable
+      		FIN
+      		SI (cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailCompletChargé _OU_ (PAS bDescriptionComplète _ET_ cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailBasiqueChargé)) _ET_ PAS bForceRechargement ALORS
+      			//la table est déjà chargée comme on l'a demandé
+      		SINON			
+      			SI bForceRechargement ALORS cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailNonChargé
+      			sTablesACharger+=[tab]+sTable
+      		FIN
+      	FIN
+      	SI p_sErreur>"" ALORS 
+      		RENVOYER Faux 
+      	SINON SI sTablesACharger>"" ALORS
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sTablesACharger,bDescriptionComplète,bForceRechargement)
+      	SINON
+      		//rien à charger
+      		RENVOYER PAS cApplication.mg_taInfo[sNomTableUnique].p_eColonnesChargées=cTable.TableDétailNonChargé
+      	FIN
+      FIN
+      
+      pclUneColonne	est un ccolonne dynamique
+      stUneColonne 	est un cfichierexcel.stColonne
+      stUneFeuille	est un cfichierexcel.stFeuille
+      clObjetBD		est un cBaseDeDonnées(m_nIndiceDeConnexion)
+      POUR TOUT stUneFeuille de cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.m_tabFeuille
+      	SI position(sTablesACharger,stUneFeuille.sNom,0,MotComplet+SansCasse)>0 alors
+      		sNomTableUnique = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(stUneFeuille.sNom)
+      		pour tout element stUneColonne de stUneFeuille.tabColonnes
+      			pclUneColonne = allouer un ccolonne(clObjetBD,sNomTableUnique,stUneColonne.sNom,stUneColonne.nOrdre,cFichierExcel.FormatExcelVersRubriqueWx(stUneColonne.eFormat),stUneColonne.eType..nom,500)
+      			cApplication.mg_taInfo[sNomTableUnique].p_tabColonnes=pclUneColonne
+      		fin
+      	FIN
+      FIN
+      cApplication.mg_taInfo[sNomTableUnique].Colonnes()	//pour créer la table fantôme
+      
+      SI cApplication.mg_taInfo[sNomTableUnique].p_sToutesLesColonnes="" ALORS m_pclErreur.AjouteAvertissement(<§$0007§>)
+      RENVOYER Vrai
+     type : 458752
+   -
+     name : TableColonneExiste
+     procedure_id : 1344960840214577762
+     type_code : 12
+     code : |1-
+      // Résumé : Vérifie l'existence d'une colonne de table (feuille) dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableColonneExiste (<sNomTable> est chaîne)                              
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Nom de la colonne (feuille+"."+colonne) dont on souhaite vérifier l'existence.
+      // Valeur de retour : booléen : Retourne Vrai si la colonne de table existe dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE TableColonneExiste(sNomTableEtColonne est une chaîne) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomTableEtColonne)
+      m_pclErreur.Raz()
+      
+      SI PAS cBaseDeDonnées.ConnexionActive(m_nIndiceDeConnexion) ALORS m_pclErreur.AjouteErreur(<§$0005§>);renvoyer ""
+      
+      sTable,sColonne sont des chaines
+      sColonne= ExtraitChaîne(sNomTableEtColonne,1,".",DepuisFin)
+      sTable	= Gauche(sNomTableEtColonne,Taille(sNomTableEtColonne)-Taille(sColonne)-1)
+      
+      RENVOYER Faux
+     type : 458752
+   -
+     name : SQLAvantColonne
+     procedure_id : 1561045513926619304
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoi du SQL à mettre devant le nom d'une colonne (ex [ pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAvantColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre devant toute référence à une colonne lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAvantColonne() : chaine
+      Renvoyer ""
+     type : 458752
+   -
+     name : SQLAprèsColonne
+     procedure_id : 1561045775923683712
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoi du SQL à mettre devant le nom d'une colonne (ex ] pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAprèsColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre après toute référence à une colonne lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAprèsColonne() : chaîne
+      renvoyer ""
+     type : 458752
+   -
+     name : SQLTableAvantColonne
+     procedure_id : 1561046119521147361
+     type_code : 12
+     code : |1-
+      // Résumé : Indique si il faut ajouter le nom de la table devant le nom de la colonne lors d'une requête SQL.
+      // Syntaxe : [ <Résultat> = ] SQLTableAvantColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Vrai s'il faut ajouter le nom de la table devant le nom de la colonne, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE SQLTableAvantColonne() : booleen
+      renvoyer faux
+     type : 458752
+   -
+     name : SQLAvantTable
+     procedure_id : 1561046570611897681
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoi du SQL à mettre devant le nom d'une table (ex [ pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAvantTable ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre devant toute référence à une table lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAvantTable() : chaîne
+      renvoyer ""
+     type : 458752
+   -
+     name : SQLAprèsTable
+     procedure_id : 1561046935684136446
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui renvoi du SQL à mettre devant le nom d'une table (ex ] pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAprèsTable ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre après toute référence à une table lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAprèsTable() : chaine
+      renvoyer ""
+     type : 458752
+  properties :
+   -
+     name : p_bEstConnecté
+     identifier : 0x12a9c637171b8270
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut de la connexion
+         PROCEDURE PUBLIQUE p_bEstConnecté() : booleen
+         RENVOYER m_nIndiceDeConnexion>0
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x12a9c54916f5df2f
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le nom serveur est obligatoire
+      en-GB : The name of the server is required
+      fr-CA : Le nom serveur est obligatoire
+      en-US : The name of the server is required
+     index : 0
+   -
+     text :
+      fr-FR : Le nom du fichier Excel est obligatoire
+      en-GB : Excel file name is required
+      fr-CA : Le nom du fichier Excel est obligatoire
+      en-US : Excel file name is required
+     index : 1
+   -
+     text :
+      fr-FR : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to close data connection (%1 - %2) : "
+      fr-CA : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-US : "Unable to close data connection (%1 - %2) : "
+     index : 2
+   -
+     text :
+      fr-FR : La base de données n'était pas connectée
+      en-GB : The database was not connected
+      fr-CA : La base de données n'était pas connectée
+      en-US : The database was not connected
+     index : 3
+   -
+     text :
+      fr-FR : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to open data connection (%1 - %2) : "
+      fr-CA : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-US : "Unable to open data connection (%1 - %2) : "
+     index : 4
+   -
+     text :
+      fr-FR : Aucune connexion
+      en-GB : No connection
+      fr-CA : Aucune connexion
+      en-US : No connection
+     index : 5
+   -
+     text :
+      fr-FR : La table %1 n'existe pas dans la base de données
+      en-GB : Table %1 does not exist in the database
+      fr-CA : La table %1 n'existe pas dans la base de données
+      en-US : Table %1 does not exist in the database
+     index : 6
+   -
+     text :
+      fr-FR : Aucune colonne
+      en-GB : No columns
+      fr-CA : Aucune colonne
+      en-US : No columns
+     index : 7
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

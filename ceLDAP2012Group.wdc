@@ -1,0 +1,144 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : ceLDAP2012Group
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f864fd1b264f67
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe Group pour LDAP sur serveur Windows 2012.
+      
+      ceLDAP2012Group est une Classe
+      	hérite de ceLDAPGroup
+      	hérite de cLDAP2012Top
+      	hérite de cLDAP2012Group
+      	hérite de cLDAP2003Security
+      	hérite de cLDAP2012Mail
+      	hérite de cLDAP2013MailExchange
+      GLOBAL CONSTANT
+      	mg_sLDAP2012GroupAttributs	est une chaine <sérialise = faux>
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1294895931114082151
+     type_code : 27
+     code : |1-
+      // Résumé : Initialisation de la classe lors de sa création.
+      // Syntaxe : Constructeur (<nIndiceDeConnexion> est entier, [, <sOrganizationalUnit> est chaîne ANSI [, <bLectureSeule> est booléen [, <sAttributsALire> est chaîne]]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indice de la connexion LDAP à utiliser.
+      //	sOrganizationalUnit (chaîne ANSI optionnelle) : L'unité organisationnelle pour laquelle la classe sera initialisée (par défaut, chaîne vide).
+      // 	bLectureSeule (booléen optionnel) : Indique si la classe doit être en mode lecture seule (par défaut, Faux).
+      //	sAttributsALire (chaîne UNICODE optionnelle) : Liste des attributs à lire pour les groupes (par défaut, liste d'attributs prédéfinie).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexion est un entier = 0,sOrganizationalUnit est une chaine ansi = "",bLectureSeule est un booléen = Faux,sAttributsALire est une chaîne = ceLDAPGroup.mg_sAttributsALire)
+      ceLDAPGroup.Constructeur(nIndiceDeConnexion,sOrganizationalUnit,bLectureSeule,sAttributsALire)
+      SI mg_sLDAP2012GroupAttributs="" ALORS mg_sLDAP2012GroupAttributs=p_sAttributs SINON m_sAttributs=mg_sLDAP2012GroupAttributs
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1294895931114147687
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : ContactsCharge
+     procedure_id : 1294896472287755067
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les contacts d'un groupe LDAP. 
+      // Syntaxe : [ <Résultat> = ] ContactsCharge ( [<xNomObjetListe> [, <xNomObjetFiche> [, <sFiltres> [, <nLimiteMax> est entier [, <sAttributsALire> est chaîne [, <bLectureSeule> est booléen]]]]]])
+      // Paramètres :
+      // 	xNomObjetListe (valeur optionnelle) : L'objet représentant la liste des contacts. Par défaut, la classe liste correspondante à la version utilisée par le groupe. 
+      // 	xNomObjetFiche (valeur optionnelle) : L'objet représentant la fiche d'un contact. Par défaut, la classe fiche correspondante à la version utilisée par le groupe. 
+      // 	sFiltres (optionnel) : Les filtres à appliquer lors de la récupération des contacts. Par défaut, tous.
+      // 	nLimiteMax (entier optionnel) : Le nombre maximum de contacts à charger. Par défaut, la valeur est 0 pour charger tous les contacts.
+      //	sAttributsALire (chaîne UNICODE optionnelle) : Les attributs à lire pour chaque contact séparés par des virgules, par défaut Tous.
+      //	bLectureSeule (booléen optionnel) : Indique si l'opération de chargement doit être en mode lecture seule, par défaut le même indicateur que cette instance. 
+      // Valeur de retour : booléen : Vrai si le chargement des contacts est réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCÉDURE ContactsCharge(xNomObjetListe = "csdLDAP2012Contact",xNomObjetFiche = "ceLDAP2012Contact",sFiltre = "",nLimiteMax est un entier = 0,sAttributsALire est une chaine = "",bLectureSeule est un booleen = p_bLectureSeule)
+      RENVOYER ceLDAPGroup.ContactsCharge(xNomObjetListe,xNomObjetFiche,sFiltre,nLimiteMax,sAttributsALire,bLectureSeule)
+     type : 458752
+   -
+     name : SubGroupsCharge
+     procedure_id : 1294896566780006742
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les sous-groupes d'un groupe LDAP. 
+      // Syntaxe : [ <Résultat> = ] ContactsCharge ( [<xNomObjetListe> [, <xNomObjetFiche> [, <sFiltres> [, <nLimiteMax> est entier [, <sAttributsALire> est chaîne [, <bLectureSeule> est booléen]]]]]])
+      // Paramètres :
+      // 	xNomObjetListe (valeur optionnelle) : L'objet représentant la liste des sous-groupes. Par défaut, la classe liste correspondante à la version utilisée par le groupe. 
+      // 	xNomObjetFiche (valeur optionnelle) : L'objet représentant la fiche d'un sous-groupe. Par défaut, la classe fiche correspondante à la version utilisée par le groupe. 
+      // 	sFiltres (optionnel) : Les filtres à appliquer lors de la récupération des sous-groupes. Par défaut, tous.
+      // 	nLimiteMax (entier optionnel) : Le nombre maximum de sous-groupes à charger. Par défaut, la valeur est 0 pour charger tous les contacts.
+      //	sAttributsALire (chaîne UNICODE optionnelle) : Les attributs à lire pour chaque sous-groupe séparés par des virgules, par défaut Tous.
+      //	bLectureSeule (booléen optionnel) : Indique si l'opération de chargement doit être en mode lecture seule, par défaut le même indicateur que cette instance. 
+      // Valeur de retour : booléen : Vrai si le chargement des sous-groupes est réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCÉDURE SubGroupsCharge(xNomObjetListe = "csdLDAP2012Group",xNomObjetFiche = "ceLDAP2012Group",sFiltre = "",nLimiteMax est un entier = 0,sAttributsALire est une chaine = "",bLectureSeule est un booleen = p_bLectureSeule)
+      RENVOYER ceLDAPGroup.SubGroupsCharge(xNomObjetListe,xNomObjetFiche,sFiltre,nLimiteMax,sAttributsALire,bLectureSeule)
+     type : 458752
+   -
+     name : UsersCharge
+     procedure_id : 1294896626916575496
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les utilisateurs d'un groupe LDAP. 
+      // Syntaxe : [ <Résultat> = ] ContactsCharge ( [<xNomObjetListe> [, <xNomObjetFiche> [, <sFiltres> [, <nLimiteMax> est entier [, <sAttributsALire> est chaîne [, <bLectureSeule> est booléen]]]]]])
+      // Paramètres :
+      // 	xNomObjetListe (valeur optionnelle) : L'objet représentant la liste des utilisateur. Par défaut, la classe liste correspondante à la version utilisée par le groupe. 
+      // 	xNomObjetFiche (valeur optionnelle) : L'objet représentant la fiche d'un utilisateur. Par défaut, la classe fiche correspondante à la version utilisée par le groupe. 
+      // 	sFiltres (optionnel) : Les filtres à appliquer lors de la récupération des utilisateurs. Par défaut, tous.
+      // 	nLimiteMax (entier optionnel) : Le nombre maximum d'utilisateurs à charger. Par défaut, la valeur est 0 pour charger tous les contacts.
+      //	sAttributsALire (chaîne UNICODE optionnelle) : Les attributs à lire pour chaque utilisateur séparés par des virgules, par défaut Tous.
+      //	bLectureSeule (booléen optionnel) : Indique si l'opération de chargement doit être en mode lecture seule, par défaut le même indicateur que cette instance. 
+      // Valeur de retour : booléen : Vrai si le chargement des utilisateurs est réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCÉDURE UsersCharge(xNomObjetListe = "csdLDAP2012User",xNomObjetFiche = "ceLDAP2012User",sFiltre = csdLDAPUser._ADUserfiltreStatutActifsSeulement,nLimiteMax est un entier = 0,sAttributsALire est une chaine = "",bLectureSeule est un booleen = p_bLectureSeule)
+      RENVOYER ceLDAPGroup.UsersCharge(xNomObjetListe,xNomObjetFiche,sFiltre,nLimiteMax,sAttributsALire,bLectureSeule)
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f864fb1b204568
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

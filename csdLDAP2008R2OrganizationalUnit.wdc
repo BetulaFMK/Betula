@@ -1,0 +1,78 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : csdLDAP2008R2OrganizationalUnit
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f864621ad4f343
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe des OUs pour LDAP sur serveur Windows 2008R2.
+      
+      csdLDAP2008R2OrganizationalUnit est une Classe
+      	hérite de csdLDAPOrganizationalUnit
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1294895265388819267
+     type_code : 27
+     code : |1-
+      // Résumé : Initialisation de la classe lors de sa création.
+      // Syntaxe : Constructeur (<nIndiceDeConnexion> est entier, <xNomObjetFiche> [, <sOrganizationalUnit> est chaîne ANSI [, <bLectureSeule> est booléen [, <sAttributsALire> est chaîne]]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indice de la connexion LDAP à utiliser.
+      // 	xNomObjetFiche : L'objet représentant la fiche d'une unité d'organisation.
+      //	sOrganizationalUnit (chaîne ANSI optionnelle) : L'unité organisationnelle pour laquelle la classe sera initialisée (par défaut, chaîne vide).
+      // 	bLectureSeule (booléen optionnel) : Indique si la classe doit être en mode lecture seule (par défaut, Faux).
+      //	sAttributsALire (chaîne UNICODE optionnelle) : Liste des attributs à lire pour les unités d'organisation (par défaut, liste d'attributs prédéfinie).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexion est un entier,xNomObjetFiche = ceLDAP2008r2OrganizationalUnit,sOrganizationalUnit est une chaine ansi = "",bLectureSeule est un booléen = Faux,sAttributsALire est une chaîne = ceLDAPOrganizationalUnit.mg_sAttributsALire)
+      csdLDAPOrganizationalUnit.Constructeur(nIndiceDeConnexion,xNomObjetFiche,sOrganizationalUnit,bLectureSeule,sAttributsALire)
+      m_tabEnregistrement <- m_tabOU
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1294895265388884803
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f864601aceea3e
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,1316 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cEnregistrementLDAP
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1c6701bf4d501309
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe équivalente à cEnregistrement mais pour LDAP (car spécifique à gérer). Est notamment utilisée dans toutes les classe ceLDAPxxx et csdLDAPxxx. 
+      
+      //replica-link OctetString	: “Hello!” = 04 06 48 65 6c 6c 6f 21					//ref : https://ldapwiki.com/wiki/OctetString
+      //DateHeure					: large integer that represents the number of 100-nanosecond intervals since January 1, 1601 (UTC).A value of zero means that the last time a incorrect password was used is unknown.
+      //https://www.serverbrain.org/active-directory-planning-008/active-directory-data-types.html
+      //voir aussi : https://social.technet.microsoft.com/wiki/contents/articles/5392.active-directory-ldap-syntax-filters.aspx
+      
+      CONSTANTE		//ref : https://docs.microsoft.com/en-us/windows/win32/adschema/a-instancetype
+      	_ADTypeInstanceHead						= 0x00000001
+      	_ADTypeInstanceReplicaNotInstantiated	= 0x00000002
+      	_ADTypeInstanceWritable					= 0x00000004
+      	_ADTypeInstanceContextAboveIsHeld		= 0x00000008
+      	_ADTypeInstanceContextUseReplication	= 0x00000010
+      	_ADTypeInstanceContextRemovedFromDSA	= 0x00000020
+      FIN
+      EADType est une énumération
+      	_ADTypeUnknown				= "unknown"
+      	_ADTypeOrganizationalUnit	= "organizationalUnit"
+      	_ADTypeUser					= "user"
+      	_ADTypeComputer				= "computer"
+      	_ADTypeContact				= "contact"
+      	_ADTypeGroup				= "group"
+      	_ADTypePrinter				= "printer"
+      	_ADTypeSharedFolder			= "folder"
+      FIN
+      cEnregistrementLDAP est une Classe, abstraite
+      	hérite de cGénérique
+      	dn							est une chaine ansi				<serialise = faux>					//DN de l'enregistrement en cours. Attention, cas spécifique où on veut affecter le DN sans lire ses attributs.
+      PUBLIC CONSTANT               		
+      	m_nIndiceDeConnexion		est un entier					<serialise = faux>					//Indice de la connexion au serveur LDAP
+      	m_bErreurDoublon			est un booleen 					<Sérialise = Faux>					//Indique qu'il y a eu une erreur de doublon lors de la dernière opération d'écriture
+      	m_sAttributsALire			est une chaine					<serialise = faux>					//Nom des attributs à lire lors d'une lecture d'un enregistrement
+      	m_sAttributsLus				est une chaine					<serialise = faux>					//Nom des attributs effectivement lus lors d'une lecture d'un enregistrement
+      	m_sSessionAD 				est une chaine					<serialise = faux>					//Nom de la session sur l'Active Directory
+      	m_sGUIDEnregistrement		est une chaine 					<Sérialise = Faux> 					//GUID de l'enregistrement (chaîne car le type guid pas dispo en Java)
+      	m_eType						est un EADType					<Sérialise = Faux>					//Type de l'enregistrement (voir l'énumération ci-dessus)
+      PROTÉGÉ
+      	m_eStatutEnregistrement		est un cenregistrement.EEnregistrementStatut <serialise = faux>		//Statut de l'enregistrement
+      	m_sValCléEnCours			est une chaine 					<Sérialise = Faux>					//Valeur de la clé unique en cours
+      	m_sHashEnregistrement		est une chaine  				<Sérialise = Faux>					//Contient le hash de l'enregistrement en JSON. Sert aux comparaisons entre l'enregistrement lu et en mémoire dans cet objet.
+      	m_sOUouGroupe				est une chaine ansi				<serialise = faux>					//OU ou Groupe lié à l'enregistrement en cours
+      	m_sAttributs				est une chaine  				<Sérialise = Faux>					//Tous les attributs disponibles pour l'objet
+      	m_sEnregistrement			est une chaine 					<serialise = faux>					//Contient l'enregistrement en JSON
+      PRIVÉ
+      	m_bGèreUTF8					est un booleen					<serialise = faux>					//Indique que le serveur support UTF8
+      	m_bLectureSeule				est un booleen 					<Sérialise = Faux>					//Indique que l'enregistrement est en lecture seule (logiciel par le constructeur)
+      	m_sEnregistrementVide		est une chaine					<serialise = faux>					//Met en mémoire l'objet vide au moment de l'appel du constructeur
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2046606476810720009
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe en définissant divers paramètres tels que l'indice de connexion, le type d'objet LDAP, l'unité organisationnelle ou le groupe, la lecture seule, et les attributs à lire.
+      // Syntaxe : Constructeur (<nIndiceDeConnexion> est entier [, <eType> est cEnregistrementLDAP.EADType [, <sOUouGroupe> est chaîne ANSI [, <bLectureSeule> est booléen [, <sAttributsALire> est chaîne]]]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indice de connexion associé à l'enregistrement LDAP.
+      //	eType (cEnregistrementLDAP.EADType) : Type d'objet LDAP. Par défaut, la valeur _ADTypeUnknown est utilisée.
+      //	sOUouGroupe (chaîne ANSI optionnelle) : Nom de l'unité organisationnelle ou du groupe LDAP. Par défaut, une chaîne vide est utilisée.
+      // 	bLectureSeule (booléen optionnel) : Indique si l'enregistrement est en mode lecture seule. Par défaut, la valeur Faux est utilisée.
+      //	sAttributsALire (chaîne UNICODE optionnel) : Attributs LDAP à lire pour cet enregistrement. Si la chaîne est vide, tous les attributs seront lus. Par défaut, une chaîne vide est utilisée.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexion EST UN ENTIER,eType est un EADType = _ADTypeUnknown,sOUouGroupe est une chaine ansi = "",bLectureSeule est un booléen = Faux,sAttributsALire est une chaine = "")
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIndiceDeConnexion,sOUouGroupe,bLectureSeule,sAttributsALire)
+      m_sEnregistrementVide=VariableVersJSON(objet)
+      m_sOUouGroupe			= sOUouGroupe
+      SI nIndiceDeConnexion>0 ALORS 
+      	p_nIndiceDeConnexion 	= nIndiceDeConnexion
+      	SI PAS Droite(m_sOUouGroupe,Taille(cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].sSchémaOuDC))~=cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC ALORS m_sOUouGroupe+=[","]+cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC
+      FIN
+      m_eStatutEnregistrement	= cEnregistrement.EstAjouté	//sera modifié ensuite si Recherche mais si pas de recherche, on affecte les membres et on voudra ajouter !
+      m_sAttributsALire		= sAttributsALire			//si vide, les utilisera tous
+      m_bLectureSeule			= bLectureSeule
+      m_eType					= eType
+      //m_sGUIDEnregistrement donné par objectGUID de l’enregistrement LDAP		//identifiant unique pour chaque enregistrement traité
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2046606476810785545
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Recherche
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2046608916376240371
+     type_code : 12
+     code : |1-
+      // Résumé : Recherche un enregistrement LDAP en fonction d'un critère spécifié. Elle utilise la session LDAP ouverte, l'unité organisationnelle (OU) ou le groupe LDAP, et les attributs à lire pour cette recherche.
+      // Syntaxe : [ <Résultat> = ] Recherche (<sCritère> est chaîne [, <sOrganizationalUnit> est chaîne ANSI [, <sLireAttributs> est chaîne]])
+      // Paramètres :
+      //	sCritère (chaîne UNICODE) : Une chaîne spécifiant le critère de recherche (voir exemple dans RechercheSelonCompteSAM).
+      //	sOrganizationalUnit (chaîne ANSI optionnelle) : Unité organisationnelle ou le groupe LDAP dans lequel effectuer la recherche. Par défaut, la valeur de l'unité organisationnelle associée à l'objet est utilisée.
+      //	sLireAttributs (chaîne UNICODE) : Attributs LDAP à lire pour cet enregistrement. Par défaut, la valeur des attributs à lire associée à l'objet est utilisée.
+      // Valeur de retour : booléen : Renvoie un booléen indiquant si la recherche a abouti avec succès (Vrai) ou non (Faux).
+      // Exemple :
+      //
+      PROCEDURE Recherche(sCritère est une chaine,sOrganizationalUnit est une chaine ansi = m_sOUouGroupe,sLireAttributs est une chaine = m_sAttributsALire) : booleen
+      SI PAS Droite(sOrganizationalUnit,Taille(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC))~=cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC ALORS 
+      	sOrganizationalUnit+=[","]+cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC
+      FIN
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCritère,sOrganizationalUnit,sLireAttributs)
+      m_pclErreur.Raz()
+      
+      SI m_sSessionAD="" 	ALORS m_pclErreur.AjouteErreur(<§$000a§>)
+      SI sCritère~="" 	ALORS m_pclErreur.AjouteErreur(<§$0001§>)
+      SI p_sErreur>"" 	ALORS RENVOYER Faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	dn = LDAPRecherche(m_sSessionAD,sOrganizationalUnit,sCritère)	
+      	//génère Echec de l'opération sur le serveur. Les causes possibles peuvent être : - les droits de l'utilisateur sont insuffisants - le pare-feu bloque la connexion
+      	//mais passe quand même (la variable dn est remplie)
+      	
+      <fin>
+      
+      
+      SI dn>"" ALORS dn=ExtraitChaîne(dn,1,RC);Relit(sLireAttributs)	//parfois un RC (inutile?) à la fin du DN
+      
+      m_sValCléEnCours 	= dn
+      m_sOUouGroupe		= sOrganizationalUnit		//au cas où on doit écrire l'enregistrement
+      
+      RENVOYER (dn>"")
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : RechercheSelonCompteSAM
+     procedure_id : 2046609290038547178
+     type_code : 12
+     code : |1-
+      // Résumé : Recherche d'un enregistrement LDAP en utilisant le nom du compte SAM spécifié. Elle utilise la session LDAP ouverte, l'unité organisationnelle (OU) ou le groupe LDAP, et les attributs à lire pour cette recherche.
+      // Syntaxe : [ <Résultat> = ] RechercheSelonCompteSAM (<sNomDuCompte> est chaîne [, <sOrganizationalUnit> est chaîne ANSI [, <sLireAttributs> est chaîne]])
+      // Paramètres :
+      //	sNomDuCompte (chaîne UNICODE) : Nom du compte SAM pour la recherche. 
+      //	sOrganizationalUnit (chaîne ANSI) : Unité organisationnelle ou le groupe LDAP dans lequel effectuer la recherche. Par défaut, la valeur de l'unité organisationnelle associée à l'objet est utilisée.
+      //	sLireAttributs (chaîne UNICODE) : Attributs LDAP à lire pour cet enregistrement. Par défaut, la valeur des attributs à lire associée à l'objet est utilisée.
+      // Valeur de retour : booléen : Indique si la recherche a abouti avec succès (Vrai) ou non (Faux). 
+      // Exemple :
+      //
+      PROCEDURE RechercheSelonCompteSAM(sNomDuCompte est une chaine,sOrganizationalUnit est une chaine ansi = m_sOUouGroupe,sLireAttributs est une chaine = m_sAttributsALire) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomDuCompte,sOrganizationalUnit,sLireAttributs)	//on ne peut pas changer l'attribut de mot de passe donc pas de cryptage
+      m_pclErreur.Raz()
+      
+      SI m_sSessionAD="" 	ALORS m_pclErreur.AjouteErreur(<§$000a§>)
+      SI sNomDuCompte~="" ALORS m_pclErreur.AjouteErreur(<§$0010§>)
+      
+      SI p_sErreur>"" ALORS RENVOYER Faux
+      
+      SI PAS Recherche("sAMAccountName="+sNomDuCompte,sOrganizationalUnit,sLireAttributs) ALORS
+      	SI Recherche("(ou=" +sNomDuCompte+")",sOrganizationalUnit,sLireAttributs) ALORS m_eType=cEnregistrementLDAP._ADTypeOrganizationalUnit;RENVOYER Vrai
+      SINON
+      	m_eType=cEnregistrementLDAP._ADTypeGroup
+      	RENVOYER Vrai
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : CopieMembresDepuis
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1154931798594657291
+     type_code : 12
+     code : |1-
+      // Résumé : Copie les membres d'un objet dynamique référencé (pclRéférence) vers l'objet courant. Attention, ne copie que les membre dont le nom est parfaitement identique.
+      // Syntaxe : [ <Résultat> = ] CopieMembresDepuis (<pclRéférence> est objet dynamique)
+      // Paramètres :
+      //	pclRéférence (objet dynamique) : L'objet dynamique à partir duquel les membres doivent être copiés.
+      // Valeur de retour : booléen : Renvoie Vrai si la copie des membres est réussie, sinon Faux.
+      // Exemple :
+      //
+      PROCEDURE CopieMembresDepuis(pclRéférence est un objet dynamique) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(pclRéférence)
+      m_pclErreur.Raz()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	defStructure 	est une Définition = RécupèreDéfinition(pclRéférence)
+      	sNom			est une chaîne
+      	
+      	POUR i=1 _À_ defStructure.Variable..Occurrence
+      		quand exception dans
+      			sNom=defStructure.Variable[i]..Nom
+      			{sNom,indvariable}={"pclRéférence."+sNom,indVariable}
+      		faire
+      			//rien, le membre dans cet objet n'existe pas
+      		fin
+      	FIN
+      	renvoyer vrai
+      	
+      <sinon si CibleExécution=Java>
+      	renvoyer faux
+      	
+      <fin>
+      
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();renvoyer faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();renvoyer faux
+     type : 458752
+   -
+     name : Écrit
+     procedure_id : 1293069650458040680
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter ou de mettre à jour un enregistrement LDAP en fonction de son état actuel. Elle prend en compte la session LDAP ouverte, l'unité organisationnelle (OU) ou le groupe LDAP, ainsi que les attributs à écrire pour cette opération.
+      // Syntaxe : [ <Résultat> = ] Écrit ( [<sOrganizationalUnit> est chaîne ANSI])
+      // Paramètres :
+      //	sOrganizationalUnit (chaîne ANSI) : Unité organisationnelle ou le groupe LDAP dans lequel effectuer l'écriture. Par défaut, la valeur de l'unité organisationnelle associée à l'objet est utilisée.
+      // Valeur de retour : booléen : Renvoie un booléen indiquant si l'opération d'écriture a réussi (Vrai) ou non (Faux).
+      // Exemple :
+      //
+      PROCEDURE Écrit(sOrganizationalUnit est une chaine ansi = m_sOUouGroupe) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sOrganizationalUnit)
+      m_pclErreur.Raz()
+      si pas vérifie() alors renvoyer faux
+      
+      SI m_sSessionAD~="" 															ALORS m_pclErreur.AjouteErreur(<§$000a§>)
+      SI m_bLectureSeule 																ALORS m_pclErreur.AjouteErreur(<§$0013§>);renvoyer faux
+      SI m_sValCléEnCours="" _ET_ sOrganizationalUnit~="" _ET_ m_eType=_ADTypeGroup 	ALORS m_pclErreur.AjouteErreur(<§$000d§>)
+      SI p_sErreur>"" ALORS RENVOYER Faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	sValeurANSI,sAttributsÉcrits 	est une chaine ansi
+      	SI m_sValCléEnCours="" ALORS
+      		//ajout
+      		vEnregistrement est un variant = JSONVersVariant(m_sEnregistrementVide)
+      		vEnregistrement={"vEnregistrement."+objet..Classe,indVariable}						//car le VariableVersJSON fait que cela commence par le nom de l'objet, donc on prend le niveau suivant
+      		LDAPDébutAjout(m_sSessionAD)
+      		SELON m_eType
+      			CAS _ADTypeUnknown				: m_pclErreur.AjouteErreur(<§$0014§>);renvoyer faux
+      			CAS _ADTypeOrganizationalUnit	: m_pclErreur.AjouteErreur(<§$0015§>);renvoyer faux
+      			CAS _ADTypeComputer				: m_pclErreur.AjouteErreur(<§$0015§>);renvoyer faux
+      			CAS _ADTypePrinter				: m_pclErreur.AjouteErreur(<§$0015§>);renvoyer faux
+      			CAS _ADTypeSharedFolder			: m_pclErreur.AjouteErreur(<§$0015§>);renvoyer faux
+      				
+      			CAS _ADTypeUser
+      				SI {"cn",indVariable}~="" ALORS m_pclErreur.AjouteErreur(<§$0016§>)
+      				SI {"sAMAccountName",indVariable}~="" ALORS m_pclErreur.AjouteErreur(<§$0017§>)
+      				SI p_sErreurTout>"" ALORS RENVOYER Faux
+      				
+      				//			si pas AttributsAjoute() alors renvoyer faux
+      				SI PAS AttributAjoute("objectClass","top") ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("objectClass","person") ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("objectClass","organizationalPerson") ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("objectClass","user") ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("objectCategory","CN=Person, CN=Schema, CN=Configuration,"+p_sDNBase) ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("instanceType",_ADTypeInstanceWritable) ALORS RENVOYER Faux											//The object is writable on this directory
+      				SI PAS AttributAjoute("cn",{"cn",indVariable}) ALORS RENVOYER Faux					
+      				SI PAS AttributAjoute("sn",{"sn",indVariable}) ALORS RENVOYER Faux					
+      				SI PAS AttributAjoute("givenName",{"givenName",indVariable}) ALORS RENVOYER Faux					
+      				SI PAS AttributAjoute("sAMAccountName",{"sAMAccountName",indVariable}) ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("userAccountControl",ceLDAP2012User.ADUSER_NORMAL_ACCOUNT+ceLDAP2012User.ADUSER_PASSWD_NOTREQD) ALORS RENVOYER Faux
+      				sValeurANSI="CN="+{"cn",indVariable}+[","]+m_sOUouGroupe+[","+p_sDNBase]
+      				SI PAS AttributAjoute("distinguishedName",sValeurANSI) ALORS RENVOYER Faux
+      				SI LDAPValideAjout(m_sSessionAD,sValeurANSI) ALORS 
+      					dn=sValeurANSI;m_sValCléEnCours=sValeurANSI
+      					m_eStatutEnregistrement = cEnregistrement.EstInchangé
+      					HashEnregistrement()
+      					RENVOYER Vrai
+      				FIN
+      			CAS _ADTypeContact	
+      				SI p_sErreurTout>"" ALORS RENVOYER Faux
+      				
+      				SI PAS AttributsAjoute() ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("objectClass","top") ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("objectClass","person") ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("objectClass","organizationalPerson") ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("objectClass","contact") ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("instanceType",_ADTypeInstanceWritable) ALORS RENVOYER Faux											//The object is writable on this directory
+      				SI {"cn",indVariable}~="" ALORS {"cn",indVariable}={"givenName",indVariable}+[" "]+{"sn",indVariable}
+      				SI PAS AttributAjoute("cn",{"cn",indVariable}) ALORS RENVOYER Faux				
+      				sValeurANSI="CN="+{"cn",indVariable}+[","]+m_sOUouGroupe+[","+p_sDNBase]
+      				SI LDAPValideAjout(m_sSessionAD,sValeurANSI) ALORS 
+      					dn=sValeurANSI;m_sValCléEnCours=sValeurANSI
+      					m_eStatutEnregistrement = cEnregistrement.EstInchangé
+      					HashEnregistrement()
+      					RENVOYER Vrai
+      				FIN
+      			CAS _ADTypeGroup
+      				SI {"cn",indVariable}~="" ALORS m_pclErreur.AjouteErreur(<§$0016§>)
+      				SI {"sAMAccountName",indVariable}~="" ALORS m_pclErreur.AjouteErreur(<§$0017§>)
+      				SI p_sErreurTout>"" ALORS RENVOYER Faux
+      				
+      				SI PAS AttributsAjoute() ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("objectClass","top") ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("objectClass","group") ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("objectCategory","CN=Group,CN=Schema,CN=Configuration,"+p_sDNBase) ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("distinguishedName","CN="+{"cn",indVariable}+","+sOrganizationalUnit) ALORS RENVOYER Faux
+      				SI PAS AttributAjoute("instanceType",_ADTypeInstanceWritable) ALORS RENVOYER Faux										//The object is writable on this directory
+      				sValeurANSI="CN="+{"cn",indVariable}+","+sOrganizationalUnit
+      				SI LDAPValideAjout(m_sSessionAD,sValeurANSI) ALORS 
+      					dn=sValeurANSI;m_sValCléEnCours=sValeurANSI
+      					m_eStatutEnregistrement = cEnregistrement.EstInchangé
+      					HashEnregistrement()
+      					RENVOYER Vrai
+      				FIN
+      		FIN
+      	SINON
+      		//modification
+      		vEnregistrement est un variant = JSONVersVariant(m_sEnregistrement)
+      		SI HashEnregistrement()=m_sHashEnregistrement ALORS RENVOYER Vrai					//rien à écrire
+      		sAttributs est une chaine = LDAPListeAttribut(m_sSessionAD,dn)
+      		sNouveaux,sModifiés,sValeur sont des chaines
+      		vEnregistrement={"vEnregistrement."+objet..Classe,indVariable}						//car le VariableVersJSON fait que cela commence par le nom de l'objet, donc on prend le niveau suivant
+      		POUR TOUTE CHAÎNE sAttribut de m_sAttributsLus separee par ","
+      			SI sAttribut DANS ("objectGUID","objectSid") ALORS CONTINUER					//en lecture seule
+      			SI TypeVar({AttributVersMembre(sAttribut),indVariable})=wlTableau ALORS
+      				sValeur=""
+      				POUR nValeur = 1 _a_ AttributNbValeurs(sAttribut)
+      					sValeur+=[cGénérique._Sep]+{"vEnregistrement."+sAttribut,indVariable}[nValeur]
+      				FIN
+      				POUR nValeur = 1 _a_ {AttributVersMembre(sAttribut),indVariable}..occurrence 
+      					SI Position(sValeur,{sAttribut,indVariable}[nValeur],0,MotComplet)<1 ALORS
+      						SI Position(sAttributs,sAttribut,0,MotComplet)<1 ALORS 
+      							SI Position(sNouveaux,sAttribut) ALORS sNouveaux+=[","]+sAttribut
+      						SINON 
+      							SI Position(sModifiés,sAttribut) ALORS sModifiés+=[","]+sAttribut
+      						FIN
+      					FIN
+      				FIN
+      			SINON
+      				sValeur = (TypeVar({AttributVersMembre(sAttribut),indVariable})=wlChaîneAnsi ? AnsiVersUnicode({"vEnregistrement."+sAttribut,indVariable}) SINON {"vEnregistrement."+sAttribut,indVariable})
+      				SI sAttribut~="thumbnailPhoto" _ET_ fFichierExiste({sAttribut,indVariable}) ALORS	//ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/178609-ldap-champ-thumbnailphoto-180483/read.awp
+      					sTemp 	est une chaîne = fFichierTemp("PAD")
+      					imgTemp est une image = fChargeBuffer(sTemp);dSauveImageJPEG(imgTemp,sTemp,80,imgJPEGProgressif);{sAttribut,indVariable}=fChargeBuffer(sTemp)
+      				FIN
+      				SI sValeur<>(TypeVar({AttributVersMembre(sAttribut),indVariable})=wlChaîneAnsi ? AnsiVersUnicode({AttributVersMembre(sAttribut),indVariable}) SINON {AttributVersMembre(sAttribut),indVariable}) ALORS
+      					SI Position(sAttributs,sAttribut,0,MotComplet)<1 ALORS sNouveaux+=[","]+sAttribut SINON sModifiés+=[","]+sAttribut
+      				FIN
+      			FIN
+      		FIN
+      	//	Trace("nouveaux:"+sNouveaux);Trace("modifiés:"+sModifiés)
+      		SI sNouveaux+sModifiés>"" ALORS
+      			LDAPDébutModification(m_sSessionAD)
+      			POUR TOUTE CHAÎNE sAttribut de sNouveaux+[","]+sModifiés separee par ","
+      				SI TypeVar({AttributVersMembre(sAttribut),indVariable})=wlTableau ALORS
+      					//on supprime d'abord tous les attributs du tableau
+      					POUR nValeur = 1 _a_ AttributNbValeurs(sAttribut)
+      						sValeurANSI = (TypeVar({AttributVersMembre(sAttribut),indVariable})=wlChaîneUnicode ? UnicodeVersAnsi({"vEnregistrement."+sAttribut,indVariable}[nValeur]) SINON {"vEnregistrement."+sAttribut,indVariable}[nValeur])	//nécessaire car la fonction LDAPRemplaceValeurAttribut attend la valeur d'avant
+      						LDAPSupprimeValeurAttribut(m_sSessionAD,sAttribut,sValeurANSI)
+      					FIN
+      					//on recrée ensuite tous les attributs
+      					POUR nValeur = 1 _a_ {AttributVersMembre(sAttribut),indVariable}..occurrence 
+      						SI PAS AttributAjoute(sAttribut,{AttributVersMembre(sAttribut),indVariable}[nValeur]) ALORS RENVOYER Faux
+      					FIN
+      				SINON
+      					SI Position(sNouveaux,sAttribut,0,MotComplet)>0 ALORS
+      						SI PAS AttributAjoute(sAttribut,{AttributVersMembre(sAttribut),indVariable}) ALORS RENVOYER Faux	//même les attributs qu'on ajoute passent dans un LDAPDébutModification
+      					SINON
+      						SI PAS AttributModifie(sAttribut,{AttributVersMembre(sAttribut),indVariable},{"vEnregistrement."+sAttribut,indVariable}) ALORS RENVOYER Faux
+      					FIN
+      				FIN
+      			FIN
+      			SI LDAPValideModification(m_sSessionAD,m_sValCléEnCours) ALORS RENVOYER Vrai
+      		SINON
+      			RENVOYER Vrai
+      		FIN
+      	FIN
+      	
+      	m_pclErreur.AjouteErreurWx()
+      	m_bErreurDoublon=Position(p_sErreur,"(68)")
+      	
+      		PROCÉDURE INTERNE AttributAjoute(sNomAttribut,sValAttribut) : booleen
+      		SI sValAttribut>"" _ET_ Position(sAttributsÉcrits,sNomAttribut,0,MotComplet)<1 ALORS
+      			bTableau			est un booleen		= (TypeVar({AttributVersMembre(sNomAttribut),indVariable}) = wlTableau)		
+      			sNomAttributANSI 	est une chaine ANSI = UnicodeVersAnsi(sNomAttribut)
+      			sValAttributANSI 	est une chaine ANSI
+      			SI TypeVar({AttributVersMembre(sNomAttribut),indVariable}) = wlChaîneAnsi ALORS
+      				sValAttributANSI = sValAttribut
+      			SINON	
+      				sValAttributANSI = UnicodeVersAnsi(sValAttribut)
+      			FIN
+      			SI AttributVersMembre(sNomAttribut)="dn" ALORS sValeurANSI=DNVersANSI(sValAttributANSI)	//ref : https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ldap/distinguished-names 
+      			SI LDAPAjouteAttribut(m_sSessionAD,sNomAttribut, ChaîneVersUTF8(sValAttributANSI)) ALORS 
+      				sAttributsÉcrits+=[","]+(bTableau ? "" SINON sNomAttribut) 
+      			SINON 
+      				m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      			FIN
+      		FIN
+      		RENVOYER Vrai
+      		FIN
+      	
+      		PROCÉDURE INTERNE AttributModifie(sNomAttribut,sValAttribut,sValAncien) : booleen
+      		SI Position(sAttributsÉcrits,sNomAttribut,0,MotComplet)<1 ALORS
+      			sNomAttributANSI 	est une chaine ANSI = UnicodeVersAnsi(sNomAttribut)
+      			sValAttributANSI 	est une chaine ANSI
+      			SI TypeVar({AttributVersMembre(sNomAttribut),indVariable}) = wlChaîneAnsi ALORS sValAttributANSI = sValAttribut SINON sValAttributANSI = UnicodeVersAnsi(sValAttribut)
+      			SI sValAncien<>sValAttribut ALORS
+      				SI LDAPRemplaceValeurAttribut(m_sSessionAD,sNomAttribut, ChaîneVersUTF8(UTF8VersUnicode(LDAPValeur(m_sSessionAD,m_sValCléEnCours,sNomAttribut))),ChaîneVersUTF8(sValAttributANSI)) ALORS 
+      					sAttributsÉcrits+=[","]+sNomAttribut
+      				SINON 
+      					m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      				FIN
+      			FIN
+      		FIN
+      		RENVOYER Vrai
+      		FIN
+      	
+      		PROCÉDURE INTERNE AttributsAjoute() : booléen
+      		sValAttributANSI,sValeurDéfaut sont des chaines ansi
+      		vEnregistrementVide est un variant = JSONVersVariant(m_sEnregistrementVide)
+      		POUR TOUTE CHAÎNE sNomAttribut de m_sAttributs separee par ","
+      			SI Position(sAttributsÉcrits,sNomAttribut,0,MotComplet)<1 ALORS
+      				SI TypeVar({AttributVersMembre(sNomAttribut),indVariable}) = wlTableau ALORS
+      					SI {AttributVersMembre(sNomAttribut),indVariable}..Occurrence>0 ALORS
+      						POUR nValeur = 1 _a_ {AttributVersMembre(sNomAttribut),indVariable}..occurrence 
+      							sValAttributANSI=(m_bGèreUTF8 ? ChaîneVersUTF8({AttributVersMembre(sNomAttribut),indVariable}[nValeur]) SINON ...
+      							UnicodeVersAnsi({AttributVersMembre(sNomAttribut),indVariable}[nValeur]))
+      							SI sValAttributANSI>"" ALORS
+      								//pas de test si déjà écrit car par définition, les éléments d'un tableau va s'écrire à chaque élément de ce dernier
+      								SI PAS LDAPAjouteAttribut(m_sSessionAD,sNomAttribut,sValAttributANSI) ALORS m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      							FIN
+      						FIN
+      					FIN
+      				SINON SI TypeVar({AttributVersMembre(sNomAttribut),indVariable}) = wlBuffer ALORS
+      					//a tester
+      		//			si sNomAttribut~="thumbnailPhoto" _Et_ ffichierexiste({sNomAttribut,indVariable}) alors	//ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/178609-ldap-champ-thumbnailphoto-180483/read.awp
+      		//				sTemp 	est une chaîne = fRépertoireTemp + ["\"] + "image_ad.jpg"
+      		//				SI fFichierExiste(sTemp) ALORS fSupprime(sTemp)
+      		//				imgTemp est une image = fChargeBuffer(sTemp);dSauveImageJPEG(imgTemp,sTemp,80,imgJPEGProgressif);{sNomAttribut,indVariable}=fChargeBuffer(sTemp)
+      		//			FIN
+      		//			Trace("B:"+sNomAttribut,{AttributVersMembre(sNomAttribut),indVariable})
+      		//			SI LDAPAjouteAttribut(m_sSessionAD,sNomAttribut,{AttributVersMembre(sNomAttribut),indVariable}) ALORS sAttributsÉcrits+=[","]+sNomAttribut SINON m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      				SINON	
+      					SI {"vEnregistrement."+sNomAttribut,indVariable}=Null ALORS
+      						sValeurDéfaut 	= TypeVar({AttributVersMembre(sNomAttribut),indVariable}) DANS (wlChaîneAnsi,wlChaîne,wlDate,wlHeure,wlDateHeure) ? "" SINON 0
+      					SINON
+      						sValeurDéfaut 	= (TypeVar({AttributVersMembre(sNomAttribut),indVariable})=wlChaîneAnsi ? AnsiVersUnicode({"vEnregistrement."+sNomAttribut,indVariable}) SINON {"vEnregistrement."+sNomAttribut,indVariable})
+      					FIN
+      					sValAttributANSI= {AttributVersMembre(sNomAttribut),indVariable}
+      		//			sValAttributANSI= (m_bGèreUTF8 ? ChaîneVersUTF8({AttributVersMembre(sNomAttribut),indVariable}) SINON UnicodeVersAnsi({AttributVersMembre(sNomAttribut),indVariable}))
+      					SI sValeurDéfaut<>sValAttributANSI ALORS
+      						SI LDAPAjouteAttribut(m_sSessionAD,sNomAttribut,sValAttributANSI) ALORS sAttributsÉcrits+=[","]+sNomAttribut SINON m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      					FIN
+      				FIN
+      			FIN
+      		FIN
+      		RENVOYER Vrai
+      		FIN
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : AttributNbValeurs
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1293071832302917434
+     type_code : 12
+     code : |1-
+      // Résumé : Nombre de valeurs associées à un attribut spécifié dans l'enregistrement LDAP en cours (tableau de valeurs).
+      // Syntaxe : [ <Résultat> = ] AttributNbValeurs (<sAttribut> est chaîne)
+      // Paramètres :
+      //	sAttribut (chaîne UNICODE) : Nom de l'attribut pour lequel on souhaite obtenir le nombre de valeurs.
+      // Valeur de retour : entier : Nombre de valeurs associées à l'attribut dans l'enregistrement LDAP en cours.
+      // Exemple :
+      //
+      PROCEDURE AttributNbValeurs(sAttribut est une chaine) : entier
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sAttribut)
+      m_pclErreur.Raz()
+      
+      SI m_sSessionAD~="" ALORS m_pclErreur.AjouteErreur(<§$000a§>);renvoyer 0
+      SI dn~="" 			ALORS m_pclErreur.AjouteErreur(<§$0005§>);renvoyer 0
+      SI sAttribut~="" 	ALORS m_pclErreur.AjouteErreur(<§$000e§>);renvoyer 0
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	RENVOYER LDAPNbValeur(m_sSessionAD,dn,sAttribut)
+      	
+      <fin>
+      
+      
+      RENVOYER 0
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : Fils
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1293072888866298255
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie la liste des DN des fils de l'enregistrement LDAP en cours.
+      // Syntaxe : [ <Résultat> = ] Fils ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne ANSI : Liste des DN des fils de l'enregistrement LDAP en cours
+      // Exemple :
+      //
+      PROCEDURE PROTÉGÉE Fils() : chaîne ANSI
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI m_sSessionAD~="" ALORS m_pclErreur.AjouteErreur(<§$000a§>);renvoyer ""
+      SI dn~="" 			ALORS m_pclErreur.AjouteErreur(<§$0005§>);renvoyer ""
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	sFils est une chaine ansi = LDAPListeFils(m_sSessionAD,dn)
+      	RENVOYER sFils
+      	
+      <fin>
+      
+      
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER ""
+     type : 458752
+   -
+     name : Relit
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1293073352724250073
+     type_code : 12
+     code : |1-
+      // Résumé : Force la relecture des données d'un enregistrement, existant dans la base de données pointé, par la clé en cours. Utile quand on affiche une liste avec des informations succinctes et que l'on ouvre ensuite le détail avec l'affichage de tous les champs.
+      // Syntaxe : [ <Résultat> = ] Relit ([<sLireAttributs> est chaîne])
+      // Paramètres :
+      //	bBloque (booléen optionnel) : Permet de bloquer l'enregistrement qui est relu.
+      //	sLireAttributs (chaîne UNICODE optionnel) : Liste des attributs à lire, durant cette relecture, séparée par des virgules. Par défaut : toutes
+      // Valeur de retour : booléen : Renvoie Vrai si la lecture a bien été effectuée, Faux dans le cas contraire
+      // Exemple :
+      //
+      PROCEDURE Relit(LOCAL sLireAttributs est une chaine = m_sAttributsALire) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sLireAttributs)
+      m_pclErreur.Raz()
+      
+      SI m_sSessionAD~="" ALORS m_pclErreur.AjouteErreur(<§$000a§>)
+      SI dn~="" 			ALORS m_pclErreur.AjouteErreur(<§$0005§>)
+      SI p_sErreur>"" 	ALORS RENVOYER Faux
+      
+      sAttribut,sAttributs,sValeurs,sAttributsSuppl sont des chaines
+      SI m_eType=_ADTypeUser 	ALORS sAttributsSuppl="userAccountControl"	//pour savoir si le user est actif ou pas (voir filtre et constantes _ADUserFiltreStatutxxx)
+      SI m_eType=_ADTypeGroup ALORS sAttributsSuppl="groupType"			//pour savoir de quel type est le groupe (voir filtre et constantes _ADGroupFiltrexxx)
+      m_sAttributsLus	= ""
+      //met tous les attributs à vide et fait une liste des attributs réellement à lire
+      POUR TOUTE CHAÎNE sAttribut DE m_sAttributs SEPAREE PAR ","
+      	SI sAttribut>"" ALORS
+      		QUAND EXCEPTION DANS
+      			SI TypeVar({AttributVersMembre(sAttribut),indVariable})=wlTableau ALORS TableauSupprimeTout({AttributVersMembre(sAttribut),indVariable}) SINON VariableRAZ({AttributVersMembre(sAttribut),indVariable})
+      			SI sLireAttributs DANS ("*","") _OU_ (Position(sLireAttributs+[","]+"objectGUID,objectClass"+[","]+sAttributsSuppl,sAttribut,0,MotComplet+SansCasse+DepuisDébut)>0 _ET_ ...
+      				Position(m_sAttributs,sAttribut,0,MotComplet+SansCasse+DepuisDébut)>0) ALORS sAttributs+=[","]+sAttribut
+      		FAIRE
+      //			rien : l'attribut n'existe pas
+      		FIN
+      	FIN
+      FIN
+      	
+      POUR TOUTE CHAÎNE sAttribut DE sAttributs SEPAREE PAR ","
+      	sValeurs+=[","]+sAttribut+"="+AttributValeur(sAttribut)			
+      FIN
+      m_sGUIDEnregistrement 	= {"objectGUID",indVariable}
+      m_sValCléEnCours		= dn
+      SI PAS m_bLectureSeule ALORS m_sHashEnregistrement	= HashEnregistrement()
+      m_sAttributsLus			= sAttributs
+      RENVOYER Vrai
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : HashEnregistrement
+     procedure_id : 1293073889597253999
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée calculant le hash de l'enregistrement en cours
+      PROCEDURE PRIVÉE HashEnregistrement() : Buffer
+      m_sEnregistrement = VariableVersJSON(objet)
+      RENVOYER Hash(m_sEnregistrement)
+     type : 458752
+   -
+     name : Hash
+     procedure_id : 1293074005561397480
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui génère une valeur de hachage (hash) à partir d'une chaîne de caractères. Elle utilise l'algorithme de hachage SHA-160. Utilisé par HashEnregistrement.
+      PROCEDURE privé Hash(LOCAL sChaine) : Buffer
+      sSuffixAlias est une chaîne = ExtraitChaîne(sChaine,1,"$",DepuisFin)
+      SI sSuffixAlias <> "" ALORS sChaine = Remplace(sChaine,"$" + sSuffixAlias,">")
+      RENVOYER HashChaîne(HA_SHA_160,sChaine)
+     type : 458752
+   -
+     name : Supprime
+     procedure_id : 1293074117230639107
+     type_code : 12
+     code : |1-
+      // Résumé : Supprime l'enregistrement LDAP en cours.
+      // Syntaxe : [ <Résultat> = ] Supprime ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : indique si la suppression a réussi (Vrai) ou échoué (Faux).
+      // Exemple :
+      //
+      PROCEDURE Supprime() : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      SI m_sSessionAD~="" ALORS m_pclErreur.AjouteErreur(<§$000a§>);renvoyer faux
+      SI dn~="" 			ALORS m_pclErreur.AjouteErreur(<§$0005§>);renvoyer faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	SI LDAPSupprime(m_sSessionAD,dn) ALORS RENVOYER Vrai SINON m_pclErreur.AjouteErreurWx()
+      	
+      <fin>
+      
+      
+      RENVOYER Faux
+     type : 458752
+   -
+     name : AttributVersMembre
+     procedure_id : 1293074581088525155
+     type_code : 12
+     code : |1-
+      // Résumé : Les attributs qui ont nativement des - ne peuvent pas être déclaré dans les membres des classes WinDev. Ils ont donc été remplacés par de _. Cette procédure Transforme le nom d'un attribut LDAP en un nom de membre en utilisant des règles spécifiques. 
+      // Syntaxe : [ <Résultat> = ] AttributVersMembre (<sNomAttribut> est chaîne)
+      // Paramètres :
+      //	sNomAttribut (chaîne UNICODE) : Nom de l'attribut LDAP.
+      // Valeur de retour : chaîne UNICODE : Nom de membre correspondant à l'attribut LDAP.
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE AttributVersMembre(sNomAttribut est une chaine) : chaine
+      SI sNomAttribut~="ou" ALORS RENVOYER "organizationalUnit" 
+      SI sNomAttribut~="distinguishedName" ALORS RENVOYER "dn"
+      RENVOYER Remplace(sNomAttribut,"-","_")
+     type : 458752
+   -
+     name : Lit
+     procedure_id : 1293074714232607958
+     type_code : 12
+     code : |1-
+      // Résumé : Lit les attributs d'un enregistrement LDAP spécifié par son DN (Distinguished Name). Les attributs à lire sont déterminés par le paramètre "sLireAttributs".
+      // Syntaxe : [ <Résultat> = ] Lit (<sDN> est chaîne ANSI [, <sLireAttributs> est chaîne])
+      // Paramètres :
+      //	sDN (chaîne ANSI) : DN de l'enregistrement LDAP à lire.
+      //	sLireAttributs (chaîne UNICODE) : Attributs à lire (par défaut, elle utilise la valeur de l'attribut m_sAttributsALire de l'objet).
+      // Valeur de retour : booléen : renvoie vrai si la lecture des attributs de l'enregistrement LDAP réussit, sinon elle renvoie faux.
+      // Exemple :
+      //
+      PROCEDURE Lit(sDN est une chaine ansi,sLireAttributs est une chaine = m_sAttributsALire) : booleen
+      SI m_sSessionAD~="" ALORS m_pclErreur.AjouteErreur(<§$0000§>);renvoyer faux
+      SI PAS Droite(sDN,Taille(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC))~=cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC ALORS sDN+=[","]+cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC
+      //vérifier que ce DN existe
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	dn=LDAPValeur(m_sSessionAD,sDN,"distinguishedName")
+      	
+      <fin>
+      
+      
+      SI dn>"" ALORS
+      	RENVOYER Relit(sLireAttributs)
+      SINON
+      	m_pclErreur.AjouteErreur(ChaîneConstruit(<§$000f§>,sDN));renvoyer faux
+      FIN
+     type : 458752
+   -
+     name : AttributValeur
+     procedure_id : 1293075087894783926
+     type_code : 12
+     code : |1-
+      // Résumé : Renvoie la valeur d'un attribut LDAP pour l'enregistrement actuellement pointé par l'objet.
+      // Syntaxe : [ <Résultat> = ] AttributValeur (<sAttribut> est chaîne [, <nNumValeur> est entier])
+      // Paramètres :
+      //	sAttribut (chaîne UNICODE) : Nom de l'attribut LDAP à lire.
+      // 	nNumValeur (entier optionnel) : Numéro de la valeur à lire dans le cas d'un attribut multivalué (par défaut, la première valeur est lue).
+      // Valeur de retour : chaîne UNICODE : Valeur de l'attribut LDAP spécifié.
+      // Exemple :
+      //
+      PROCEDURE AttributValeur(sAttribut est une chaine,nNumValeur est un entier = 0) : chaine
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sAttribut,nNumValeur)
+      SI sAttribut="dn" ALORS RENVOYER dn
+      m_pclErreur.Raz()
+      
+      SI m_sSessionAD~="" ALORS m_pclErreur.AjouteErreur(<§$000a§>);renvoyer ""
+      SI dn~="" 			ALORS m_pclErreur.AjouteErreur(<§$0005§>);renvoyer ""
+      SI sAttribut~="" 	ALORS m_pclErreur.AjouteErreur(<§$000e§>);renvoyer ""
+      
+      sValeurs	est une chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	sValeur 	est une chaîne
+      	n,nValLDAP	sont des entiers
+      	SELON TypeVar({AttributVersMembre(sAttribut),indVariable})
+      		CAS wlChaîneAnsi
+      			sValeurANSI est une chaine ansi = LDAPValeur(m_sSessionAD,dn,sAttribut)
+      			SI ErreurDétectée() ALORS 
+      				Trace("Erreur de lecture de "+sAttribut+" : "+ErreurInfo())
+      			SINON
+      				SI sValeurANSI="<not set>" ALORS		//au cas où des scripts d'import ne sont pas conformes et qui écrirait la chaine "<not set>"
+      					VariableRAZ({AttributVersMembre(sAttribut),indVariable});sValeurs=""
+      				SINON
+      					SI sAttribut="objectGUID" ALORS 
+      						sValeur = ObjectGUIDVersHexa(sValeurANSI)
+      					SINON 
+      						SI AttributVersMembre(sAttribut)="dn" ALORS	sValeur=ANSIVersDN(sValeurANSI)
+      					FIN
+      					{AttributVersMembre(sAttribut),indVariable}=sValeur
+      					sValeurs=sValeur
+      				FIN
+      			FIN
+      		CAS wlChaîne,wlChaîneUnicode
+      			SI m_bGèreUTF8 ALORS sValeur=UTF8VersUnicode(LDAPValeur(m_sSessionAD,dn,sAttribut)) SINON sValeur=LDAPValeur(m_sSessionAD,dn,sAttribut)
+      			SI ErreurDétectée() ALORS 
+      				m_pclErreur.AjouteErreur("Erreur de lecture de "+sAttribut+" : "+ErreurInfo())
+      			SINON
+      				SI sValeur="<not set>" ALORS	//au cas où des scripts d'import ne sont pas conformes et qui écrirait la chaine "<not set>"
+      					VariableRAZ({AttributVersMembre(sAttribut),indVariable});sValeurs=""
+      				SINON
+      					SI Droite(sValeur,2)=RC ALORS sValeur=Gauche(sValeur,Taille(sValeur)-2)	//parfois un RC (inutile?) à la fin de la chaine
+      					{AttributVersMembre(sAttribut),indVariable}=sValeur
+      					sValeurs=sValeur
+      				FIN
+      			FIN
+      		CAS wlTableau	//de chaine
+      			n=0;nValLDAP=AttributNbValeurs(sAttribut)
+      			POUR nValeur = 1 À nValLDAP
+      				SI nNumValeur=0 _OU_ nNumValeur=nValeur ALORS
+      					SI m_bGèreUTF8 ALORS sValeur=UTF8VersUnicode(LDAPValeur(m_sSessionAD,dn,sAttribut,nValeur)) SINON sValeur=LDAPValeur(m_sSessionAD,dn,sAttribut,nValeur)
+      					SI ErreurDétectée() ALORS 
+      						m_pclErreur.AjouteErreur("Erreur de lecture de "+sAttribut+"["+nValeur+"] : "+ErreurInfo())
+      					SINON
+      						SI sValeur>"" ALORS
+      							SI sValeur="<not set>" ALORS	//au cas où des scripts d'import ne sont pas conformes et qui écrirait la chaine "<not set>"
+      								VariableRAZ({AttributVersMembre(sAttribut),indVariable})
+      								SI sValeurs="" ALORS sValeurs="," SINON sValeurs+=","
+      							SINON
+      								SI sAttribut="dSCorePropagationData" ALORS	//tableau de dates
+      									TableauAjoute({AttributVersMembre(sAttribut),indVariable},Gauche(sValeur,14))
+      								SINON										//tableau de chaines
+      									TableauAjoute({AttributVersMembre(sAttribut),indVariable},sValeur)
+      								FIN
+      								sValeurs+=[","]+sValeur
+      							FIN
+      							n++
+      						FIN
+      					FIN
+      				FIN
+      			FIN
+      		CAS wlBooléen
+      			SI m_bGèreUTF8 ALORS sValeur=UTF8VersUnicode(LDAPValeur(m_sSessionAD,dn,sAttribut)) SINON sValeur=LDAPValeur(m_sSessionAD,dn,sAttribut)
+      			SI ErreurDétectée() ALORS m_pclErreur.AjouteErreur("Erreur de lecture de "+sAttribut+" : "+ErreurInfo()) SINON {AttributVersMembre(sAttribut),indVariable}=(sValeur="1");sValeurs=sValeur
+      		CAS wlEntier,wlEntier_2,wlEntier_4,wlEntier_8
+      			SI m_bGèreUTF8 ALORS sValeur=UTF8VersUnicode(LDAPValeur(m_sSessionAD,dn,sAttribut)) SINON sValeur=LDAPValeur(m_sSessionAD,dn,sAttribut)
+      			SI ErreurDétectée() ALORS m_pclErreur.AjouteErreur("Erreur de lecture de "+sAttribut+" : "+ErreurInfo()) SINON {AttributVersMembre(sAttribut),indVariable}=Val(sValeur);sValeurs=sValeur
+      		CAS wlDateHeure
+      			SI m_bGèreUTF8 ALORS sValeur=UTF8VersUnicode(LDAPValeur(m_sSessionAD,dn,sAttribut)) SINON sValeur=LDAPValeur(m_sSessionAD,dn,sAttribut)
+      			SI ErreurDétectée() ALORS m_pclErreur.AjouteErreur("Erreur de lecture de "+sAttribut+" : "+ErreurInfo()) SINON {AttributVersMembre(sAttribut),indVariable}=sValeur;sValeurs=sValeur	//Gauche(sValeur,14)	//ne pas faire le Gauche car quand on écrit l'enreg, il compare avec la valeur dans l'AD
+      		CAS wlBuffer
+      			SI m_bGèreUTF8 ALORS sValeur=UTF8VersUnicode(LDAPValeur(m_sSessionAD,dn,sAttribut)) SINON sValeur=LDAPValeur(m_sSessionAD,dn,sAttribut)
+      			SI ErreurDétectée() ALORS m_pclerreur.Ajouteerreur("Erreur de lecture de "+sAttribut+" : "+ErreurInfo()) SINON {AttributVersMembre(sAttribut),indVariable}=sValeur;sValeurs=sValeur
+      		AUTRE CAS
+      			sValeurs=sValeur
+      			dbgAssertion(Faux,"Le type "+TypeVar({cEnregistrementLDAP.AttributVersMembre(sAttribut),indVariable})+" n'est pas géré") 
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER sValeurs
+     type : 458752
+   -
+     name : ObjectGUIDVersHexa
+     procedure_id : 1293080340646580651
+     type_code : 12
+     code : |1-
+      // Résumé : Convertit un GUID au format chaîne ANSI en format hexadécimal. La conversion inclut l'ajout des tirets et des accolades si nécessaire.
+      // Syntaxe : [ <Résultat> = ] ObjectGUIDVersHexa (<sGUID> est chaîne ANSI [, <bAvecAccolade> est booléen])
+      // Paramètres :
+      //	sGUID (chaîne ANSI) : Chaîne ANSI représentant le GUID à convertir.
+      // 	bAvecAccolade (booléen optionnel) : indique s'il faut inclure les accolades dans la sortie (par défaut, Faux).
+      // Valeur de retour : chaîne UNICODE : le GUID converti en format hexadécimal.
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE ObjectGUIDVersHexa(sGUID est une chaine ansi,bAvecAccolade est un booleen = faux) : chaine
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sGUID,bAvecAccolade)
+      
+      sRes est une chaine
+      POUR nCaract = 6 À 1 PAS -1
+      	sRes=NumériqueVersChaîne(Asc(sGUID[[10+nCaract]]),"02X")+sRes
+      FIN
+      sRes="-"+sRes
+      POUR nCaract = 2 À 1 PAS -1
+      	sRes=NumériqueVersChaîne(Asc(sGUID[[8+nCaract]]),"02X")+sRes
+      FIN
+      sRes="-"+sRes
+      POUR nCaract = 1 À 2
+      	sRes=NumériqueVersChaîne(Asc(sGUID[[6+nCaract]]),"02X")+sRes
+      FIN
+      sRes="-"+sRes
+      POUR nCaract = 1 À 2
+      	sRes=NumériqueVersChaîne(Asc(sGUID[[4+nCaract]]),"02X")+sRes
+      FIN
+      sRes="-"+sRes
+      POUR nCaract = 1 À 4
+      	sRes=NumériqueVersChaîne(Asc(sGUID[[nCaract]]),"02X")+sRes
+      FIN
+      RENVOYER (bAvecAccolade ? "{" SINON "")+sRes+(bAvecAccolade ? "}" SINON "")
+     type : 458752
+   -
+     name : DNVersANSI
+     procedure_id : 1293080516741591910
+     type_code : 12
+     code : |1-
+      // Résumé : Convertit une chaîne Distinguished Name (DN) en format ANSI. La conversion implique le remplacement de certains caractères spéciaux et l'ajout de virgules aux positions appropriées pour respecter la syntaxe d'un DN.
+      // Syntaxe : [ <Résultat> = ] DNVersANSI (<sDN> est chaîne ANSI)
+      // Paramètres :
+      //	sDN (chaîne ANSI) : Représente le Distinguished Name à convertir.
+      // Valeur de retour : chaîne ANSI : Chaîne ANSI représentant le DN converti.
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE DNVersANSI(LOCAL sDN est une chaine ansi) : chaine ansi
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sDN)
+      
+      tabSeparateur est un tableau de chaine ansi = ["CN=","DC=","OU="]
+      sRes,sPart est une chaine ansi
+      sDN = SansEspace(sDN)	//pas d'espace au début ou à la fin
+      POUR TOUTE CHAÎNE sPart,nPosition de sDN separee par tabSeparateur
+      	SI sPart>"" ALORS
+      		sPart=Remplace(sPart,",","")
+      		sRes+=[","]+(nPosition>1 ? Milieu(sDN,nPosition-3,3) SINON "")+Remplace(Remplace(Remplace(Remplace(Remplace(Remplace(Remplace(Remplace(Remplace(Remplace(Remplace(sPart,"\","\5C"),",","\2C"),"+","\2B"),cGénérique._Guillemet,"\22"),"<","\3C"),">","\3E"),";","\3B"),Caract(10),"\0A"),[Caract(12),RC],"\0D"),"=","\3D"),"/","2F")
+      	FIN
+      FIN
+      RENVOYER sRes
+     type : 458752
+   -
+     name : ANSIVersDN
+     procedure_id : 1293080641295738202
+     type_code : 12
+     code : |1-
+      // Résumé : Convertit une chaîne au format ANSI en Distinguished Name (DN). La conversion implique le remplacement de certaines séquences spéciales utilisées pour représenter des caractères spéciaux dans un DN.
+      // Syntaxe : [ <Résultat> = ] ANSIVersDN (<sDNAnsi> est chaîne ANSI)
+      // Paramètres :
+      //	sDNAnsi (chaîne ANSI) : Chaîne ANSI représentant le DN en format ANSI à convertir.
+      // Valeur de retour : chaîne ANSI : Chaîne ANSI représentant le DN converti.
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE ANSIVersDN(sDNAnsi est une chaine ansi) : chaine ansi
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sDNAnsi)
+      
+      tabSeparateur est un tableau de chaine ansi = ["CN=","DC=","OU="]
+      sRes,sPart est une chaine ansi
+      POUR TOUTE CHAÎNE sPart,nPosition de sDNAnsi separee par tabSeparateur
+      	SI sPart>"" ALORS
+      		sPart=Remplace(sPart,",","")
+      		sRes+=[","]+(nPosition>1 ? Milieu(sDNAnsi,nPosition-3,3) SINON "")+Remplace(Remplace(Remplace(Remplace(Remplace(Remplace(Remplace(Remplace(Remplace(Remplace(Remplace(sPart,"\5C","\"),"\2C",","),"\2B","+"),"\22",cGénérique._Guillemet),"\3C","<"),"\3E",">"),"\3B",";"),"\0A",CR),"\0D",RC),"\3D","="),"2F","/")
+      	FIN
+      FIN
+      RENVOYER sRes
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 1293081216822735180
+     type_code : 12
+     code : |1-
+      // Résumé : Réinitialise les attributs et les propriétés d'un objet de la classe cEnregistrementLDAP à leurs valeurs par défaut.
+      // Syntaxe : Raz ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Raz()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      
+      POUR TOUTE CHAÎNE sAttribut de m_sAttributs separee par ","
+      	VariableRAZ({AttributVersMembre(sAttribut),indVariable})
+      FIN
+      m_eStatutEnregistrement	= cEnregistrement.EstAjouté
+      m_sValCléEnCours		= ""
+      m_sEnregistrement		= ""
+      m_sHashEnregistrement	= ""
+     type : 458752
+   -
+     name : Vérifie
+     procedure_id : 1293081362853623379
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode virtuelle qui vérifie l'enregistrement avant de l'écrire (par exemple pour vérifier les valeurs obligatoires à écrire)
+      // Syntaxe : [ <Résultat> = ] Vérifie ()
+      // Paramètres :	Aucun
+      // Valeur de retour : booléen : Doit renvoyer vrai si toutes les colonnes sont correctement vérifiées. Faux dans le cas contraire (mettre alors le message d'erreur en mémoire grâce à m_pclErreur.AjouteErreu())
+      // Exemple :
+      //
+      PROCEDURE VIRTUELLE Vérifie() : booléen
+      RENVOYER Vrai
+     type : 458752
+   -
+     name : TypeDétecteDansDN
+     procedure_id : 1293081534652355093
+     type_code : 12
+     code : |1-
+      // Résumé : Détecte le type d'objet Active Directory (AD) à partir d'un DN (Distinguished Name) fourni en paramètre.
+      // [ <Résultat> = ] TypeDétecteDansDN (<nIndiceDeConnexion> est entier, <sDN> est chaîne ANSI)
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indice de connexion spécifiant les paramètres à utiliser pour la détection.
+      //	sDN (chaîne ANSI) : DN de l'objet AD à partir duquel le type doit être détecté.
+      // Valeur de retour : cEnregistrementLDAP.EADType : Valeur de l'énumération cEnregistrementLDAP.EADType, indiquant le type d'objet AD détecté. Si le type ne peut pas être détecté, la valeur _ADTypeUnknown est renvoyée.
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE TypeDétecteDansDN(nIndiceDeConnexion est un entier,sDN est une chaine ansi) : cEnregistrementLDAP.EADType
+      SI nIndiceDeConnexion<1 ALORS ErreurDéclenche(100,<§$0011§>);renvoyer _ADTypeUnknown
+      SI sDN~="" 				ALORS ErreurDéclenche(101,<§$0012§>);RENVOYER _ADTypeUnknown
+      
+      sParams est une chaine = cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].sAutresParamètres
+      tabDetectionUser,tabDetectionContact,tabDetectionGroup sont des tableaux de chaines
+      ChaîneVersTableau(ExtraitChaîne(sParams,1,cGénérique._Sep),tabDetectionUser,";")
+      ChaîneVersTableau(ExtraitChaîne(sParams,2,cGénérique._Sep),tabDetectionContact,";")
+      ChaîneVersTableau(ExtraitChaîne(sParams,3,cGénérique._Sep),tabDetectionGroup,";")
+      SI Position(sDN,"Computer",0,SansCasse)>0 ALORS
+      	RENVOYER cEnregistrementLDAP._ADTypeComputer
+      SINON SI (PAS ExtraitChaîne(sParams,1,cGénérique._Sep) DANS ("",EOT) _ET_ Position(sDN,tabDetectionUser,0,SansCasse))>0 ALORS
+      	RENVOYER cEnregistrementLDAP._ADTypeUser
+      SINON SI (PAS ExtraitChaîne(sParams,2,cGénérique._Sep) DANS ("",EOT) _ET_ Position(sDN,tabDetectionContact,0,SansCasse)>0) ALORS
+      	RENVOYER cEnregistrementLDAP._ADTypeContact
+      SINON SI (PAS ExtraitChaîne(sParams,3,cGénérique._Sep) DANS ("",EOT) _ET_ Position(sDN,tabDetectionGroup,0,SansCasse)>0) ALORS
+      	RENVOYER cEnregistrementLDAP._ADTypeGroup
+      SINON SI Gauche(sDN,3)="OU=" ALORS
+      	RENVOYER cEnregistrementLDAP._ADTypeOrganizationalUnit
+      FIN
+      RENVOYER _ADTypeUnknown
+     type : 458752
+  properties :
+   -
+     name : p_nIndiceDeConnexion
+     identifier : 0x11f1e4d101226c34
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indice de connexion courant
+         PROCEDURE PUBLIQUE p_nIndiceDeConnexion() : entier
+         RENVOYER m_nIndiceDeConnexion
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie l'indice de connexion
+         PROCEDURE PUBLIQUE p_nIndiceDeConnexion(Valeur)
+         m_nIndiceDeConnexion = Valeur
+         SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé>"" ALORS 
+         	m_sSessionAD 	= ExtraitChaîne(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé,3)
+         	m_bGèreUTF8 	= cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].bGèreUTF8
+         SINON 
+         	m_sSessionAD	= ""
+         	m_bGèreUTF8		= Faux
+         FIN
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sDNBase
+     identifier : 0x11f1e520015aa241
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le DN de base
+         PROCEDURE PUBLIQUE p_sDNBase() : chaîne ANSI
+         RENVOYER cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sSchémaOuDC
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sSessionAD
+     identifier : 0x11f1e55a015b8540
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom de la session AD en cours
+         PROCEDURE PUBLIQUE p_sSessionAD() : chaîne
+         RENVOYER ExtraitChaîne(cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sClé,3)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_eVersionServeur
+     identifier : 0x11f1e57b015c0528
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la version du serveur Windows hébergeant le serveur LDAP
+         PROCEDURE PUBLIQUE p_eVersionServeur() : cBaseDeDonnées.EVersionServeur
+         RENVOYER cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eVersionDuServeur
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sDN
+     identifier : 0x11f1e5a2015d9da0
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le DN pour l'enregistrement courant
+         PROCEDURE PUBLIQUE p_sDN() : chaîne ANSI
+         RENVOYER dn
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie le DN pour l'enregistrement courant et relit l'enregistrement
+         PROCEDURE PUBLIQUE p_sDN(Valeur)
+         dn 				= Valeur
+         m_sValCléEnCours= Valeur
+         Relit()
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sAttributs
+     identifier : 0x11f1e5d9015e7411
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie les attributs disponibles pour ce type d'enregistrement
+         PROCEDURE PUBLIQUE p_sAttributs() : chaîne
+         m_sAttributs = ""
+         
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+         	
+         	tabAttributs 	est un tableau de chaine
+         	defUser 		est une definition = RécupèreDéfinition(objet)                                 
+         	POUR TOUT Var DE defUser..Variable
+         		SI Var.Déclaration.Nom [~ "cLDAP" _ET_ PAS Var.Déclaration.Nom ~= "cGénérique" _ET_ Var..Hérité ALORS 
+         			TableauAjoute(tabAttributs,(Var..Nom~="organizationalUnit" ? "ou" SINON Remplace(Var..Nom,"_","-")))
+         		FIN  
+         	FIN
+         	TableauTrie(tabAttributs)
+         	POUR TOUT sAttribut de tabAttributs
+         		m_sAttributs+=[","]+sAttribut
+         	FIN
+         	
+         <fin>
+         
+         
+         RENVOYER m_sAttributs
+        type : 1966080
+     template_refs : []
+   -
+     name : p_eStatutEnregistrement
+     identifier : 0x11f1e6390160eb42
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut de l'enregistrement
+         PROCEDURE PUBLIQUE p_eStatutEnregistrement() : cEnregistrement.EEnregistrementStatut
+         RENVOYER m_eStatutEnregistrement
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie le statut à l'enregistrement
+         PROCEDURE PUBLIQUE p_eStatutEnregistrement(Valeur)
+         SI Valeur=cEnregistrement.EEnregistrementStatut.EstAjouté ALORS m_sGUIDEnregistrement=DonneGUID(guidBrut);m_sValCléEnCours=""	//si on force le statut à nouveau, on donne un autre guid (car cet objet peut avoir être rempli par copie d'un autre objet)
+         m_eStatutEnregistrement = Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_bufHashRecalcule
+     identifier : 0x11f1e66b0161aceb
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le hash recalculé de l'enregistrement (ex : quand des membres ont été modifiés)
+         PROCEDURE PUBLIQUE p_bufHashRecalcule() : Buffer
+         RENVOYER HashEnregistrement()
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bLectureSeule
+     identifier : 0x11f1e68701621a3e
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut de lecture seule de l'enregistrement
+         PROCEDURE PUBLIQUE p_bLectureSeule() : booléen
+         RENVOYER m_bLectureSeule
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie le statut de lecture seule de l'enregistrement
+         PROCEDURE PUBLIQUE p_bLectureSeule(Valeur)
+         SI Valeur _ET_ m_sHashEnregistrement="" ALORS m_sHashEnregistrement	= HashEnregistrement()
+         m_bLectureSeule=Valeur
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1c6701b14d4adfd9
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Pas d'employé en cours
+      en-GB : No current employee
+      fr-CA : Pas d'employé en cours
+      en-US : No current employee
+     index : 0
+   -
+     text :
+      fr-FR : Le critère de recherche est obligatoire
+      en-GB : The search criterion is required
+      fr-CA : Le critère de recherche est obligatoire
+      en-US : The search criterion is required
+     index : 1
+   -
+     text :
+      fr-FR : L'ID de l'employé est obligatoire
+      en-GB : Employee ID is required
+      fr-CA : L'ID de l'employé est obligatoire
+      en-US : Employee ID is required
+     index : 2
+   -
+     text :
+      fr-FR : Le compte AD est obligatoire
+      en-GB : The AD account is required
+      fr-CA : Le compte AD est obligatoire
+      en-US : The AD account is required
+     index : 3
+   -
+     text :
+      fr-FR : Une série de modifications a déjà commencé. Impossible de débuter une série d'ajouts.
+      en-GB : A series of modifications has already begun. Can not start a series of additions.
+      fr-CA : Une série de modifications a déjà commencé. Impossible de débuter une série d'ajouts.
+      en-US : A series of modifications has already begun. Can not start a series of additions.
+     index : 4
+   -
+     text :
+      fr-FR : Pas d'enregistrement en cours
+      en-GB : No current record
+      fr-CA : Pas d'enregistrement en cours
+      en-US : No current record
+     index : 5
+   -
+     text :
+      fr-FR : Aucune série d'ajouts débutée
+      en-GB : No series of additions started
+      fr-CA : Aucune série d'ajouts débutée
+      en-US : No series of additions started
+     index : 6
+   -
+     text :
+      fr-FR : "Pour un ajout ponctuel, il faut préciser le DN de l'objet"
+      en-GB : "For a one-time addition, specify the object's DN"
+      fr-CA : "Pour un ajout ponctuel, il faut préciser le DN de l'objet"
+      en-US : "For a one-time addition, specify the object's DN"
+     index : 7
+   -
+     text :
+      fr-FR : Une série d'ajouts a déjà commencé. Impossible de débuter une série de modification.
+      en-GB : A series of additions has already begun. Can not start a series of changes.
+      fr-CA : Une série d'ajouts a déjà commencé. Impossible de débuter une série de modification.
+      en-US : A series of additions has already begun. Can not start a series of changes.
+     index : 8
+   -
+     text :
+      fr-FR : Aucune série de modifications débutée
+      en-GB : No series of modifications started
+      fr-CA : Aucune série de modifications débutée
+      en-US : No series of modifications started
+     index : 9
+   -
+     text :
+      fr-FR : Pas de session LDAP ouverte
+      en-GB : No open LDAP session
+      fr-CA : Pas de session LDAP ouverte
+      en-US : No open LDAP session
+     index : 10
+   -
+     text :
+      fr-FR : Le DN de l'objet à supprimer est obligatoire
+      en-GB : The DN of the object to delete is required
+      fr-CA : Le DN de l'objet à supprimer est obligatoire
+      en-US : The DN of the object to delete is required
+     index : 11
+   -
+     text :
+      fr-FR : Cette méthode n'est pas compatible
+      en-GB : This method is not compatible
+      fr-CA : Cette méthode n'est pas compatible
+      en-US : This method is not compatible
+     index : 12
+   -
+     text :
+      fr-FR : Le organization unit est obligatoire
+      en-GB : The organization unit is mandatory
+      fr-CA : Le organization unit est obligatoire
+      en-US : The organization unit is mandatory
+     index : 13
+   -
+     text :
+      fr-FR : Le nom de l'attribut est obligatoire
+      en-GB : The attribute name is mandatory
+      fr-CA : Le nom de l'attribut est obligatoire
+      en-US : The attribute name is mandatory
+     index : 14
+   -
+     text :
+      fr-FR : Le DN %1 n'existe pas
+      en-GB : DN %1 does not exist
+      fr-CA : Le DN %1 n'existe pas
+      en-US : DN %1 does not exist
+     index : 15
+   -
+     text :
+      fr-FR : Le nom du compte SAM est obligatoire
+      en-GB : SAM account name is mandatory
+      fr-CA : Le nom du compte SAM est obligatoire
+      en-US : SAM account name is mandatory
+     index : 16
+   -
+     text :
+      fr-FR : L'indice de connexion est obligatoire
+      en-GB : The connection index is mandatory
+      fr-CA : L'indice de connexion est obligatoire
+      en-US : The connection index is mandatory
+     index : 17
+   -
+     text :
+      fr-FR : Le DN est obligatoire
+      en-GB : DN is mandatory
+      fr-CA : Le DN est obligatoire
+      en-US : DN is mandatory
+     index : 18
+   -
+     text :
+      fr-FR : L'enregistrement est en lecture seule
+      en-GB : The record is read-only
+      fr-CA : L'enregistrement est en lecture seule
+      en-US : The record is read-only
+     index : 19
+   -
+     text :
+      fr-FR : Type d'objet AD non reconnu
+      en-GB : AD object type not recognized
+      fr-CA : Type d'objet AD non reconnu
+      en-US : AD object type not recognized
+     index : 20
+   -
+     text :
+      fr-FR : Type d'objet AD non géré
+      en-GB : Unmanaged AD object type
+      fr-CA : Type d'objet AD non géré
+      en-US : Unmanaged AD object type
+     index : 21
+   -
+     text :
+      fr-FR : L'attribut cn est obligatoire
+      en-GB : The cn attribute is mandatory
+      fr-CA : L'attribut cn est obligatoire
+      en-US : The cn attribute is mandatory
+     index : 22
+   -
+     text :
+      fr-FR : L'attribut sAMAccountName est obligatoire
+      en-GB : The sAMAccountName attribute is mandatory
+      fr-CA : L'attribut sAMAccountName est obligatoire
+      en-US : The sAMAccountName attribute is mandatory
+     index : 23
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,119 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cLDAP2000Employee
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f1fbc304230c1c
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe qui donne la structure d'un enregistrement User sur un serveur Windows 2000.
+      
+      cLDAP2000Employee est une Classe, abstraite					//ref : https://docs.microsoft.com/en-us/windows/win32/adschema/c-organizationalperson#windows-2000-server-attributes
+      	streetAddress							est une chaine							//The user's address.
+      	homePostalAddress						est une chaine							//A user's home address.
+      	assistant								est une chaine	//DN					//The distinguished name of a user's administrative assistant.
+      	company									est une chaîne							//The user's company name.
+      	countryCode								est un entier sur 2 octets				//Specifies the country/region code for the user's language of choice. This value is not used by Windows 2000.
+      	c										est une chaîne							//The country/region in the address of the user. The country/region is represented as a 2-character code based on ISO-3166.
+      	department								est une chaîne							//Contains the name for the department in which the user works.
+      	destinationIndicator					est une chaîne							//This is part of the X.500 specification and not used by NTDS.
+      	division								est une chaîne							//The user's division.
+      	mail									est une chaîne							//The list of email addresses for a contact.
+      	employeeID								est une chaîne							//The ID of an employee.
+      	facsimileTelephoneNumber				est une chaîne							//Contains telephone number of the user's business fax machine.
+      	generationQualifier						est une chaîne							//Indicates a person generation. For example, Jr. or II.
+      	givenName								est une chaîne							//Contains the given name (first name) of the user.
+      	initials								est une chaîne							//Contains the initials for parts of the user's full name. This may be used as the middle initial in the Windows Address Book.
+      	internationalISDNNumber					est une chaîne	//numérique				//Specifies an International ISDN Number associated with an object.
+      	logo									est un buffer	//replica-link			//BLOB that contains a logo for this object.
+      	manager									est une chaîne	//DN					//Contains the distinguished name of the user who is the user's manager. 
+      	mhsORAddress							est un chaîne							//X.400 address.
+      	organizationalUnit						est une chaîne	//=ou					//The name of the organizational unit. Attention : on ne peut pas mettre OU car c'est un mot réservé
+      	o										est une chaîne							//The name of the company or organization.
+      	otherMailbox							est une chaine							//Contains other additional mail addresses in a form such as CCMAIL: BruceKeever.
+      	middleName								est une chaine							//Additional names for a user. For example, middle name, patronymic, matronymic, or others.
+      	personalTitle							est une chaîne							//The user's title.
+      	otherFacsimileTelephoneNumber			est une chaîne							//A list of alternate facsimile numbers.
+      	otherHomePhone							est une chaîne							//A list of alternate home phone numbers.
+      	homePhone								est une chaîne							//The user's main home phone number.
+      	otherIpPhone							est une chaîne							//The list of alternate TCP/IP addresses for the phone.
+      	ipPhone									est une chaîne							//The TCP/IP address for the phone.
+      	primaryInternationalISDNNumber			est une chaîne							//The primary ISDN.
+      	otherMobile								est une chaîne							//A list of alternate mobile phone numbers.
+      	mobile									est une chaîne							//The primary mobile phone number.
+      	otherTelephone							est une chaîne							//A list of alternate office phone numbers.
+      	otherPager								est une chaîne							//A list of alternate pager numbers.
+      	pager									est une chaîne							//The primary pager number.
+      	physicalDeliveryOfficeName				est une chaîne							//Contains the office location in the user's place of business.
+      	thumbnailPhoto							est une chaîne	//replica-link			//An image of the user. A space-efficient format like JPEG or GIF is recommended.
+      	postalAddress							est une chaîne							//The mailing address for the object.
+      	postalCode								est une chaîne							//The postal or zip code for mail delivery.
+      	postOfficeBox							est une chaîne							//The post office box number for this object.
+      	preferredDeliveryMethod					est un entier							//The X.500-preferred way to deliver to addressee.
+      	registeredAddress						est une chaîne 	//replica-link			//Specifies a mnemonic for an address associated with an object at a particular city location.
+      	st										est une chaîne							//State-Or-Province-Name
+      	street									est une chaîne							//The street address.
+      	teletexTerminalIdentifier				est une chaîne	//replica-link			//Specifies the Teletex terminal identifier and, optionally, parameters, for a teletex terminal associated with an object.
+      	telexNumber								est une chaîne	//replica-link			//A list of alternate telex numbers.
+      	primaryTelexNumber						est une chaîne							//The primary telex number.
+      	co										est une chaîne							//The country/region in which the user is located.
+      	title									est une chaîne							//Contains the user's job title. This property is commonly used to indicate the formal job title, such as Senior Programmer
+      	comment									est une chaine							//The user's comments.
+      	x121Address								est une chaîne							//The X.121 address for an object.
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1293091383038708764
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1293091383038774300
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f1fbc0041d02ba
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

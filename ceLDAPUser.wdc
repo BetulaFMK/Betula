@@ -1,0 +1,182 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : ceLDAPUser
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f1fa9203f06488
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe de base de type User (employé) dans le LDAP.  
+      
+      ceLDAPUser est une Classe, abstraite										//Classe abstraite
+      	hérite de cEnregistrementLDAP
+      GLOBAL
+      	mg_sAttributsALire			est une chaine			<Sérialise = Faux>	//Liste des attributs à lire pour le type User séparés par des virgules
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1293090073070363784
+     type_code : 27
+     code : |1-
+      // Résumé : Initialisation de la classe lors de sa création.
+      // Syntaxe : Constructeur (<nIndiceDeConnexion> est entier [, <sOrganizationalUnit> est chaîne ANSI [, <bLectureSeule> est booléen [, <sAttributsALire> est chaîne]]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indique l'indice de connexion pour accéder au LDAP.
+      //	sOrganizationalUnit (chaîne ANSI optionnelle) : Nom de la OU à laquelle est liée l'utilisateur.
+      // 	bLectureSeule (booléen optionnel) : Indique de l'enregistrement est en lecture seule (dépend uniquement de la programmation).
+      //	sAttributsALire (chaîne UNICODE optionnelle) : Liste des attributs à lire séparés par des virgules, par défaut les attributs mis dans le membre global pour le type User.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexion est un entier,sOrganizationalUnit est une chaine ansi = "",bLectureSeule est un booléen = Faux,sAttributsALire est une chaîne = ceLDAPUser.mg_sAttributsALire)
+      cEnregistrementLDAP.Constructeur(nIndiceDeConnexion,cEnregistrementLDAP._ADTypeUser,sOrganizationalUnit,bLectureSeule,sAttributsALire)
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1293090073070429320
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : RechercheSelonNomCommun
+     procedure_id : 1293090253459097857
+     type_code : 12
+     code : |1-
+      // Résumé : Recherche un utilisateur dans l'annuaire LDAP en utilisant son nom commun (common name).
+      // Syntaxe : [ <Résultat> = ] RechercheSelonNomCommun (<sNomDuUser> est chaîne [, <sOrganizationalUnit> est chaîne ANSI [, <sLireAttributs> est chaîne]])
+      // Paramètres :
+      //	sNomDuUser (chaîne UNICODE) : Le nom commun de l'utilisateur à rechercher.
+      //	sOrganizationalUnit (chaîne ANSI optionnelle) : L'unité organisationnelle dans laquelle effectuer la recherche. Par défaut, utilise celle passé en paramètre du constructeur.
+      //	sLireAttributs (chaîne UNICODE optionnelle) : Liste des attributs à lire pour l'utilisateur trouvé. Par défaut, utilise ceux passé en paramètre du constructeur.
+      // Valeur de retour : booléen : Vrai si la recherche réussit et trouve un utilisateur correspondant, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE RechercheSelonNomCommun(sNomDuUser est une chaine,sOrganizationalUnit est une chaine ansi = m_sOUouGroupe,sLireAttributs est une chaine = m_sAttributsALire) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomDuUser,sOrganizationalUnit,sLireAttributs)	//on ne peut pas changer l'attribut de mot de passe donc pas de cryptage
+      m_pclErreur.Raz()
+      
+      SI m_sSessionAD~="" ALORS m_pclErreur.AjouteErreur(<§$0000§>)
+      SI sNomDuUser~="" 	ALORS m_pclErreur.AjouteErreur(<§$0001§>)
+      SI p_sErreur>"" 	ALORS RENVOYER Faux
+      
+      RENVOYER Recherche("(&(objectCategory=user)(cn=" +sNomDuUser+"))",sOrganizationalUnit,sLireAttributs)
+     type : 458752
+   -
+     name : MotDePasseChange
+     procedure_id : 1293090390898148845
+     type_code : 12
+     code : |1-
+      // Résumé : Changer le mot de passe d'un utilisateur dans l'annuaire LDAP. Elle utilise un script VBScript temporaire pour effectuer l'opération de changement de mot de passe en utilisant l'objet GetObject sur l'entrée de l'utilisateur spécifié par son DN (Distinguished Name).
+      // Syntaxe : [ <Résultat> = ] MotDePasseChange (<sNouveauMotDePasse> est chaîne)
+      // Paramètres :
+      //	sNouveauMotDePasse (chaîne UNICODE) : Le nouveau mot de passe à définir pour l'utilisateur.
+      // Valeur de retour : booléen : Vrai si le changement de mot de passe est effectué avec succès, Faux en cas d'échec.
+      // Exemple :
+      //
+      PROCEDURE MotDePasseChange(sNouveauMotDePasse est une chaine) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	sVBSTemp est une chaine = frepertoireTemp()+["\"]+"ad.vbs"
+      	sNouveauMotDePasse = Remplace(sNouveauMotDePasse,Caract(34),"")
+      	SI fSauveTexte(sVBSTemp,"Set objUser=GetObject("+Caract(34)+"LDAP://"+dn+Caract(34)+")"+RC+"objuser.SetPassword "+Caract(34)+sNouveauMotDePasse+Caract(34))
+      		SI DDELance("Cscript "+Caract(34)+sVBSTemp+Caract(34),DDEActif,Vrai) ALORS
+      			RENVOYER Vrai
+      		SINON
+      			m_pclErreur.AjouteErreurWx()
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER Faux
+     type : 458752
+   -
+     name : RechercheSelonIDEmployée
+     procedure_id : 1342597856112702955
+     type_code : 12
+     code : |1-
+      // Résumé : Recherche un utilisateur dans l'annuaire LDAP en utilisant son identifiant d'employé (employeeID).
+      // Syntaxe : [ <Résultat> = ] RechercheSelonIDEmployée (<nIDEmployé> est entier [, <sOrganizationalUnit> est chaîne ANSI [, <sLireAttributs> est chaîne]])
+      // Paramètres :
+      //	nIDEmployé (entier) : L'identifiant de l'employé à rechercher.
+      //	sOrganizationalUnit (chaîne ANSI optionnelle) : L'unité organisationnelle dans laquelle effectuer la recherche. Par défaut, utilise celle passé en paramètre du constructeur.
+      //	sLireAttributs (chaîne UNICODE optionnelle) : Liste des attributs à lire pour l'utilisateur trouvé. Par défaut, utilise ceux passé en paramètre du constructeur.
+      // Valeur de retour : booléen : Vrai si la recherche réussit et trouve un utilisateur correspondant, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE RechercheSelonIDEmployée(nIDEmployé est un entier,sOrganizationalUnit est une chaine ansi = m_sOUouGroupe,sLireAttributs est une chaine = m_sAttributsALire) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIDEmployé,sOrganizationalUnit,sLireAttributs)	//on ne peut pas changer l'attribut de mot de passe donc pas de cryptage
+      m_pclErreur.Raz()
+      
+      SI m_sSessionAD~="" ALORS m_pclErreur.AjouteErreur(<§$0000§>)
+      SI nIDEmployé=0 	ALORS m_pclErreur.AjouteErreur(<§$0002§>)
+      SI p_sErreur>"" 	ALORS RENVOYER Faux
+      
+      renvoyer Recherche("(employeeID~="+nIDEmployé+")",sOrganizationalUnit,m_sAttributs)
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f1fa8e03ea558b
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Pas de session ouverte
+      en-GB : No open session
+      fr-CA : Pas de session ouverte
+      en-US : No open session
+     index : 0
+   -
+     text :
+      fr-FR : Le nom du user est obligatoire
+      en-GB : The user name is mandatory
+      fr-CA : Le nom du user est obligatoire
+      en-US : The user name is mandatory
+     index : 1
+   -
+     text :
+      fr-FR : L'ID employé est obligatoire
+      en-GB : Employee ID is mandatory
+      fr-CA : L'ID employé est obligatoire
+      en-US : Employee ID is mandatory
+     index : 2
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,2989 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cFichierExcel
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1c004a05317c2835
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe permettant de créer et modifier un fichier Excel au format XSL, XLSX mais aussi XML (permet plus de personnalisations, ref : https://en.wikipedia.org/wiki/Microsoft_Office_XML_formats)
+      //Attention : la partie XLS et XLSX doivent être complété, faire un XLSContenuCharge avec les même éléments que XLSContenuÉcrit
+      EExcelSouligne est une énumération
+      	UneLigne				= "Single"
+      	DeuxLignes				= "Double"
+      fin
+      EExcelCelluleFondPaterne est une énumération
+      	Solide					= "Solid"
+      	Gris75					= "Gray75"
+      	Gris50					= "Gray50"
+      	Gris25					= "Gray25"
+      	Gris12					= "Gray125"
+      	Gris06					= "Gray0625"
+      	RayéHorizontal			= "HorzStripe"
+      	RayéVertical			= "VertStripe"
+      	DiagonalInverse			= "ReverseDiagStripe"
+      	Diagonal				= "DiagStripe"
+      	DiagonalHachuré			= "DiagCross"
+      	HachuréFin				= "ThinHorzCross"
+      	RayéHorizontalFin		= "ThinHorzStripe"
+      	RayéVerticalFin			= "ThinVertStripe"
+      	DiagonalInverseFin		= "ThinReverseDiagStripe"
+      	DiagonalFin				= "ThinDiagStripe"
+      	DiagonalHachuréFin		= "ThinDiagCross"
+      	DiagonalHachuréÉpais	= "ThickDiagCross"
+      fin
+      EExcelVersion est une énumération
+      	Fichier2				= 2
+      	Fichier3				= 3
+      	Fichier4				= 4
+      	Fichier5				= 5
+      	Fichier7				= 7
+      	Fichier95				= 7
+      	Fichier8				= 8
+      	Fichier97				= 8
+      	Fichier9				= 9
+      	Fichier2000				= 9
+      	Fichier10				= 10
+      	Fichier2002				= 10
+      	Fichier11				= 11
+      	Fichier2003				= 11
+      	Fichier12				= 12
+      	Fichier2007				= 12
+      	Fichier14				= 14
+      	Fichier2010				= 14
+      	Fichier15				= 15
+      	Fichier2013				= 15
+      	Fichier16				= 16
+      	Fichier2016				= 16
+      fin
+      EExcelCelluleAttribut est une énumération
+      	AttributTous
+      	AttributCouleur			
+      	AttributBordure			
+      	AttributCouleurFond		
+      	AttributPaterne			
+      	AttributPolice			
+      	AttributAlignementV		
+      	AttributAlignementH		
+      	AttributMultiligne		
+      	AttributItalique		
+      	AttributGras			
+      	AttributSouligné		
+      	AttributFormat			
+      	AttributPoliceTaille	
+      	AttributMasque			
+      	AttributFormule			
+      	AttributPoliceFamille	
+      	AttributFusion			
+      fin
+      EExcelCelluleFormatValeur est un Enumération
+      	ParDéfaut			= -1
+      	EstActif			= 1
+      	EstInactif			= 0
+      FIN
+      EExcelCelluleAligneVertical est une énumération
+      	AlignementAucun		= 0
+      	AlignementHaut		= cvHaut
+      	AlignementBas		= cvBas
+      	AlignementMilieu	= cvMilieu
+      fin
+      EExcelCelluleAligneHorizontal est une énumération
+      	AlignementAucun		= 0
+      	AlignementGauche	= chGauche
+      	AlignementDroite	= chDroite
+      	AlignementCentre	= chCentre
+      	AlignementJustifié	= chJustifié
+      fin
+      EExcelFormat est une énumération
+      	FichierNonReconnu
+      	FichierXLS	
+      	FichierXLSX	
+      	FichierXML	
+      fin
+      EExcelCelluleType est une énumération
+      	TypeAucun
+      	TypeDateHeure		= "DateTime"
+      	TypeNumérique		= "Number"
+      	TypeChaine			= "String"
+      fin
+      EExcelBordStyle est une énumération
+      	BordContinu			= "Continuous"
+      	BordDouble 			= "Double"
+      	BordMixte		 	= "DashDot"
+      	BordMixteTiretDouble= "DashDotDot"
+      	BordTiret			= "Dash"
+      fin
+      EExcelBordOrientation est une énumération
+      	OrientationHaut		= BordHaut								
+      	OrientationBas 		= BordBas								
+      	OrientationDroite  	= BordDroite								
+      	OrientationGauche  	= BordGauche								
+      fin
+      EExcelCelluleFormat est une énumération
+      	FormatParDéfaut		= 0
+      	FormatNumérique		= 1
+      	FormatChaine		= 2
+      	FormatScientifique	= 3
+      	FormatHeure			= 4
+      	FormatDate			= 5
+      	FormatMonétaire		= 6
+      	FormatComptabilité	= 7
+      	FormatPourcent		= 8
+      	FormatDateHeure		= 9
+      	FormatDurée			= 10		
+      fin
+      CONSTANTE			
+      	_nbMaxColonneXLS	= 256
+      	_nbMaxColonneXLSX	= 15682
+      	                    
+      	_nbMaxLigneXLS		= 65536
+      	_nbMaxLigneXLSX		= 1048576
+      FIN
+      
+      STBordure est une structure
+      	eOrientation			est un EExcelBordOrientation
+      	nÉpaisseur				est un entier
+      	eStyle					est un EExcelBordStyle
+      	nCouleur 				est un entier
+      FIN
+      STStyle est une structure
+      	nNum					est un entier
+      	sNom					est une chaîne
+      	tabBordure				est un tableau dynamique de 0 stBordure
+      	
+      	nGras					est un entier
+      	nItalique				est un entier
+      	nSouligné				est un entier
+      	rAngle					est un réel
+      	nBarré					est un entier
+      	nExpoIndice				est un entier
+      	sPoliceNom				est une chaîne
+      	sPoliceFamille			est une chaîne
+      	rPoliceTaille			est un réel
+      	nPoliceCouleur 			est un entier		//transformé de #FFFFFF en entier WD
+      	
+      	eAligneVertical			est un EExcelCelluleAligneVertical
+      	eAligneHorizontal		est un EExcelCelluleAligneHorizontal
+      	
+      	sMasque					est une chaîne
+      	nFormatConnu			est un entier
+      	sParent					est une chaîne
+      	nFondCouleur			est un entier 		//transformé de #FFFFFF en entier WD
+      	sFondPaterne			est une chaîne
+      	nFondPaterneCouleur		est un entier 		//transformé de #FFFFFF en entier WD
+      	nMultiligne				est un entier
+      	
+      	sClé					est une chaine
+      FIN
+      STColonne est une structure
+      	nOrdre					est un entier
+      	rLargeur				est un réel
+      	sNom					est une chaîne
+      	nLargeurAjustée			est un entier
+      	bInvisible				est un booléen
+      	eFormat					est un EExcelCelluleFormat
+      	eType					est un EExcelCelluleType
+      	eTypeDéfaut				est un EExcelCelluleType
+      	nNumStyleDéfaut			est un entier		//indice dans m_tabStyle
+      FIN
+      STCellule est une structure
+      	nNum					est un entier
+      	bFusionnée				est un booleen
+      	eFormat					est un EExcelCelluleFormat
+      	eType					est un EExcelCelluleType
+      	nNumStyle				est un entier		//indice dans m_tabStyle
+      	sValeur					est une chaîne
+      	sFormule 				est une chaîne
+      	bValeurHTML				est un booléen
+      	nFusionHorizontale		est un entier
+      	nFusionVerticale		est un entier
+      FIN
+      STLigne est une structure
+      	nNum					est un entier
+      	rHauteur				est un réel
+      	tabCellules				est un tableau de 0 stCellule
+      	nHauteurAjustée			est un entier
+      	bInvisible				est un booléen
+      FIN
+      STFeuille est une structure
+      	sNom					est une chaîne
+      	nOrdre					est un entier
+      	nNbColonnes				est un entier
+      	nNbLignes				est un entier	
+      	rColonneLargeurDéfaut	est un reel
+      	rLigneHauteurDéfaut		est un reel
+      	tabColonnes				est un tableau de 0 stColonne
+      	tabLignes				est un tableau de 0 stLigne
+      	rMargeEntête			est un réel
+      	rMargePiedPage			est un réel
+      	rMargeHaut				est un réel
+      	rMargeBas				est un réel
+      	rMargeGauche			est un réel
+      	rMargeDroite			est un réel
+      	bInvisible				est un booléen
+      FIN
+      
+      cFichierExcel est une classe
+      	hérite de cGénérique
+      PUBLIC CONSTANT
+      	m_sAuteurOriginal			est une chaîne								//auteur au moment de la création du fichier
+      	m_sAuteurDernier			est une chaîne								//auteur de la dernière modification du fichier
+      	m_sCompagnie				est une chaîne								//compagnie de l'auteur
+      	m_dhCréationUTC				est une DateHeure							//date et heure de création du fichier (UTC)
+      	m_dhModificationUTC			est une DateHeure							//date et heure de modification du fichier (UTC)
+      	m_eFormat					est un EExcelFormat							//format du fichier (XLS, XLSX ou XML)
+      PRIVÉ                           
+      	constante                   
+      		_1						= " "
+      		_2						= "  "
+      		_3						= "   "
+      		_4						= "    "
+      		_5						= "     "
+      		ErreurDeExcel			= 240
+      	fin                         
+      	                            
+      	m_pclFichier				est un cfichier dynamique					//l'ouverture d'un fichier XML est faite via la classe fichier
+      	m_bContenuModifié			est un booleen								//vrai si le contenu a été modifié
+      	m_tabStyle					est un tableau dynamique de 0 stStyle		//tableau des styles
+      	m_tabFeuille				est un tableau dynamique de 0 stFeuille		//tableau des feuilles contenues dans le fichier
+      	m_nFeuilleEnCours			est un entier								//numéro de la feuille en cours
+      	m_nNumStyleMax				est un entier								//nombre de style maximum présents dans le fichier (max 62)
+      	
+      	m_nTailleCaractèreDéfaut	est un entier								//taille par défaut des caractères
+      	m_rHauteurLigneDéfaut		est un réel									//hauteur de ligne par défaut
+      	m_rLargeurColonneDéfaut		est un réel									//largeur de colonne par défaut
+      	m_sPolicesInstallées		est une chaine								//liste des polices installées sur le poste
+      	
+      	m_sMasqueNumérique			est une chaîne								//masque numérique par défaut : Fixes
+      	m_sMasqueChaine				est une chaîne								//masque alphanumérique par défaut : @
+      	m_sMasqueScientifique		est une chaîne								//masque scientifique par défaut : Scientific
+      	m_sMasqueHeure				est une chaîne								//masque d'heure par défaut : hh:mm:ss;@
+      	m_sMasqueDate				est une chaîne								//masque de date par défaut : [$-F800]dddd\,\ mmmm\ dd\,\ yyyy
+      	m_sMasqueMonétaire			est une chaîne								//masque des monétaire par défaut : #,##0.00\ ""$""
+      	m_sMasqueComptabilité		est une chaîne								//masque des numériques "comptables" par défaut : _ * #,##0.00_)\ ""$""_ ;_ * \(#,##0.00\)\ ""$""_ ;_ * ""-&""??_)\ ""$""_ ;_ @_ 
+      	m_sMasquePourcent			est une chaîne								//masque des pourcentages par défaut : Percent
+      	m_sMasqueDateHeure			est une chaîne								//masque de date et heure par défaut : [$-F800]dddd\,\ mmmm\ dd\,\ yyyy"+" "+"hh:mm:ss;@
+      	m_sMasqueDurée				est une chaine								//masque des durées par défaut : 
+      
+      	m_rXL_DivLargeur			est un réel
+      	m_rXL_DivXLS				est un réel
+      	
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2017694019228018741
+     type_code : 27
+     code : |1+
+      // Résumé :  Elle initialise les attributs de la classe, notamment les valeurs par défaut pour la taille de caractère, la hauteur de ligne et la largeur de colonne.
+      // Syntaxe : Constructeur ( [<nTailleCaractèreParDéfaut> est entier [, <rHauteurLigneDéfaut> est réel [, <rLargeurColonneDéfaut> est réel]]])
+      // Paramètres :
+      //	nTailleCaractèreParDéfaut (entier optionnel) : La taille de caractère par défaut à utiliser dans le fichier Excel, par défaut=11.
+      //	rHauteurLigneDéfaut (réel optionnel) : La hauteur de ligne par défaut à utiliser dans le fichier Excel, par défaut=15.
+      //	rLargeurColonneDéfaut (réel optionnel) : La largeur de colonne par défaut à utiliser dans le fichier Excel, par défaut=10.71.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      Procédure Constructeur(nTailleCaractèreParDéfaut est un entier = 11,rHauteurLigneDéfaut est un réel = 15,rLargeurColonneDéfaut est un réel =10.71)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nTailleCaractèreParDéfaut,rHauteurLigneDéfaut,rLargeurColonneDéfaut)
+      m_pclFichier				= allouer un cfichier()
+      m_rXL_DivLargeur			= 0.1785
+      m_rXL_DivXLS				= 1.33333
+      m_nTailleCaractèreDéfaut	= nTailleCaractèreParDéfaut
+      m_rHauteurLigneDéfaut		= rHauteurLigneDéfaut
+      m_rLargeurColonneDéfaut		= rLargeurColonneDéfaut/m_rXL_DivLargeur
+      
+      m_sMasqueNumérique			= "Fixed"
+      m_sMasqueChaine				= "@"
+      m_sMasqueScientifique		= "Scientific"
+      m_sMasqueHeure				= "hh:mm:ss;@"
+      m_sMasqueDate				= "[$-F800]dddd\,\ mmmm\ dd\,\ yyyy"
+      m_sMasqueMonétaire			= "#,##0.00\ ""$"""
+      m_sMasqueComptabilité		= "_ * #,##0.00_)\ ""$""_ ;_ * \(#,##0.00\)\ ""$""_ ;_ * ""-&""??_)\ ""$""_ ;_ @_ "
+      m_sMasquePourcent			= "Percent"
+      m_sMasqueDateHeure			= "[$-F800]dddd\,\ mmmm\ dd\,\ yyyy"+" "+"hh:mm:ss;@"
+      m_sMasqueDurée				= "" //A FAIRE
+      
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=Java ou CibleExécution=ServiceWindows>
+      	m_sPolicesInstallées		= PoliceListe()
+      	
+      <fin>
+      
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2017694019228084277
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      Procédure Destructeur()
+     type : 655360
+   -
+     name : ChargeFichier
+     procedure_id : 2017694019228149813
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée appelée par la méthode Ouvre
+      PROCEDURE PRIVÉ ChargeFichier(sNomFichier est une chaîne,bLectureSeule est un booleen=vrai) : booleen
+      m_pclErreur.Raz()
+      
+      sDHTemp,sStyle,sTagStyle,sBord,sTagBord,sTag,sTagContenu,sTagFeuille,sFeuille,sTagColonne,sTagLigne,sLigne,sContenuExcel,sTypeColonne sont des chaînes
+      nStyle,nBord,nFeuille,nColonne,nLigne,nNumLigne,nNumColonne sont des entiers
+      sColonne 		est une chaine ansi
+      stUneCellule 	est une stCellule
+      stUnStyle 		est un stStyle
+      stUneFeuille 	est une stFeuille
+      stUneBordure 	est une stBordure
+      stUneColonne 	est une stColonne
+      stUneLigne 		est une stLigne
+      
+      SELON m_eFormat
+      	CAS FichierXML
+      		sContenuExcel=fChargeTexte(sNomFichier)
+      		SI ErreurDétectée et sContenuExcel="" ALORS
+      			m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      		sinon
+      			//pour garder le fichier ouvert en écriture
+      			SI PAS bLectureSeule ALORS
+      				si pas m_pclfichier.ouvre(sNomFichier,cFichier.foBloqueEcriture,cFichier.foNePasCréer,cFichier.fiANSI) alors renvoyer faux
+      			FIN
+      		FIN
+      
+      		SI sContenuExcel>"" ALORS
+      			SI XMLDocument("ExcelXML", sContenuExcel) ALORS
+      				//infos générales
+      				m_sAuteurOriginal	= XMLLit("ExcelXML","/Workbook/DocumentProperties/Author")
+      				m_sAuteurDernier	= XMLLit("ExcelXML","/Workbook/DocumentProperties/LastAuthor")
+      				m_sCompagnie		= XMLLit("ExcelXML","/Workbook/DocumentProperties/Company")
+      				sDHTemp				= XMLLit("ExcelXML","/Workbook/DocumentProperties/Created")
+      				m_dhCréationUTC		= sDHTemp[[1 A 4]]+sDHTemp[[6 A 7]]+sDHTemp[[9 A 10]]+sDHTemp[[12 A 13]]+sDHTemp[[15 A 16]]+sDHTemp[[18 A 19]]
+      				sDHTemp				= XMLLit("ExcelXML","/Workbook/DocumentProperties/LastSaved")
+      				m_dhModificationUTC	= sDHTemp[[1 A 4]]+sDHTemp[[6 A 7]]+sDHTemp[[9 A 10]]+sDHTemp[[12 A 13]]+sDHTemp[[15 A 16]]+sDHTemp[[18 A 19]]
+      				
+      				//style
+      				sTagStyle="/Workbook/Styles/Style[%1]/"
+      				nStyle=1;sTag=ChaîneConstruit(sTagStyle,nStyle);sStyle=XMLLit("ExcelXML",sTag+"@ss:ID")
+      				TANTQUE sStyle>""
+      					VariableRAZ(stUnStyle);stUnStyle.nNum=Val(Milieu(sStyle,2)) 	//car style = sNN, 0 pour le style par défaut
+      					sStyle=XMLLit("ExcelXML",sTag+"@ss:Parent")				;stUnStyle.sParent=sStyle
+      					sStyle=XMLLit("ExcelXML",sTag+"@ss:Name")				;stUnStyle.sNom=sStyle
+      					sStyle=XMLLit("ExcelXML",sTag+"Font/@ss:FontName")		;SI sStyle="" ET stUnStyle.nNum=0 ALORS stUnStyle.sPoliceNom="Calibri" SINON stUnStyle.sPoliceNom=sStyle
+      					sStyle=XMLLit("ExcelXML",sTag+"Font/@x:Family")			;SI sStyle="" ET stUnStyle.nNum=0 ALORS stUnStyle.sPoliceFamille="Swiss" SINON stUnStyle.sPoliceFamille=sStyle
+      					sStyle=XMLLit("ExcelXML",sTag+"Font/@ss:Size")			;SI sStyle="" ET stUnStyle.nNum=0 ALORS stUnStyle.rPoliceTaille=11 SINON stUnStyle.rPoliceTaille=Val(sStyle)				//à 0 si vide
+      					sStyle=XMLLit("ExcelXML",sTag+"Font/@ss:Color")			;stUnStyle.nPoliceCouleur=htmlversrvb(sStyle)	//à -1 si vide
+      					sStyle=XMLLit("ExcelXML",sTag+"Font/@ss:Underline")		;SI sStyle="" ALORS stUnStyle.nSouligné=(stUnStyle.nNum=0 ? 0 SINON -1) SINON stUnStyle.nSouligné=((sStyle="" ? 0 SINON (sStyle="Single" ? 1 SINON 2)))
+      					sStyle=XMLLit("ExcelXML",sTag+"Font/@ss:Bold")			;SI sStyle="" ALORS stUnStyle.nGras=(stUnStyle.nNum=0 ? 0 SINON -1) SINON stUnStyle.nGras=(sStyle="1")
+      					sStyle=XMLLit("ExcelXML",sTag+"Font/@ss:Italic")		;SI sStyle="" ALORS stUnStyle.nItalique=(stUnStyle.nNum=0 ? 0 SINON -1) SINON stUnStyle.nItalique=(sStyle="1")
+      					sStyle=XMLLit("ExcelXML",sTag+"Font/@ss:StrikeThrough")	;SI sStyle="" ALORS stUnStyle.nBarré=(stUnStyle.nNum=0 ? 0 SINON -1) SINON stUnStyle.nBarré=(sStyle="1")
+      					sStyle=XMLLit("ExcelXML",sTag+"Font/@ss:VerticalAlign")	;SI sStyle="" ALORS stUnStyle.nExpoIndice=-1 SINON stUnStyle.nExpoIndice=(sStyle="Superscript" ? 1 SINON 0)
+      					sStyle=XMLLit("ExcelXML",sTag+"NumberFormat/@ss:Format");stUnStyle:sMasque=XMLVersTexte(sStyle)
+      					sStyle=XMLLit("ExcelXML",sTag+"Alignment/@ss:Horizontal")
+      					selon sStyle
+      						CAS "Left" 		: stUnStyle.eAligneHorizontal=EExcelCelluleAligneHorizontal.alignementGauche
+      						CAS "Right" 	: stUnStyle.eAligneHorizontal=EExcelCelluleAligneHorizontal.AlignementDroite
+      						CAS "Center"	: stUnStyle.eAligneHorizontal=EExcelCelluleAligneHorizontal.AlignementCentre
+      						CAS "Justify"	: stUnStyle.eAligneHorizontal=EExcelCelluleAligneHorizontal.AlignementJustifié
+      					FIN
+      					sStyle=XMLLit("ExcelXML",sTag+"Alignment/@ss:Vertical")
+      					SELON sStyle
+      						CAS "Top" 		: stUnStyle.eAligneVertical=EExcelCelluleAligneVertical.AlignementHaut
+      						CAS "Bottom" 	: stUnStyle.eAligneVertical=EExcelCelluleAligneVertical.AlignementBas
+      						CAS "Center"	: stUnStyle.eAligneVertical=EExcelCelluleAligneVertical.AlignementMilieu
+      					fin
+      					sStyle=XMLLit("ExcelXML",sTag+"Alignment/@ss:WrapText")		;SI sStyle="" ALORS stUnStyle.nMultiligne=(stUnStyle.nNum=0 ? 0 SINON -1) SINON stUnStyle.nMultiligne=(sStyle="1")
+      					sStyle=XMLLit("ExcelXML",sTag+"Alignment/@ss:Rotate")		;SI sStyle="" ALORS stUnStyle.rAngle=(stUnStyle.nNum=0 ? 0 SINON -1) SINON stUnStyle.rAngle=Val(sStyle)
+      					sStyle=XMLLit("ExcelXML",sTag+"Interior/@ss:Color")			;stUnStyle.nFondCouleur=HTMLVersRVB(sStyle)
+      					sStyle=XMLLit("ExcelXML",sTag+"Interior/@ss:Pattern")		;stUnStyle.sFondPaterne=sStyle
+      					sStyle=XMLLit("ExcelXML",sTag+"Interior/@ss:PatternColor")	;stUnStyle.nFondPaterneCouleur=HTMLVersRVB(sStyle)
+      					sTagBord=sTag+"Borders/Border[%1]/"
+      					nBord=1;sTag=ChaîneConstruit(sTagBord,nBord);sBord=XMLLit("ExcelXML",sTag+"@ss:Position")
+      					TANTQUE sBord>""
+      						VariableRAZ(stUneBordure);stUneBordure.eOrientation=EnumérationDepuisValeur(EExcelBordOrientation,sBord)
+      						sBord=XMLLit("ExcelXML",sTag+"@ss:LineStyle")	;stUneBordure.eStyle=EnumérationDepuisValeur(EExcelBordStyle,sBord)
+      						sBord=XMLLit("ExcelXML",sTag+"@ss:Weight")		;SI sBord="" ALORS stUneBordure.nÉpaisseur=(stUnStyle.nNum=0 ? 1 SINON -1) SINON stUneBordure.nÉpaisseur=Val(sBord)
+      						sBord=XMLLit("ExcelXML",sTag+"@ss:Color")		;stUneBordure.nCouleur=HTMLVersRVB(sBord)
+      						TableauAjoute(stUnStyle.tabBordure,stUneBordure)
+      						nBord++;sTag=ChaîneConstruit(sTagBord,nBord);sBord=XMLLit("ExcelXML",sTag+"@ss:Position")
+      					FIN
+      					stUnStyle.sclé			= StyleVersClé(stUnStyle)	//pour comparaison après
+      					stUnStyle.nFormatConnu	= MasqueVersFormat(stUnStyle.sMasque)
+      					TableauAjoute(m_tabStyle,stUnStyle)
+      					m_nNumStyleMax=max(m_nNumStyleMax,stUnStyle.nNum)
+      					nStyle++;sTag=ChaîneConstruit(sTagStyle,nStyle);sStyle=XMLLit("ExcelXML",sTag+"@ss:ID")
+      				FIN
+      				
+      				//contenu
+      				sTagFeuille="/Workbook/Worksheet[%1]/"
+      				nFeuille=1;sTagContenu=ChaîneConstruit(sTagFeuille,nFeuille);sFeuille=XMLLit("ExcelXML",sTagContenu+"@ss:Name")
+      				TANTQUE sFeuille>""
+      					VariableRAZ(stUneFeuille);stUneFeuille.sNom=sFeuille;stUneFeuille.nOrdre=nFeuille
+      					sFeuille=XMLLit("ExcelXML",sTagContenu+"Table/@ss:ExpandedColumnCount");stUneFeuille.nNbColonnes=Val(sFeuille)
+      					sFeuille=XMLLit("ExcelXML",sTagContenu+"Table/@ss:ExpandedRowCount");stUneFeuille.nNbLignes=Val(sFeuille)
+      					sFeuille=XMLLit("ExcelXML",sTagContenu+"Table/@ss:DefaultColumnWidth");stUneFeuille.rColonneLargeurDéfaut=(Val(sFeuille)*::m_rXL_DivLargeur)	//pour avoir la valeur à l'écran
+      					sFeuille=XMLLit("ExcelXML",sTagContenu+"Table/@ss:DefaultRowHeight");stUneFeuille.rLigneHauteurDéfaut=Val(sFeuille)
+      					
+      					sTagColonne=sTagContenu+"Table/Column[%1]/"
+      					nColonne=1;sTag=ChaîneConstruit(sTagColonne,nColonne);sColonne=XMLLit("ExcelXML",sTag+"@ss:Width")
+      					TANTQUE sColonne>""
+      						VariableRAZ(stUneColonne);stUneColonne.rLargeur=(Val(sColonne)*m_rXL_DivLargeur)	//pour avoir la valeur à l'écran
+      						stUneColonne.nOrdre=nColonne
+      						sColonne=XMLLit("ExcelXML",sTag+"@ss:AutoFitWidth");SI sColonne>"" ALORS stUneColonne.nLargeurAjustée=Val(sColonne) SINON stUneColonne.nLargeurAjustée=-1
+      						sColonne=XMLLit("ExcelXML",sTag+"@ss:Hidden");stUneColonne.bInvisible=(sColonne="1") 
+      						TableauAjoute(stUneFeuille.tabColonnes,stUneColonne)
+      						nColonne++;sTag=ChaîneConstruit(sTagColonne,nColonne);sColonne=XMLLit("ExcelXML",sTag+"@ss:Width")
+      					FIN
+      					
+      					sTagLigne=sTagContenu+"Table/Row[%1]/";nNumLigne=0
+      					POUR nLigne = 1 _A_ stUneFeuille.nNbLignes
+      						VariableRAZ(stUneLigne);stUneLigne.nNum=nLigne
+      						sTag=ChaîneConstruit(sTagLigne,nLigne)
+      						sLigne=XMLLit("ExcelXML",sTag+"@ss:Height");SI sLigne="" ALORS stUneLigne.rHauteur=-1 SINON stUneLigne.rHauteur=Val(sLigne) 
+      						sLigne=XMLLit("ExcelXML",sTag+"@ss:Hidden");stUneLigne.bInvisible=(sLigne="1") 
+      						sLigne=XMLLit("ExcelXML",sTag+"@ss:AutoFitHeight");SI sLigne="" ALORS stUneLigne.nHauteurAjustée=(stUnStyle.nNum=0 ? 0 SINON -1) SINON stUneLigne.nHauteurAjustée=Val(sLigne) 
+      						sLigne=XMLLit("ExcelXML",sTag+"@ss:Index")
+      						SI sLigne>"" ALORS nNumLigne=Val(sLigne) SINON nNumLigne++
+      						stUneLigne.nNum=nNumLigne
+      						
+      						sTagColonne=sTagContenu+"Table/Row[%1]/Cell[%2]/";nNumColonne=0
+      						POUR nColonne = 1 _A_ stUneFeuille.nNbColonnes
+      							VariableRAZ(stUneCellule)
+      							sTag=ChaîneConstruit(sTagColonne,nLigne,nColonne)
+      							
+      							sColonne=XMLLit("ExcelXML",sTag+"@ss:StyleID");stUneCellule.nnumStyle=val(milieu(sColonne,2))
+      							sColonne=XMLLit("ExcelXML",sTag+"@ss:Formula");stUneCellule.sFormule=sColonne
+      							sColonne=XMLLit("ExcelXML",sTag+"@ss:MergeAcross");stUneCellule.nFusionHorizontale=Val(sColonne)
+      							sColonne=XMLLit("ExcelXML",sTag+"@ss:MergeDown");stUneCellule.nFusionVerticale=Val(sColonne)
+      							sColonne=XMLLit("ExcelXML",sTag+"Data");sTypeColonne=XMLLit("ExcelXML",sTag+"Data/@ss:Type")
+      							SI sColonne="" ALORS 
+      								sColonne=XMLLit("ExcelXML",sTag+"ss:Data")
+      								SI sColonne>"" ALORS
+      									stUneCellule.sValeur=sColonne;stUneCellule.bValeurHTML=Vrai
+      									sColonne=XMLLit("ExcelXML",sTag+"ss:Data/@ss:Type");stUneCellule.eType=EnumérationDepuisValeur(EExcelCelluleType,sColonne)	//formaté web. Ex avec 2 couleurs dans la même case : <Font html:Color="#000000">avec format </Font><Font html:Color="#FF0000">1234,10</Font>
+      								FIN
+      							SINON
+      								stUneCellule.sValeur=UTF8VersChaîne(sColonne,alphabetAnsi);stUneCellule.bValeurHTML=Faux
+      								stUneCellule.eType=EnumérationDepuisValeur(EExcelCelluleType,sTypeColonne)
+      								SELON stUneCellule.eType
+      									CAS TypeChaine		: //pas de modif
+      									CAS TypeNumérique	: 
+      									CAS TypeDateHeure	: 
+      										stUneCellule.sValeur=Remplace(Remplace(Remplace(stUneCellule:sValeur,"-",""),":",""),"T","")
+      										SI Gauche(stUneCellule.sValeur,8)="18991231" ALORS stUneCellule.sValeur="00000000"+Milieu(stUneCellule.sValeur,9)
+      								FIN
+      							FIN
+      							sColonne=XMLLit("ExcelXML",sTag+"@ss:Index")
+      							SI sColonne>"" ALORS 
+      								nNumColonne=Val(sColonne);stUneCellule.nNum=nNumColonne
+      								TableauAjoute(stUneLigne.tabCellules,stUneCellule)
+      							SINON 
+      								nNumColonne++
+      								SI stUneCellule.nnumStyle>0 OU stUneCellule.sFormule>"" OU stUneCellule.sValeur>"" ALORS
+      									stUneCellule.nNum=nNumColonne;TableauAjoute(stUneLigne.tabCellules,stUneCellule)
+      								FIN
+      							FIN
+      						FIN
+      						TableauAjoute(stUneFeuille.tabLignes,stUneLigne)
+      					FIN
+      					
+      					//options
+      					sTag=sTagContenu+"WorksheetOptions/"
+      					stUneFeuille.rMargeEntête	= Val(XMLLit("ExcelXML",sTag+"PageSetup/Header/@x:Margin"))
+      					stUneFeuille.rMargePiedPage	= Val(XMLLit("ExcelXML",sTag+"PageSetup/Footer/@x:Margin"))
+      					stUneFeuille.rMargeBas		= Val(XMLLit("ExcelXML",sTag+"PageSetup/PageMargins/@x:Bottom"))
+      					stUneFeuille.rMargeHaut		= Val(XMLLit("ExcelXML",sTag+"PageSetup/PageMargins/@x:Top"))
+      					stUneFeuille.rMargeGauche	= Val(XMLLit("ExcelXML",sTag+"PageSetup/PageMargins/@x:Left"))
+      					stUneFeuille.rMargeDroite	= Val(XMLLit("ExcelXML",sTag+"PageSetup/PageMargins/@x:Right"))
+      					stUneFeuille.bInvisible		= (XMLLit("ExcelXML",sTag+"Visible")="SheetHidden")
+      					
+      					TableauAjoute(m_tabFeuille,stUneFeuille)
+      					nFeuille++;sTagContenu=ChaîneConstruit(sTagFeuille,nFeuille);sFeuille=XMLLit("ExcelXML",sTagContenu+"@ss:Name")
+      				FIN
+      				
+      				XMLTermine("ExcelXML")
+      				RENVOYER Vrai
+      			SINON
+      				m_pclErreur.AjouteErreurWx()
+      			FIN
+      		sinon
+      			m_pclErreur.AjouteErreur(<§$001e§>)
+      		fin
+      	CAS FichierXLS,FichierXLSX
+      		
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64>
+      			docExcel est un xlsDocument = xlsOuvre(sNomFichier) //vérifier que le fichier s'ouvre bien
+      			SI ErreurDétectée ALORS
+      				m_pclErreur.AjouteErreur(xlsMsgErreur(docExcel));RENVOYER Faux
+      			SINON
+      				p_dhLocaleDernièreModif = fDate(sNomFichier,"",fModification)
+      				p_dhLocaleCréation 		= fDate(sNomFichier,"",fCréation)
+      				SI xlsNbFeuille(docExcel)>0 ALORS
+      					POUR nFeuille = 1 _À_ xlsNbFeuille(docExcel)
+      						SI xlsFeuilleEnCours(docExcel,nFeuille) ALORS
+      							VariableRAZ(stUneFeuille)
+      							stUneFeuille.nOrdre		= nFeuille
+      							stUneFeuille.sNom		= docExcel..NomFeuille
+      							stUneFeuille.nNbColonnes= xlsNbColonne(docExcel,Faux)
+      							stUneFeuille.nNbLignes	= xlsNbLigne(docExcel,Faux)
+      							POUR nColonne = 1 _À_ stUneFeuille.nNbColonnes
+      								stUneColonne.nOrdre	= nColonne
+      								stUneColonne.sNom	= xlsDonnée(docExcel,1,nColonne,Faux)		//xlsTitreColonne(docExcel,nColonne)
+      								stUneColonne.eType	= EExcelCelluletype.TypeAucun
+      								SELON xlsTypeColonne(docExcel,nColonne)
+      									CAS xlsTypeChaîne 	: stUneColonne.eType=EExcelCelluleType.TypeChaine;stUneColonne.eFormat=EExcelCelluleFormat.FormatChaine
+      									CAS xlsTypeDate 	: stUneColonne.eType=EExcelCelluleType.TypeDateHeure;stUneColonne.eFormat=EExcelCelluleFormat.FormatDate
+      									CAS xlsTypeDouble 	: stUneColonne.eType=EExcelCelluleType.TypeNumérique;stUneColonne.eFormat=EExcelCelluleFormat.FormatNumérique
+      									CAS xlsTypeHeure 	: stUneColonne.eType=EExcelCelluleType.TypeDateHeure;stUneColonne.eFormat=EExcelCelluleFormat.FormatHeure
+      									CAS xlsTypeDateHeure: stUneColonne.eType=EExcelCelluleType.TypeDateHeure;stUneColonne.eFormat=EExcelCelluleFormat.FormatDateHeure
+      									CAS xlsTypeDurée 	: stUneColonne.eType=EExcelCelluleType.TypeNumérique;stUneColonne.eFormat=EExcelCelluleFormat.formatDurée
+      									CAS xlsTypeMonétaire: stUneColonne.eType=EExcelCelluleType.TypeNumérique;stUneColonne.eFormat=EExcelCelluleFormat.FormatMonétaire
+      								FIN
+      								TableauAjoute(stUneFeuille.tabColonnes,stUneColonne)
+      							FIN
+      							POUR nLigne = 2 _À_ stUneFeuille.nNbLignes
+      								VariableRAZ(stUneLigne)
+      								stUneLigne.nNum=nLigne
+      								POUR nColonne = 1 _À_ stUneFeuille.nNbColonnes
+      									VariableRAZ(stUneCellule)
+      									stUneCellule.nNum	= nColonne	
+      									stUneCellule.sValeur= xlsDonnée(docExcel,nLigne,nColonne,Faux)				
+      									SI stUneCellule.sValeur="" _ET_ ErreurDétectée ALORS
+      										m_pclErreur.AjouteErreur(xlsMsgErreur(docExcel));xlsFerme(docExcel);RENVOYER Faux
+      									FIN
+      									TableauAjoute(stUneLigne.tabCellules,stUneCellule)
+      								FIN
+      								TableauAjoute(stUneFeuille.tabLignes,stUneLigne)
+      							FIN
+      							TableauAjoute(m_tabFeuille,stUneFeuille)
+      						SINON
+      							m_pclErreur.AjouteErreur(ChaîneConstruit(<§$001f§>,nFeuille));xlsFerme(docExcel);RENVOYER Faux
+      						FIN
+      						
+      						//ajout des styles
+      						pour nFeuille = 1 _a_ m_tabFeuille..occurrence
+      							pour nLigne=1 _a_ m_tabFeuille[nFeuille].nNbLignes
+      								pour nColonne = 1 _a_ m_tabFeuille[nFeuille].nNbColonnes
+      									StyleXLSVersCode(nFeuille,docExcel..Ligne[nLigne]..Cellule[nColonne]..Cadre,docExcel..Ligne[nLigne]..Cellule[nColonne]..CouleurFond,
+      									EnumérationDepuisValeur(EExcelCelluleAligneHorizontal,docExcel..Ligne[nLigne]..Cellule[nColonne]..AlignementH),
+      									EnumérationDepuisValeur(EExcelCelluleAligneVertical,docExcel..Ligne[nLigne]..Cellule[nColonne]..AlignementV),
+      									docExcel..Ligne[nLigne]..Cellule[nColonne]..Multiligne,docExcel..Ligne[nLigne]..Cellule[nColonne]..Police,
+      									docExcel..Ligne[nLigne]..Cellule[nColonne]..Type)
+      								FIN
+      							FIN
+      						fin
+      					FIN
+      					xlsFerme(docExcel);RENVOYER Vrai
+      				SINON
+      					m_pclErreur.AjouteErreur(<§$001e§>);	xlsFerme(docExcel)
+      				FIN
+      			FIN
+      	
+      <fin>
+      
+      		
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : EcritTout
+     procedure_id : 2017694019228280885
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'écrire l'ensemble des données du fichier Excel, y compris les feuilles, les styles, et le contenu des cellules dans le fichier.
+      // Syntaxe : [ <Résultat> = ] EcritTout ( [<bFaireBackup> est booléen])
+      // Paramètres :
+      // 	bFaireBackup (booléen optionnel) : indique s'il faut créer une sauvegarde (backup) du fichier avant l'écriture. La valeur par défaut est Faux.
+      // Valeur de retour : booléen : Retourne Vrai si l'écriture a réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE EcritTout(bFaireBackup est un booléen = Faux) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bFaireBackup)
+      m_pclErreur.Raz()
+      
+      nStyle			est un entier
+      stStyleDéfaut 	est un stStyle
+      sContenu 		est une chaine
+      sEntêteXML 		est une chaîne = [
+      <?xml version="1.0"?>
+      <?mso-application progid="Excel.Sheet"?>
+      ]
+      
+      si m_pclFichier.m_sNomFichier>"" alors
+      	SI bFaireBackup ALORS 
+      		SI fFichierExiste(m_pclFichier.m_sNomFichier+".bak") _Et_ PAS fSupprime(m_pclFichier.m_sNomFichier+".bak") ALORS m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      		SI PAS fRenomme(m_pclFichier.m_sNomFichier,m_pclFichier.m_sNomFichier+".bak") ALORS m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      	FIN
+      	
+      	nStyle=TableauCherche(m_tabStyle,tcLinéaire,"nNum",0)
+      	SI nStyle>0 ALORS stStyleDéfaut=m_tabStyle[nStyle] SINON stStyleDéfaut=Stylepardéfaut()
+      	
+      	TableauTrie(m_tabFeuille,ttMembre,"+nOrdre")	//classer les feuilles 
+      	
+      	SELON m_eFormat
+      		CAS EExcelFormat.fichierXML
+      			sContenu=sEntêteXML+rc+XMLWorkbook(XMLDocumentProperties(),XMLOfficeDocumentSettings(),XMLExcelWorkbook(),XMLStyles(stStyleDéfaut),XMLContenuEcrit())
+      			si fSauveTexte(m_pclFichier.m_sNomFichier,sContenu) alors renvoyer vrai
+      			m_pclErreur.AjouteErreurWx()
+      		CAS EExcelFormat.fichierXLS
+      			SI XLSContenuEcrit(stStyleDéfaut) ALORS RENVOYER Vrai
+      		AUTRE CAS
+      			
+      	FIN
+      fin
+      RENVOYER Faux
+     type : 458752
+   -
+     name : FeuilleAjoute
+     procedure_id : 2017694019228411957
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter une nouvelle feuille au fichier Excel. Cette nouvelle feuille est configurée avec des valeurs par défaut, et son nom peut être spécifié en paramètre.
+      // Syntaxe : [ <Résultat> = ] FeuilleAjoute ( [<sNomFeuille> est chaîne])
+      // Paramètres :
+      //	sNomFeuille (chaîne UNICODE optionnel) : nom de la nouvelle feuille. Si aucun nom n'est fourni, la feuille sera nommée automatiquement (par exemple, "Feuille1", "Feuille2", etc.)
+      // Valeur de retour : entier : Retourne l'ordre de la nouvelle feuille ajoutée.
+      // Exemple :
+      //
+      PROCEDURE FeuilleAjoute(sNomFeuille est une chaine = "") : entier
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomFeuille)
+      m_pclErreur.Raz()
+      
+      si MesParamètres..NbReçus=1 _et_ pas FeuilleNomCorrect(sNomFeuille) alors RENVOYER 0
+      //valeur par défaut d'une feuille
+      stUneFeuille est un stFeuille
+      stUneFeuille.rColonneLargeurDéfaut	= m_rLargeurColonneDéfaut
+      stUneFeuille.rLigneHauteurDéfaut	= m_rHauteurLigneDéfaut
+      stUneFeuille.nOrdre=(m_tabFeuille..Occurrence+1)
+      SI MesParamètres..NbReçus=0 alors stUneFeuille.sNom=<§$0000§>+stUneFeuille.nOrdre siNON stUneFeuille.sNom=sNomFeuille
+      stUneFeuille.nNbColonnes			= 0
+      stUneFeuille.nNbLignes				= 0
+      TableauAjoute(m_tabFeuille,stUneFeuille)
+      renvoyer stUneFeuille.nOrdre
+     type : 458752
+   -
+     name : Ouvre
+     procedure_id : 2017694019228477493
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ouvrir un fichier Excel spécifié. Si le fichier existe, il sera ouvert avec les paramètres spécifiés. Si le fichier n'existe pas et que la création est autorisée, un nouveau fichier sera créé.
+      // Syntaxe : [ <Résultat> = ] Ouvre (<sCheminDuFichier> est chaîne, <eModeOuverture> est cFichier.EModeOuverture [, <eCréation> est cFichier.EModeCréation])
+      // Paramètres :
+      //	sCheminDuFichier (chaîne UNICODE) : Chemin complet du fichier Excel à ouvrir ou à créer.
+      //	eModeOuverture (cFichier.EModeOuverture optionnel) : Mode d'ouverture du fichier (par défaut, en lecture-écriture).
+      //	eCréation (cFichier.EModeCréation optionnel) : Mode de création du fichier (par défaut, ne pas créer)
+      // Valeur de retour : booléen : Retourne Vrai si l'ouverture du fichier est réussie, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Ouvre(sCheminDuFichier est une chaine,eModeOuverture est un cfichier.EModeOuverture,eCréation est un cfichier.EModeCréation = cfichier.foNePasCréer) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCheminDuFichier,eModeOuverture..Nom,eCréation..Nom)
+      m_pclErreur.Raz()
+      
+      SI m_pclFichier.m_sNomFichier>"" ALORS m_pclErreur.AjouteErreur(<§$001b§>);RENVOYER Faux
+      
+      m_eFormat = FormatReconnu(sCheminDuFichier)
+      SI m_eFormat<>EExcelFormat.FichierNonReconnu ALORS
+      	bNouveauFichier est un booleen = ffichierexistE(sCheminDuFichier)
+      	si m_pclFichier.ouvre(sCheminDuFichier,eModeOuverture,eCréation,cFichier.fiANSI) alors
+      		SI PAS ChargeFichier(sCheminDuFichier,eModeOuverture DANS (cFichier.foLecture,cFichier.foBloqueLecture)) ALORS 
+      			//le message d'erreur est déjà rempli par la fonction
+      			m_pclFichier.ferme()
+      		SINON 
+      			si bNouveauFichier alors
+      				m_sCompagnie			= ""
+      				m_sAuteurOriginal		= ""
+      				TableauAjoute(m_tabStyle,StyleParDéfaut())
+      			fin
+      			RENVOYER Vrai
+      		FIN
+      	sinon
+      		m_pclErreur.AjouteErreur(m_pclFichier.p_sErreur)
+      	fin
+      sinon
+      	m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0019§>,fExtraitChemin(sCheminDuFichier,fExtension)))
+      FIN
+      RENVOYER Faux 
+     type : 458752
+   -
+     name : XLSContenuÉcrit
+     procedure_id : 2017694019228543029
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée utilisé par ÉcritTout()
+      PROCEDURE PRIVÉE XLSContenuÉcrit(stStyleDéfaut est un stStyle) : booleen
+      m_pclErreur.Raz()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64>
+      	nFeuille,nLigne,nCellule,nStyle,nl,nc,nAlignement sont des entiers
+      	stUneLigne 		est une stLigne
+      	stUneCellule 	est une stCellule
+      	stUneBordure 	est un stBordure
+      	docExcel 		est un xlsDocument
+      	stUneColonne 	est une stColonne
+      	tabBordure 		est un tableau de 0 stBordure
+      	cadStyle 		est un Cadre
+      	polPolice 		est une Police
+      	
+      	POUR TOUTE stUneFeuille DE m_tabFeuille
+      		nFeuille++
+      		SI PAS m_tabFeuille[nFeuille].bInvisible ALORS
+      			SI xlsAjouteFeuille(docExcel,stUneFeuille.sNom, nFeuille) ALORS	//on ne peut pas masquer une feuille par programmation
+      				docExcel..Feuille = nFeuille
+      				POUR TOUTE stUneColonne DE m_tabFeuille[nFeuille].tabColonnes
+      					SI stUneColonne.bInvisible ALORS 
+      						docExcel..Colonne[stUneColonne.nOrdre]..Largeur=0
+      					SINON 
+      						docExcel..Colonne[stUneColonne.nOrdre]..Largeur=(stUneColonne.rLargeur=-1 ? m_tabFeuille[nFeuille].rColonneLargeurDéfaut SINON stUneColonne.rLargeur)/m_rXL_DivLargeur*m_rXL_DivXLS
+      					FIN
+      				FIN
+      				POUR nLigne=1 _A_ m_tabFeuille[nFeuille].nNbLignes
+      					nl=TableauCherche(m_tabFeuille[nFeuille].tabLignes,tcLinéaire,"nNum",nLigne)
+      					SI nl>0 ALORS
+      						stUneLigne=m_tabFeuille[nFeuille].tabLignes[nl]
+      						SI stUneLigne.bInvisible ALORS 
+      							docExcel..Ligne[nLigne]..Hauteur=0
+      						SINON 
+      							docExcel..Ligne[nLigne]..Hauteur=(stUneLigne.rHauteur=-1 ? m_tabFeuille[nFeuille].rLigneHauteurDéfaut SINON stUneLigne.rHauteur)*m_rXL_DivXLS
+      						FIN
+      						POUR nCellule=1 _A_ m_tabFeuille[nFeuille].nNbColonnes
+      							nc=TableauCherche(stUneLigne.tabCellules,tcLinéaire,"nNum",nCellule)
+      							SI nc>0 ALORS
+      								stUneCellule=stUneLigne.tabCellules[nc]
+      								SELON stUneCellule.eType
+      									CAS EExcelCelluleType.typeChaine 
+      										docExcel..Ligne[nLigne]..Cellule[nCellule] = stUneCellule.sValeur
+      									CAS EExcelCelluleType.TypeNumérique
+      										docExcel..Ligne[nLigne]..Cellule[nCellule] = Val(stUneCellule.sValeur)
+      									CAS EExcelCelluleType.TypeDateHeure 
+      										SI Val(Droite(stUneCellule.sValeur,9))=0 ALORS 
+      											docExcel..Ligne[nLigne]..Cellule[nCellule]..MasqueWD 	= "JJ/MM/AAAA"
+      											docExcel..Ligne[nLigne]..Cellule[nCellule] 				= Gauche(stUneCellule.sValeur,8)
+      										SINON SI Val(Gauche(stUneCellule:sValeur,8))=0 ALORS
+      											docExcel..Ligne[nLigne]..Cellule[nCellule]..MasqueWD	= "HH:MM:SS"
+      											docExcel..Ligne[nLigne]..Cellule[nCellule] 				= stUneCellule.sValeur[[9 À 10]]+":"+stUneCellule.sValeur[[11 À 12]]+":"+stUneCellule.sValeur[[13 À 14]]
+      										SINON
+      											docExcel..Ligne[nLigne]..Cellule[nCellule]..MasqueWD	= "JJ/MM/AAAA HH:MM:SS"
+      											docExcel..Ligne[nLigne]..Cellule[nCellule] 				= stUneCellule.sValeur
+      										FIN
+      								FIN
+      								SI stUneCellule.nnumStyle>0 ALORS
+      									nStyle=TableauCherche(m_tabStyle,tcLinéaire,"nNum",stUneCellule.nnumStyle,2)
+      									SI nStyle>0 ALORS
+      										SI m_tabStyle[nStyle].eAligneHorizontal=EExcelCelluleAligneHorizontal.AlignementAucun ALORS 
+      											nAlignement=stStyleDéfaut.eAligneHorizontal 
+      										SINON 
+      											nAlignement=m_tabStyle[nStyle].eAligneHorizontal
+      										FIN
+      										docExcel..Ligne[nLigne]..Cellule[nCellule]..AlignementH=nAlignement
+      										SI m_tabStyle[nStyle].eAligneVertical=EExcelCelluleAligneVertical.AlignementAucun ALORS 
+      											nAlignement=stStyleDéfaut.eAligneVertical 
+      										SINON 
+      											nAlignement=m_tabStyle[nStyle].eAligneVertical
+      										FIN
+      										docExcel..Ligne[nLigne]..Cellule[nCellule]..AlignementV=nAlignement
+      										
+      										VariableRAZ(cadStyle)
+      										cadStyle..Bords=BordAucun;cadStyle..Trait=TraitAucun
+      										SI m_tabStyle[nStyle].tabBordure..Occurrence>0 OU stStyleDéfaut.tabBordure..Occurrence>0 ALORS
+      											SI m_tabStyle[nStyle].tabBordure..Occurrence>0 ALORS tabBordure=m_tabStyle[nStyle].tabBordure SINON tabBordure=stStyleDéfaut.tabBordure
+      											cadStyle..Couleur=(tabBordure[1].nCouleur=-1 ? Noir SINON tabBordure[1].nCouleur)
+      											SELON tabBordure[1].eStyle
+      												CAS EExcelBordStyle.BordContinu
+      													SELON tabBordure[1].nÉpaisseur
+      														CAS 1 	: cadStyle..Trait	= TraitContinu 
+      														CAS 2	: cadStyle..Trait	= TraitContinuMoyen
+      														CAS 3 À : cadStyle..Trait	= TraitContinuEpais
+      													FIN
+      												CAS EExcelBordStyle.BordDouble 			: cadStyle..Trait=TraitDouble
+      												CAS EExcelBordStyle.BordMixte		 	: cadStyle..Trait=(tabBordure[1].eStyle=BordContinu ? TraitMixte SINON TraitMixteMoyen)
+      												CAS	EExcelBordStyle.BordMixteTiretDouble: cadStyle..Trait=(tabBordure[1].eStyle=BordContinu ? TraitMixteTiretDouble SINON TraitMixteTiretDoubleMoyen)
+      												CAS EExcelBordStyle.BordTiret			: cadStyle..Trait=(tabBordure[1].eStyle=BordContinu ? TraitTiret SINON TraitTiretMoyen) 
+      											FIN
+      											POUR TOUT stUneBordure DE tabBordure
+      												cadStyle..Bords+=stUneBordure.eOrientation..Valeur
+      											FIN
+      										FIN
+      										docExcel..Ligne[nLigne]..Cellule[nCellule]..Cadre		= cadStyle
+      										
+      										docExcel..Ligne[nLigne]..Cellule[nCellule]..Masque		= m_tabStyle[nStyle].sMasque
+      										docExcel..Ligne[nLigne]..Cellule[nCellule]..Multiligne	= (m_tabStyle[nStyle].nMultiligne=-1 ? (stStyleDéfaut.nMultiligne=1) SINON (m_tabStyle[nStyle].nMultiligne=1))
+      										docExcel..Ligne[nLigne]..Cellule[nCellule]..CouleurFond	= (m_tabStyle[nStyle].nFondCouleur=-1 ? (stStyleDéfaut.nFondCouleur=-1 ? CouleurDéfaut SINON stStyleDéfaut.nFondCouleur) SINON :m_tabStyle[nStyle]:nFondCouleur)
+      										
+      										polPolice..Angle	= (m_tabStyle[nStyle].rAngle=-1 ? stStyleDéfaut.rAngle SINON m_tabStyle[nStyle].rAngle)
+      										polPolice..Barré	= (m_tabStyle[nStyle].nBarré=-1 ? (stStyleDéfaut.nBarré=1) SINON (m_tabStyle[nStyle].nBarré=1)) 
+      										polPolice..Couleur	= (m_tabStyle[nStyle].nPoliceCouleur=-1 ? stStyleDéfaut.nPoliceCouleur SINON m_tabStyle[nStyle].nPoliceCouleur)
+      										polPolice..Gras		= (m_tabStyle[nStyle].nGras=-1 ? (stStyleDéfaut.nGras=1) SINON (m_tabStyle[nStyle].nGras=1))
+      										polPolice..Italique	= (m_tabStyle[nStyle].nItalique=-1 ? (stStyleDéfaut.nItalique=1) SINON (m_tabStyle[nStyle].nItalique=1))
+      										polPolice..Nom		= (m_tabStyle[nStyle].sPoliceNom="" ? stStyleDéfaut.sPoliceNom SINON m_tabStyle[nStyle].sPoliceNom)
+      										polPolice..Souligné	= (m_tabStyle[nStyle].nSouligné=-1 ? (stStyleDéfaut.nSouligné>0) SINON (m_tabStyle[nStyle].nSouligné>0))
+      										polPolice..Taille	= (m_tabStyle[nStyle].rPoliceTaille=0 ? stStyleDéfaut.rPoliceTaille SINON m_tabStyle[nStyle].rPoliceTaille)
+      										
+      										SI m_tabStyle[nStyle].sParent>"" ALORS
+      											nStyle=TableauCherche(m_tabStyle,tcLinéaire,"nNumStyle",Val(Milieu(m_tabStyle[nStyle].sParent,2)))
+      											SI nStyle>0 ALORS docExcel..Ligne[nLigne]..Cellule[nCellule]..Masque=m_tabStyle[nStyle].sMasque
+      										FIN
+      									SINON
+      										polPolice..Nom=stStyleDéfaut.sPoliceNom;polPolice..Taille=stStyleDéfaut.rPoliceTaille
+      									FIN
+      								SINON
+      									polPolice..Nom=stStyleDéfaut.sPoliceNom;polPolice..Taille=stStyleDéfaut.rPoliceTaille
+      								FIN
+      								docExcel..Ligne[nLigne]..Cellule[nCellule]..Police=polPolice
+      								SI docExcel..Ligne[nLigne]..Cellule[nCellule]..Masque="Fixed" ALORS docExcel..Ligne[nLigne]..Cellule[nCellule]..Masque=""
+      								SI docExcel..Ligne[nLigne]..Cellule[nCellule]..Masque="Percent" ALORS docExcel..Ligne[nLigne]..Cellule[nCellule]..Masque="0.00%"
+      								SI Position(docExcel..Ligne[nLigne]..Cellule[nCellule]..Masque,entreGuillemets("$")) ALORS docExcel..Ligne[nLigne]..Cellule[nCellule]..Masque="#,##0.00\ "+EntreGuillemets("$")
+      								//							si docExcel..Ligne[nLigne]..Cellule[nCellule]..Masque="" et stUneCellule:sType=_clapXL_CaseFormatChaine alors docExcel..Ligne[nLigne]..Cellule[nCellule]..Masque="@"
+      							FIN
+      						FIN
+      					FIN
+      				FIN
+      			SINON
+      				m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      			FIN
+      		FIN
+      	FIN
+      	
+      	SI PAS xlsSauve(docExcel,m_pclFichier.m_sNomFichier) ALORS 
+      		m_pclErreur.AjouteErreurWx()
+      		xlsFerme(docExcel)
+      	SINON
+      		xlsFerme(docExcel);RENVOYER Vrai
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER Faux
+     type : 458752
+   -
+     name : FormatReconnu
+     procedure_id : 2017694019228608565
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée utilisé par Ouvre()
+      PROCEDURE PRIVÉE FormatReconnu(sNomFichier est une chaine) : EExcelFormat
+      SELON Majuscule(fExtraitChemin(sNomFichier,fExtension))
+      	CAS ".XLS" 	: RENVOYER EExcelFormat.fichierXLS
+      	CAS ".XLSX" : RENVOYER EExcelFormat.FichierXLSX
+      	CAS ".XML" 	: RENVOYER EExcelFormat.FichierXML
+      	AUTRE CAS	: RENVOYER EExcelFormat.FichierNonReconnu
+      FIN
+     type : 458752
+   -
+     name : FeuilleTrouve
+     procedure_id : 2017694019228674101
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée utilisée par FeuilleNom
+      Procédure PRIVEE FeuilleTrouve(nNumFeuille est un entier) : entier
+      RENVOYER TableauCherche(m_tabFeuille,tcLinéaire,"nOrdre",nNumFeuille)
+     type : 458752
+   -
+     name : StyleXLSVersCode
+     procedure_id : 2017694019228739637
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée utilisée par ChargeFichier()
+      PROCEDURE PRIVÉE StyleXLSVersCode(nFeuille est un entier,cadCadre est un Cadre,nCouleurFond est un entier,eAlignementHorizontal est un EExcelCelluleAligneHorizontal,eAlignementVertical est un EExcelCelluleAligneVertical,bMultiligne est un booléen,polPolice est un Police,nType est un entier) : entier
+      m_pclErreur.Raz()
+      
+      stUneBordure 	est un stBordure
+      stUnStyle 		est un stStyle
+      nBords 			est un entier 	= cadCadre..Bords
+      bTrouve 		est un booleen 	= faux
+      nIndice 		est un entier 	= 61
+      
+      SI nBords<>BordAucun ALORS
+      	VariableRAZ(stUneBordure)
+      	stUneBordure.nCouleur	= cadCadre..Couleur
+      	stUneBordure.nÉpaisseur	= cadCadre..Epaisseur
+      	stUneBordure.eStyle		= EnumérationDepuisValeur(EExcelBordStyle,cadCadre..Trait)
+      	SI ETBinaire(nBords,BordHaut)=BordHaut OU ETBinaire(nBords,BordTous)=BordTous ALORS
+      		stUneBordure.eOrientation=EExcelBordOrientation.OrientationHaut;TableauAjoute(stUnStyle.tabBordure,stUneBordure)
+      	FIN
+      	SI ETBinaire(nBords,BordBas)=BordBas OU ETBinaire(nBords,BordTous)=BordTous ALORS
+      		stUneBordure.eOrientation=EExcelBordOrientation.OrientationBas;TableauAjoute(stUnStyle.tabBordure,stUneBordure)
+      	FIN
+      	SI ETBinaire(nBords,BordGauche)=BordGauche OU ETBinaire(nBords,BordTous)=BordTous ALORS
+      		stUneBordure.eOrientation=EExcelBordOrientation.OrientationGauche;TableauAjoute(stUnStyle.tabBordure,stUneBordure)
+      	FIN
+      	SI ETBinaire(nBords,BordDroite)=BordDroite OU ETBinaire(nBords,BordTous)=BordTous ALORS
+      		stUneBordure.eOrientation=EExcelBordOrientation.OrientationDroite;TableauAjoute(stUnStyle.tabBordure,stUneBordure)
+      	FIN
+      FIN
+      
+      stUnStyle.nGras				= polPolice..Gras
+      stUnStyle.nItalique			= polPolice..Italique
+      stUnStyle.nSouligné			= polPolice..Souligné
+      stUnStyle.rPoliceTaille		= polPolice..Taille
+      stUnStyle.nPoliceCouleur	= polPolice..Couleur
+      stUnStyle.sPoliceNom		= polPolice..Nom	
+      stUnStyle.sPoliceFamille	= ""		//trouver la famille par rapport au nom ?	
+      stUnStyle.rAngle			= polPolice..Angle
+      stUnStyle.nBarré			= polPolice..Barré
+      stUnStyle.nExpoIndice		= -1	//pas géré par la police
+                              	
+      stUnStyle.nMultiligne		= bMultiligne
+                              	
+      stUnStyle.nFondCouleur		= nCouleurFond
+      
+      stUnStyle.eAligneHorizontal	= eAlignementHorizontal
+      stUnStyle.eAligneVertical	= eAlignementVertical
+      
+      renvoyer StyleVersNumStyle(nFeuille,stUnStyle,AttributTous)
+     type : 458752
+   -
+     name : XMLContenuEcrit
+     procedure_id : 2017694019228805173
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée utilisée par ÉcritTout()
+      PROCEDURE PRIVÉE XMLContenuEcrit() : chaine
+      m_pclErreur.Raz()
+      
+      sContenu,sAttrib 	sont des chaines
+      stUneFeuille 		est un stFeuille
+      stUneColonne 		est un stColonne
+      stUneLigne 			est un stLigne
+      stUneCellule 		est un stCellule
+      nLigne,nColonne 	sont des entiers
+      bFusion 			est un booleen = faux
+      
+      POUR TOUT stUneFeuille DE m_tabFeuille	//trié dans la fonction appelante
+      	SI stUneFeuille.nNbColonnes>0 ET stUneFeuille.nNbLignes>0 ALORS
+      		sContenu+=[RC]+_1+"<Worksheet ss:Name="+EntreGuillemets(ChaîneVersUTF8(stUneFeuille.sNom))+">"
+      		//contenu
+      		sContenu+=[RC]+_2+"<Table ss:ExpandedColumnCount="+EntreGuillemets(stUneFeuille.nNbColonnes)+" ss:ExpandedRowCount="+EntreGuillemets(stUneFeuille.nNbLignes)+" x:FullColumns="+EntreGuillemets(1)+" x:FullRows="+EntreGuillemets(1)+" ss:DefaultColumnWidth="+EntreGuillemets(arrondi(stUneFeuille.rColonneLargeurDéfaut*m_rXL_DivLargeur,2))+" ss:DefaultRowHeight="+EntreGuillemets(stUneFeuille.rLigneHauteurDéfaut)+">"
+      		TableauTrie(stUneFeuille.tabColonnes,ttMembre,"nOrdre")
+      		POUR TOUTE stUneColonne DE stUneFeuille.tabColonnes
+      			sContenu+=[RC]+_3+"<Column ss:Width="+EntreGuillemets(Arrondi((stUneColonne.rLargeur=-1 ? stUneFeuille.rColonneLargeurDéfaut SINON stUneColonne.rLargeur)*m_rXL_DivLargeur,2))+(stUneColonne.nLargeurAjustée<>-1 ? " ss:AutoFitWidth="+EntreGuillemets(stUneColonne.nLargeurAjustée) SINON "")+(stUneColonne.bInvisible ? " ss:Hidden="+EntreGuillemets(1) SINON "")+"/>"
+      		FIN
+      		nLigne=0
+      		TableauTrie(stUneFeuille.tabLignes,ttMembre,"nNum")
+      		POUR TOUT stUneLigne DE stUneFeuille.tabLignes
+      			SI stUneLigne.tabCellules..Occurrence>0 ALORS
+      				nLigne++
+      //				SI nLigneSuivante>0 _ET_ nLigne<=nLigneSuivante ALORS CONTINUE
+      				sContenu+=[RC]+_3+"<Row"+(stUneLigne.rHauteur>=0 ? " ss:Height="+EntreGuillemets(arrondi(stUneLigne.rHauteur,2)) SINON "")+(stUneLigne.nNum<>nLigne ? " ss:Index="+EntreGuillemets(stUneLigne.nNum) SINON "")+(stUneLigne.nHauteurAjustée<>-1 ? " ss:AutoFitHeight="+EntreGuillemets(stUneLigne.nHauteurAjustée) SINON "")+(stUneLigne.bInvisible ? " ss:Hidden="+EntreGuillemets(1) SINON "")+">"
+      				TableauTrie(stUneLigne.tabCellules,ttMembre,"nNum")
+      				nColonne=0
+      				POUR TOUTE stUneCellule DE stUneLigne.tabCellules
+      					SI stUneCellule.bFusionnée alors continue sinon nColonne++
+      					sAttrib=(stUneCellule.nNum<>nColonne ? " ss:Index="+EntreGuillemets(stUneCellule.nNum) SINON "")
+      					SI stUneCellule.nFusionHorizontale>0 ALORS sAttrib+=" ss:MergeAcross="+EntreGuillemets(stUneCellule.nFusionHorizontale)
+      					SI stUneCellule.nFusionVerticale>0 ALORS sAttrib+=" ss:MergeDown="+EntreGuillemets(stUneCellule.nFusionVerticale) 
+      					si stUneCellule.nNumStyle>0 alors sAttrib+=" ss:StyleID="+EntreGuillemets("s"+stUneCellule.nNumStyle)
+      					si stUneCellule.sFormule>"" alors sAttrib+=" ss:Formula="+EntreGuillemets(stUneCellule.sFormule)
+      					
+      					SI stUneCellule:sValeur="" ALORS
+      						SI sAttrib>"" ALORS sContenu+=[RC]+_4+"<Cell"+sAttrib+"/>"
+      					SINON
+      						sContenu+=[RC]+_4+"<Cell"+sAttrib+">"
+      						SI stUneCellule.bValeurHTML ALORS
+      							sContenu+="<ss:Data"+" ss:Type="+EntreGuillemets(stUneCellule.eType<>typeaucun ? stUneCellule.eType..valeur SINON TypeChaine)+" xmlns="+EntreGuillemets("http://www.w3.org/TR/REC-html40")+">"
+      						SINON
+      							sContenu+="<Data"+" ss:Type="+EntreGuillemets(stUneCellule.eType<>TypeAucun ? stUneCellule.eType..Valeur SINON TypeChaine)+">"
+      						FIN
+      						SI stUneCellule.bValeurHTML ALORS
+      							sContenu+=ChaîneVersUTF8(stUneCellule.sValeur)+"</ss:Data></Cell>"
+      						SINON
+      							sContenu+=ChaîneVersUTF8(stUneCellule.sValeur)+"</Data></Cell>"
+      						FIN
+      					FIN
+      					nColonne=stUneCellule.nNum
+      				FIN
+      				nLigne=stUneLigne.nNum
+      				sContenu+=[RC]+_3+"</Row>"
+      			SINON SI stUneLigne.rHauteur>=0 ALORS
+      				nLigne++
+      				sContenu+=[RC]+_3+"<Row"+(stUneLigne.rHauteur>=0 ? " ss:Height="+EntreGuillemets(Arrondi(stUneLigne.rHauteur,2)) SINON "")+(stUneLigne.nNum<>nLigne ? " ss:Index="+EntreGuillemets(stUneLigne.nNum) SINON "")+"/>"
+      			FIN
+      		FIN
+      		sContenu+=[RC]+_2+"</Table>"
+      		//options
+      		sContenu+=[RC]+_2+"<WorksheetOptions xmlns="+EntreGuillemets("urn:schemas-microsoft-com:office:excel")+">"
+      		sContenu+=[RC]+_3+"<PageSetup>"
+      		sContenu+=[RC]+_4+"<Header x:Margin="+EntreGuillemets(NumériqueVersChaîne(stUneFeuille.rMargeEntête))+"/>"
+      		sContenu+=[RC]+_4+"<Footer x:Margin="+EntreGuillemets(NumériqueVersChaîne(stUneFeuille.rMargePiedPage))+"/>"
+      		sContenu+=[RC]+_4+"<PageMargins x:Bottom="+EntreGuillemets(NumériqueVersChaîne(stUneFeuille.rMargeBas))+" x:Left="+EntreGuillemets(NumériqueVersChaîne(stUneFeuille.rMargeGauche))+" x:Right="+EntreGuillemets(NumériqueVersChaîne(stUneFeuille.rMargeDroite))+" x:Top="+EntreGuillemets(NumériqueVersChaîne(stUneFeuille.rMargeHaut))+"/>"
+      		sContenu+=[RC]+_3+"</PageSetup>"
+      		SI stUneFeuille.bInvisible ALORS sContenu+=[RC]+_3+"<Visible>SheetHidden</Visible>" 
+      		SI stUneFeuille.tabLignes..Occurrence>0 ALORS
+      			sContenu+=[RC]+_3+"<Print>"
+      			sContenu+=[RC]+_4+"<ValidPrinterInfo/>"
+      			sContenu+=[RC]+_4+"<HorizontalResolution>600</HorizontalResolution>"
+      			sContenu+=[RC]+_4+"<VerticalResolution>600</VerticalResolution>"
+      			sContenu+=[RC]+_3+"</Print>"
+      			sContenu+=[RC]+_3+"<Selected/>"
+      			sContenu+=[RC]+_3+"<TopRowVisible>0</TopRowVisible>"
+      			sContenu+=[RC]+_3+"<Panes>"
+      			sContenu+=[RC]+_4+"<Pane>"
+      			sContenu+=[RC]+_5+"<Number>1</Number>"
+      			sContenu+=[RC]+_5+"<ActiveRow>1</ActiveRow>"
+      			sContenu+=[RC]+_5+"<ActiveCol>1</ActiveCol>"
+      			sContenu+=[RC]+_4+"</Pane>"
+      			sContenu+=[RC]+_3+"</Panes>"
+      		FIN
+      		sContenu+=[RC]+_3+"<ProtectObjects>False</ProtectObjects>"
+      		sContenu+=[RC]+_3+"<ProtectScenarios>False</ProtectScenarios>"
+      		sContenu+=[RC]+_2+"</WorksheetOptions>"
+      		
+      		sContenu+=[RC]+_1+"</Worksheet>"
+      	FIN
+      FIN
+      RENVOYER sContenu
+     type : 458752
+   -
+     name : XMLDocumentProperties
+     procedure_id : 2017694019228870709
+     type_code : 12
+     code : |1-
+      //Résumé : procédure privée utilisée ÉcritTout()
+      PROCEDURE PRIVÉ XMLDocumentProperties() : chaine
+      dhDateModification est une DateHeure = DateHeureLocaleVersUTC(m_dhModificationUTC)
+      sDateCréation,sDateModification sont des chaînes
+      sContenu est une chaîne = [
+      <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office"><§cs:7§>
+      <Author>%1</Author><§cs:7§>
+      <LastAuthor>%2</LastAuthor><§cs:7§>
+      <Created>%3</Created><§cs:7§>
+      <LastSaved>%4</LastSaved><§cs:7§>
+      <Company>%5</Company><§cs:7§>
+      <Version>14.00</Version><§cs:7§>
+      </DocumentProperties><§cs:7§>
+      ]
+      sDateCréation=DateVersChaîne(m_dhCréationUTC..PartieDate,"AAAA-MM-JJ")+"T"+HeureVersChaîne(m_dhCréationUTC..PartieHeure,"HH:MM:SS")+"Z"				//ne change pas
+      sDateModification=DateVersChaîne(dhDateModification..PartieDate,"AAAA-MM-JJ")+"T"+HeureVersChaîne(dhDateModification..PartieHeure,"HH:MM:SS")+"Z"
+      RENVOYER ChaîneConstruit(sContenu,m_sAuteurOriginal,m_sAuteurDernier,sDateCréation,sDateModification,m_sCompagnie)
+     type : 458752
+   -
+     name : XMLExcelWorkbook
+     procedure_id : 2017694019228936245
+     type_code : 12
+     code : |1-
+      //Résumé : procédure privée utilisée par ÉcritTout()
+      PROCEDURE PRIVÉE XMLExcelWorkbook() : chaine
+      sContenu est une chaîne = [
+      <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel"><§cs:7§>
+      <WindowHeight>10290</WindowHeight><§cs:7§>
+      <WindowWidth>21315</WindowWidth><§cs:7§>
+      <WindowTopX>0</WindowTopX><§cs:7§>
+      <WindowTopY>60</WindowTopY><§cs:7§>
+      <ProtectStructure>False</ProtectStructure><§cs:7§>
+      <ProtectWindows>False</ProtectWindows><§cs:7§>
+      </ExcelWorkbook><§cs:7§>
+      ]
+      RENVOYER sContenu
+     type : 458752
+   -
+     name : XMLOfficeDocumentSettings
+     procedure_id : 2017694019229001781
+     type_code : 12
+     code : |1-
+      //Résumé : procédure privée utilisée par ÉcritTout()
+      PROCEDURE PRIVÉE XMLOfficeDocumentSettings() : chaine
+      sContenu est une chaîne = [
+      <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office"><§cs:7§>
+      <AllowPNG/><§cs:7§>
+      </OfficeDocumentSettings><§cs:7§>
+      ]
+      RENVOYER sContenu
+     type : 458752
+   -
+     name : XMLStyles
+     procedure_id : 2017694019229067317
+     type_code : 12
+     code : |1-
+      //Résumé : procédure privée utilisée par ÉcritTout()
+      PROCEDURE PRIVÉE XMLStyles(stStyleDéfaut est un stStyle) : chaine
+      m_pclErreur.Raz()
+      
+      stUnStyle est un stStyle
+      stUneBordure est un stBordure
+      sContenu est une chaîne
+      
+      //prendre le style 0 pour défaut
+      //tableautrie(:m_tabStyle,ttMembre,"nNumStyle")
+      sContenu+=[RC]+_1+"<Styles>"
+      POUR TOUT ELEMENT stUnStyle DE m_tabStyle
+      	sContenu+=[RC]+_2+"<Style ss:ID="+EntreGuillemets((stUnStyle.nNum=0 ? "Default" SINON "s"+stUnStyle.nNum))+(stUnStyle.sParent>"" ? " ss:Parent="+EntreGuillemets(stUnStyle.sParent) SINON "")+(stUnStyle.sNom>"" ? " ss:Name="+EntreGuillemets(stUnStyle.sNom) SINON "")+">"
+      	si stUnStyle.sPoliceNom+stUnStyle.sPoliceFamille>"" _ou_ stUnStyle.rPoliceTaille<>-1 _ou_ stUnStyle.nPoliceCouleur<>-1 _ou_ stUnStyle.nGras<>-1 _ou_ stUnStyle.nItalique<>-1 _ou_ stUnStyle.nSouligné>0 _ou_ stUnStyle.nBarré<>-1 _ou_ stUnStyle.nExpoIndice<>-1 alors
+      		sContenu+=[RC]+_3+"<Font"
+      		sContenu+=" ss:FontName="+EntreGuillemets((stUnStyle:sPoliceNom>"" ? stUnStyle.sPoliceNom sinon stStyleDéfaut.sPoliceNom))
+      		sContenu+=" x:Family="+EntreGuillemets((stUnStyle:sPoliceFamille>"" ? stUnStyle.sPoliceFamille sinon stStyleDéfaut.sPoliceFamille))
+      		si stUnStyle.rPoliceTaille<>-1 	alors sContenu+=" ss:Size="+EntreGuillemets(NumériqueVersChaîne(stUnStyle.rPoliceTaille))
+      		si stUnStyle.nPoliceCouleur<>-1 alors sContenu+=" ss:Color="+EntreGuillemets((stUnStyle.nPoliceCouleur))
+      		SI stUnStyle.nGras>-1 			ALORS sContenu+=" ss:Bold="+EntreGuillemets(stUnStyle.nGras)
+      		SI stUnStyle.nItalique>-1 		ALORS sContenu+=" ss:Italic="+EntreGuillemets(stUnStyle.nItalique)
+      		SI stUnStyle.nSouligné>0 ALORS 
+      			sContenu+=" ss:Underline="+EntreGuillemets((stUnStyle.nSouligné=2 ? deuxlignes SINON uneligne))
+      		SINON SI stStyleDéfaut:nSouligné>0 ALORS
+      			sContenu+=" ss:Underline="+EntreGuillemets((stStyleDéfaut.nSouligné=2 ? DeuxLignes SINON UneLigne))
+      		FIN
+      		SI stUnStyle.nBarré<>-1 ALORS sContenu+=" ss:StrikeThrough="+EntreGuillemets(stUnStyle.nBarré)
+      		SI stUnStyle.nExpoIndice<>-1 ALORS sContenu+=" ss:VerticalAlign="+(stUnStyle.nExpoIndice=1 ? EntreGuillemets("Superscript") SINON EntreGuillemets("Subscript"))
+      		sContenu+="/>"
+      	FIN
+      	SI stUnStyle.nFondCouleur<>-1 ALORS
+      		sContenu+=[RC]+_3+"<Interior ss:Color="+EntreGuillemets(RVBVersHTML(stUnStyle.nFondCouleur))+" ss:Pattern="+EntreGuillemets(stUnStyle.sFondPaterne)+(stUnStyle.nFondPaterneCouleur>-1 ? " ss:PatternColor="+EntreGuillemets(RVBVersHTML(stUnStyle.nFondPaterneCouleur)) SINON "")+"/>"
+      	SINON SI stUnStyle.nNum=0 ALORS
+      		sContenu+=[RC]+_3+"<Interior/>"
+      	FIN
+      	
+      	SI stUnStyle.tabBordure..Occurrence>0 ALORS
+      		sContenu+=[RC]+_3+"<Borders>"
+      		POUR TOUT ELEMENT stUneBordure DE stUnStyle.tabBordure
+      			sContenu+=[RC]+_4+"<Border "+"ss:Position="
+      			selon stUneBordure.eOrientation
+      				cas OrientationHaut 	: sContenu+=EntreGuillemets("Top")
+      				cas Orientationbas 		: sContenu+=EntreGuillemets("Bottom")
+      				cas Orientationgauche 	: sContenu+=EntreGuillemets("Left")
+      				cas Orientationdroite 	: sContenu+=EntreGuillemets("Right")
+      			fin
+      			sContenu+=" ss:LineStyle="+EntreGuillemets(stUneBordure.eStyle..valeur)+(stUneBordure.nÉpaisseur>0 ? " ss:Weight="+EntreGuillemets(NumériqueVersChaîne(stUneBordure.nÉpaisseur)) SINON "")+(stUneBordure.nCouleur<>-1 ? " ss:Color="+EntreGuillemets(RVBVersHTML(stUneBordure.nCouleur)) SINON "")+"/>"
+      		FIN
+      		sContenu+=[RC]+_3+"</Borders>"
+      	SINON SI stUnStyle:nNum=0 ALORS
+      		sContenu+=[RC]+_3+"<Borders/>"
+      	FIN
+      	
+      	SI stUnStyle.eAligneHorizontal<>EExcelCelluleAligneHorizontal.AlignementAucun _OU_ stUnStyle.eAligneVertical<>EExcelCelluleAligneVertical.AlignementAucun _OU_ stUnStyle.nMultiligne<>-1 _OU_ stUnStyle.rAngle<>-1 ALORS
+      		sContenu+=[RC]+_3+"<Alignment"
+      		si stUnStyle.eAligneHorizontal<>EExcelCelluleAligneHorizontal.AlignementAucun alors
+      			sContenu+=" ss:Horizontal="
+      			selon stUnStyle.eAligneHorizontal
+      				cas EExcelCelluleAligneHorizontal.AlignementGauche 		: sContenu+=EntreGuillemets("Left")
+      				cas EExcelCelluleAligneHorizontal.Alignementdroite		: sContenu+=EntreGuillemets("Right")
+      				cas EExcelCelluleAligneHorizontal.Alignementcentre		: sContenu+=EntreGuillemets("Center")
+      				cas EExcelCelluleAligneHorizontal.Alignementjustifié	: sContenu+=EntreGuillemets("Justify")
+      			FIN
+      		FIN
+      		SI stUnStyle.eAligneVertical<>EExcelCelluleAligneVertical.AlignementAucun ALORS
+      			sContenu+=" ss:Vertical="
+      			SELON stUnStyle.eAligneVertical
+      				CAS EExcelCelluleAligneVertical.Alignementhaut 			: sContenu+=EntreGuillemets("Top")
+      				CAS EExcelCelluleAligneVertical.Alignementbas			: sContenu+=EntreGuillemets("Bottom")
+      				CAS EExcelCelluleAligneVertical.AlignementMilieu		: sContenu+=EntreGuillemets("Center")
+      			FIN
+      		FIN
+      		sContenu+=(stUnStyle.nMultiligne<>-1 ? " ss:WrapText="+EntreGuillemets(stUnStyle.nMultiligne) SINON "")+(stUnStyle.rAngle<>-1 ? " ss:Rotate="+EntreGuillemets(stUnStyle.rAngle) SINON "")+"/>"
+      	SINON SI stUnStyle.nNum=0 ALORS
+      		sContenu+=[RC]+_3+"<Alignment/>"
+      	FIN
+      	
+      	SI stUnStyle.sMasque>"" ALORS
+      		sContenu+=[RC]+_3+"<NumberFormat ss:Format="+EntreGuillemets(TexteVersHTML(stUnStyle.sMasque))+"/>"
+      	SINON SI stUnStyle.nNum=0 ALORS
+      		sContenu+=[RC]+_3+"<NumberFormat/>"
+      	FIN
+      	
+      	SI stUnStyle.nNum=0 ALORS sContenu+=[RC]+_3+"<Protection/>"
+      	
+      	sContenu+=[RC]+_2+"</Style>"
+      FIN
+      sContenu+=[RC]+_1+"</Styles>"
+      RENVOYER sContenu
+     type : 458752
+   -
+     name : XMLWorkbook
+     procedure_id : 2017694019229132853
+     type_code : 12
+     code : |1-
+      //Résumé : procédure privée utilisée par ÉcritTout()
+      PROCEDURE PRIVÉ XMLWorkbook(*) : chaine
+      sContenu est une chaîne
+      sEntêteWorkbook est une chaîne = [
+      <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"<§cs:7§>
+      xmlns:o="urn:schemas-microsoft-com:office:office"<§cs:7§>
+      xmlns:x="urn:schemas-microsoft-com:office:excel"<§cs:7§>
+      xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"<§cs:7§>
+      xmlns:html="http://www.w3.org/TR/REC-html40"><§cs:7§>
+      %1<§cs:7§>
+      </Workbook><§cs:7§>
+      ]
+      SI MesParamètres..Occurrence>0 ALORS
+      	POUR nContenu = 1 _A_ MesParamètres..Occurrence
+      		sContenu+=[RC]+MesParamètres[nContenu]
+      	FIN
+      FIN
+      RENVOYER ChaîneConstruit(sEntêteWorkbook,sContenu)
+     type : 458752
+   -
+     name : CelluleValeur
+     procedure_id : 2017694019229198389
+     type_code : 12
+     group : 4
+     code : |1-
+      // Résumé : Permet de lire ou d'écrire les valeurs des cellules spécifiées dans la feuille de calcul en cours.
+      // Syntaxe : [ <Résultat> = ] CelluleValeur (<sCellules> est chaîne [, <vNouvelleValeur>])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      // 	vNouvelleValeur (valeur optionnel) : Nouvelle valeur à écrire dans les cellules spécifiées. Si omis (Null), la méthode sera utilisée en mode lecture.
+      // Valeur de retour : Type indéterminé : En mode lecture, retourne la valeur des cellules spécifiées sous forme de chaîne. En mode écriture, retourne Vrai si l'écriture a réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE CelluleValeur(sCellules est une chaine,vNouvelleValeur=Null) //pas de typage de sortie car en lecture c'est une chaine, en écriture c'est un booleen 
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCellules,vNouvelleValeur)
+      m_pclErreur.Raz()
+      
+      nLigneDébut,nLigneFin,nColonneDébut,nColonneFin,nc,nl sont des entiers
+      sRes est une chaine
+      bLecture est un booleen = (MesParamètres..NbReçus=1)
+      
+      SI m_nFeuilleEnCours>0 ALORS
+      	si CoordonnéesVersPlage(sCellules,nLigneDébut,nLigneFin,nColonneDébut,nColonneFin,(pas bLecture)) alors
+      		pour nLigne = nLigneDébut _a_ nLigneFin
+      			SI bLecture _et_ nLigne>nLigneDébut ALORS sRes+=RC
+      			nl=TableauCherche(m_tabFeuille[m_nFeuilleEnCours].tabLignes,tcLinéaire,"nNum",nLigne)
+      			si nl>0 alors
+      				pour nColonne = nColonneDébut _a_ nColonneFin
+      					SI bLecture _ET_ nColonne>nColonneDébut ALORS sRes+=tab
+      					nc=TableauCherche(m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules,tcLinéaire,"nNum",nColonne)
+      					SI nc>0 ALORS
+      						SI bLecture ALORS
+      							sRes+=[tab]+m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].sValeur
+      						SINON //écrire la valeur dans toutes les cellules
+      							m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].sValeur=vNouvelleValeur
+      						FIN
+      					fin
+      				fin
+      			sinon
+      				si bLecture _et_ nColonneFin>nColonneDébut alors sRes+=chaineoccurrence(tab,(nColonneFin-nColonneDébut-1))
+      			fin
+      		fin
+      		SI bLecture ALORS renvoyer sRes sinon m_bContenuModifié=Vrai;renvoyer Vrai
+      	fin
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0022§>)
+      FIN
+      SI bLecture ALORS renvoyer "" sinon RENVOYER faux
+     type : 458752
+   -
+     name : CelluleBord
+     procedure_id : 2017694019229263925
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de lire ou d'écrire les propriétés de bordure des cellules spécifiées dans la feuille de calcul en cours.
+      // Syntaxe : [ <Résultat> = ] CelluleBord (<sCellules> est chaîne [, <nBords> est entier [, <eType> est cFichierExcel.EExcelBordStyle [, <nÉpaisseur> est entier [, <nCouleur> est entier]]]])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      // 	nBords (entier optionnel) : Entier représentant les bords à traiter. Les valeurs possibles sont définies par les constantes BordHaut, BordBas, BordGauche, BordDroite et BordAucun. Si omis, tous les bords sont traités.
+      //	eType (cFichierExcel.EExcelBordStyle optionnel) : Style de bordure à appliquer. Les valeurs possibles sont définies par l'énumération EExcelBordStyle. La valeur par défaut est EExcelBordStyle.BordContinu.
+      // 	nÉpaisseur (entier optionnel) : Épaisseur de la bordure. La valeur par défaut est 1.
+      // 	nCouleur (entier optionnel) : Couleur de la bordure. La valeur par défaut est Noir.
+      // Valeur de retour : Type indéterminé : En mode lecture, retourne la couleur de la bordure des cellules spécifiées sous forme de chaîne. En mode écriture, retourne Vrai si l'écriture a réussi, Faux sinon.
+      // Exemple :
+      //
+      Procédure CelluleBord(sCellules est une chaine,nBords est un entier = 0,eType est une EExcelBordStyle = EExcelBordStyle.BordContinu ,nÉpaisseur est un entier = 1,nCouleur est un entier = noir)  
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCellules,nBords,eType..Nom,nÉpaisseur,nCouleur)
+      m_pclErreur.Raz()
+      
+      nLigneDébut,nLigneFin,nColonneDébut,nColonneFin,nc,nl,ns,nt sont des entiers
+      sRes est une chaine
+      bLecture est un booleen = (MesParamètres..NbReçus=1)
+      
+      SI m_nFeuilleEnCours>0 ALORS
+      	SI bLecture _OU_ VérifieNouvelleValeur(AttributBordure,nBords) ALORS
+      		SI CoordonnéesVersPlage(sCellules,nLigneDébut,nLigneFin,nColonneDébut,nColonneFin,(PAS bLecture)) ALORS
+      			POUR nLigne = nLigneDébut _a_ nLigneFin
+      				SI bLecture _ET_ nLigne>nLigneDébut ALORS sRes+=RC
+      				nl=TableauCherche(m_tabFeuille[m_nFeuilleEnCours].tabLignes,tcLinéaire,"nNum",nLigne)
+      				SI nl>0 ALORS
+      					POUR nColonne = nColonneDébut _a_ nColonneFin
+      						SI bLecture _ET_ nColonne>nColonneDébut ALORS sRes+=TAB
+      						nc=TableauCherche(m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules,tcLinéaire,"nNum",nColonne)
+      						SI nc>0 ALORS
+      							SI m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].nNumStyle>0 ALORS ns=TableauCherche(m_tabStyle,tcLinéaire,"nNum",m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].nNumStyle) SINON ns=0
+      							SI bLecture ALORS
+      								SI ns>0 ALORS sRes+=m_tabStyle[ns].nPoliceCouleur
+      							SINON //écrire la valeur
+      								si nBords=BordAucun alors
+      									ns=StyleVersNumStyle(m_nFeuilleEnCours,(ns>0 ? m_tabStyle[ns] SINON StyleVide()),AttributBordure,"")
+      									m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].nNumStyle=ns
+      								sinon
+      									SI ETBinaire(nBords,BordHaut)=BordHaut ET nLigne=nLigneDébut ALORS
+      										nt=StyleVersNumStyle(m_nFeuilleEnCours,(ns>0 ? m_tabStyle[ns] SINON StyleVide()),AttributBordure,bordhaut,eType..valeur,nÉpaisseur,nCouleur)
+      										m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].nNumStyle=nt;ns=TableauCherche(m_tabStyle,tcLinéaire,"nNum",nt)
+      									FIN
+      									SI ETBinaire(nBords,BordBas)=BordBas ET nLigne=nLigneFin ALORS
+      										nt=StyleVersNumStyle(m_nFeuilleEnCours,(ns>0 ? m_tabStyle[ns] SINON StyleVide()),AttributBordure,bordbas,eType..Valeur,nÉpaisseur,nCouleur)
+      										m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].nNumStyle=nt;ns=TableauCherche(m_tabStyle,tcLinéaire,"nNum",nt)
+      									FIN
+      									SI ETBinaire(nBords,BordGauche)=BordGauche ET nColonne=nColonneDébut ALORS
+      										nt=StyleVersNumStyle(m_nFeuilleEnCours,(ns>0 ? m_tabStyle[ns] SINON StyleVide()),AttributBordure,bordgauche,eType..Valeur,nÉpaisseur,nCouleur)
+      										m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].nNumStyle=nt;ns=TableauCherche(m_tabStyle,tcLinéaire,"nNum",nt)
+      									FIN
+      									SI ETBinaire(nBords,BordDroite)=BordDroite ET nColonne=nColonneFin ALORS
+      										nt=StyleVersNumStyle(m_nFeuilleEnCours,(ns>0 ? m_tabStyle[ns] SINON StyleVide()),AttributBordure,borddroite,eType..Valeur,nÉpaisseur,nCouleur)
+      										m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].nNumStyle=nt
+      									FIN
+      								FIN
+      							FIN
+      						FIN
+      					FIN
+      				SINON
+      					SI nColonneFin>nColonneDébut ALORS sRes+=ChaîneOccurrence(TAB,(nColonneFin-nColonneDébut-1))
+      				FIN
+      			FIN
+      			SI bLecture ALORS RENVOYER sRes SINON m_bContenuModifié=Vrai;RENVOYER Vrai
+      		SINON
+      			//le message d'erreur est déjà rempli par la fonction
+      		FIN
+      	SINON
+      		//le message d'erreur est déjà rempli par la fonction
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0022§>)
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : CoordonnéesVersPlage
+     procedure_id : 2017694019229329461
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée permettant de transformer une plage (ex : A5:C15) en ligne et colonne début/fin. Utilisé dans CelluleAttribut, CelluleBord, CelluleFormule et CelluleValeur
+      Procédure prive CoordonnéesVersPlage(sCellules est une chaine,nLigneDébut est un entier,nLigneFin est un entier,nColonneDébut est un entier,nColonneFin est un entier,bCréeManquants est un booleen)
+      m_pclErreur.Raz()
+      
+      nc,nl,n sont des entiers
+      sDébut,sFin,sLigne,sColonne sont des chaines
+      stUneColonne est un stColonne
+      stUneLigne est un stLigne
+      stUneCellule est un stCellule
+      si position(sCellules,":")>0 alors
+      	sDébut=ExtraitChaîne(sCellules,1,":");sFin=ExtraitChaîne(sCellules,2,":")
+      sinon
+      	sDébut=sCellules;sFin=""
+      FIN
+      si sDébut>"" alors
+      	pour nCaract = 1 _a_ taille(sDébut)
+      		si position(cGénérique._LettresMajuscules+cGénérique._CaractèresNumériques,sDébut[[nCaract]])>0 alors
+      			si position(cGénérique._LettresMajuscules,sDébut[[nCaract]])>0 alors
+      				si sLigne="" alors
+      					sColonne+=sDébut[[nCaract]]
+      				sinon
+      					m_pclErreur.AjouteErreur(<§$0013§>);SORTIR	
+      				FIN
+      			sinon	//chiffres
+      				si sColonne>"" alors
+      					sLigne+=sDébut[[nCaract]]
+      				sinon
+      					m_pclErreur.AjouteErreur(<§$0014§>);SORTIR	
+      				FIN
+      			FIN
+      		sinon
+      			m_pclErreur.AjouteErreur(<§$0015§>+sDébut[[nCaract]]);sortir
+      		FIN
+      	FIN
+      	si m_pclErreur.p_sErreur="" alors nLigneDébut=val(sLigne);n=0;nColonneDébut=LettreVersNumColonne(sColonne,m_eFormat)
+      FIN
+      SI sFin>"" et m_pclErreur.p_sErreur>"" ALORS
+      	sColonne="";sLigne=""
+      	POUR nCaract = 1 _a_ taille(sFin)
+      		SI Position(cGénérique._LettresMajuscules+cGénérique._CaractèresNumériques,sFin[[nCaract]])>0 ALORS
+      			SI Position(cGénérique._LettresMajuscules,sFin[[nCaract]])>0 ALORS
+      				SI sLigne="" ALORS
+      					sColonne+=sFin[[nCaract]]
+      				SINON
+      					m_pclErreur.AjouteErreur(<§$0016§>);SORTIR	
+      				FIN
+      			SINON	//chiffres
+      				SI sColonne>"" ALORS
+      					sLigne+=sFin[[nCaract]]
+      				SINON
+      					m_pclErreur.AjouteErreur(<§$0017§>);SORTIR	
+      				FIN
+      			FIN
+      		SINON
+      			m_pclErreur.AjouteErreur(<§$0018§>+sDébut[[nCaract]]);SORTIR
+      		FIN
+      	FIN
+      	SI m_pclErreur.p_sErreur="" ALORS nLigneFin=Val(sLigne);n=0;nColonneFin=LettreVersNumColonne(sColonne,m_eFormat)
+      FIN
+      
+      si m_pclErreur.p_sErreur="" alors
+      	si nLigneFin>0 alors
+      		si nLigneFin<nLigneDébut alors nLigneFin<=>nLigneDébut				//on échange les valeurs
+      	sinon
+      		nLigneFin=nLigneDébut
+      	FIN
+      	SI nColonneFin>0 alors 
+      		si nColonneFin<nColonneDébut ALORS nColonneFin<=>nColonneDébut		//on échange les valeurs
+      	sinon
+      		nColonneFin=nColonneDébut
+      	FIN
+      	si bCréeManquants alors
+      		POUR nColonne = nColonneDébut _a_ nColonneFin
+      			nc=TableauCherche(m_tabFeuille[m_nFeuilleEnCours].tabColonnes,tcLinéaire,"nOrdre",nColonne)
+      			SI nc<1 ALORS
+      				//créer la colonne
+      				m_tabFeuille[m_nFeuilleEnCours].nNbColonnes=Max(nColonne,m_tabFeuille[m_nFeuilleEnCours].nNbColonnes)
+      				stUneColonne.nOrdre			= nColonne
+      				stUneColonne.nLargeurAjustée= -1
+      				stUneColonne.rLargeur		= m_rLargeurColonneDéfaut	//largeur par défaut
+      				TableauAjoute(m_tabFeuille[m_nFeuilleEnCours].tabColonnes,stUneColonne)
+      			FIN
+      		FIN	
+      		POUR nLigne = nLigneDébut _a_ nLigneFin
+      			nl=TableauCherche(m_tabFeuille[m_nFeuilleEnCours].tabLignes,tcLinéaire,"nNum",nLigne)
+      			SI nl<1 ALORS
+      				//créer la ligne
+      				m_tabFeuille[m_nFeuilleEnCours].nNbLignes=Max(nLigne,m_tabFeuille[m_nFeuilleEnCours].nNbLignes)
+      				stUneLigne.nNum				= nLigne
+      				stUneLigne.nHauteurAjustée	= -1
+      				stUneLigne.rHauteur			= -1
+      				nl=TableauAjoute(m_tabFeuille[m_nFeuilleEnCours].tabLignes,stUneLigne)
+      			fin
+      			pour nColonne = nColonneDébut _a_ nColonneFin
+      				nc=TableauCherche(m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules,tcLinéaire,"nNum",nColonne)
+      				si nc<1 alors	//créer la cellule
+      					stUneCellule.nNum=nColonne
+      					tableauajoute(m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules,stUneCellule)
+      				FIN
+      			FIN
+      		fin					
+      	fin
+      	renvoyer vrai
+      sinon
+      	renvoyer faux
+      fin	
+     type : 458752
+   -
+     name : CelluleCouleur
+     procedure_id : 2017694019229394997
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de lire ou d'écrire la couleur de texte des cellules spécifiées dans la feuille de calcul en cours.
+      // Syntaxe : [ <Résultat> = ] CelluleCouleur (<sCellules> est chaîne [, <nNouvelleCouleur> est entier])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      // 	nNouvelleCouleur (entier optionnel) : Entier représentant la couleur à appliquer aux cellules spécifiées. Si omis, la méthode est en mode lecture et retourne la couleur de texte des cellules.
+      // Valeur de retour : Type indéterminé : En mode lecture, retourne la couleur de texte des cellules spécifiées sous forme d'entier (code couleur). En mode écriture, retourne Vrai si l'écriture a réussi, Faux sinon.
+      // Exemple :
+      //
+      procédure CelluleCouleur(sCellules est une chaine,nNouvelleCouleur est un entier = -1)
+      renvoyer (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributCouleur,sCellules) sinon CelluleAttribut(AttributCouleur,sCellules,nNouvelleCouleur))
+     type : 458752
+   -
+     name : StyleVersClé
+     procedure_id : 2017694019229460533
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privé qui sérialise le style (pour en faire une "clé" permettant les comparaisons). Utilisé dans ChargeFichier, StyleParDéfaut, StyleVersNumStyle et StyleVide
+      Procédure prive StyleVersClé(local stUnStyle est un ststyle) : chaine
+      nb est un entier
+      sRes est une chaine = variableversjson(stUnStyle)
+      //ajout des 4 bords
+      nb=TrouveBord(EExcelBordOrientation.OrientationHaut);sRes+=TAB+BordHaut
+      si nb<1 alors sRes+="###" sinon sRes+="#"+stUnStyle.tabBordure[nb].eStyle..valeur+"#"+stUnStyle.tabBordure[nb].nÉpaisseur+"#"+stUnStyle.tabBordure[nb].ncouleur
+      nb=TrouveBord(EExcelBordOrientation.OrientationGauche);sRes+=TAB+BordGauche
+      SI nb<1 ALORS sRes+="###" SINON sRes+="#"+stUnStyle.tabBordure[nb].eStyle..Valeur+"#"+stUnStyle.tabBordure[nb].nÉpaisseur+"#"+stUnStyle.tabBordure[nb].ncouleur
+      nb=TrouveBord(EExcelBordOrientation.OrientationBas);sRes+=TAB+BordBas
+      SI nb<1 ALORS sRes+="###" SINON sRes+="#"+stUnStyle.tabBordure[nb].eStyle..Valeur+"#"+stUnStyle.tabBordure[nb].nÉpaisseur+"#"+stUnStyle.tabBordure[nb].ncouleur
+      nb=TrouveBord(EExcelBordOrientation.Orientationdroite);sRes+=TAB+BordDroite
+      SI nb<1 ALORS sRes+="###" SINON sRes+="#"+stUnStyle.tabBordure[nb].eStyle..Valeur+"#"+stUnStyle.tabBordure[nb].nÉpaisseur+"#"+stUnStyle.tabBordure[nb].ncouleur
+      renvoyer sRes
+      
+      	procédure interne TrouveBord(eQuelBord est un EExcelBordOrientation) : entier	//car pas de tableauCherche sur des énumérations
+      	pour nBordure = 1 _a_ stUnStyle.tabBordure..Occurrence
+      		si stUnStyle.tabBordure[nBordure].eOrientation=eQuelBord alors renvoyer nBordure
+      	fin
+      	renvoyer 0
+      	FIN
+     type : 458752
+   -
+     name : StyleVersNumStyle
+     procedure_id : 2017694019229526069
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée généraliste pour changer le style de cellule. Utilisé par CelluleAttribut et CelluleBord
+      Procédure prive StyleVersNumStyle(nFeuille est un entier,local stUnStyle est un stStyle,eValeurAChanger est un EExcelCelluleAttribut,vNouvelleValeur=null,*) : entier	//la nouvelleValeur doit être vérifiée avant
+      m_pclErreur.Raz()
+      
+      sClé 			est une chaine
+      ns 				est un entier
+      stUneBordure 	est un stBordure
+      
+      selon eValeurAChanger
+      	cas AttributCouleur				: stUnStyle.nPoliceCouleur		= vNouvelleValeur
+      	CAS AttributCouleurFond			: stUnStyle.nFondCouleur		= vNouvelleValeur;si stUnStyle.sFondPaterne="" alors stUnStyle.sFondPaterne=Solide
+      	cas AttributBordure 			: 
+      		si vNouvelleValeur="" alors 
+      			tableausupprimetout(stUnStyle.tabbordure)
+      		sinon
+      			si tableaucherche(stUnStyle.tabBordure,tcLinéaire,"eOrientation",vNouvelleValeur)<1 alors
+      				stUneBordure.eOrientation	= EnumérationDepuisValeur(EExcelBordOrientation,vNouvelleValeur)
+      				stUneBordure.eStyle			= EnumérationDepuisValeur(EExcelBordStyle,MesParamètres[4])
+      				stUneBordure.nÉpaisseur		= MesParamètres[5]
+      				stUneBordure.nCouleur		= MesParamètres[6]
+      				tableauajoute(stUnStyle.tabBordure,stUneBordure)
+      			FIN
+      		FIN
+      	cas AttributPaterne				:
+      	cas AttributPolice				: stUnStyle.sPoliceNom			= vNouvelleValeur
+      	cas AttributAlignementV			: stUnStyle.ealignevertical		= vNouvelleValeur
+      	cas AttributAlignementH			: stUnStyle.eAlignehorizontal	= vNouvelleValeur
+      	cas AttributMultiligne			: stUnStyle.nMultiligne			= vNouvelleValeur
+      	cas AttributItalique			: stUnStyle.nItalique			= vNouvelleValeur
+      	cas AttributGras				: stUnStyle.nGras				= vNouvelleValeur
+      	cas AttributSouligné			: stUnStyle.nSouligné			= vNouvelleValeur
+      	cas AttributFormat				: 
+      		stUnStyle.nFormatConnu		= vNouvelleValeur
+      		stUnStyle.sMasque			= FormatVersMasque(vNouvelleValeur)
+      	cas AttributPoliceTaille		: stUnStyle.rPoliceTaille		= vNouvelleValeur
+      	cas AttributMasque				: stUnStyle.smasque				= vNouvelleValeur
+      	cas AttributPoliceFamille		: stUnStyle.sPoliceFamille		= vNouvelleValeur
+      FIN
+      
+      sClé=StyleVersClé(stUnStyle)
+      ns=TableauCherche(m_tabStyle,tcLinéaire,"sClé",sClé)
+      SI ns>0 ALORS 
+      	RENVOYER m_tabStyle[ns].nNum
+      SINON 
+      	stUnStyle.sClé=sClé
+      	//vérifier si d'autres cases ont ce style
+      	SI NbCasesAvecStyle(nFeuille,stUnStyle.nNum)>1 _ou_ stUnStyle.nNum=0 ALORS
+      		//créer un nouveau style
+      		m_nNumStyleMax++
+      		stUnStyle.nNum=m_nNumStyleMax
+      		tableauajoute(m_tabStyle,stUnStyle)
+      	SINON	//modifier le style
+      		ns=TableauCherche(m_tabStyle,tcLinéaire,"nNum",stUnStyle.nNum)
+      		si ns>0 alors m_tabStyle[ns]=stUnStyle
+      	FIN
+      	RENVOYER stUnStyle.nNum
+      fin
+     type : 458752
+   -
+     name : NbCasesAvecStyle
+     procedure_id : 2017694019229591605
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée comptant le nombre de cellule ayant un certain style. Utilisé dans StyleVersNumStyle.
+      Procédure prive NbCasesAvecStyle(nFeuille est un entier,nNumStyle est un entier,bLimité est un booleen = faux) : entier
+      n est un entier
+      si nFeuille<1 alors renvoyer 0
+      pour tout element stUneLigne de m_tabFeuille[nFeuille].tabLignes
+      	pour tout element stUneCellule de stUneLigne.tabCellules
+      		si stUneCellule.nNumStyle=nNumStyle alors 
+      			n++
+      			si bLimité _et_ n=2 alors renvoyer n	//pour ne pas faire toutes les cases pour rien
+      		FIN
+      	FIN
+      FIN
+      renvoyer n
+     type : 458752
+   -
+     name : VérifieNouvelleValeur
+     procedure_id : 2017694019229657141
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui vérifie si la valeur d'un attribut est dans la gamme acceptable de valeurs. Utilisé dans CelluleAttribut et CelluleBord.
+      Procédure privé VérifieNouvelleValeur(eValeurAChanger est un EExcelCelluleAttribut,xNouvelleValeur) : booleen
+      m_pclErreur.Raz()
+      
+      SELON eValeurAChanger
+      	CAS AttributCouleur			: SI 0<=xNouvelleValeur<16777216 ou xNouvelleValeur=-1 ALORS renvoyer vrai SINON m_pclErreur.AjouteErreur(<§$0004§>)
+      	CAS AttributCouleurFond		: SI 0<=xNouvelleValeur<16777216 OU xNouvelleValeur=-1 ALORS RENVOYER Vrai SINON m_pclErreur.AjouteErreur(<§$0004§>)
+      	CAS AttributPolice			: 
+      		
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ServiceWindows>
+      	SI Position(m_sPolicesInstallées,xNouvelleValeur,0,DepuisDébut+SansCasse+MotComplet)>0 ALORS 
+      		RENVOYER Vrai 
+      	SINON 
+      		m_pclErreur.AjouteErreur(<§$0020§>)
+      	fin
+      	
+      <sinon si CibleExécution=SiteLinux ou CibleExécution=SitePHP ou CibleExécution=WebserviceLinux ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	renvoyer vrai
+      	
+      <fin>
+      
+      		
+      	CAS AttributMultiligne		: SI xNouvelleValeur dans (-1,0,1) ALORS RENVOYER Vrai SINON m_pclErreur.AjouteErreur(<§$0008§>) 
+      	CAS AttributItalique		: SI xNouvelleValeur DANS (-1,0,1) ALORS RENVOYER Vrai SINON m_pclErreur.AjouteErreur(<§$0009§>) 
+      	CAS AttributGras			: si xNouvelleValeur DANS (-1,0,1) alors renvoyer vrai sinon m_pclErreur.AjouteErreur(<§$000a§>) 
+      	CAS AttributSouligné		: SI xNouvelleValeur dans (-1,0,1,2) ALORS RENVOYER Vrai SINON m_pclErreur.AjouteErreur(<§$000b§>) 
+      	cas AttributPoliceTaille	: si 3<xNouvelleValeur<73 ou xNouvelleValeur=-1 alors renvoyer vrai sinon m_pclErreur.AjouteErreur(<§$000d§>)
+      	cas AttributMasque			: renvoyer vrai 	//pas de test car chaine de caractères
+      	cas AttributFormule			: si xNouvelleValeur[[1]]="=" alors renvoyer vrai sinon m_pclErreur.AjouteErreur(<§$000e§>)
+      	cas AttributPoliceFamille	: SI xNouvelleValeur DANS ("Decorative","Modern","Roman","Script","Swiss") ALORS RENVOYER Vrai SINON m_pclErreur.AjouteErreur(<§$0021§>)
+      	cas AttributFusion			: renvoyer vrai 	//pas de test car juste cellule
+      FIN
+      renvoyer faux
+     type : 458752
+   -
+     name : StyleVide
+     procedure_id : 2017694019229722677
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée créant un style vide. Utilisé dans CelluleAttribut et CelluleBord
+      Procédure prive StyleVide()
+      stUnStyle est un stStyle
+      stUnStyle.nNum=0
+      stUnStyle.nPoliceCouleur=-1;stUnStyle.rPoliceTaille=-1
+      stUnStyle.sPoliceNom="";stUnStyle.sPoliceFamille=""
+      stUnStyle.eAligneVertical=EExcelCelluleAligneVertical.AlignementAucun
+      stUnStyle.eAligneHorizontal=EExcelCelluleAligneHorizontal.AlignementAucun
+      stUnStyle.rAngle=-1;stUnStyle.nExpoIndice=-1
+      stUnStyle.nItalique=-1;stUnStyle.nGras=-1;stUnStyle.nBarré=-1;stUnStyle.nSouligné=-1
+      stUnStyle.nFondCouleur=-1;stUnStyle.nFondPaterneCouleur=-1;stUnStyle.nMultiligne=-1
+      stUnStyle.sClé=StyleVersClé(stUnStyle)	//pour comparaison après
+      renvoyer stUnStyle
+     type : 458752
+   -
+     name : CelluleAttribut
+     procedure_id : 2017694019229788213
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode générique privée pour renvoyer la valeur d'un attribut ou le modifier. Est appelé par CelluleAlignementH, CelluleCouleur, CelluleCouleurFond, ...
+      Procédure privé CelluleAttribut(eAttribut est un EExcelCelluleAttribut,sCellules est une chaine,vNouvelleValeur = Null,eNouvelAlignement = Null)	//eNouvelAlignement uniquement quand eAttribut = AttributFormat
+      m_pclErreur.Raz()
+      
+      nLigneDébut,nLigneFin,nColonneDébut,nColonneFin,nc,nl,ns sont des entiers
+      sRes 		est une chaine
+      bLecture 	est un booleen = (MesParamètres..NbReçus=2)
+      
+      SI :m_nFeuilleEnCours>0 ALORS
+      	SI bLecture _ou_ VérifieNouvelleValeur(eAttribut,vNouvelleValeur) ALORS
+      		SI CoordonnéesVersPlage(sCellules,nLigneDébut,nLigneFin,nColonneDébut,nColonneFin,(PAS bLecture)) ALORS
+      			POUR nLigne = nLigneDébut _a_ nLigneFin
+      				SI bLecture _ET_ nLigne>nLigneDébut ALORS sRes+=RC
+      				nl=TableauCherche(m_tabFeuille[m_nFeuilleEnCours].tabLignes,tcLinéaire,"nNum",nLigne)
+      				SI nl>0 ALORS
+      					POUR nColonne = nColonneDébut _a_ nColonneFin
+      						SI bLecture _ET_ nColonne>nColonneDébut ALORS sRes+=TAB
+      						nc=TableauCherche(m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules,tcLinéaire,"nNum",nColonne)
+      						SI nc>0 ALORS
+      							SI m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].nNumStyle>0 ALORS ns=TableauCherche(m_tabStyle,tcLinéaire,"nNum",m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].nNumStyle) SINON ns=0
+      							SI bLecture ALORS
+      								SI ns>0 ALORS sRes+=m_tabStyle[ns].nPoliceCouleur
+      							SINON //écrire la valeur dans toutes les cellules
+      								ns=StyleVersNumStyle((ns>0 ? m_tabStyle[ns] SINON StyleVide()),eAttribut,vNouvelleValeur)
+      								m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].nNumStyle=ns
+      								selon eAttribut
+      									cas AttributFormat
+      										selon vNouvelleValeur 
+      											CAS FormatChaine
+      												m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].eType=EExcelCelluleType.TypeChaine
+      											CAS	FormatDate,FormatHeure,FormatDateHeure
+      												m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].eType=EExcelCelluleType.TypeDateHeure
+      											AUTRE CAS 
+      												m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].eType=EExcelCelluleType.TypeNumérique
+      										FIN
+      									cas AttributFusion
+      										si nLigne=nLigneDébut et nColonne=nColonneDébut alors
+      											si nColonneDébut<>nColonneFin 	alors m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].nFusionHorizontale	= nColonneFin-nColonneDébut
+      											si nLigneDébut<>nLigneFin		alors m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].nFusionVerticale	= nLigneFin-nLigneDébut
+      										sinon
+      											m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].bFusionnée=Vrai
+      										fin
+      								fin
+      							FIN
+      						FIN
+      					FIN
+      				SINON
+      					SI nColonneFin>nColonneDébut ALORS sRes+=ChaîneOccurrence(TAB,(nColonneFin-nColonneDébut-1))
+      				FIN
+      			FIN
+      			SI bLecture ALORS 
+      				RENVOYER sRes 
+      			SINON 
+      				m_bContenuModifié=vrai
+      				RENVOYER Vrai
+      			FIN
+      		SINON
+      			//le message d'erreur est déjà rempli par la fonction
+      		FIN
+      	SINON
+      		//le message d'erreur est déjà rempli par la fonction
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0022§>)
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : CelluleCouleurFond
+     procedure_id : 2017694019229853749
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de lire ou d'écrire la couleur de fond des cellules spécifiées dans la feuille de calcul en cours.
+      // Syntaxe : [ <Résultat> = ] CelluleCouleurFond (<sCellules> est chaîne [, <nNouvelleCouleur> est entier])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      // 	nNouvelleCouleur (entier optionnel) : Entier représentant la couleur à appliquer aux cellules spécifiées. Si omis, la méthode est en mode lecture et retourne la couleur de fond des cellules.
+      // Valeur de retour : Type indéterminé : En mode lecture, retourne la couleur de fond des cellules spécifiées sous forme d'entier (code couleur). En mode écriture, retourne Vrai si l'écriture a réussi, Faux sinon.
+      // Exemple :
+      //
+      Procédure CelluleCouleurFond(sCellules est une chaine,nNouvelleCouleur est un entier = -1)
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributCouleurFond,sCellules) sinon CelluleAttribut(AttributCouleurFond,sCellules,nNouvelleCouleur))
+     type : 458752
+   -
+     name : CelluleFormatExcel
+     procedure_id : 2017694019229919285
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de lire ou d'écrire le format des cellules spécifiées dans la feuille de calcul en cours.
+      // Syntaxe : [ <Résultat> = ] CelluleFormatExcel (<sCellules> est chaîne [, <eNouveauFormat> est cFichierExcel.EExcelCelluleFormat])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      //	eNouveauFormat (cFichierExcel.EExcelCelluleFormat) : représente le nouveau format à appliquer aux cellules spécifiées. Si omis, la méthode est en mode lecture et retourne le format actuel des cellules.
+      // Valeur de retour : Type indéterminé : En mode lecture, retourne le format actuel des cellules spécifiées sous forme de l'énumération EExcelCelluleFormat. En mode écriture, retourne Vrai si l'écriture a réussi, Faux sinon.
+      // Exemple :
+      //
+      Procédure CelluleFormatExcel(sCellules est une chaine, eNouveauFormat est un EExcelCelluleFormat = EExcelCelluleFormat.Formatpardéfaut)
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributFormat,sCellules) sinon CelluleAttribut(AttributFormat,sCellules,eNouveauFormat))
+     type : 458752
+   -
+     name : FormatRubriqueWxVersExcel
+     procedure_id : 2017694019230050357
+     type_code : 12
+     code : |1-
+      // Résumé : Effectue la conversion d'un format de rubrique WinDev vers le format correspondant dans Microsoft Excel. Elle retourne le format de cellule Excel ainsi que l'alignement horizontal associé.
+      // Syntaxe :[ <Résultat> = ] FormatRubriqueWxVersExcel (<nFormatRubriqueWD> est entier)
+      // Paramètres :
+      //	nFormatRubriqueWD (entier) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      // Valeur de retour : multi-valeur : La première composante du tuple représente le format de cellule Excel sous forme de l'énumération EExcelCelluleFormat. La deuxième composante du tuple représente l'alignement horizontal de la cellule Excel sous forme de l'énumération EExcelCelluleAligneHorizontal.
+      // Exemple :
+      //
+      Procédure global FormatRubriqueWxVersExcel(nFormatRubriqueWD est un entier) : (EExcelCelluleFormat,EExcelCelluleAligneHorizontal)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nFormatRubriqueWD)
+      
+      SELON nFormatRubriqueWD
+      	CAS hRubCaractère,hRubMémoTexte,hRubMémoUnicode,hRubTexte,hRubTexteUnicode,hRubDurée 	: RENVOYER (EExcelCelluleFormat.FormatChaine,AlignementGauche)
+      	CAS	hRubBooléen			: RENVOYER (EExcelCelluleFormat.FormatChaine,AlignementCentre)
+      	CAS hRubEntier1,hRubEntier2,hRubEntier4,hRubEntier8,hRubIdAuto,hRubIdAuto4,hRubNumEnr	: RENVOYER (EExcelCelluleFormat.FormatNumérique,AlignementDroite)
+      	CAS hRubEntierNonSigné1,hRubEntierNonSigné2,hRubEntierNonSigné4,hRubEntierNonSigné8		: RENVOYER (EExcelCelluleFormat.FormatNumérique,AlignementDroite)
+      	CAS hRubRéel4,hRubRéel8,hRubRéelTurbo 	: RENVOYER (EExcelCelluleFormat.FormatComptabilité,AlignementDroite)
+      	CAS hRubNumérique 		: RENVOYER (EExcelCelluleFormat.FormatScientifique,AlignementDroite)
+      	CAS hRubHeure 			: RENVOYER (EExcelCelluleFormat.FormatHeure,AlignementGauche)
+      	CAS hRubDate6,hRubDate8	: RENVOYER (EExcelCelluleFormat.FormatDate,AlignementGauche)
+      	CAS hRubDateHeure		: RENVOYER (EExcelCelluleFormat.FormatDateHeure,AlignementGauche)
+      	CAS hRubMonétaire 		: RENVOYER (EExcelCelluleFormat.FormatMonétaire,AlignementDroite)
+      	AUTRE CAS 				: ErreurDéclenche(ErreurDeExcel,<§$0025§>)
+      FIN
+      RENVOYER (EExcelCelluleFormat.FormatParDéfaut,EExcelCelluleAligneHorizontal.AlignementAucun)
+     type : 458752
+   -
+     name : CelluleGras
+     procedure_id : 2017694019230115893
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de définir ou récupérer le style gras d'une cellule dans Microsoft Excel. Elle retourne la valeur actuelle du style gras de la cellule.
+      // Syntaxe : [ <Résultat> = ] CelluleGras (<sCellules> est chaîne [, <eAttributGras> est cFichierExcel.EExcelCelluleFormatValeur])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      //	eAttributGras (cFichierExcel.EExcelCelluleFormatValeur optionnel) : Paramètre optionnel spécifiant la valeur du style gras à appliquer à la cellule. La valeur par défaut est ParDéfaut.
+      // Valeur de retour : Type indéterminé : En lecture, retourne la valeur actuelle du style gras de la cellule spécifiée par sCellules. En écriture, renvoie Vrai si l'opération réussit, sinon Faux.
+      // Exemple :
+      //
+      Procédure CelluleGras(sCellules est une chaine,eAttributGras est un EExcelCelluleFormatValeur = ParDéfaut)
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributGras,sCellules) SINON CelluleAttribut(AttributGras,sCellules,eAttributGras..valeur))
+     type : 458752
+   -
+     name : CelluleSouligné
+     procedure_id : 2017694019230181429
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de définir ou récupérer le style souligné d'une cellule dans Microsoft Excel. Elle retourne la valeur actuelle du style souligné de la cellule.
+      // Syntaxe : [ <Résultat> = ] CelluleSouligné (<sCellules> est chaîne [, <eTypeSouligné> est cFichierExcel.EExcelCelluleFormatValeur])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      //	eTypeSouligné (cFichierExcel.EExcelCelluleFormatValeur optionnel) : spécifie la valeur du style souligné à appliquer à la cellule. La valeur par défaut
+      // Valeur de retour : Type indéterminé : En lecture, retourne la valeur actuelle du style souligné de la cellule spécifiée par sCellules. En écriture, renvoie Vrai si l'opération réussit, sinon Faux.
+      // Exemple :
+      //
+      Procédure CelluleSouligné(sCellules est une chaine,eTypeSouligné est un EExcelCelluleFormatValeur = ParDéfaut)
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributSouligné,sCellules) SINON CelluleAttribut(AttributSouligné,sCellules,eTypeSouligné..Valeur))
+     type : 458752
+   -
+     name : CelluleItalique
+     procedure_id : 2017694019230246965
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de définir ou récupérer le style italique d'une cellule dans Microsoft Excel. Elle retourne la valeur actuelle du style italique de la cellule.
+      // Syntaxe : [ <Résultat> = ] CelluleItalique (<sCellules> est chaîne [, <eTypeItalique> est cFichierExcel.EExcelCelluleFormatValeur])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      //	eTypeItalique (cFichierExcel.EExcelCelluleFormatValeur optionnel) : spécifiant la valeur du style italique à appliquer à la cellule. La valeur par défaut est ParDéfaut.
+      // Valeur de retour : Type indéterminé : En lecture, retourne la valeur actuelle du style italique de la cellule spécifiée par sCellules. En écriture, renvoie Vrai si l'opération réussit, sinon Faux.
+      // Exemple :
+      //
+      Procédure CelluleItalique(sCellules est une chaine,eTypeItalique est un EExcelCelluleFormatValeur = ParDéfaut)
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributItalique,sCellules) SINON CelluleAttribut(AttributItalique,sCellules,eTypeItalique..valeur))
+     type : 458752
+   -
+     name : CelluleMultiligne
+     procedure_id : 2017694019230312501
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de définir ou récupérer l'attribut de texte multiligne d'une cellule dans Microsoft Excel. Elle retourne la valeur actuelle de l'attribut multiligne de la cellule.
+      // Syntaxe : [ <Résultat> = ] CelluleMultiligne (<sCellules> est chaîne [, <nAttributMultiligne> est entier])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      // 	nAttributMultiligne (entier optionnel) : spécifiant l'attribut multiligne à appliquer à la cellule. La valeur par défaut est -1.
+      // Valeur de retour : Type indéterminé : En lecture, retourne la valeur actuelle de l'attribut multiligne de la cellule spécifiée par sCellules. En écriture, renvoie Vrai si l'opération réussit, sinon Faux.
+      // Exemple :
+      //
+      Procédure CelluleMultiligne(sCellules est une chaine,nAttributMultiligne est un entier = -1)
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributMultiligne,sCellules) SINON CelluleAttribut(AttributMultiligne,sCellules,nAttributMultiligne))
+     type : 458752
+   -
+     name : FeuilleNom
+     procedure_id : 2017694019230378037
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de récupérer ou de définir le nom d'une feuille dans un classeur Excel. Elle retourne le nom actuel de la feuille ou modifie le nom de la feuille selon la valeur spécifiée.
+      // Syntaxe : [ <Résultat> = ] FeuilleNom (<nNumFeuille> est entier [, <sNouveauNom> est chaîne])
+      // Paramètres :
+      //	nNumFeuille (entier) : Numéro de la feuille dont on souhaite récupérer ou définir le nom.
+      //	sNouveauNom (chaîne UNICODE optionnel) : Si ce paramètre est fourni, la méthode tente de renommer la feuille avec ce nouveau nom. La valeur par défaut est une chaîne vide ("").
+      // Valeur de retour : Type indéterminé : En lecture, retourne le nom actuel de la feuille spécifiée par nNumFeuille. En écriture, renvoie Vrai si l'opération réussit, sinon Faux.
+      // Exemple :
+      //
+      Procédure FeuilleNom(nNumFeuille est un entier,sNouveauNom est une chaine = "")
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nNumFeuille,sNouveauNom)
+      m_pclErreur.Raz()
+      
+      nf est un entier = FeuilleTrouve(nNumFeuille)
+      si nf>0 alors
+      	si MesParamètres..NbReçus=1 alors 
+      		renvoyer m_tabFeuille[nf].sNom 
+      	sinon 
+      		si FeuilleNomCorrect(sNouveauNom) alors m_tabFeuille[nf].sNom=sNouveauNom;renvoyer vrai
+      	FIN
+      sinon
+      	m_pclErreur.AjouteErreur(<§$0012§>)
+      	SI MesParamètres..NbReçus=1 alors renvoyer ""
+      fin
+      RENVOYER Faux
+     type : 458752
+   -
+     name : NumColonneVersLettre
+     procedure_id : 2017694019230443573
+     type_code : 12
+     code : |1-
+      // Résumé : Convertit le numéro d'une colonne en lettre correspondante selon le format du fichier Excel spécifié.
+      // Syntaxe : [ <Résultat> = ] NumColonneVersLettre (<nNuméro> est entier, <eFormat> est cFichierExcel.EExcelFormat)
+      // Paramètres :
+      //	nNuméro (entier) : Numéro de la colonne à convertir en lettre.
+      //	eFormat (cFichierExcel.EExcelFormat) : Format du fichier Excel. Il peut être FichierXLS, FichierXLSX, ou FichierXML. Permet de vérifier que le numéro de colonne est dans la limite acceptable.
+      // Valeur de retour : chaîne UNICODE : La lettre correspondante à la colonne spécifiée par le numéro. Si le numéro de colonne dépasse la capacité du format Excel spécifié, la méthode génère une erreur et renvoie une chaîne vide ("").
+      // Exemple :
+      //
+      Procédure GLOBAL NumColonneVersLettre(local nNuméro est un entier,eFormat est un EExcelFormat) : chaine
+      SELON eFormat
+      	CAS FichierXLS 				: SI nNuméro>_nbMaxColonneXLS ALORS ErreurDéclenche(ErreurDeExcel,<§$0026§>);RENVOYER ""
+      	CAS FichierXLSX,FichierXML	: SI nNuméro>_nbMaxColonneXLSX ALORS ErreurDéclenche(ErreurDeExcel,<§$0027§>);RENVOYER ""
+      FIN
+      sRes est une chaine
+      nRes est un entier
+      pour i = 3 a 0 pas -1
+      	nRes=PartieEntière(nNuméro/Puissance(26,i))
+      	si nRes>0 alors sRes+=cGénérique._LettresMajuscules[[nRes]];nNuméro-=nRes*Puissance(26,i)
+      FIN
+      renvoyer sRes
+     type : 458752
+   -
+     name : LettreVersNumColonne
+     procedure_id : 2017694019230509109
+     type_code : 12
+     code : |1-
+      // Résumé : Convertit une lettre représentant une colonne en son numéro correspondant, en tenant compte du format du fichier Excel spécifié.
+      // Syntaxe : [ <Résultat> = ] LettreVersNumColonne (<sNuméro> est chaîne, <eFormat> est cFichierExcel.EExcelFormat)
+      // Paramètres :
+      //	sNuméro (chaîne UNICODE) : La lettre représentant la colonne à convertir en numéro.
+      //	eFormat (cFichierExcel.EExcelFormat) : Format du fichier Excel. Il peut être FichierXLS, FichierXLSX, ou FichierXML. Permet de vérifier que le numéro de colonne est dans la limite acceptable.
+      // Valeur de retour : entier : Le numéro de la colonne correspondant à la lettre spécifiée. Si une erreur se produit pendant la conversion, la méthode génère une erreur et renvoie 0.
+      // Exemple :
+      //
+      Procédure globale LettreVersNumColonne(sNuméro est une chaine,eFormat est un EExcelFormat) : entier
+      n,nRes,p sont des entiers
+      si sNuméro="" alors renvoyer 0
+      POUR nCaract = Taille(sNuméro) _a_ 1 pas -1
+      	p=Position(cGénérique._LettresMajuscules,sNuméro[[nCaract]])
+      	si p>0 alors 
+      		nRes+=Puissance(26,n)*p;n++
+      	sinon
+      		ErreurDéclenche(ErreurDeExcel,ChaîneConstruit(<§$0023§>,sNuméro[[nCaract]]));renvoyer 0
+      	FIN
+      FIN
+      SELON eFormat
+      	CAS FichierXLS 				: SI nRes>_nbMaxColonneXLS ALORS ErreurDéclenche(ErreurDeExcel,ChaîneConstruit("Le numéro de colonne (%1) dépasse les capacités du format XLS (%2)",nRes,_nbMaxColonneXLSX));RENVOYER 0
+      	CAS FichierXLSX,FichierXML	: SI nRes>_nbMaxColonneXLSX ALORS ErreurDéclenche(ErreurDeExcel,ChaîneConstruit("Le numéro de colonne (%1) dépasse les capacités du format XLSX (%2)",nRes,_nbMaxColonneXLSX));RENVOYER 0
+      FIN
+      renvoyer nRes
+     type : 458752
+   -
+     name : FeuilleNomCorrect
+     procedure_id : 2017694019230574645
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée permettant de vérifier s'il y a des caractères interdits dans le nom de la feuille. Utilisé dans FeuilleAjoute et FeuilleNom.
+      Procédure prive FeuilleNomCorrect(sNomFeuille) : booleen
+      m_pclErreur.Raz()
+      SI sNomFeuille="" ALORS m_pclErreur.AjouteErreur(<§$000f§>);RENVOYER faux
+      SI Taille(sNomFeuille)>31 ALORS m_pclErreur.AjouteErreur(<§$0010§>);RENVOYER Faux
+      POUR i=1 _a_ taille(sNomFeuille)
+      	SI Position("\/?*[]",sNomFeuille[[i]]) ALORS m_pclErreur.AjouteErreur(<§$0011§>+sNomFeuille[[i]]);RENVOYER Faux
+      FIN
+      renvoyer vrai
+     type : 458752
+   -
+     name : CelluleAlignementH
+     procedure_id : 2017694019230640181
+     type_code : 12
+     code : |1-
+      // Résumé :Permet de récupérer ou définir l'alignement horizontal des cellules spécifiées dans une plage.
+      // Syntaxe : [ <Résultat> = ] CelluleAlignementH (<sCellules> est chaîne [, <eAttributAligmenent> est cFichierExcel.EExcelCelluleAligneHorizontal])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      //	eAttributAligmenent (cFichierExcel.EExcelCelluleAligneHorizontal optionnel) : L'alignement horizontal à appliquer aux cellules.
+      // Valeur de retour : Type indéterminé : En lecture, renvoie la valeur de l'attribut d'alignement horizontal des cellules spécifiées. En écriture, renvoie Vrai si la modification a réussi, sinon Faux.
+      // Exemple :
+      //
+      Procédure CelluleAlignementH(sCellules est une chaine,eAttributAligmenent est un EExcelCelluleAligneHorizontal = EExcelCelluleAligneHorizontal.AlignementAucun)
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributAlignementH,sCellules) SINON CelluleAttribut(AttributAlignementH,sCellules,eAttributAligmenent..valeur))
+     type : 458752
+   -
+     name : StyleParDéfaut
+     procedure_id : 2017694019230705717
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée permettant de renvoyer une structure de style par défaut. Utilisée dans Ouvre, ÉcritTout et StyleVersClé.
+      Procédure prive StyleParDéfaut() : ststyle
+      stUnStyle est un stStyle
+      stUnStyle.nNum=0;stUnStyle.sNom="Normal";stUnStyle.sParent=""
+      stUnStyle.nPoliceCouleur=noir;stUnStyle.rPoliceTaille=m_nTailleCaractèreDéfaut
+      stUnStyle.sPoliceNom="Calibri";stUnStyle.sPoliceFamille="Swiss"
+      stUnStyle.eAligneVertical=AlignementBas
+      stUnStyle.eAligneHorizontal=EExcelCelluleAligneHorizontal.AlignementAucun
+      stUnStyle.rAngle=-1;stUnStyle.nExpoIndice=-1
+      stUnStyle.nItalique=-1;stUnStyle.nGras=-1;stUnStyle.nBarré=-1;stUnStyle.nSouligné=-1
+      stUnStyle.nFondCouleur=-1;stUnStyle.nFondPaterneCouleur=-1;stUnStyle.nMultiligne=-1
+      stUnStyle.sClé=StyleVersClé(stUnStyle)	//pour comparaison après
+      RENVOYER stUnStyle
+     type : 458752
+   -
+     name : CelluleAlignementV
+     procedure_id : 2017694019230771253
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de récupérer ou définir l'alignement vertical des cellules spécifiées dans une plage.
+      // Syntaxe : [ <Résultat> = ] CelluleAlignementV (<sCellules> est chaîne [, <eAttributAligmenent> est cFichierExcel.EExcelCelluleAligneVertical])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      //	eAttributAligmenent (cFichierExcel.EExcelCelluleAligneVertical optionnel) : L'alignement vertical à appliquer aux cellules.
+      // Valeur de retour : Type indéterminé : En lecture, renvoie la valeur de l'attribut d'alignement vertical des cellules spécifiées. En écriture, renvoie Vrai si la modification a réussi, sinon Faux.
+      // Exemple :
+      //
+      Procédure CelluleAlignementV(sCellules est une chaine,eAttributAligmenent est un EExcelCelluleAligneVertical = EExcelCelluleAligneVertical.AlignementAucun)
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributAlignementv,sCellules) SINON CelluleAttribut(AttributAlignementv,sCellules,eAttributAligmenent..valeur))
+     type : 458752
+   -
+     name : ColonneLargeur
+     procedure_id : 2017694019230836789
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de récupérer ou définir la largeur d'une colonne dans une feuille de calcul Excel.
+      // Syntaxe : [ <Résultat> = ] ColonneLargeur (<sColonne> est chaîne, <rLargeur> est réel)
+      // Paramètres :
+      //	sColonne (chaîne UNICODE) : La lettre de la colonne ou le numéro de colonne (sous forme de chaîne) dont on veut obtenir ou définir la largeur.
+      //	rLargeur (réel) : La nouvelle largeur de la colonne à définir (en points).
+      // Valeur de retour : entier : En lecture, renvoie la largeur de la colonne spécifiée. En écriture, renvoie Vrai si la modification a réussi, sinon Faux.
+      // Exemple :
+      //
+      Procédure ColonneLargeur(sColonne est une chaine,rLargeur est un réel) : entier
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sColonne,rLargeur)
+      m_pclErreur.Raz()
+      
+      SI m_nFeuilleEnCours>0 ALORS
+      	bLecture est un booleen 	= (MesParamètres..NbReçus=1)
+      	nNumColonne est un entier 	= (EstNumérique(sColonne) ? Val(sColonne) SINON LettreVersNumColonne(sColonne,m_eFormat))
+      	si nNumColonne>0 alors
+      		nNumColonne=tableaucherche(m_tabFeuille[m_nFeuilleEnCours].tabColonnes,tcLinéaire,"nOrdre",nNumColonne)
+      		si nNumColonne>0 alors
+      			si bLecture alors 
+      				renvoyer m_tabFeuille[m_nFeuilleEnCours].tabColonnes[nNumColonne].rLargeur*m_rXL_DivLargeur*m_rXL_DivLargeur
+      			sinon
+      				m_tabFeuille[m_nFeuilleEnCours].tabColonnes[nNumColonne].rLargeur=rLargeur/m_rXL_DivLargeur/m_rXL_DivLargeur
+      				renvoyer vrai
+      			FIN
+      		sinon
+      			m_pclErreur.AjouteErreur(<§$0001§>+sColonne)
+      			SI bLecture ALORS RENVOYER Faux	
+      		FIN
+      	sinon
+      		si bLecture alors renvoyer faux	//message déjà dans la fonction appelée
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0022§>)
+      FIN
+      RENVOYER -1
+     type : 458752
+   -
+     name : LigneHauteurAuto
+     procedure_id : 2017694019230902325
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de récupérer ou définir l'attribut "hauteur ajustée" d'une ligne dans une feuille de calcul Excel.
+      // Syntaxe : [ <Résultat> = ] LigneHauteurAuto (<nLigne> est entier, <bAttributHauteurAuto> est booléen)
+      // Paramètres :
+      //	nLigne (entier) : Le numéro de la ligne dont on veut obtenir ou définir l'attribut "hauteur automatique".
+      //	bAttributHauteurAuto (booléen) : La nouvelle valeur de l'attribut "hauteur automatique" à définir (Vrai pour activer, Faux pour désactiver).
+      // Valeur de retour : Type indéterminé : En lecture, renvoie la valeur de l'attribut "hauteur ajustée" de la ligne spécifiée. En écriture, renvoie Vrai si la modification a réussi, sinon Faux.
+      // Exemple :
+      //
+      Procédure LigneHauteurAuto(nLigne est un entier,bAttributHauteurAuto est un booleen)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nLigne,bAttributHauteurAuto)
+      m_pclErreur.Raz()
+      
+      SI m_nFeuilleEnCours>0 ALORS
+      	bLecture est un booleen = (MesParamètres..NbReçus=1)
+      	nNumLigne est un entier = TableauCherche(:m_tabFeuille[m_nFeuilleEnCours].tabLignes,tcLinéaire,"nNum",nLigne)
+      	SI nNumLigne>0 ALORS
+      		SI bLecture ALORS 
+      			RENVOYER m_tabFeuille[m_nFeuilleEnCours].tabLignes[nNumLigne].nHauteurAjustée
+      		sinon
+      			m_tabFeuille[m_nFeuilleEnCours].tabLignes[nNumLigne].nHauteurAjustée=bAttributHauteurAuto;renvoyer vrai
+      		FIN
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0002§>+nLigne)
+      		SI bLecture ALORS RENVOYER faux
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0022§>)
+      FIN
+      RENVOYER -1	
+     type : 458752
+   -
+     name : CellulePoliceTaille
+     procedure_id : 2017694019230967861
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de récupérer ou définir la taille de la police d'une cellule dans une feuille de calcul Excel.
+      // Syntaxe : [ <Résultat> = ] CellulePoliceTaille (<sCellules> est chaîne [, <nNouvelleTaille> est entier])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      // 	nNouvelleTaille (entier optionnel) : La nouvelle taille de la police à définir. Si non spécifié (-1 par défaut)
+      // Valeur de retour : Type indéterminé : En lecture, renvoie la taille actuelle de la police de la cellule spécifiée. En écriture, renvoie Vrai si la modification a réussi, sinon Faux.
+      // Exemple :
+      //
+      Procédure CellulePoliceTaille(sCellules est une chaine,nNouvelleTaille est un entier = -1)
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributPoliceTaille,sCellules) SINON CelluleAttribut(AttributPoliceTaille,sCellules,nNouvelleTaille))
+     type : 458752
+   -
+     name : CelluleMasque
+     procedure_id : 2017694019231033397
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de récupérer ou définir le masque de cellule dans une feuille de calcul Excel.
+      // Syntaxe : [ <Résultat> = ] CelluleMasque (<sCellules> est chaîne [, <nNouveauMasque> est chaîne])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      // 	nNouveauMasque (chaîne UNICODE optionnel) : Le nouveau masque à définir. Si non spécifié, la méthode est en mode lecture.
+      // Valeur de retour : Type indéterminé : En lecture, renvoie le masque actuel de la cellule spécifiée. En écriture, renvoie Vrai si la modification a réussi, sinon Faux.
+      // Exemple :
+      //
+      Procédure CelluleMasque(sCellules est une chaine,nNouveauMasque est une chaine = null)
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributMasque,sCellules) SINON CelluleAttribut(AttributMasque,sCellules,nNouveauMasque))
+     type : 458752
+   -
+     name : CelluleFormule
+     procedure_id : 2017694019231098933
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de récupérer ou définir la formule d'une cellule dans une feuille de calcul Excel.
+      // Syntaxe : [ <Résultat> = ] CelluleFormule (<sCellules> est chaîne [, <sNouvelleFormule> est chaîne])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      //	sNouvelleFormule (chaîne UNICODE) : La nouvelle formule à définir. Si non spécifiée, la méthode est en mode lecture.
+      // Valeur de retour : Type indéterminé : En lecture, renvoie la formule actuelle de la cellule spécifiée. En écriture, renvoie Vrai si la modification a réussi, sinon Faux. 
+      // Exemple :
+      //
+      Procédure CelluleFormule(sCellules est une chaine,sNouvelleFormule est une chaine = "")
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCellules,sNouvelleFormule)
+      m_pclErreur.Raz()
+      
+      nLigneDébut,nLigneFin,nColonneDébut,nColonneFin,nc,nl sont des entiers
+      sRes est une chaine
+      bLecture est un booleen = (MesParamètres..NbReçus=1)
+      
+      SI m_nFeuilleEnCours>0 ALORS
+      	SI CoordonnéesVersPlage(sCellules,nLigneDébut,nLigneFin,nColonneDébut,nColonneFin,(PAS bLecture)) ALORS
+      		POUR nLigne = nLigneDébut _a_ nLigneFin
+      			SI bLecture _ET_ nLigne>nLigneDébut ALORS sRes+=RC
+      			nl=TableauCherche(m_tabFeuille[m_nFeuilleEnCours].tabLignes,tcLinéaire,"nNum",nLigne)
+      			SI nl>0 ALORS
+      				POUR nColonne = nColonneDébut _a_ nColonneFin
+      					SI bLecture _ET_ nColonne>nColonneDébut ALORS sRes+=TAB
+      					nc=TableauCherche(m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules,tcLinéaire,"nNum",nColonne)
+      					SI nc>0 ALORS
+      						SI bLecture ALORS
+      							sRes+=[tab]+m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].sFormule
+      						SINON //écrire la valeur dans toutes les cellules
+      							m_tabFeuille[m_nFeuilleEnCours].tabLignes[nl].tabCellules[nc].sFormule=sNouvelleFormule
+      						FIN
+      					FIN
+      				FIN
+      			SINON
+      				SI bLecture _Et_ nColonneFin>nColonneDébut ALORS sRes+=ChaîneOccurrence(TAB,(nColonneFin-nColonneDébut-1))
+      			FIN
+      		FIN
+      		SI bLecture ALORS RENVOYER sRes SINON m_bContenuModifié=Vrai;RENVOYER Vrai
+      	SINON
+      		//le message d'erreur est déjà rempli par la fonction
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0022§>)
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : CellulePolice
+     procedure_id : 2017694019231164469
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de récupérer ou définir le nom de la police d'une cellule dans une feuille de calcul Excel.
+      // Syntaxe : [ <Résultat> = ] CellulePolice (<sCellules> est chaîne [, <sNouvellePolice> est chaîne])
+      //
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      //	sNouvellePolice (chaîne UNICODE) : Le nouveau nom de la police à définir. Si non spécifié, la méthode est en mode lecture.
+      // Valeur de retour : Type indéterminé : En lecture, renvoie le nom de la police actuelle de la cellule spécifiée. En écriture, renvoie Vrai si la modification a réussi, sinon Faux.
+      // Exemple :
+      //
+      Procédure CellulePolice(sCellules est une chaîne,sNouvellePolice est une chaine="")
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributPolice,sCellules) SINON CelluleAttribut(AttributPolice,sCellules,sNouvellePolice))
+     type : 458752
+   -
+     name : CellulePoliceFamille
+     procedure_id : 2017694019231230005
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de récupérer ou définir la famille de police d'une cellule dans une feuille de calcul Excel.
+      // Syntaxe : [ <Résultat> = ] CellulePoliceFamille (<sCellules> est chaîne [, <sNouvellePoliceFamille> est chaîne])
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      //	sNouvellePoliceFamille (chaîne UNICODE) : La nouvelle famille de police à définir. Si non spécifié, la méthode est en mode lecture.
+      // Valeur de retour : Type indéterminé : En lecture, renvoie la famille de police actuelle de la cellule spécifiée. En écriture, renvoie Vrai si la modification a réussi, sinon Faux.
+      // Exemple :
+      //
+      Procédure CellulePoliceFamille(sCellules est une chaîne,sNouvellePoliceFamille est une chaine="")
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributPolicefamille,sCellules) SINON CelluleAttribut(AttributPoliceFamille,sCellules,sNouvellePoliceFamille))
+     type : 458752
+   -
+     name : CelluleFusion
+     procedure_id : 2017694019231295541
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de fusionner ou de lire l'état de fusion d'une plage de cellules dans une feuille de calcul Excel.
+      // Syntaxe : [ <Résultat> = ] CelluleFusion (<sCelluleDépart> est chaîne [, <sCelluleArrivée> est chaîne])
+      // Paramètres :
+      //	sCelluleDépart (chaîne UNICODE) : Les coordonnées de la cellule de départ de la plage à fusionner, sous la forme "A1".
+      //	sCelluleArrivée (chaîne UNICODE) : Les coordonnées de la cellule d'arrivée de la plage à fusionner, sous la forme "B2". Si non spécifié, la méthode est en mode lecture.
+      // Valeur de retour : booléen : En lecture, renvoie Vrai si la plage de cellules est fusionnée, sinon Faux. En écriture, renvoie Vrai si la fusion a réussi, sinon Faux.
+      // Exemple :
+      //
+      Procédure CelluleFusion(sCelluleDépart est une chaîne,sCelluleArrivée est une chaine="")
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributFusion,sCelluleDépart) SINON CelluleAttribut(AttributFusion,sCelluleDépart+":"+sCelluleArrivée,sCelluleArrivée))
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 2017728507850174289
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui permet de mettre à 0 les variables liées à un fichier Excel
+      PROCEDURE PRIVÉE Raz()
+      m_pclFichier.RAZ()
+      TableauSupprimeTout(m_tabStyle)
+      TableauSupprimeTout(m_tabFeuille)
+      m_nNumStyleMax		= 62
+      m_bContenuModifié	= Faux
+      m_nFeuilleEnCours	= 0
+     type : 458752
+   -
+     name : CelluleFormatVariableWx
+     procedure_id : 1222471984898578386
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de gérer le format des cellules selon les constantes de WinDev (ex:wlChaîne).
+      // Syntaxe : [ <Résultat> = ] CelluleFormatVariableWx (<sCellules> est chaîne, <nFormatVariable> est entier)
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      //	nFormatVariable (entier) : Variable entière représentant le format à appliquer aux cellules (ex:wlChaîne).
+      // Valeur de retour : Type indéterminé : En lecture, renvoie le format actuel des cellules. En écriture, renvoie Vrai si l'opération de formatage a réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE CelluleFormatVariableWx(sCellules est une chaîne, nFormatVariable est un entier)
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributFormat,sCellules) SINON CelluleAttribut(AttributFormat,sCellules,FormatVariableWxVersExcel(nFormatVariable)))
+     type : 458752
+   -
+     name : CelluleFormatRubriqueWx
+     procedure_id : 1222472113747693628
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de gérer le format des cellules selon les noms de rubriques de WinDev (ex:hRubTexte).
+      // Syntaxe : [ <Résultat> = ] CelluleFormatRubriqueWx (<sCellules> est chaîne, <nFormatRubrique> est entier)
+      // Paramètres :
+      //	sCellules (chaîne UNICODE) : Les coordonnées de la cellule sous la forme "A1" ou "B2:C4" (plage de cellules).
+      //	nFormatRubrique (entier) : Variable entière représentant le format de rubrique à appliquer aux cellules (ex:hRubTexte).
+      // Valeur de retour : Type indéterminé : En lecture, renvoie le format actuel des cellules. En écriture, renvoie Vrai si l'opération de formatage a réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE CelluleFormatRubriqueWx(sCellules est une chaîne, nFormatRubrique est un entier)
+      RENVOYER (MesParamètres..NbReçus=1 ? CelluleAttribut(AttributFormat,sCellules) SINON CelluleAttribut(AttributFormat,sCellules,FormatRubriqueWxVersExcel(nFormatRubrique)))
+     type : 458752
+   -
+     name : FormatVariableWxVersExcel
+     procedure_id : 1222472234006870986
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de convertir un format de variable WinDev (ex:wlChaîne) en un format de cellule Excel compatible.
+      // Syntaxe : [ <Résultat> = ] FormatVariableWxVersExcel (<nFormatRubriqueWD> est entier)
+      // Paramètres :
+      //	nFormatRubriqueWD (entier) : Représente le format de rubrique WinDev à convertir.
+      // Valeur de retour : multi-valeur : Première valeur : Format de cellule Excel correspondant au format de variable WinDev. Deuxième valeur : Alignement horizontal de la cellule Excel correspondant au format de variable WinDev.
+      // Exemple :
+      //
+      PROCEDURE global FormatVariableWxVersExcel(nFormatRubriqueWD est un entier) : (EExcelCelluleFormat,EExcelCelluleAligneHorizontal)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nFormatRubriqueWD)
+      
+      SELON nFormatRubriqueWD
+      	CAS wlCaractère,wlChaîne,wlChaîneUnicode,wlChaîneAnsi,wlChaîneASCIIZ,wlChaîneFixe,wlChaînePascal : RENVOYER (EExcelCelluleFormat.FormatChaine,AlignementDroite)
+      	CAS wlBooléen,wlEntierSansSigne_1 À wlEntier_8,wlHandle	: RENVOYER (EExcelCelluleFormat.FormatNumérique,AlignementGauche)
+      	CAS wlNumérique 	: RENVOYER (EExcelCelluleFormat.FormatScientifique,AlignementGauche)
+      	CAS wldurée 		: RENVOYER (EExcelCelluleFormat.Formatdurée,AlignementDroite)
+      	CAS wlHeure 		: RENVOYER (EExcelCelluleFormat.FormatHeure,AlignementDroite)
+      	CAS wlDate			: RENVOYER (EExcelCelluleFormat.FormatDate,AlignementDroite)
+      	CAS wlDateHeure		: RENVOYER (EExcelCelluleFormat.FormatDateHeure,AlignementDroite)
+      	CAS wlMonétaire 	: RENVOYER (EExcelCelluleFormat.FormatMonétaire,AlignementGauche)
+      	CAS wlRéel,wlRéel_4 : RENVOYER (EExcelCelluleFormat.FormatComptabilité,AlignementGauche)
+      	AUTRE CAS 			: ErreurDéclenche(ErreurDeExcel,<§$0025§>)
+      FIN
+      RENVOYER (EExcelCelluleFormat.FormatParDéfaut,EExcelCelluleAligneHorizontal.AlignementAucun)
+     type : 458752
+   -
+     name : FormatVersMasque
+     procedure_id : 1222472611964015155
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui renvoie le masque Excel selon le format de cellule. Utilisé dans StyleVersNumStyle.
+      PROCEDURE privée FormatVersMasque(nFormat est un entier) : chaîne
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nFormat)
+      
+      SELON nFormat
+      	CAS FormatNumérique..Valeur		: RENVOYER m_sMasqueNumérique	
+      	CAS FormatChaine..Valeur		: RENVOYER m_sMasqueChaine
+      	CAS FormatScientifique..Valeur	: RENVOYER m_sMasqueScientifique
+      	CAS FormatHeure..Valeur			: RENVOYER m_sMasqueHeure
+      	CAS FormatDate..Valeur			: RENVOYER m_sMasqueDate
+      	CAS FormatMonétaire..Valeur		: RENVOYER m_sMasqueMonétaire
+      	CAS FormatComptabilité..Valeur	: RENVOYER m_sMasqueComptabilité
+      	CAS FormatPourcent..Valeur		: RENVOYER m_sMasquePourcent
+      	CAS FormatDateHeure..Valeur		: RENVOYER m_sMasqueDateHeure
+      	CAS FormatDuree..Valeur			: RENVOYER m_sMasqueDurée
+      	AUTRE CAS						: RENVOYER ""		
+      FIN
+     type : 458752
+   -
+     name : MasqueVersFormat
+     procedure_id : 1222472719338288925
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui renvoie le format de cellule selon le masque Excel. Utilisé dans ChargeFichier.
+      PROCEDURE PRIVÉE MasqueVersFormat(sMasque est une chaîne) : entier
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sMasque)
+      
+      SI sMasque~=m_sMasqueNumérique 		ALORS RENVOYER FormatNumérique..Valeur
+      SI sMasque~=m_sMasqueChaine 		ALORS RENVOYER FormatChaine..Valeur
+      SI sMasque~=m_sMasqueScientifique 	ALORS RENVOYER FormatScientifique..Valeur
+      SI sMasque~=m_sMasqueDateHeure 		_OU_ ((Position(sMasque,"hh",0,SansCasse)+Position(sMasque,"mm",0,SansCasse)+Position(sMasque,"dd",0,SansCasse))>0 _ET_ (Position(sMasque,"dd",0,SansCasse)+Position(sMasque,"yy",0,SansCasse)+Position(sMasque,"mm",0,SansCasse))>0)	ALORS RENVOYER FormatDateHeure..Valeur
+      SI sMasque~=m_sMasqueHeure 			_OU_ (Position(sMasque,"hh",0,SansCasse)+Position(sMasque,"mm",0,SansCasse)+Position(sMasque,"dd",0,SansCasse))>0 ALORS RENVOYER FormatHeure..Valeur
+      SI sMasque~=m_sMasqueDate  			_OU_ (Position(sMasque,"dd",0,SansCasse)+Position(sMasque,"yy",0,SansCasse)+Position(sMasque,"mm",0,SansCasse))>0 ALORS RENVOYER FormatDate..Valeur
+      SI sMasque~=m_sMasqueComptabilité 	_OU_ (Position(sMasque,"#")>0 _ET_ Position(sMasque,"$")>0 _ET_ Position(sMasque,"(")>0) ALORS RENVOYER FormatComptabilité..Valeur
+      SI sMasque~=m_sMasqueMonétaire 		_OU_ (Position(sMasque,"#")>0 _ET_ Position(sMasque,"$")>0) ALORS RENVOYER FormatMonétaire..Valeur
+      SI sMasque~=m_sMasquePourcent 		ALORS RENVOYER FormatPourcent..Valeur
+      SI sMasque~=m_sMasqueduree	 		ALORS RENVOYER Formatduree..Valeur
+      
+      RENVOYER FormatParDéfaut..Valeur
+     type : 458752
+   -
+     name : FormatExcelVersRubriqueWx
+     procedure_id : 1344957601809203069
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de convertir un format de cellule Excel en un format de rubrique WinDev compatible.
+      // Syntaxe : [ <Résultat> = ] FormatExcelVersRubriqueWx (<eFormatExcel> est cFichierExcel.EExcelCelluleFormat)
+      // Paramètres :
+      //	eFormatExcel (cFichierExcel.EExcelCelluleFormat) : Valeur d'énumération représentant le format de cellule Excel à convertir.
+      // Valeur de retour : entier : Représente le format de rubrique WinDev correspondant au format de cellule Excel spécifié. Si le format de cellule Excel n'a pas de correspondance dans les formats de rubrique WinDev, la valeur renvoyée est 0.
+      // Exemple :
+      //
+      PROCEDURE global FormatExcelVersRubriqueWx(eFormatExcel est un EExcelCelluleFormat) : entier
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(eFormatExcel..Nom)	
+      
+      selon eFormatExcel
+      	CAS FormatParDéfaut
+      	CAS FormatNumérique		: renvoyer hRubEntier8
+      	CAS FormatChaine		: renvoyer hRubTexteUnicode
+      	CAS FormatScientifique	: renvoyer hRubNumérique
+      	CAS Formatduree			: renvoyer hRubduree
+      	CAS FormatHeure			: renvoyer hRubHeure
+      	CAS FormatDate			: renvoyer hRubDate8
+      	CAS FormatDateHeure		: renvoyer hRubDateHeure
+      	CAS FormatMonétaire		: renvoyer hRubMonétaire
+      	CAS FormatComptabilité	: renvoyer hRubRéel8
+      	CAS FormatPourcent		: renvoyer hRubRéel4
+      FIN
+      renvoyer 0
+     type : 458752
+   -
+     name : Ferme
+     procedure_id : 1345595825139936649
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de fermer le fichier Excel XML
+      // Syntaxe : Ferme ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Ferme()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      si m_pclFichier<> null alors 
+      	m_pclFichier.Ferme()
+      	m_pclFichier = null
+      FIN
+     type : 458752
+  properties :
+   -
+     name : p_nFeuilleEnCours
+     identifier : 0x1c004a05317d2835
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : renvoie le numéro de la feuille en cours dans le fichier Excel.
+         PROCEDURE PUBLIQUE p_nFeuilleEnCours() : entier
+         RENVOYER m_nFeuilleEnCours 
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de définir la feuille en cours dans le fichier Excel en spécifiant son numéro.
+         PROCEDURE PUBLIQUE p_nFeuilleEnCours(nNumFeuille est un entier)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(nNumFeuille)
+         SI TableauCherche(m_tabFeuille,tcLinéaire,"nOrdre",nNumFeuille)>0 ALORS 
+         	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute("Changement de feuille courante : ("+nNumFeuille+") : "+m_tabFeuille[nNumFeuille].sNom)
+         	m_nFeuilleEnCours=nNumFeuille
+         FIN
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sAuteurOriginal
+     identifier : 0x1c004a05317e2835
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le nom de l'auteur original du fichier Excel.
+         PROCEDURE PUBLIQUE p_sAuteurOriginal() : chaine
+         RENVOYER HTMLVersTexte(m_sAuteurOriginal)
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : permet de définir le nom de l'auteur original du fichier Excel.
+         PROCEDURE PUBLIQUE p_sAuteurOriginal(sNomAuteur est une chaine)
+         si sNomAuteur<>HTMLVersTexte(m_sAuteurOriginal) alors m_sAuteurOriginal=TexteVersHTML(sNomAuteur);m_bContenuModifié=vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sAuteurDernier
+     identifier : 0x1c004a05317f2835
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le nom de l'auteur original du fichier Excel.
+         PROCEDURE PUBLIQUE p_sAuteurDernier() : chaine
+         RENVOYER HTMLVersTexte(m_sAuteurDernier)
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : permet de définir le nom de l'auteur de la dernière modification du fichier Excel.
+         PROCEDURE PUBLIQUE p_sAuteurDernier(sNomAuteur est une chaine)
+         SI sNomAuteur<>HTMLVersTexte(m_sAuteurDernier) ALORS m_sAuteurDernier=TexteVersHTML(sNomAuteur);m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sCompagnie
+     identifier : 0x1c004a0531802835
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le nom de la compagnie du fichier Excel.
+         PROCEDURE PUBLIQUE p_sCompagnie() : chaine
+         RENVOYER HTMLVersTexte(m_sCompagnie)
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : permet de définir le nom de l'auteur original du fichier Excel.
+         PROCEDURE PUBLIQUE p_sCompagnie(sNomCompagnie est une chaine)
+         SI sNomCompagnie<>HTMLVersTexte(m_sCompagnie) ALORS m_sCompagnie=TexteVersHTML(sNomCompagnie);m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_dhLocaleCréation
+     identifier : 0x1c004a0531812835
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir la date et heure de création du fichier Excel.
+         PROCEDURE PUBLIQUE p_dhLocaleCréation() : dateheure
+         RENVOYER DateHeureUTCVersLocale(m_dhCréationUTC)
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : permet de définir la date et heure de création du fichier Excel.
+         PROCEDURE PUBLIQUE p_dhLocaleCréation(dhOriginale est une dateheure)
+         si m_dhCréationUTC<>DateHeureLocaleVersUTC(dhOriginale) alors m_dhCréationUTC = DateHeureLocaleVersUTC(dhOriginale);m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_dhLocaleDernièreModif
+     identifier : 0x1c004a0531822835
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir la date et heure de dernière modification du fichier Excel.
+         PROCEDURE PUBLIQUE p_dhLocaleDernièreModif() : dateheure
+         RENVOYER DateHeureUTCVersLocale(m_dhModificationUTC)
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : permet définir la date et heure de dernière modification du fichier Excel.
+         PROCEDURE PUBLIQUE p_dhLocaleDernièreModif(dhDernier est une dateheure)
+         si m_dhModificationUTC<>DateHeureLocaleVersUTC(dhDernier) alors m_dhModificationUTC = DateHeureLocaleVersUTC(dhDernier);m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_bLectureSeule
+     identifier : 0x1c004a0531832835
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet de savoir si le fichier est ouvert en lecture seule
+         PROCEDURE PUBLIQUE p_bLectureSeule() : booleen
+         renvoyer (m_pclFichier.m_eModeOuverture DANS (cFichier.foLecture,cFichier.foBloqueLecture))
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sFeuilleEnCours
+     identifier : 0x12b2381e5586c8ec
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le nom de la feuille en cours
+         PROCEDURE PUBLIQUE p_sFeuilleEnCours() : chaine
+         nIndice est un entier = TableauCherche(m_tabFeuille,tcLinéaire,"nOrdre",m_nFeuilleEnCours)
+         SI nIndice>0 ALORS renvoyer m_tabFeuille[nIndice].sNom
+         renvoyer ""
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : permet de définir le nom de la feuille en cours
+         PROCEDURE PUBLIQUE p_sFeuilleEnCours(Valeur)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(Valeur)
+         POUR TOUT element stUneFeuille de m_tabFeuille
+         	SI stUneFeuille.sNom~=Valeur ALORS 
+         		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute("Changement de feuille courante : ("+stUneFeuille.nOrdre+") : "+stUneFeuille.sNom)
+         		m_nFeuilleEnCours=stUneFeuille.nOrdre;SORTIR
+         	FIN
+         FIN
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sMasqueNumérique
+     identifier : 0x1595da4c19c93139
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le masque numérique du fichier Excel.
+         PROCEDURE PUBLIQUE p_sMasqueNumérique() : chaine
+         renvoyer m_sMasqueNumérique
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : permet de définir le masque numérique du fichier Excel.
+         PROCEDURE PUBLIQUE p_sMasqueNumérique(Valeur)
+         si m_sMasqueNumérique<>Valeur alors m_sMasqueNumérique=Valeur;m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sMasqueChaine
+     identifier : 0x1595db5519ca39d1
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le masque alphanumérique du fichier Excel.
+         PROCEDURE PUBLIQUE p_sMasqueChaine() : chaîne
+         RENVOYER m_sMasqueChaine
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : permet de définir le masque alphanumérique du fichier Excel.
+         PROCEDURE PUBLIQUE p_sMasqueChaine(Valeur)
+         SI m_sMasqueChaine<>Valeur ALORS m_sMasqueChaine=Valeur;m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sMasqueScientifique
+     identifier : 0x1595db6519cb7842
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le masque scientifique du fichier Excel.
+         PROCEDURE PUBLIQUE p_sMasqueScientifique() : chaîne
+         RENVOYER m_sMasqueScientifique
+        type : 1966080
+      -
+        code : |1-
+         PROCEDURE PUBLIQUE p_sMasqueScientifique(Valeur)
+         SI m_sMasqueScientifique<>Valeur ALORS m_sMasqueScientifique=Valeur;m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sMasqueHeure
+     identifier : 0x1595db7419ccb2f9
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le masque des heures du fichier Excel.
+         PROCEDURE PUBLIQUE p_sMasqueHeure() : chaîne
+         RENVOYER m_sMasqueHeure
+        type : 1966080
+      -
+        code : |1-
+         PROCEDURE PUBLIQUE p_sMasqueHeure(Valeur)
+         SI m_sMasqueHeure<>Valeur ALORS m_sMasqueHeure=Valeur;m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sMasqueDate
+     identifier : 0x1595db9419cd31fc
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le masque des dates du fichier Excel.
+         PROCEDURE PUBLIQUE p_sMasqueDate() : chaîne
+         RENVOYER m_sMasqueDate
+        type : 1966080
+      -
+        code : |1-
+         PROCEDURE PUBLIQUE p_sMasqueDate(Valeur)
+         SI m_sMasqueDate<>Valeur ALORS m_sMasqueDate=Valeur;m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sMasqueMonétaire
+     identifier : 0x1595dba119ce65ed
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le masque des monétaires du fichier Excel.
+         PROCEDURE PUBLIQUE p_sMasqueMonétaire() : chaîne
+         RENVOYER m_sMasqueMonétaire
+        type : 1966080
+      -
+        code : |1-
+         PROCEDURE PUBLIQUE p_sMasqueMonétaire(Valeur)
+         SI m_sMasqueMonétaire<>Valeur ALORS m_sMasqueMonétaire=Valeur;m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sMasqueComptabilité
+     identifier : 0x1595dbaf19cf9b65
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le masque des valeurs comptables du fichier Excel.
+         PROCEDURE PUBLIQUE p_sMasqueComptabilité() : chaîne
+         RENVOYER m_sMasqueComptabilité
+        type : 1966080
+      -
+        code : |1-
+         PROCEDURE PUBLIQUE p_sMasqueComptabilité(Valeur)
+         SI m_sMasqueComptabilité<>Valeur ALORS m_sMasqueComptabilité=Valeur;m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sMasqueDateHeure
+     identifier : 0x1595dbbe19d0d467
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le masque des dates/heures du fichier Excel.
+         PROCEDURE PUBLIQUE p_sMasqueDateHeure() : chaîne
+         RENVOYER m_sMasqueDateHeure
+        type : 1966080
+      -
+        code : |1-
+         PROCEDURE PUBLIQUE p_sMasqueDateHeure(Valeur)
+         SI m_sMasqueDateHeure<>Valeur ALORS m_sMasqueDateHeure=Valeur;m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sMasqueDurée
+     identifier : 0x1595dbca19d10402
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : permet d'obtenir le masque des durées du fichier Excel.
+         PROCEDURE PUBLIQUE p_sMasqueDurée() : chaîne
+         RENVOYER m_sMasqueDurée
+        type : 1966080
+      -
+        code : |1-
+         PROCEDURE PUBLIQUE p_sMasqueDurée(Valeur)
+         SI m_sMasqueDurée<>Valeur ALORS m_sMasqueDurée=Valeur;m_bContenuModifié=Vrai
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : CClasse1
+resources :
+ string_res :
+  identifier : 0x14ecd667000eb033
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Feuille
+      en-GB : Sheet
+      fr-CA : Feuille
+      en-US : Sheet
+     index : 0
+   -
+     text :
+      fr-FR : "Colonne inconnue : "
+      en-GB : "Unknown column : "
+      fr-CA : "Colonne inconnue : "
+      en-US : "Unknown column : "
+     index : 1
+   -
+     text :
+      fr-FR : "Ligne inconnue : "
+      en-GB : "Unknown row : "
+      fr-CA : "Ligne inconnue : "
+      en-US : "Unknown row : "
+     index : 2
+   -
+     text :
+      fr-FR : La couleur doit être entre 0 et 16777215 inclus ou -1 (couleur par défaut)
+      en-GB : The color should be between 0 and 16777215 inclusive or -1 (the default color)
+      fr-CA : La couleur doit être entre 0 et 16777215 inclus ou -1 (couleur par défaut)
+      en-US : The color should be between 0 and 16777215 inclusive or -1 (the default color)
+     index : 3
+   -
+     text :
+      fr-FR : La couleur doit être entre 0 et 16777215 inclus ou -1 (couleur par défaut)
+      en-GB : The color should be between 0 and 16777215 inclusive or -1 (the default color)
+      fr-CA : La couleur doit être entre 0 et 16777215 inclus ou -1 (couleur par défaut)
+      en-US : The color should be between 0 and 16777215 inclusive or -1 (the default color)
+     index : 4
+   -
+     text :
+      fr-FR : "Le bord doit utiliser une ou une combinaison des constantes : bordAucun, bordGauche, bordDroite, bordHaut, bordBas, bordTous. La valeur -1 désigne les bords par défaut."
+      en-GB : "The border must use one or a combination of constants : BorderNone, BorderLeft, BorderRight, BorderTop, BorderBottom, BorderAll. -1 Means the borders by default."
+      fr-CA : "Le bord doit utiliser une ou une combinaison des constantes : bordAucun, bordGauche, bordDroite, bordHaut, bordBas, bordTous. La valeur -1 désigne les bords par défaut."
+      en-US : "The border must use one or a combination of constants : BorderNone, BorderLeft, BorderRight, BorderTop, BorderBottom, BorderAll. -1 Means the borders by default."
+     index : 5
+   -
+     text :
+      fr-FR : "L'alignement doit utiliser une des constantes cvHaut, cvBas, cvMilieu ou -1 (alignement par défaut)"
+      en-GB : "Alignment must use a constant vaTop, vaBottom, vaMiddle or -1 (the default alignment)"
+      fr-CA : "L'alignement doit utiliser une des constantes cvHaut, cvBas, cvMilieu ou -1 (alignement par défaut)"
+      en-US : "Alignment must use a constant vaTop, vaBottom, vaMiddle or -1 (the default alignment)"
+     index : 6
+   -
+     text :
+      fr-FR : "L'alignement doit utiliser une des constantes chGauche, chDroite, chCentre, chJustifié ou -1 (alignement par défaut)"
+      en-GB : "Alignment must use a constant haLeft, haRight, haCenter, haJustified or -1 (the default alignment)"
+      fr-CA : "L'alignement doit utiliser une des constantes chGauche, chDroite, chCentre, chJustifié ou -1 (alignement par défaut)"
+      en-US : "Alignment must use a constant haLeft, haRight, haCenter, haJustified or -1 (the default alignment)"
+     index : 7
+   -
+     text :
+      fr-FR : "L'attribut 'multi-ligne' doit avoir la valeur 0 (faux), 1 (vrai) ou -1 (par défaut)"
+      en-GB : "Attribute 'multi-line' must be set to 0 (false), 1 (true) or -1 (the default)"
+      fr-CA : "L'attribut 'multi-ligne' doit avoir la valeur 0 (faux), 1 (vrai) ou -1 (par défaut)"
+      en-US : "Attribute 'multi-line' must be set to 0 (false), 1 (true) or -1 (the default)"
+     index : 8
+   -
+     text :
+      fr-FR : "L'attribut 'italique' doit avoir la valeur 0 (faux), 1 (vrai) ou -1 (par défaut)"
+      en-GB : "Attribute 'italic' must be set to 0 (false), 1 (true) or -1 (the default)"
+      fr-CA : "L'attribut 'italique' doit avoir la valeur 0 (faux), 1 (vrai) ou -1 (par défaut)"
+      en-US : "Attribute 'italic' must be set to 0 (false), 1 (true) or -1 (the default)"
+     index : 9
+   -
+     text :
+      fr-FR : "L'attribut 'gras' doit avoir la valeur 0 (faux), 1 (vrai) ou -1 (par défaut)"
+      en-GB : "Attribute 'bold' must be set to 0 (false), 1 (true) or -1 (the default)"
+      fr-CA : "L'attribut 'gras' doit avoir la valeur 0 (faux), 1 (vrai) ou -1 (par défaut)"
+      en-US : "Attribute 'bold' must be set to 0 (false), 1 (true) or -1 (the default)"
+     index : 10
+   -
+     text :
+      fr-FR : "L'attribut 'souligné' doit avoir la valeur 0 (pas de souligné), 1 (souligné simple), 2 (souligné double) ou -1 (par défaut)"
+      en-GB : "Attribute 'underline' must be set to 0 (no underline), 1 (single underline), 2 (double underline) or -1 (the default)"
+      fr-CA : "L'attribut 'souligné' doit avoir la valeur 0 (pas de souligné), 1 (souligné simple), 2 (souligné double) ou -1 (par défaut)"
+      en-US : "Attribute 'underline' must be set to 0 (no underline), 1 (single underline), 2 (double underline) or -1 (the default)"
+     index : 11
+   -
+     text :
+      fr-FR : "Le format doit utiliser une des constantes clapExcel::_FormatCellule..."
+      en-GB : "The format must use a constant clapExcel :: _FormatCellule..."
+      fr-CA : "Le format doit utiliser une des constantes clapExcel::_FormatCellule..."
+      en-US : "The format must use a constant clapExcel :: _FormatCellule..."
+     index : 12
+   -
+     text :
+      fr-FR : La taille de caractère doit être comprise entre 4 et 72 ou -1 (taille par défaut)
+      en-GB : The font size must be between 4 and 72 or -1 (the default size)
+      fr-CA : La taille de caractère doit être comprise entre 4 et 72 ou -1 (taille par défaut)
+      en-US : The font size must be between 4 and 72 or -1 (the default size)
+     index : 13
+   -
+     text :
+      fr-FR : La formule doit commencer par le signe =
+      en-GB : The formula must begin with the = sign
+      fr-CA : La formule doit commencer par le signe =
+      en-US : The formula must begin with the = sign
+     index : 14
+   -
+     text :
+      fr-FR : Le nom de la feuille ne peut pas être vide
+      en-GB : The sheet name can not be empty
+      fr-CA : Le nom de la feuille ne peut pas être vide
+      en-US : The sheet name can not be empty
+     index : 15
+   -
+     text :
+      fr-FR : Le nom de la feuille ne peut pas dépasser 31 caractères
+      en-GB : The sheet name can not exceed 31 characters
+      fr-CA : Le nom de la feuille ne peut pas dépasser 31 caractères
+      en-US : The sheet name can not exceed 31 characters.
+     index : 16
+   -
+     text :
+      fr-FR : "Le nom de la feuille contient un caractère interdit : "
+      en-GB : "The sheet name contains a banned character : "
+      fr-CA : "Le nom de la feuille contient un caractère interdit : "
+      en-US : "The sheet name contains a banned character : "
+     index : 17
+   -
+     text :
+      fr-FR : La feuille n'a pas été trouvée
+      en-GB : The sheet was not found
+      fr-CA : La feuille n'a pas été trouvée
+      en-US : The sheet was not found
+     index : 18
+   -
+     text :
+      fr-FR : Caractère numérique pour la colonne de début
+      en-GB : Numeric character for the start column
+      fr-CA : Caractère numérique pour la colonne de début
+      en-US : Numeric character for the start column
+     index : 19
+   -
+     text :
+      fr-FR : Caractère alpha-numérique pour la ligne de début
+      en-GB : Alphanumeric character for the beginning of the line
+      fr-CA : Caractère alpha-numérique pour la ligne de début
+      en-US : Alphanumeric character for the beginning of the line
+     index : 20
+   -
+     text :
+      fr-FR : "Caractère inconnu dans la cellule de début : "
+      en-GB : "Unknown character in the start cell : "
+      fr-CA : "Caractère inconnu dans la cellule de début : "
+      en-US : "Unknown character in the start cell : "
+     index : 21
+   -
+     text :
+      fr-FR : Caractère numérique pour la colonne de fin
+      en-GB : Numeric character to the end column
+      fr-CA : Caractère numérique pour la colonne de fin
+      en-US : Numeric character to the end column
+     index : 22
+   -
+     text :
+      fr-FR : Caractère alpha-numérique pour la ligne de fin
+      en-GB : Alphanumeric character to the end line
+      fr-CA : Caractère alpha-numérique pour la ligne de fin
+      en-US : Alphanumeric character to the end line
+     index : 23
+   -
+     text :
+      fr-FR : "Caractère inconnu dans la cellule de fin : "
+      en-GB : "Unknown character in the end cell : "
+      fr-CA : "Caractère inconnu dans la cellule de fin : "
+      en-US : "Unknown character in the end cell : "
+     index : 24
+   -
+     text :
+      fr-FR : "Le format de fichier n'est pas reconnu [%1]"
+      en-GB : "The file format is not recognized [%1]"
+      fr-CA : "Le format de fichier n'est pas reconnu [%1]"
+      en-US : "The file format is not recognized [%1]"
+     index : 25
+   -
+     text :
+      fr-FR : "Impossible de sauver le fichier Excel : "
+      en-GB : "Unable to save the Excel file : "
+      fr-CA : "Impossible de sauver le fichier Excel : "
+      en-US : "Unable to save the Excel file : "
+     index : 26
+   -
+     text :
+      fr-FR : Veuillez d'abord fermer le fichier avant d'en créer un autre
+      en-GB : Please close the file first before creating another
+      fr-CA : Veuillez d'abord fermer le fichier avant d'en créer un autre
+      en-US : Please close the file first before creating another
+     index : 27
+   -
+     text :
+      fr-FR : Le fichier n'existe pas
+      en-GB : The file does not exist
+      fr-CA : Le fichier n'existe pas
+      en-US : The file does not exist
+     index : 28
+   -
+     text :
+      fr-FR : Le fichier existe déjà
+      en-GB : The file already exists
+      fr-CA : Le fichier existe déjà
+      en-US : The file already exists
+     index : 29
+   -
+     text :
+      fr-FR : Le fichier est vide
+      en-GB : The file is empty
+      fr-CA : Le fichier est vide
+      en-US : The file is empty
+     index : 30
+   -
+     text :
+      fr-FR : "Impossible de se positionner sur la feuille [%1]"
+      en-GB : "Unable to position on the sheet [%1]"
+      fr-CA : "Impossible de se positionner sur la feuille [%1]"
+      en-US : "Unable to position on the sheet [%1]"
+     index : 31
+   -
+     text :
+      fr-FR : La police n'existe pas sur le poste
+      en-GB : The font doesn't exist on this computer
+      fr-CA : La police n'existe pas sur le poste
+      en-US : The font doesn't exist on this computer
+     index : 32
+   -
+     text :
+      fr-FR : "La famille de police doit être dans Decorative, Modern, Roman,Script,Swiss"
+      en-GB : "The font family must be in Decorative, Modern, Roman, Script, Swiss"
+      fr-CA : "La famille de police doit être dans Decorative, Modern, Roman,Script,Swiss"
+      en-US : "The font family must be in Decorative, Modern, Roman, Script, Swiss"
+     index : 33
+   -
+     text :
+      fr-FR : Aucune feuille en cours
+      en-GB : No current worksheet
+      fr-CA : Aucune feuille en cours
+      en-US : Aucune feuille en cours
+     index : 34
+   -
+     text :
+      fr-FR : "Le caractère [%1] n'est pas compatible avec Excel"
+      en-GB : "The character [%1] is not compatible with Excel"
+      fr-CA : "Le caractère [%1] n'est pas compatible avec Excel"
+      en-US : "The character [%1] is not compatible with Excel"
+     index : 35
+   -
+     text :
+      fr-FR : Le numéro de colonne (%1) dépasse les capacités du format XLSX (%2)
+      en-GB : The column number (%1) exceeds the capabilities of the XLSX format (%2)
+      fr-CA : Le numéro de colonne (%1) dépasse les capacités du format XLSX (%2)
+      en-US : The column number (%1) exceeds the capabilities of the XLSX format (%2)
+     index : 36
+   -
+     text :
+      fr-FR : Format incompatible avec Excel
+      en-GB : Format incompatible with Excel
+      fr-CA : Format incompatible avec Excel
+      en-US : Format incompatible with Excel
+     index : 37
+   -
+     text :
+      fr-FR : Le numéro de colonne dépasse la capacité du fichier XLS
+      en-GB : Column number exceeds the capacity of the XLS file
+      fr-CA : Le numéro de colonne dépasse la capacité du fichier XLS
+      en-US : Column number exceeds the capacity of the XLS file
+     index : 38
+   -
+     text :
+      fr-FR : Le numéro de colonne dépasse la capacité du fichier XLSX
+      en-GB : Column number exceeds the capacity of the XLSX file
+      fr-CA : Le numéro de colonne dépasse la capacité du fichier XLSX
+      en-US : Column number exceeds the capacity of the XLSX file
+     index : 39
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

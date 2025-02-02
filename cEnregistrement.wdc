@@ -1,0 +1,2258 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cEnregistrement
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1aa9647500b390ce
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe contient l'information sur un enregistrement (nouveau ou lu d'une base de données). Elle ne peut être accédée directement, il est donc nécessaire d'en hériter dans une autre classe qui décrira également le mapping vers les colonnes de la base de données.
+      
+      EEnregistrementStatut est une énumération
+      	PasDeChangement
+      	EstInchangé
+      	EstAjouté
+      	EstModifié
+      	SeraSupprimé
+      FIN
+      cEnregistrement est une Classe, abstraite
+      	hérite de csql
+      	m_bPointeur					est un booléen 						<Sérialise = Faux>				//Indique que le pointeur de l'alias du fichier pointe sur l'enregistrement en cours.
+      PUBLIC CONSTANT	                                                                            		
+      	m_sTableNomUnique			est une chaine 						<Sérialise = Faux>				//Nom unique de la table à laquelle est reliée la colonne.
+      protégé                                                                                     		
+      	m_eStatutEnregistrement		est un EEnregistrementStatut 		<serialise = faux>				//Statut de l'enregistrement (voir énumération ci-dessus).
+      protégé constant                                                                            		
+      	m_sEnregistrement			est une chaine 						<serialise = faux>				//Enregistrement transformé en XML.
+      	m_sValCléEnCours			est une chaine 						<Sérialise = Faux>				//Valeur de la clé unique en cours.
+      privé                                                                                       		
+      	m_bLectureSeule				est un booleen 						<Sérialise = Faux>				//Indique que l'enregistrement est en lecture seule (soit imposé par la BD soit par le constructeur). Il prend priorité sur le même membre déclaré dans cSourceDeDonnées.
+      	m_stConnexion				est un cBaseDeDonnées.STConnexion 	<Sérialise = Faux>      		//Connexion à laquelle l'enregistrement est lié.
+      	m_bErreurDoublon			est un booleen 						<Sérialise = Faux>				//Indique qu'il y a eu une erreur de doublon lors de la dernière opération d'écriture.
+      	m_bErreurIntégrité			est un booleen 						<Sérialise = Faux>				//Indique qu'il y a eu une erreur d'intégrité lors de la dernière opération d'écriture.
+      	m_bErreurBlocage			est un booleen 						<Sérialise = Faux>				//Indique qu'il y a eu une erreur de blocage lors de la dernière opération d'écriture.
+      	m_sEmplacementDesMémos		est une chaine 						<Sérialise = Faux>				//Emplacement des mémos (voir constructeur). Il prend priorité sur le même membre déclaré dans cSourceDeDonnées.
+      	m_sLitAussiMemos			est une chaine 						<Sérialise = Faux>				//Indique qu'il faut également lire les mémos lors d'une lecture de l'enregistrement. Il prend priorité sur le même membre déclaré dans cSourceDeDonnées.
+      	m_bufHashEnregistrement		est un buffer  						<Sérialise = Faux>				//Contient le hash de l'enregistrement. Sert aux comparaisons entre l'enregistrement lu et en mémoire dans cet objet.
+      	m_bFaireFichierVersObjet	est un booleen 						<Sérialise = Faux>				//Exécuter FichierVersObjet pour être sûr que l'enregistrement en mémoire est le bon.
+      	m_taHashMémosChargés		est un tableau associatif 			<sérialise = faux> de buffers	//Contient les hash des mémos de l'enregistrement.
+      	m_taMémosCache				est un tableau associatif 			<sérialise = faux> de chaines	//Contient les mémos (c'est une cache qui évite de devoir les relire).
+      	m_sColonnesALire			est une chaine						<serialise = faux>				//Nom des colonnes à lire lors d'une lecture d'un enregistrement.
+      	m_sColonnesLues				est une chaine						<serialise = faux>				//Nom des colonnes effectivement lues lors d'une lecture d'un enregistrement. Il prend priorité sur le même membre déclaré dans cSourceDeDonnées.
+      	m_sRequêteVide				est une chaine						<serialise = faux>				//Requête qui permet d'avoir une source de données vide correctement structuré.
+      local public constant
+      	m_sGUIDEnregistrement		est une chaine 						<Sérialise = Faux> 				//GUID de l'enregistrement (chaîne car le type guid pas dispo en Java).
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921177169736011982
+     type_code : 27
+     code : |1-
+      // Résumé : Cette classe est une extension de la classe cSQL et sert de base pour toutes les classes représentant des enregistrements dans une base de données. Le constructeur initialise les propriétés de base de l'enregistrement.
+      // Syntaxe :
+      //Constructeur (<nIndiceDeConnexion> est entier, <xNomTableOuObjetSourceDonnées> [, <bLectureSeule> est booléen [, <sColonnesALire> est chaîne [, <sLitAussiMemos> est chaîne [, <sEmplacementDesMémos> est chaîne]]]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Représente l'indice de connexion à la base de données.
+      //	xNomTableOuObjetSourceDonnées : Nom de la table ou instance de l'objet source de données.
+      //	bLectureSeule (booléen - valeur par défaut=0) : Indique si l'enregistrement est en mode lecture seule (par défaut à Faux).
+      //	sColonnesALire (chaîne UNICODE - valeur par défaut="*") : Colonnes à lire lors d'une lecture/d'une recherche séparées par une virgule (par défaut Toutes).
+      //	sLitAussiMemos (chaîne UNICODE - valeur par défaut="") : Colonnes mémo à lire également lors d'une lecture/d'une recherche séparées par une virgule
+      //	sEmplacementDesMémos (chaîne UNICODE) : Emplacement des mémos associés à l'enregistrement (par défaut l'emplacement lié à la base de données)
+      // Valeur de retour :
+      // 	Aucune
+      // Exemple :
+      //// Traitement automatique des erreurs :   exécuter le bloc de code CAS ERREUR
+      //
+      // Traitement automatique des exceptions :   exécuter le bloc de code CAS EXCEPTION:
+      //
+      
+      PROCEDURE Constructeur(nIndiceDeConnexion est un entier,xNomTableOuObjetSourceDonnées,bLectureSeule est un booleen = faux,sColonnesALire est une chaine = "*",sLitAussiMemos est une chaine = "",sEmplacementDesMémos est une chaine = (nIndiceDeConnexion>0 _et_ nIndiceDeConnexion<=cBaseDeDonnées.mg_tabConnexion..occurrence ? cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].sEmplacementDesMémos sinon ""))
+      cSQL.constructeur(nIndiceDeConnexion,xNomTableOuObjetSourceDonnées)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nIndiceDeConnexion,(TypeVar(xNomTableOuObjetSourceDonnées)=wlInstance ? xNomTableOuObjetSourceDonnées..Classe SINON xNomTableOuObjetSourceDonnées),bLectureSeule,sLitAussiMemos,sEmplacementDesMémos)
+      
+      SI p_sErreur="" ALORS	//sinon c'est qu'il y a eu un problème dans le constructeur de cSQL (ex : un indice de connexion à 0)
+      	m_nIndiceDeConnexion		= nIndiceDeConnexion
+      	m_stConnexion				= cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion]
+      	m_eStatutEnregistrement		= EstAjouté	//sera modifié ensuite si Recherche mais si pas de recherche, on affecte les membres et on voudra ajouter !
+      	m_sGUIDEnregistrement		= DonneGUID(guidBrut)	//identifiant unique pour chaque enregistrement traité
+      	m_bFaireFichierVersObjet	= vrai
+      	m_sLitAussiMemos			= sLitAussiMemos
+      	m_sEmplacementDesMémos		= sEmplacementDesMémos
+      	m_bLectureSeule				= bLectureSeule
+      	m_sColonnesALire			= sColonnesALire
+      	
+      	si TypeVar(xNomTableOuObjetSourceDonnées)=wlInstance alors
+      		//cApplication.mg_taInfo[m_sTableNomUnique] déjà créé dans le cSourceDeDonnées
+      		m_sTableNomUnique=xNomTableOuObjetSourceDonnées.m_sTableNomUnique
+      		SI pas bLectureSeule _et_ m_pclBaseDeDonnées.m_stConnexion.eAccès _DANS_ (cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC) ALORS m_sd=xNomTableOuObjetSourceDonnées.m_sd //SdStructureInit()	
+      	sinon
+      		sTable est une chaine = Minuscule(xNomTableOuObjetSourceDonnées)
+      		m_sTableNomUnique = m_pclBaseDeDonnées.p_sNomUnique+cGénérique._Sep+sTable
+      		SI cApplication.mg_taInfo[m_sTableNomUnique]=Null ALORS cApplication.mg_taInfo[m_sTableNomUnique] = allouer un cTable(nIndiceDeConnexion,sTable)
+      		SI m_pclBaseDeDonnées.m_stConnexion.eAccès _DANS_ (cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC) ALORS sdStructureInit()	
+      		si cRéseau.Protocole(m_sEmplacementDesMémos)=cRéseau.EProtocoleRéseau.FTP alors 
+      			si droite(m_sEmplacementDesMémos,1)<>"/" alors m_sEmplacementDesMémos+="/"
+      		sinon
+      			m_sEmplacementDesMémos=ComplèteRep(m_sEmplacementDesMémos)
+      		FIN
+      	FIN
+      fin
+      	
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 589824
+   -
+     name : Destructeur
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921177169736077518
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+      //SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()	//ne fonctionne pas
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 655360
+   -
+     name : RazDéfaut
+     procedure_id : 1941917408006780275
+     type_code : 12
+     code : |1-
+      // Résumé : Réinitialise les valeurs par défaut des colonnes de l'enregistrement. Elle prend en compte un nom de groupe de valeur (ex : un groupe "devis" et "facture"). Utiliser cTable.ValeurDéfaut pour associer des valeurs par défaut aux colonnes.
+      // Syntaxe : RazDéfaut ( [<sNomGroupeDeValeur> est chaîne])
+      // Paramètres :
+      //	sNomGroupeDeValeur (chaîne UNICODE optionnelle) : Nom du groupe de valeur. Si fourni, seules les valeurs de ce groupe seront réinitialisées. Par défaut, la réinitialisation s'applique à toutes les colonnes.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE RazDéfaut(sNomGroupeDeValeur est une chaine = "")
+      Raz()
+      sNomColonne est une chaine
+      nIndice		est un entier
+      pour tout element sValeur,sClé de capplication.mg_taValeurParDéfaut
+      	sNomColonne=ExtraitChaîne(sClé,1)
+      	si sNomGroupeDeValeur="" _ou_ extraitchaine(sClé,2)=sNomGroupeDeValeur alors
+      		nIndice=tableaucherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sNomColonne)
+      		si nIndice>0 alors 
+      			si m_stConnexion.eAccès=cBaseDeDonnées.FonctionsH alors
+      				{m_sAlias+"."+sNomColonne,indRubrique}=sValeur
+      			sinon
+      				{"m_sd."+sNomColonne,indVariable}=sValeur
+      			FIN
+      		FIN
+      	FIN
+      FIN
+      SI m_stConnexion.eAccès=cBaseDeDonnées.FonctionsH ALORS fichierversmémoire(objet,m_sAlias) sinon FichierVersMémoire(objet,m_sd)
+     type : 458752
+   -
+     name : Vérifie
+     procedure_id : 1961211814520620397
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode virtuelle qui vérifie l'enregistrement avant de l'écrire (par exemple pour vérifier les valeurs obligatoires à écrire)
+      // Syntaxe : [ <Résultat> = ] Vérifie ()
+      // Paramètres :	Aucun
+      // Valeur de retour : booléen : Doit renvoyer vrai si toutes les colonnes sont correctement vérifiées. Faux dans le cas contraire (mettre alors le message d'erreur en mémoire grâce à m_pclErreur.AjouteErreu())
+      // Exemple :
+      //
+      PROCEDURE virtuelle Vérifie() : booléen
+      renvoyer vrai
+     type : 458752
+   -
+     name : SourceVersObjet
+     procedure_id : 1961237292313774694
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les données depuis une source de données (généralement un fichier ou une source de données) vers l'objet en cours. Elle prend en charge la lecture des mémos binaires si nécessaire.
+      // Syntaxe : [ <Résultat> = ] SourceVersObjet (<sdSource> [, <bCalculeCléPrimaire> est booléen [, <bUneTable> est booléen [, <sColonnesLues> est chaîne]]])
+      // Paramètres :
+      // 	sdSource : Objet source de données (source de données ou fichier) à partir duquel charger les données.
+      // 	bCalculeCléPrimaire (booléen optionnel) : Indique s'il faut calculer la clé primaire (en cas de clé composée). Par défaut, la clé primaire est calculée (Vrai).
+      // 	bUneTable (booléen optionnel) : Indique s'il s'agit d'une seule table. Par défaut, la valeur est Vrai.
+      // Valeur de retour : booléen : toujours Vrai (pourrait renvoyer Faux, par exemple, si le calcul n'a pas pu être fait)
+      // Exemple :
+      //
+      PROCEDURE SourceVersObjet(sdSource,bCalculeCléPrimaire est un booleen = vrai,bUneTable est un booleen = vrai) : booleen	//pas protégé ni privé car utilisé dans cSourceDeDonnées
+      FichierVersMémoire(objet,sdSource)
+      si bCalculeCléPrimaire alors
+      	//la cléEnCours doit être ici car elle sert à la lecture des mémos un peu plus bas
+      	vCléEnCours est un variant = cApplication.mg_taInfo[m_sTableNomUnique].CléPrimaire(sdSource)
+      	si vCléEnCours=null alors m_bLectureSeule=vrai;m_sValCléEnCours="";m_pclErreur.AjouteAvertissement(<§$001e§>) sinon m_sValCléEnCours=vCléEnCours
+      	SI PAS m_bLectureSeule ALORS m_bufHashEnregistrement=HashEnregistrement()
+      	
+      	si m_sLitAussiMemos>"" _et_ cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémoBinaire>"" _et_ (vCléEnCours<>Null _ou_ m_stConnexion.eAccès=cBaseDeDonnées.FonctionsH) alors
+      		bufMémo 	est un buffer
+      		nIndiceHash	est un entier
+      		pour toute chaine sColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémoBinaire separée par ","
+      			si m_sLitAussiMemos="*" _OU_ Position(m_sLitAussiMemos,sColonne,0,MotComplet+SansCasse+DepuisDébut)>0 alors
+      				nIndiceHash=tableaucherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonne+"hash")
+      				bufMémo=MémoTélécharge(sColonne,(nIndiceHash>0 ? {sdSource+"."+sColonne+"hash",indRubrique} SINON ""))
+      				{sdSource+"."+sColonne,indRubrique}=bufMémo
+      			fin
+      		FIN
+      		FichierVersMémoire(objet,sdSource)	//pour mettre le contenu des mémos, qui sont dans la source de données, dans l'objet courant
+      	fin
+      fin
+      
+      AprèsLecture((bUneTable ? Null SINON sdSource))	//au cas où il faut traiter d'autres colonnes que celles mappées
+      
+      renvoyer vrai
+     type : 458752
+   -
+     name : ObjetVersSource
+     procedure_id : 1974952256921321816
+     type_code : 12
+     code : |1-
+      // Résumé : Sauvegarde les données de l'objet en cours vers une source de données. Elle effectue des traitements spécifiques avant l'écriture des données.
+      // Syntaxe : [ <Résultat> = ] ObjetVersSource (<sdSource>)
+      // Paramètres :
+      // 	sdSource : Source de données vers lequel sauvegarder les données.
+      // Valeur de retour : booléen : toujours Vrai
+      // Exemple :
+      //
+      PROCEDURE PROTÉGÉE ObjetVersSource(sdSource) : booleen
+      AvantÉcriture()
+      MémoireVersFichier(objet,sdSource)
+      renvoyer vrai
+     type : 458752
+   -
+     name : EstObjetIdentique
+     procedure_id : 1993532989374473497
+     type_code : 12
+     code : |1-
+      // Résumé : Détermine si l'objet courant est identique à un objet de comparaison. L'identité est évaluée en comparant les valeurs de hachage des enregistrements.
+      // Syntaxe : [ <Résultat> = ] EstObjetIdentique (<pcl_ObjetComparaison> est objet dynamique)
+      // Paramètres :
+      //	pcl_ObjetComparaison (objet dynamique) : Objet dynamique à comparer avec l'objet courant.
+      // Valeur de retour : booléen : Vrai si les objets sont identiques, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE EstObjetIdentique(pcl_ObjetComparaison est un objet dynamique) : booleen                  
+      SI m_bLectureSeule ALORS RENVOYER Vrai SINON RENVOYER pcl_ObjetComparaison.m_bufHashEnregistrement = m_bufHashEnregistrement
+     type : 458752
+   -
+     name : Hash
+     procedure_id : 1999103372915389536
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui génère une valeur de hachage (hash) à partir d'une chaîne de caractères. Elle utilise l'algorithme de hachage SHA-160. Utilisé par HashEnregistrement.
+      PROCEDURE privé Hash(sChaine) : buffer
+      sSuffixAlias est une chaine = extraitchaine(sChaine,1,"$",DepuisFin)
+      si sSuffixAlias <> "" alors sChaine = Remplace(sChaine,"$" + sSuffixAlias,">")
+      renvoyer HashChaîne(HA_SHA_160,sChaine)
+     type : 458752
+   -
+     name : Ajoute
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1924479351069104691
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute l'enregistrement en cours dans sa base de données. Utilisé par Écrit().
+      PROCEDURE privé Ajoute(bForceID est un booleen = faux) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bForceID)
+      m_pclErreur.Raz()
+      
+      nIndice,nIndiceHash sont des entiers
+      bIDAutomatique 		est un booléen
+      pclColonneAuto		est un cColonne dynamique
+      sReq				est une chaine
+      
+      m_bErreurDoublon=Faux;m_bErreurIntégrité=Faux;m_bErreurBlocage=faux
+      
+      si m_pclBaseDeDonnées.m_stConnexion.eAccès =  cBaseDeDonnées.FonctionsH alors
+      	POUR TOUTE CHAÎNE sColonne DE cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesNonMémo SEPAREE PAR ","
+      		nIndice = TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonne)
+      		SI nIndice>0 ALORS
+      			SI cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstAutomatique ALORS 
+      				bIDAutomatique=Vrai
+      			SINON SI cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstNullable ALORS
+      				{m_sAlias+"."+sColonne,indRubrique}..Null = (cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstTexte _OU_ cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstDateOuHeure ? {m_sAlias+"."+sColonne,indRubrique}="" SINON {m_sAlias+"."+sColonne,indRubrique}=0)
+      			FIN
+      		FIN		
+      	FIN	
+      	
+      	SI HAjoute(m_sAlias,(bForceID ? hForceIdAuto SINON hEcritureDéfaut+hBlocageNon)) ALORS 
+      		SI bIDAutomatique ALORS FichierVersMémoire(objet,m_sAlias)
+      		m_sValCléEnCours	= cApplication.mg_taInfo[m_sTableNomUnique].CléPrimaire(m_sAlias)
+      		RENVOYER Vrai
+      	SINON 
+      		//A FAIRE : vérifier les autres types d'erreur
+      		m_bErreurDoublon	= HErreurDoublon()				
+      		m_bErreurIntégrité	= HErreurIntégrité()	
+      		m_bErreurBlocage	= HErreurBlocage()			
+      		m_pclErreur.AjouteErreurHF()
+      	FIN
+      sinon
+      	sValeurs,sCodeRetourClé,sColonnes,sBuffer sont des chaines
+      	bAuto,bNum,bUnicode	sont des booleens
+      	
+      	SI cApplication.mg_taInfo[m_sTableNomUnique].p_sColonneAutomatique>"" ALORS sCodeRetourClé=m_pclBaseDeDonnées.SQLRetourIDAuto(cApplication.mg_taInfo[m_sTableNomUnique].p_sColonneAutomatique)
+      	
+      	sBuffer=m_pclBaseDeDonnées.SQLBinaireÉcrit("%1")
+      	
+      	POUR TOUT pclUneColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes
+      		SI PAS pclUneColonne.p_bEstMémoBinaire ALORS
+      			SI Droite(pclUneColonne.m_sNom,4)="hash" _ET_ Position(cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémoBinaire,Gauche(pclUneColonne.m_sNom,Taille(pclUneColonne.m_sNom)-4))>0 ALORS CONTINUER	//on évite les colonnes de hash binaire car traitée par la suite
+      			bAuto=pclUneColonne.p_bEstAutomatique
+      			SI PAS bForceID _ET_ bAuto _ET_ pclUneColonne.p_sSéquenceOracle>"" ALORS
+      				sValeurs+=[","]+pclUneColonne.m_sNomSQL+"="+pclUneColonne.p_sSéquenceOracle+".NEXTVAL"
+      			SINON SI (bForceID _OU_ PAS bAuto)  ALORS
+      				sColonnes+=[","]+pclUneColonne.m_sNomSQL				
+      				SI pclUneColonne.p_bEstDateOuHeure ALORS
+      					SI pclUneColonne.p_bEstNullable _ET_ Val({"m_sd."+pclUneColonne.m_sNom,indVariable})=0 ALORS
+      						sValeurs+=[","]+"NULL"
+      					SINON
+      						SELON pclUneColonne.m_nTypeWD
+      							CAS hRubDateHeure	: sValeurs+=[","]+m_pclBaseDeDonnées.DateHeureVersSQL({"m_sd."+pclUneColonne.m_sNom,indVariable})
+      							CAS hRubHeure		: sValeurs+=[","]+m_pclBaseDeDonnées.HeureVersSQL({"m_sd."+pclUneColonne.m_sNom,indVariable})
+      							AUTRE CAS			: sValeurs+=[","]+m_pclBaseDeDonnées.DateVersSQL({"m_sd."+pclUneColonne.m_sNom,indVariable})
+      						FIN
+      					FIN
+      				SINON SI pclUneColonne.p_bEstBinaire ALORS
+      					SI pclUneColonne.p_bEstNullable _ET_ {"m_sd."+pclUneColonne.m_sNom,indVariable}="" ALORS
+      						sValeurs+=[","]+"NULL"
+      					SINON 
+      						sValeurs+=[","]+ChaîneConstruit(sBuffer,BufferVersHexa({"m_sd."+pclUneColonne.m_sNom,indVariable},SansRegroupement,SansLigne))
+      					FIN
+      				SINON SI pclUneColonne.p_bEstBooléen ALORS
+      					SI pclUneColonne.p_bEstNullable _ET_ {"m_sd."+pclUneColonne.m_sNom,indVariable}="" ALORS
+      						sValeurs+=[","]+"NULL"
+      					SINON 
+      						sValeurs+=[","]+m_pclBaseDeDonnées.BooléenVersSQL({"m_sd."+pclUneColonne.m_sNom,indVariable})
+      					FIN
+      				SINON
+      					bNum=pclUneColonne.p_bEstNumérique
+      					bUnicode=pclUneColonne.p_bEstUnicode
+      					SI pclUneColonne.p_bEstNullable _ET_ ((bNum _ET_ {"m_sd."+pclUneColonne.m_sNom,indVariable}=0) _OU_ (PAS bNum _ET_ {"m_sd."+pclUneColonne.m_sNom,indVariable}="")) ALORS
+      						sValeurs+=[","]+"NULL"
+      					SINON
+      						sValeurs+=[","]+(bNum ? {"m_sd."+pclUneColonne.m_sNom,indVariable} SINON (bUnicode ? m_pclBaseDeDonnées.SQLUnicodePréfixe() SINON "")+"'"+Remplace({"m_sd."+pclUneColonne.m_sNom,indVariable},"'","''")+"'")
+      					FIN
+      				FIN				
+      			FIN
+      		FIN
+      	FIN
+      	
+      	POUR TOUT pclUneColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes
+      		SI pclUneColonne.p_bEstAutomatique ALORS pclColonneAuto<-pclUneColonne
+      		SI pclUneColonne.p_bEstMémoBinaire ALORS
+      			sColonnes+=[","]+pclUneColonne.m_sNomSQL
+      			SI pclUneColonne.p_bEstNullable _ET_ {"m_sd."+pclUneColonne.m_sNom,indVariable}="" ALORS
+      				sValeurs+=[","]+"NULL"
+      			SINON
+      				si pas m_stConnexion.sRépertoireCache~="" alors nIndiceHash=TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",pclUneColonne.m_sNom+"hash")
+      				sValeurs+=[","]+ChaîneConstruit(sBuffer,BufferVersHexa((nIndiceHash<1 _et_ pas m_stConnexion.sRépertoireCache~="" ? hashMemo({"m_sd."+pclUneColonne.m_sNom,indVariable}) sinon "")+{"m_sd."+pclUneColonne.m_sNom,indVariable},SansRegroupement,SansLigne))
+      				SI pas m_stConnexion.sRépertoireCache~="" _Et_ nIndiceHash>0 ALORS 
+      					sColonnes+=[","]+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_sNomSQL
+      					sValeurs+=[","]+(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_bEstBinaire ? ChaîneConstruit(sBuffer,{"m_sd."+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_sNomSQL,indVariable}) SINON "'"+{"m_sd."+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_sNomSQL,indVariable}+"'")
+      				fin
+      			FIN
+      		FIN
+      	FIN
+      	
+      	SI pclColonneAuto<>Null ALORS
+      		SI PAS bForceID _OU_ cApplication.mg_taInfo[m_sTableNomUnique].SQLTableForceIDauto(Vrai) ALORS 
+      			sReq = "INSERT INTO "+cApplication.mg_taInfo[m_sTableNomUnique].m_sPremierAlias+" ("+sColonnes+")"
+      			SI PAS bForceID _ET_ m_stConnexion.cnxDonnées..Provider<>cBaseDeDonnéesPostgreSQL.hAccèsNatifPostGreSQL ALORS sReq+=[" "]+sCodeRetourClé
+      			sReq+=[" "]+"VALUES ("+sValeurs+")"
+      			SI PAS bForceID _ET_ m_stConnexion.cnxDonnées..Provider=cBaseDeDonnéesPostgreSQL.hAccèsNatifPostGreSQL ALORS sReq+=[" "]+sCodeRetourClé
+      			{"m_sd."+cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire,indVariable}=Requête(sReq,Vrai)
+      			SI bForceID ALORS 
+      				RENVOYER Vrai
+      			SINON
+      				SI cApplication.mg_taInfo[m_sTableNomUnique].p_sErreur="" ALORS
+      					FichierVersMémoire(objet,m_sd)	//pour mettre l'ID auto dans l'objet
+      					m_sValCléEnCours=cApplication.mg_taInfo[m_sTableNomUnique].CléPrimaire(m_sd)
+      					cApplication.mg_taInfo[m_sTableNomUnique].SQLTableForceIDauto(Faux)
+      					RENVOYER Vrai
+      				SINON
+      					m_pclErreur.AjouteErreur(cApplication.mg_taInfo[m_sTableNomUnique].p_serreur)
+      					cApplication.mg_taInfo[m_sTableNomUnique].SQLTableForceIDauto(Faux)
+      				FIN
+      			FIN
+      		SINON
+      			m_pclErreur.AjouteErreur(<§$0013§>)
+      		FIN
+      	SINON
+      		m_sValCléEnCours=cApplication.mg_taInfo[m_sTableNomUnique].CléPrimaire(m_sd)
+      		SI Requête("INSERT INTO "+cApplication.mg_taInfo[m_sTableNomUnique].m_sPremierAlias+" ("+sColonnes+") "+sCodeRetourClé+[" "]+"VALUES ("+sValeurs+")") ALORS
+      			SI bForceID ALORS 
+      				RENVOYER Vrai
+      			SINON
+      				SI cApplication.mg_taInfo[m_sTableNomUnique].p_sErreur="" ALORS
+      					m_pclErreur.AjouteErreur(cApplication.mg_taInfo[m_sTableNomUnique].p_sErreur)
+      					FichierVersMémoire(objet,m_sd)	//pour mettre l'ID auto dans l'objet
+      					RENVOYER Vrai
+      				FIN
+      			FIN
+      		FIN
+      	FIN
+      FIN
+      RENVOYER faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();renvoyer faux
+     type : 458752
+   -
+     name : Modifie
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1924479351069170289
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée modifiant l'enregistrement dans sa base de données. Utilisé par Écrit()
+      PROCEDURE privé Modifie() : booleen
+      m_pclErreur.Raz()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      
+      m_bErreurDoublon=Faux;m_bErreurIntégrité=Faux;m_bErreurBlocage=Faux
+      
+      nIndice,nIndiceHash sont des entiers
+      
+      si m_stConnexion.eAccès = cBaseDeDonnées.FonctionsH	alors 
+      	POUR TOUTE CHAÎNE sColonne DE cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesNonMémo SEPAREE PAR ","
+      		nIndice = tableaucherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonne)
+      		SI nIndice>0 _Et_ PAS cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstAutomatique _et_ cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstNullable alors
+      			{m_sAlias+"."+sColonne,indRubrique}..null = (cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstTexte _ou_ cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstDateOuHeure ? {m_sAlias+"."+sColonne,indRubrique}="" SINON {m_sAlias+"."+sColonne,indRubrique}=0)
+      		fin		
+      	fin	
+      		
+      	si hmodifie(m_sAlias) ALORS 	
+      		SourceVersObjet(m_sAlias)
+      		m_sValCléEnCours=cApplication.mg_taInfo[m_sTableNomUnique].CléPrimaire(m_sAlias)
+      		RENVOYER Vrai
+      	sinon	
+      		m_pclErreur.AjouteErreurHF()
+      	FIN
+      sinon
+      	sClé est une chaine 
+      	si m_sValCléEnCours="" alors 
+      		POUR TOUTE CHAÎNE sColonneClé de cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire separee par ","
+      			nIndice = TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonneClé)
+      			SI nIndice<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$001c§>,sColonneClé,cApplication.mg_taInfo[m_sTableNomUnique].m_snom));renvoyer faux
+      			sClé+=[" AND "]+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL+"="+(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstTexte _OU_ cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstDateOuHeure ? "'"+Remplace({"m_sd."+sColonneClé,indVariable},"'","''")+"'" sinon {"m_sd."+sColonneClé,indVariable})
+      		fin
+      	sinon 
+      		sClé=cApplication.mg_taInfo[m_sTableNomUnique].CléValeur(m_sValCléEnCours)
+      	FIN
+      	
+      	SI sClé>"" ALORS
+      		sValeurs,sHash,sBuffer	sont des chaines
+      		bufMemo,bufHash			sont des buffers	
+      		bNum,bUnicode			sont des booleens
+      
+      		sBuffer=m_pclBaseDeDonnées.SQLBinaireÉcrit("%1")
+      		
+      		POUR TOUT pclUneColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes
+      			SI PAS pclUneColonne.p_bEstMémoBinaire _et_ (m_sColonnesLues DANS ("","*") _OU_ Position(m_sColonnesLues,pclUneColonne.m_sNomOriginal,0,MotComplet+SansCasse)>0) ALORS
+      				SI Droite(pclUneColonne.m_snom,4)="hash" _ET_ Position(cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémoBinaire,Gauche(pclUneColonne.m_sNom,Taille(pclUneColonne.m_sNom)-4))>0 ALORS CONTINUER	//on évite les colonnes de hash binaire car traitée par la suite
+      				
+      				SI PAS pclUneColonne.p_bEstAutomatique ALORS 
+      					sValeurs+=[","]+pclUneColonne.m_sNomSQL+"="
+      					SI pclUneColonne.p_bEstDateOuHeure ALORS
+      						SI pclUneColonne.p_bEstNullable _ET_ Val({"m_sd."+pclUneColonne.m_sNom,indVariable})=0 ALORS
+      							sValeurs+="NULL"
+      						SINON
+      							SELON pclUneColonne.m_nTypeWD
+      								CAS hRubDateHeure	: sValeurs+=m_pclBaseDeDonnées.DateHeureVersSQL({"m_sd."+pclUneColonne.m_sNom,indVariable})
+      								CAS hRubHeure		: sValeurs+=m_pclBaseDeDonnées.HeureVersSQL({"m_sd."+pclUneColonne.m_sNom,indVariable})
+      								AUTRE CAS			: sValeurs+=m_pclBaseDeDonnées.DateVersSQL({"m_sd."+pclUneColonne.m_sNom,indVariable})
+      							FIN
+      						FIN
+      					SINON SI pclUneColonne.p_bEstBinaire ALORS
+      						SI pclUneColonne.p_bEstNullable _ET_ {"m_sd."+pclUneColonne.m_sNom,indVariable}="" ALORS
+      							sValeurs+="NULL"
+      						SINON
+      							sValeurs+=ChaîneConstruit(sBuffer,BufferVersHexa({"m_sd."+pclUneColonne.m_sNom,indVariable},SansRegroupement,SansLigne))
+      						FIN
+      					sinon si pclUneColonne.p_bEstBooléen alors
+      						SI pclUneColonne.p_bEstNullable _ET_ {"m_sd."+pclUneColonne.m_sNom,indVariable}="" ALORS
+      							sValeurs+="NULL"
+      						SINON
+      							sValeurs+=m_pclBaseDeDonnées.BooléenVersSQL({"m_sd."+pclUneColonne.m_sNom,indVariable})
+      						FIN
+      					SINON
+      						bNum=pclUneColonne.p_bEstNumérique
+      						SI pclUneColonne.p_bEstNullable _ET_ ((bNum _ET_ {"m_sd."+pclUneColonne.m_sNom,indVariable}=0) _OU_ (PAS bNum _ET_ {"m_sd."+pclUneColonne.m_sNom,indVariable}="")) ALORS
+      							sValeurs+="NULL"
+      						SINON
+      							bUnicode=pclUneColonne.p_bEstUnicode
+      							sValeurs+=(bNum ? {"m_sd."+pclUneColonne.m_sNom,indVariable} SINON (bUnicode ? m_pclBaseDeDonnées.SQLUnicodePréfixe() sinon "")+"'"+Remplace({"m_sd."+pclUneColonne.m_sNom,indVariable},"'","''")+"'")
+      						FIN
+      					FIN
+      				FIN
+      			fin
+      		FIN
+      		
+      		POUR TOUT pclUneColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes
+      			SI pclUneColonne.p_bEstMémoBinaire ALORS
+      				SI pclUneColonne.p_bEstNullable _ET_ {"m_sd."+pclUneColonne.m_sNom,indVariable}="" ALORS
+      					sValeurs+=[","]+pclUneColonne.m_sNomSQL+"="+"NULL"
+      				SINON
+      					SI PAS m_stConnexion.sRépertoireCache~="" ALORS nIndiceHash = TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",pclUneColonne.m_sNom+"hash")
+      					sValeurs+=[","]+pclUneColonne.m_sNomSQL+"="
+      					sValeurs+=ChaîneConstruit(sBuffer,BufferVersHexa((nIndiceHash<1 _et_ pas m_stConnexion.sRépertoireCache~="" ? HashMemo({"m_sd."+pclUneColonne.m_sNom,indVariable}) sinon "")+{"m_sd."+pclUneColonne.m_sNom,indVariable},SansRegroupement,SansLigne))
+      					SI PAS m_stConnexion.sRépertoireCache~="" _ET_ nIndiceHash>0 ALORS 
+      						sValeurs+=[","]+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_sNomSQL+"="
+      						sValeurs+=(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_bEstBinaire ? ChaîneConstruit(sBuffer,{"m_sd."+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_sNomSQL,indVariable}) SINON "'"+{"m_sd."+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_sNomSQL,indVariable}+"'")
+      					fin
+      				FIN
+      			fin
+      		FIN
+      		
+      		SI Requête("UPDATE "+cApplication.mg_taInfo[m_sTableNomUnique].m_sPremierAlias+" SET "+sValeurs+" WHERE "+sClé) ALORS RENVOYER Vrai	//sinon l'erreur vient déjà de l'ancêtre
+      	SINON
+      		//l'erreur est déjà dans m_pclErreur
+      	FIN
+      FIN
+      
+      RENVOYER Faux
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();renvoyer faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();rENVOYER Faux
+     type : 458752
+   -
+     name : Recherche
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1924479351069235887
+     type_code : 12
+     code : |1-
+      // Résumé : Recherche un enregistrement dans la base de données en fonction d'une valeur de clé spécifiée. La recherche peut être effectuée sur une clé particulière ou sur la clé primaire de la table. La méthode utilise différentes stratégies en fonction de l'accès à la base de données (ODBC, requête SQL, fonctions Hxxxx) selon ce qui a été choisi lors de l'ouverture de la table.
+      // Syntaxe : [ <Résultat> = ] Recherche (<xValeurClé> [, <sNomOuStructureClé> est chaîne [, <bBloque> est booléen [, <sColonnesALire> est chaîne]]])
+      // Paramètres :
+      // 	xValeurClé : Valeur de la clé pour la recherche.
+      //	sNomOuStructureClé (chaîne UNICODE) : Nom ou structure de la clé à utiliser pour la recherche (par défaut, utilise la clé primaire de la table).
+      // 	bBloque (booléen  optionnel) : Indique si la recherche doit être bloquante (par défaut, non bloquante).
+      //	sColonnesALire (chaîne UNICODE) : Liste des colonnes à lire, séparée par des virgules, lors de la recherche (par défaut, toutes les colonnes).
+      // Valeur de retour : booléen : Vrai si l'enregistrement est trouvé, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Recherche(local xValeurClé,local sNomOuStructureClé est une chaine = cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire,bBloque est un booleen = faux,local sColonnesALire est une chaine = m_sColonnesALire) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(xValeurClé,sNomOuStructureClé,bBloque)
+      m_pclErreur.RAZ()
+      sValeurClé,sColonneClé	sont des chaînes
+      sPréLimite,sPostLimite 	sont des chaines
+      bufValeurClé			est un buffer
+      nIndiceClé,nIndice		sont des entiers
+      
+      m_bPointeur 	= Faux
+      m_sColonnesLues	= ""
+      m_sColonnesALire= sColonnesALire
+      
+      SI sNomOuStructureClé>"" ALORS
+      	si m_stConnexion.eAccès = cBaseDeDonnées.FonctionsH alors
+      		sColonneClé	= cApplication.mg_taInfo[m_sTableNomUnique].ColonnesCléVersClé(sNomOuStructureClé)
+      		nIndiceClé 	= TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabIndexes,tcLinéaire,"m_sNom",sColonneClé)
+      		nIndice 	= TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sNomOuStructureClé)
+      		si nIndice<1 _et_ nIndiceClé>0 alors
+      			bufValeurClé=cApplication.mg_taInfo[m_sTableNomUnique].CléValeur(xValeurClé,sNomOuStructureClé)
+      			SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(<§$000b§>+sColonneClé+<§$000c§>+BufferVersHexa(bufValeurClé,SansRegroupement,SansLigne))
+      			si bufValeurClé>"" alors
+      				//uniquement la recherche à l'identique. Pour les recherches génériques, utiliser Liste
+      				SI HLitRecherche(m_sAlias,sColonneClé,bufValeurClé,(bBloque ? hBlocageEcriture SINON hBlocageNon)+hLimiteParcours) ALORS
+      					m_sColonnesLues	= cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnes
+      					m_eStatutEnregistrement	= cEnregistrement.EstInchangé;m_bPointeur = Vrai	//le mettre avant SourceVersObjet pour éviter une 2eme lecture si on charge les mémos
+      					SI m_bFaireFichierVersObjet ALORS SourceVersObjet(m_sAlias);AprèsLecture()	//W23-20180313 : faire l'affectation avant le hSuivant sinon les mémos textes ne sont pas récupérés
+      					SI PAS HSuivant(m_sAlias,sColonneClé) ALORS RENVOYER Vrai SINON Raz();m_pclErreur.AjouteAvertissement(<§$0014§>)
+      				SINON 
+      					//faire une requête et vérifier qu'il n'y a qu'un seul résultat (cas où on recherche du "commence par" et qu'on sait que l'on a qu'un résultat)
+      					SI HErreur()<>0 alors m_pclerreur.AjouteErreurHF()
+      					si RechercheParRequête() alors 
+      						SI HErreur()<>0 ALORS m_pclErreur.Raz()																//m_pclErreur.Raz pour enlever l'erreur éventuelle de hLitRecherche
+      						FichierVersMémoire(objet,m_sd)													//met le résultat dans l'objet pour ensuite aller cherche la clé unique
+      						HLitRecherchePremier(m_sAlias,cApplication.mg_taInfo[m_sTableNomUnique].p_sCléPrimaire,cApplication.mg_taInfo[m_sTableNomUnique].CléPrimaire(m_sd),(bBloque ? hBlocageEcriture SINON hBlocageNon)+hLimiteParcours)	//pour mettre le curseur sur l'enregistrement trouvé
+      						SI HTrouve(m_sAlias) ALORS								
+      							m_sColonnesLues	= cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnes
+      							m_eStatutEnregistrement	= cEnregistrement.EstInchangé;m_bPointeur = Vrai	//le mettre avant SourceVersObjet pour éviter une 2eme lecture si on charge les mémos
+      							SI m_bFaireFichierVersObjet ALORS SourceVersObjet(m_sd);AprèsLecture()		//W23-20180313 : faire l'affectation avant le hSuivant sinon les mémos textes ne sont pas récupérés
+      							SI PAS HSuivant(m_sAlias,cApplication.mg_taInfo[m_sTableNomUnique].p_sCléPrimaire) ALORS RENVOYER Vrai SINON Raz();m_pclErreur.AjouteAvertissement(<§$0014§>)
+      						FIN
+      					FIN
+      				FIN
+      			sinon
+      				//message déjà dans l'erreur
+      			fin
+      		sinon SI nIndice>0 alors
+      			SI HRecherchePremier(m_sAlias,sNomOuStructureClé,xValeurClé) ALORS
+      				m_sColonnesLues=cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnes
+      				SI PAS HSuivant(m_sAlias,sNomOuStructureClé) ALORS //WD23 20190828 : répéter la recherche car sinon une erreur "aucun parcours n'a été amorcé pour la rubrique" apparaît (HFCS)
+      					SI HLitRecherchePremier(m_sAlias,sNomOuStructureClé,xValeurClé,(bBloque ? hBlocageEcriture SINON hBlocageNon)) ALORS 
+      						m_eStatutEnregistrement	= cEnregistrement.EstInchangé;m_bPointeur = Vrai	//le mettre avant SourceVersObjet pour éviter une 2eme lecture si on charge les mémos
+      						SI m_bFaireFichierVersObjet ALORS SourceVersObjet(m_sAlias);AprèsLecture()	//W23-20180313 : faire l'affectation avant le hSuivant sinon les mémos textes ne sont pas récupérés
+      						RENVOYER Vrai 
+      					SINON si herreur()<>0 alors
+      						m_pclErreur.AjouteErreurHF()
+      					FIN
+      				SINON 
+      					Raz();m_pclErreur.AjouteAvertissement(<§$0014§>)
+      				FIN
+      			SINON
+      				Raz();m_pclErreur.AjouteAvertissement(<§$0019§>)
+      			FIN
+      		sinon	//pas le choix de faire une requête
+      			SI RechercheParRequête() ALORS 
+      				FichierVersMémoire(objet,m_sd)													//met le résultat dans l'objet pour ensuite aller cherche la clé unique
+      				SI HLitRecherchePremier(m_sAlias,cApplication.mg_taInfo[m_sTableNomUnique].p_sCléPrimaire,cApplication.mg_taInfo[m_sTableNomUnique].CléPrimaire(m_sd)) ALORS	//pour mettre le curseur sur l'enregistrement trouvé
+      					m_eStatutEnregistrement	= cEnregistrement.EstInchangé;m_bPointeur = Vrai	//le mettre avant SourceVersObjet pour éviter une 2eme lecture si on charge les mémos
+      					SI m_bFaireFichierVersObjet ALORS SourceVersObjet(m_sd);AprèsLecture()
+      					RENVOYER Vrai 
+      				FIN
+      			FIN
+      		fin
+      	sinon
+      		Colonnes()
+      		SI RechercheParRequête() ALORS
+      			m_eStatutEnregistrement	= cEnregistrement.EstInchangé
+      			SourceVersObjet(m_sd);AprèsLecture()
+      			RENVOYER Vrai 
+      		FIN
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      FIN
+      RAZ()	//si l'enregistrement n'est pas trouvé, on vide son contenu (pour éviter qu'il y ait confusion dans la suite du code)
+      renvoyer faux
+      
+      	PROCÉDURE INTERNE RechercheParRequête() : booléen
+      	clRecherche 	est un csql(m_nIndiceDeConnexion,cApplication.mg_taInfo[m_sTableNomUnique].m_sNom,cApplication.mg_taInfo[m_sTableNomUnique].m_sMotDePasse,cApplication.mg_taInfo[m_sTableNomUnique].m_sAnalyse,cApplication.mg_taInfo[m_sTableNomUnique].m_sMotDePasseAnalyse)
+      	sValeurClé=cApplication.mg_taInfo[m_sTableNomUnique].CléValeur(xValeurClé,sNomOuStructureClé,cBaseDeDonnées.RequêteSQL)
+      	SI sValeurClé>"" ALORS
+      		(sPréLimite,sPostLimite)=clRecherche.SQLLimiteRéqueteA(2,vrai)
+      		POUR TOUTE CHAÎNE sColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire separee par ","
+      			m_sColonnesLues+=[","]+sColonne	//clé obligatoirement dans les colonnes à lire
+      		FIN
+      		POUR TOUTE CHAÎNE sColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnes separee par ","
+      			SI sColonnesALire DANS ("","*") _OU_ Position(sColonnesALire,sColonne,0,SansCasse+MotComplet)>0 ALORS m_sColonnesLues+=[","]+sColonne
+      		FIN
+      		SI clRecherche.Requête("SELECT "+sPréLimite+[" "]+cApplication.mg_taInfo[m_sTableNomUnique].SQLColonnes(m_sColonnesLues,m_sLitAussiMemos)+" FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" WHERE "+sValeurClé+[" "]+sPostLimite) ALORS
+      			selon m_stConnexion.eAccès
+      				cas cBaseDeDonnées.ODBC
+      					Selon clRecherche.SQLNbLig()
+      						cas 0
+      							m_pclErreur.AjouteAvertissement(<§$0019§>)
+      						cas 1
+      							si clRecherche.SQLAvance()=0 ALORS
+      								nCol est un entier
+      								m_bPointeur=Faux
+      								POUR TOUTE CHAÎNE sColonne de m_sColonnesLues separee par ","
+      									nCol++;{"m_sd."+sColonne,indVariable}=clRecherche.SQLLitCol(nCol)
+      								FIN
+      								RENVOYER Vrai
+      							sinon
+      								m_pclErreur.AjouteErreur(<§$0015§>)
+      							fin
+      						cas 2
+      							m_pclErreur.AjouteAvertissement(<§$0014§>)
+      					FIN
+      				cas cbasededonnées.RequêteSQL 
+      					quand exception dans
+      						si HNbEnr(clRecherche.m_sd)=1 alors 
+      							HLitPremier(clRecherche.m_sd);m_bPointeur=Faux;SdStructureInit()
+      							HCopieEnreg(m_sd,clRecherche.m_Sd,hCopieIdAuto);SourceVersObjet(m_sd);RENVOYER Vrai
+      						sinon si HNbEnr(clRecherche.m_sd)>1 alors
+      							m_pclErreur.AjouteAvertissement(<§$0014§>)
+      						FIN
+      					faire
+      						m_pclErreur.AjouteException()
+      					fin
+      				cas cbasededonnées.FonctionsH 
+      					quand exception dans
+      						si HNbEnr(clRecherche.m_salias)=1 alors 
+      							HLitPremier(clRecherche.m_sAlias);m_bPointeur=Faux;SdStructureInit()
+      							HCopieEnreg(m_sd,clRecherche.m_Sd,hCopieIdAuto);SourceVersObjet(m_sAlias);RENVOYER Vrai
+      						sinon si HNbEnr(clRecherche.m_sAlias)>1 alors
+      							m_pclErreur.AjouteAvertissement(<§$0014§>)
+      						FIN
+      					faire
+      						m_pclErreur.AjouteException()
+      					fin
+      			fin
+      		SINON
+      			m_pclErreur.AjouteErreur(clRecherche.p_sErreur)
+      		FIN
+      	SINON
+      		//m_pclErreur contient une erreur de CléEtValeur
+      	FIN
+      	RENVOYER faux
+      	FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Supprime
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1924479351069301455
+     type_code : 12
+     code : |1-
+      // Résumé : Supprime un enregistrement de la base de données en fonction de la clé primaire spécifiée. Elle prend en charge la suppression en cascade en examinant les relations de clés étrangères ajoutées par cTable.AjouteCascade.
+      // Syntaxe : [ <Résultat> = ] Supprime ( [<sValeurClé> [, <sColonneClé> est chaîne]])
+      // Paramètres :
+      // 	sValeurClé (optionnel) : Clé primaire de l'enregistrement à supprimer (par défaut, utilise la clé en cours de l'objet).
+      //	sColonneClé (chaîne UNICODE optionnelle) : Nom de la colonne de la clé primaire (par défaut, utilise la colonne de clé primaire de la table).
+      // Valeur de retour : booléen : Vrai si la suppression est réussie, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Supprime(local sValeurClé = m_sValCléEnCours,sColonneClé est une chaine = cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire) : booleen	//avec valeurClé obligatoire pour supprimer l'enregistrement sans avoir besoin de le lire avant (pour avoir son ID)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sValeurClé,sColonneClé)
+      m_pclErreur.RAZ()
+      
+      SI sValeurClé<>"" ALORS
+      	SI sColonneClé>"" ALORS
+      		selon m_stConnexion.eAccès
+      			CAS cBaseDeDonnées.FonctionsH
+      				si PAS m_bPointeur _ou_ sValeurClé<>m_sValCléEnCours alors 	//soit c'est un autre enregistrement, soit la clé est différente (alors on a pas le choix de relire l'enregistrement)
+      					si pas Recherche(sValeurClé,sColonneClé) alors 
+      						si p_sErreur="" renvoyer vrai sinon renvoyer faux 	//déjà supprimé
+      					FIN
+      				FIN
+      				SupprimeCascade()
+      				si hsupprime(m_sAlias) alors RAZ();renvoyer vrai
+      			CAS cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC
+      				sClé est une chaine = cApplication.mg_taInfo[m_sTableNomUnique].CléValeur(sValeurClé,sColonneClé)
+      				SI sClé>"" ALORS 
+      					ObjetVersSource(m_sd)
+      					SupprimeCascade()
+      					si Requête("DELETE FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sPremierAlias+" WHERE "+sClé) alors Raz();RENVOYER Vrai
+      				SINON
+      					//message d'erreur déjà là
+      				FIN
+      		FIN
+      	sinon
+      		m_pclErreur.ajouteErreur(<§$0000§>)
+      	FIn
+      SINON
+      	m_pclErreur.AjouteErreur(<§$000e§>)
+      FIN
+      renvoyer faux
+      
+      	procédure interne SupprimeCascade()
+      	//suppression cascade : regarder s'il y a un lien avec d'autres tables
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      	sTable,sConditionCascade,sColonne	sont des chaines
+      	nIndice,nIndiceCascade 				sont des entiers
+      	POUR TOUT pclClé de capplication.mg_taInfo[m_sTableNomUnique].p_tabIndexes
+      		POUR TOUT sCascade de pclClé.m_tabLienIntégrité
+      			sTable 				= ExtraitChaîne(sCascade,3,cGénérique._Sep)
+      			sColonne			= ExtraitChaîne(sTable,2,".")
+      			clTableCascade 	est un cTable(m_nIndiceDeConnexion,extraitchaine(sTable,1,"."))	//ouverture de la table visée
+      			clTableCascade.colonnes()														//pour charger en mémoire les colonnes
+      			nIndice 		= TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabIndexes,tcLinéaire,"m_sNom",sColonne)
+      			si nIndice>0 alors
+       				nIndiceCascade = TableauCherche(cApplication.mg_taInfo[clTableCascade.m_sNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonne)
+      				si nIndiceCascade>0 alors	
+      					sConditionCascade+=[" AND "]+cApplication.mg_taInfo[clTableCascade.m_sNomUnique].p_tabColonnes[nIndiceCascade].m_sNomSQL+"="
+       					sConditionCascade+=(cApplication.mg_taInfo[clTableCascade.m_sNomUnique].p_tabColonnes[nIndiceCascade].p_bEstNumérique _ou_ cApplication.mg_taInfo[clTableCascade.m_sNomUnique].p_tabColonnes[nIndiceCascade].p_bEstBooléen ? "" sinon "'")
+       					sConditionCascade+=Remplace((m_stConnexion.eAccès=cBaseDeDonnées.FonctionsH ? {m_sAlias+"."+sColonne,indRubrique} sinon {m_sd+"."+sColonne,indRubrique}),"'","''")
+       					sConditionCascade+=(cApplication.mg_taInfo[clTableCascade.m_sNomUnique].p_tabColonnes[nIndiceCascade].p_bEstNumérique _ou_ cApplication.mg_taInfo[clTableCascade.m_sNomUnique].p_tabColonnes[nIndiceCascade].p_bEstBooléen ? "" sinon "'")
+       					clTableCascade.Supprimetout(sConditionCascade)
+       				FIN
+      			FIN
+      		FIN
+      	FIN
+      	fin
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 1941906962641918393
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour réinitialiser l'état de l'objet, y compris la mémoire associée à la connexion à la base de données. Attention, du fait que cela réinitialise aussi la clé unique, l'enregistrement est considéré comme "à ajouter" dans la BD.
+      // Syntaxe : Raz ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Raz()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      si m_pclBaseDeDonnées.m_stConnexion.eAccès _DANS_ (cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC) alors
+      	HRAZ(m_sd)
+      	FichierVersMémoire(objet,m_sd)
+      sinon
+      	HRAZ(m_sAlias)
+      	FichierVersMémoire(objet,m_sAlias)
+      FIN
+      m_eStatutEnregistrement=EstAjouté
+     type : 458752
+   -
+     name : Ecrit
+     procedure_id : 1972293628612250660
+     type_code : 12
+     code : |1-
+      // Résumé : Sauvegarde les modifications apportées à un enregistrement dans la base de données. Elle gère les opérations d'ajout, de mise à jour et de suppression.
+      // Syntaxe : [ <Résultat> = ] Ecrit ( [<bForceID> est booléen])
+      // Paramètres :
+      // 	bForceID (booléen optionnel): Si vrai, force l'écriture même si l'ID de l'enregistrement est déjà défini.
+      // Valeur de retour : booléen : Vrai si l'écriture est réussie, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Ecrit(bForceID est un booleen = faux) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bForceID)
+      m_pclErreur.Raz()
+      si m_bLectureSeule 	alors m_pclerreur.AjouteErreur(<§$0016§>);renvoyer faux
+      si pas vérifie() 	alors renvoyer faux
+      
+      sNomColonne,sModifiés 	sont des chaines
+      
+      selon m_eStatutEnregistrement
+      	cas SeraSupprimé
+      		renvoyer supprime()
+      	CAS EstInchangé,estmodifié
+      		si m_sValCléEnCours>"" alors			
+      			si m_pclBaseDeDonnées.m_stConnexion.eAccès = cBaseDeDonnées.FonctionsH alors
+      				m_bFaireFichierVersObjet=faux
+      				SI (m_bPointeur _ET_ cApplication.mg_taInfo[m_sTableNomUnique].CléPrimaire(m_sAlias)=m_sValCléEnCours) _OU_ Recherche(m_sValCléEnCours,cApplication.mg_taInfo[m_sTableNomUnique].p_sCléPrimaire) ALORS	//pour les cas où on a fait une liste et que le pointeur n'est pas encore sur le bon enregistrement	
+      					m_bFaireFichierVersObjet=vrai
+      					SI pas ObjetVersSource(m_sAlias) alors renvoyer faux
+      				SINON
+      					m_bFaireFichierVersObjet=vrai
+      					m_pclErreur.AjouteErreur(<§$000f§>);RENVOYER Faux
+      				FIN				
+      			sinon 
+      				SdStructureInit()	
+      				SI PAS ObjetVersSource(m_sd) ALORS RENVOYER Faux
+      			fin
+      			si pas m_eStatutEnregistrement=EstModifié alors
+      				POUR TOUT pclUneColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes
+      					SI pclUneColonne.p_bEstMémoBinaire ALORS
+      						sNomColonne=pclUneColonne.m_sNom
+      						SI m_pclBaseDeDonnées.m_stConnexion.eAccès = cBaseDeDonnées.FonctionsH alors
+      							SI m_taHashMémosChargés[sNomColonne]<>{m_sAlias+"."+sNomColonne,indRubrique} _ET_ m_taHashMémosChargés[sNomColonne]<>HashMemo({m_sAlias+"."+sNomColonne,indRubrique}) ALORS 
+      								m_eStatutEnregistrement=EstModifié
+      								si m_pclBaseDeDonnées.p_bTraceColonnesModifiées alors sModifiés+=[","]+sNomColonne sinon sortir
+      							FIN
+      						sinon	
+      							SI m_taHashMémosChargés[sNomColonne]<>{"m_sd."+sNomColonne,indVariable} _ET_ m_taHashMémosChargés[sNomColonne]<>HashMemo({"m_sd."+sNomColonne,indVariable}) ALORS 
+      								m_eStatutEnregistrement=EstModifié
+      								si m_pclBaseDeDonnées.p_bTraceColonnesModifiées alors sModifiés+=[","]+sNomColonne sinon sortir
+      							FIN
+      						fin
+      					fin
+      				fin
+      			FIN
+      			si pas m_eStatutEnregistrement=EstModifié alors
+      				sEnregistrement est une chaine = m_sEnregistrement
+      				SI m_bufHashEnregistrement<>HashEnregistrement() ALORS 
+      					POUR TOUTE CHAÎNE sLigne,nPos,nLigne de sEnregistrement separee par rc
+      						SI extraitchaine(extraitchaine(sLigne,2,">"),1,"<")<>ExtraitChaîne(ExtraitChaîne(ExtraitChaîne(m_sEnregistrement,nLigne,RC),2,">"),1,"<") ALORS 
+      							m_eStatutEnregistrement=EstModifié
+      							si m_pclBaseDeDonnées.p_bTraceColonnesModifiées alors sModifiés+=[","]+Milieu(ExtraitChaîne(sLigne,1," "),2) sinon sortir
+      						FIN
+      					FIN
+      				FIN
+      			fin
+      			SI m_eStatutEnregistrement=EstModifié ALORS 
+      				SI m_pclBaseDeDonnées.p_bTraceColonnesModifiées ALORS Trace("modifiés : "+sModifiés)
+      				POUR TOUT pclUneColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes
+      					SI pclUneColonne.p_bEstMémoBinaire ALORS
+      						sNomColonne=pclUneColonne.m_sNom
+      						SI m_pclBaseDeDonnées.m_stConnexion.eAccès = cBaseDeDonnées.FonctionsH alors
+      							SI m_taHashMémosChargés[sNomColonne]<>{m_sAlias+"."+sNomColonne,indRubrique} _ET_ m_taHashMémosChargés[sNomColonne]<>HashMemo({m_sAlias+"."+sNomColonne,indRubrique}) _et_ PAS MémoTéléverse(sNomColonne) ALORS RENVOYER Faux
+      						sinon	
+      							SI m_taHashMémosChargés[sNomColonne]<>{"m_sd."+sNomColonne,indVariable} _ET_ m_taHashMémosChargés[sNomColonne]<>HashMemo({"m_sd."+sNomColonne,indVariable}) _et_ PAS MémoTéléverse(sNomColonne) ALORS RENVOYER Faux
+      						FIN
+      					fin
+      				FIN
+      				renvoyer Modifie()
+      			SINON
+      				SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(<§$001b§>)
+      			FIN
+      		SINON
+      			m_pclErreur.AjouteErreur(<§$000e§>);renvoyer faux
+      		FIN
+      	CAS EstAjouté		: 
+      		SI m_pclBaseDeDonnées.m_stConnexion.eAccès = cBaseDeDonnées.FonctionsH alors
+      			si pas hraz(m_sAlias) _ou_ pas ObjetVersSource(m_sAlias) ALORS renvoyer faux
+      		sinon
+      			SdStructureInit()
+      			SI PAS HRAZ(m_sd) _OU_ PAS ObjetVersSource(m_sd) ALORS RENVOYER Faux
+      		fin
+      		POUR TOUT pclUneColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes
+      			SI pclUneColonne.p_bEstMémoBinaire _ET_ PAS MémoTéléverse(pclUneColonne.m_sNom) ALORS RENVOYER Faux
+      		FIN
+      		si pas Ajoute(bForceID) ALORS renvoyer faux
+      FIN
+      m_eStatutEnregistrement=EstInchangé
+      RENVOYER Vrai
+     type : 458752
+   -
+     name : HashEnregistrement
+     procedure_id : 1991291480225014818
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée calculant le hash de l'enregistrement en cours
+      PROCEDURE PRIVÉE HashEnregistrement() : buffer
+      si m_bLectureSeule alors renvoyer ""
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp>
+      	SI m_pclBaseDeDonnées.m_stConnexion.eAccès = cBaseDeDonnées.FonctionsH ALORS
+      		m_sEnregistrement=HEnregistrementVersXML(m_sAlias)
+      	sinon
+      		m_sEnregistrement=HEnregistrementVersXML(m_sd)
+      	fin
+      	
+      <sinon si CibleExécution=SitePHP ou CibleExécution=WindowsMobile>
+      	m_sEnregistrement = "<"+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomOriginal+">"
+      	
+      	POUR TOUTE CHAÎNE sColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnes
+      		m_sEnregistrement+=[RC]+"<"+sColonne
+      		SI m_pclBaseDeDonnées.m_stConnexion.eAccès = cBaseDeDonnées.FonctionsH alors
+      			SI {m_sAlias+"."+sColonne,indRubrique}..Null ALORS
+      				m_sEnregistrement+=" null="+cGénérique._Guillemet+"yes"+cGénérique._Guillemet+">"
+      			SINON
+      				m_sEnregistrement+=">"+{m_sAlias+"."+sColonne,indRubrique}
+      			FIN
+      		sinon
+      			SI {m_sd+"."+sColonne,indRubrique}..Null ALORS
+      				m_sEnregistrement+=" null="+cGénérique._Guillemet+"yes"+cGénérique._Guillemet+">"
+      			SINON
+      				m_sEnregistrement+=">"+{m_sd+"."+sColonne,indRubrique}
+      			FIN
+      		fin
+      		m_sEnregistrement+=[RC]+"</"+sColonne+">"
+      	FIN
+      	m_sEnregistrement = "</"+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomOriginal+">"
+      	
+      <fin>
+      
+      
+      m_sEnregistrement=Remplace(m_sEnregistrement,[
+      	null="yes"
+      ],"")
+      m_sEnregistrement=Remplace(m_sEnregistrement,[">0<",">00000000<",">000000000<",">00000000000000000<"],"><")	//les valeurs à 0 seront remplacés par des null lors de l'écriture SQL
+      RENVOYER Hash(m_sEnregistrement)
+     type : 458752
+   -
+     name : RechercheParSQL
+     procedure_id : 2007587453643820855
+     type_code : 12
+     code : |1-
+      // Résumé : Effectue une recherche dans la base de données en utilisant une requête SQL fournie en paramètre. Elle lit les résultats de la requête et met à jour l'objet avec les données obtenues.
+      // Syntaxe : [ <Résultat> = ] RechercheParSQL (<sRequête> est chaîne)
+      // Paramètres :
+      //	sRequête (chaîne UNICODE) : La requête SQL à exécuter pour la recherche.
+      // Valeur de retour : booléen : Vrai si la recherche est réussie, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE RechercheParSQL(LOCAL sRequête est une chaine) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sRequête)
+      m_pclErreur.Raz()
+      
+      si pas requete(sRequête) ALORS renvoyer faux
+      si m_stConnexion.eAccès<>cBaseDeDonnées.ODBC alors
+      	si HNbEnr(m_sd)=1 alors HLitPremier(m_sd) sinon raz();renvoyer faux
+      sinon
+      	SI SQLNbLig()=1 ALORS SQLAvance(m_sAlias) SINON RENVOYER Faux
+      	//	pour nCol = 1 a SQL.NbCol
+      	//		{"m_pclTable.m_sd."+SQL.TitreCol[nCol],indvariable}=SQLLitCol(m_pclTable.m_sAlias,nCol)	//ne fonctionne pas, SQL.TitreCol[nCol] renvoie vide
+      	//	FIN
+      	nPos,nNumColonne sont des entiers
+      	sRequête	= Remplace(Remplace(Milieu(sRequête,8),RC," "),TAB," ")
+      	nPos		= Position(sRequête,"FROM",0,MotComplet+SansCasse+DepuisDébut)
+      	sColonnes est une chaîne = Gauche(sRequête,nPos-1)
+      	sColonne est une chaîne
+      	POUR TOUTE CHAÎNE sColonne DE sColonnes SEPAREE PAR ","
+      		nNumColonne++
+      		nPos = Position(sColonne,"AS",0,MotComplet+SansCasse+DepuisDébut)
+      		sColonne=(nPos<1 ? SansEspace(sColonne) SINON Milieu(sColonne,nPos+2))
+      		{"m_sd."+sColonne,indVariable}=SQLLitCol(nNumColonne)
+      	FIN
+      FIN
+      renvoyer SourceVersObjet(m_sd)
+     type : 458752
+   -
+     name : MémoTélécharge
+     procedure_id : 2007592895387918903
+     type_code : 12
+     code : |1-
+      // Résumé : Télécharge/récupère un mémo depuis un emplacement spécifié (base de données, répertoire local, FTP, Google Drive, etc.) et renvoie son contenu sous forme de buffer.
+      // Syntaxe : [ <Résultat> = ] MémoTélécharge (<sNomColonne> est chaîne [, <sHash> est chaîne [, <bForceLectureDansBD> est booléen]])
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Nom de la colonne de mémo à télécharger.
+      //	sHash (chaîne UNICODE) : Valeur de hachage courant pour vérifier si une nouvelle version du mémo doit être récupérée/téléchargée (gestion du cache).
+      // 	bForceLectureDansBD (booléen optionnel) : Indique s'il faut forcer la lecture depuis la base de données. Par défaut Faux.
+      // Valeur de retour : buffer : Contenu du mémo
+      // Exemple :
+      //
+      PROCEDURE protégé MémoTélécharge(local sNomColonne est une chaine,local sHash est une chaine = "",bForceLectureDansBD est un booleen = faux) : buffer
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomColonne,bForceLectureDansBD)
+      m_pclErreur.Raz()
+      
+      sNomColonne=Minuscule(sNomColonne)
+      
+      sFichierTemporaire,sReq		sont des chaines
+      nIndice,nIndiceHash			sont des entiers
+      bufMémo						est un buffer
+      sCléValeur					est une chaine
+      sRepCache					est une chaine = m_stConnexion.sRépertoireCache
+      clMemo 						est un csql(m_nIndiceDeConnexion,cApplication.mg_taInfo[m_sTableNomUnique].m_sNom,cApplication.mg_taInfo[m_sTableNomUnique].m_sMotDePasse,cApplication.mg_taInfo[m_sTableNomUnique].m_sAnalyse,cApplication.mg_taInfo[m_sTableNomUnique].m_sMotDePasseAnalyse)
+      
+      //vérifier que la rubrique demandée est bien un mémo
+      nIndice = TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sNomColonne)
+      si nIndice<1 alors m_pclErreur.AjouteErreur(ChaîneConstruit(<§$001c§>,sNomColonne,cApplication.mg_taInfo[m_sTableNomUnique].m_sNom));renvoyer null
+      si pas cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstMémoBinaire _et_ PAS cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstImage alors 
+      	m_pclErreur.AjouteErreur(chaineconstruit(<§$0005§>,sNomColonne));renvoyer null
+      FIN
+      nIndiceHash = TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sNomColonne+"hash")
+      
+      sFichierTemporaire = fFichierTemp("FMK",cApplication._Application.p_sRépertoireTemporaire)
+      SI m_sEmplacementDesMémos~="" ALORS 	//dans la bd
+      	SELON m_stConnexion.eAccès
+      		CAS cBaseDeDonnées.FonctionsH
+      			SI pas bForceLectureDansBD _et_ PAS sRepCache~="" _et_ sHash<>"" _et_ fFichierExiste(sRepCache+sHash) alors renvoyer fChargeBuffer(sRepCache+sHash)
+      			SI PAS m_bPointeur alors
+      				m_bFaireFichierVersObjet=faux	//sinon risque de bouclage car la recherche va charger le mémo, qui va rechercher l'enregistrement, qui va charger le mémo, ...
+      				si pas Recherche(m_sValCléEnCours) ALORS m_bFaireFichierVersObjet=vrai;m_pclErreur.AjouteErreur(<§$0012§>);renvoyer null sinon m_bFaireFichierVersObjet=vrai
+      			fin
+      			//pas le choix d'extraire le mémo au complet
+      			sInfo est une chaine
+      			SI m_stConnexion.cnxDonnées..Provider DANS (hAccèsHF7,hAccèsHFClientServeur) ALORS HInfoMémo(m_sAlias,sNomColonne)
+      			si ExtraitChaîne(sInfo,1)<>"BAD" alors
+      				si PAS sRepCache~="" _et_ sInfo>"" _et_ pas ExtraitChaîne(sInfo,6) dans ("",eot) _et_ fFichierExiste(sRepCache+ExtraitChaîne(sInfo,6)) alors
+      					bufMémo=fChargeBuffer(sRepCache+ExtraitChaîne(sInfo,6))	//uniquement pour HF, dans les autres cas, sInfo est vide
+      				sinon
+      					SI PAS fRepCrée(cApplication._Application.p_sRépertoireTemporaire) ALORS m_pclErreur.AjouteErreurWx();RENVOYER Null
+      					SI PAS HExtraitMémo(m_sAlias,sNomColonne,sFichierTemporaire) ALORS 
+      						m_pclErreur.AjouteErreurHF();RENVOYER Null
+      					SINON si ffichierexiste(sFichierTemporaire) alors
+      						bufMémo=fChargeBuffer(sFichierTemporaire)
+      						si taille(bufMémo)=0 alors
+      							MemoDéfaut()
+      						sinon SI PAS sRepCache~="" _et_ pas m_stConnexion.cnxDonnées..Provider DANS (hAccèsHF7,hAccèsHFClientServeur) ALORS 
+      							sHash=BufferVersHexa(Gauche(bufMémo,16),SansRegroupement,SansLigne);bufMémo=Milieu(bufMémo,17)	//les 16 premiers caractères sont un hash
+      							SI sHash="" alors MemoDéfaut()
+      						FIN
+      						fSupprime(sFichierTemporaire)
+      					sinon 
+      						MemoDéfaut()
+      					FIN
+      				FIN
+      			sinon
+      				m_pclErreur.AjouteErreur(<§$0018§>);RENVOYER Null 
+      			fin
+      		CAS cBaseDeDonnées.RequêteSQL
+      			SI m_sValCléEnCours="" ALORS m_pclErreur.AjouteAvertissement(<§$001f§>);renvoyer null sinon sCléValeur=cApplication.mg_taInfo[m_sTableNomUnique].CléValeur(m_sValCléEnCours,cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire)
+      			si pas m_stConnexion.sRépertoireCache~="" alors	//il y a un répertoire cache configuré
+      				//récupère le mémo dans le cache ou dans la BD
+      				SI sHash="" ALORS
+      					si nIndiceHash>0 alors
+      						sReq="SELECT "+m_pclBaseDeDonnées.SQLBinaireLit32(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].m_sNomSQL)+" AS FrameworkHashBin FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" WHERE "+sCléValeur
+      					sinon
+      						//vérifier d'abord le hash inséré dans le binaire (pour voir si le fichier n'est pas en local)
+      						sReq="SELECT "+m_pclBaseDeDonnées.SQLBinaireLit32(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL,cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstImage)+" AS FrameworkHashBin FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" WHERE "+sCléValeur
+      					FIN
+      					SI clMemo.Requete(sReq) _ET_ HLitPremier(clMemo.m_sd) ALORS	sHash = {clMemo.m_sd+".FrameworkHashBin",indRubrique}
+      					SI sHash>"" alors
+      						b17 est un booleen
+      						SI Taille(sHash)=16 ALORS b17=vrai;sHash=majuscule(ChaineVersHexa(sHash))
+      						SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteTexte("Hash="+sHash)
+      						si bForceLectureDansBD _ou_ pas fFichierExiste(sRepCache+sHash) ALORS
+      							SI clMemo.Requête("SELECT "+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL+" AS BetulaMemo FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" WHERE "+sCléValeur) _et_ hlitpremier(clMemo.m_sd) alors
+      								si nIndiceHash>0 alors bufMémo={clMemo.m_sd+".BetulaMemo",indRubrique}	sinon bufMémo=Milieu({clMemo.m_sd+".BetulaMemo",indRubrique},(b17 ? 17 sinon 9))
+      								SI Taille(bufMémo)=0 ALORS
+      									MemoDéfaut()
+      								SINON SI PAS fSauveBuffer(sRepCache+sHash,bufMémo) ALORS
+      									m_pclErreur.Ajouteavertissement(erreurinfo())	//pas grave, il sera téléchargé la prochaine fois
+      								fin
+      							sinon
+      								m_pclErreur.AjouteErreurHF();RENVOYER Null
+      							FIN
+      						SINON
+      							bufMémo=fChargeBuffer(sRepCache+sHash)
+      						fin
+      					sinon
+      						MemoDéfaut()                                       
+      					fin
+      				sinon
+      					sHash = chaineVersHexa(sHash,2)
+      					SI PAS fFichierExiste(sRepCache+sHash) ALORS
+      						SI clMemo.Requête("SELECT "+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL+" AS BetulaMemo FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" WHERE "+sCléValeur) _ET_ HLitPremier(clMemo.m_sd) ALORS
+      							bufMémo	= {clMemo.m_sd+".BetulaMemo",indRubrique}
+      							SI Taille(bufMémo)=0 ALORS 
+      								MemoDéfaut()
+      							sinon SI PAS fSauveBuffer(sRepCache+sHash,bufMémo) ALORS 
+      								m_pclErreur.AjouteErreurWx()	//pas grave, il sera téléchargé la prochaine fois
+      							fin
+      						SINON
+      							m_pclErreur.AjouteErreurHF();rENVOYER Null
+      						FIN
+      					sinon
+      						bufMémo=fChargeBuffer(sRepCache+sHash)
+      					FIN                                        
+      				fin
+      			sinon
+      				SI clMemo.Requête("SELECT "+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL+" AS BetulaMemo FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" WHERE "+sCléValeur) _ET_ HLitPremier(clMemo.m_sd) ALORS
+      					bufMémo	= {clMemo.m_sd+".BetulaMemo",indRubrique}
+      				SINON
+      					m_pclErreur.AjouteErreurHF();RENVOYER Null
+      				FIN
+      			fin
+      		CAS cBaseDeDonnées.ODBC
+      			SI m_sValCléEnCours="" ALORS m_pclErreur.AjouteAvertissement(<§$001f§>);renvoyer null sinon sCléValeur=cApplication.mg_taInfo[m_sTableNomUnique].CléValeur(m_sValCléEnCours,cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire)
+      			SI PAS sRepCache~="" ALORS
+      				//télécharger le binaire
+      				SI sHash="" ALORS
+      					//vérifier d'abord le hash du binaire (pour voir si le fichier n'est pas en local)
+      					SELON m_stConnexion.cnxDonnées..Provider
+      						CAS hOledbSQLServer			: sReq="SELECT CONVERT(VARCHAR(32),"+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL+",2) AS FrameworkHashBin FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" WHERE "+sCléValeur
+      					FIN
+      					SI clMemo.Requête(sReq) _ET_ clMemo.SQLAvance()=0 ALORS
+      						sHash = clMemo.SQLLitMemo(1)
+      						SI sHash>"" ALORS
+      							SI PAS fFichierExiste(sRepCache+sHash) ALORS
+      								SI clMemo.Requête("SELECT "+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL+" AS BetulaMemo FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" WHERE "+sCléValeur) _ET_ clMemo.SQLAvance()=0 ALORS
+      									bufMémo=Milieu(clMemo.SQLLitMemo(1),9)
+      									SI Taille(bufMémo)=0 ALORS 
+      										MemoDéfaut()
+      									sinon SI PAS fSauveBuffer(sRepCache+sHash,bufMémo) ALORS 
+      										m_pclErreur.AjouteErreurWx()	//pas grave, il sera téléchargé la prochaine fois
+      									FIN
+      								SINON
+      									m_pclErreur.AjouteErreurHF();RENVOYER Null
+      								FIN
+      							SINON
+      								bufMémo=fChargeBuffer(sRepCache+sHash)
+      							FIN                                        
+      						FIN
+      					FIN				
+      				SINON
+      					SI PAS fFichierExiste(sRepCache+sHash) ALORS
+      						SI clMemo.Requête("SELECT "+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL+" AS BetulaMemo FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" WHERE "+sCléValeur) _ET_ HLitPremier(clMemo.m_sd) ALORS
+      							bufMémo=clMemo.SQLLitMemo(1)
+      							SI Taille(bufMémo)=0 ALORS 
+      								MemoDéfaut()
+      							sinon SI PAS fSauveBuffer(sRepCache+sHash,bufMémo) ALORS 
+      								m_pclErreur.AjouteErreurWx() 	//pas grave, il sera téléchargé la prochaine fois
+      							fin
+      						SINON
+      							m_pclErreur.AjouteErreurHF();RENVOYER Null
+      						FIN
+      					SINON
+      						bufMémo=fChargeBuffer(sRepCache+sHash)
+      					FIN                                        
+      				FIN
+      			sinon	
+      				SI clMemo.Requête("SELECT "+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL+" AS BetulaMemo FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" WHERE "+sCléValeur) _ET_ clMemo.SQLAvance()=0 ALORS
+      					bufMémo=clMemo.SQLLitMemo(1)
+      				SINON
+      					m_pclErreur.AjouteErreurHF();rENVOYER Null
+      				FIN
+      			FIN
+      	FIN
+      SINON 
+      	SI m_sEmplacementDesMémos[[2 À 3]]=":\" _OU_ m_sEmplacementDesMémos[[1 À 2]]="\\" ALORS	//dans un répertoire
+      		SI pas frepcree(m_sEmplacementDesMémos) ALORS m_pclErreur.AjouteErreurWx();RENVOYER Null	//petite vérification préalable pour éviter de faire une lecture inutile si le répertoire n'existe pas
+      	fin
+      
+      	//récupération du contenu de la colonne  (va donner le chemin du fichier "mémo")	
+      	SELON m_stConnexion.eAccès
+      		CAS cBaseDeDonnées.FonctionsH
+      			SI PAS m_bPointeur _ET_ PAS HLitRecherche(m_sAlias,cApplication.mg_taInfo[m_sTableNomUnique].p_sCléPrimaire,cApplication.mg_taInfo[m_sTableNomUnique].CléValeur(m_sValCléEnCours,cApplication.mg_taInfo[m_sTableNomUnique].p_sCléPrimaire)) ALORS m_pclErreur.AjouteErreur(<§$0012§>);renvoyer null
+      			si taille({m_sAlias+"."+sNomColonne,indRubrique})=8 alors sFichierTemporaire=BufferVersHexa({m_sAlias+"."+sNomColonne,indRubrique},SansRegroupement,SansLigne) sinon sFichierTemporaire={m_sAlias+"."+sNomColonne,indRubrique}
+      		cas cBaseDeDonnées.RequêteSQL
+      			SI clMemo.Requête("SELECT "+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL+" AS BetulaMemo FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" WHERE "+cApplication.mg_taInfo[m_sTableNomUnique].CléValeur(m_sValCléEnCours,cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire)) _ET_ HLitPremier(clMemo.m_sd) ALORS
+      				SI Taille({clMemo.m_sd+"."+"BetulaMemo",indRubrique})=8 ALORS sFichierTemporaire=BufferVersHexa({clMemo.m_sd+"."+"BetulaMemo",indRubrique},SansRegroupement,SansLigne) SINON sFichierTemporaire={clMemo.m_sd+"."+"BetulaMemo",indRubrique}
+      			sinon
+      				m_pclErreur.AjouteErreurHF();RENVOYER Null
+      			fin
+      		cas cBaseDeDonnées.ODBC
+      			SI clMemo.Requête("SELECT "+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL+" AS BetulaMemo FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" WHERE "+cApplication.mg_taInfo[m_sTableNomUnique].CléValeur(m_sValCléEnCours,cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire)) _ET_ SQLAvance()=0 ALORS
+      				SI Taille(SQLLitMemo(1))=8 ALORS sFichierTemporaire=BufferVersHexa(SQLLitMemo(1),SansRegroupement,SansLigne) SINON sFichierTemporaire=SQLLitMemo(1)
+      			SINON
+      				m_pclErreur.AjouteErreurHF();RENVOYER Null
+      			FIN
+      	fin 
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteTexte("Fichier temp = "+sFichierTemporaire)
+      	
+      	SI sFichierTemporaire>"" ALORS
+      		SI m_sEmplacementDesMémos[[2 À 3]]=":\" _OU_ m_sEmplacementDesMémos[[1 À 2]]="\\" ALORS	//dans un répertoire
+      			SI fFichierExiste(m_sEmplacementDesMémos+["\"]+sFichierTemporaire) ALORS
+      				SI PAS sRepCache~="" _et_ fFichierExiste(sRepCache+sFichierTemporaire) _et_ fdateheure(m_sEmplacementDesMémos+["\"]+sFichierTemporaire,"",fModification)=fDateHeure(sRepCache+sFichierTemporaire,"",fModification) ALORS 
+      					bufMémo=fChargeBuffer(sRepCache+sFichierTemporaire)
+      				sinon
+      					SI PAS sRepCache~="" ALORS 
+      	 					SI PAS fCopieFichier(m_sEmplacementDesMémos+["\"]+sFichierTemporaire,sRepCache+sFichierTemporaire) ALORS
+      	 						m_pclErreur.Ajouteavertissement(erreurinfo()) 
+      	 						bufMémo=fChargeBuffer(m_sEmplacementDesMémos+["\"]+sFichierTemporaire)
+      	 					SINON
+      	 						fDateHeure(m_sEmplacementDesMémos+["\"]+sFichierTemporaire,fDateHeure(sRepCache+sFichierTemporaire,"",fModification),fModification)
+      	 						bufMémo=fChargeBuffer(sRepCache+sFichierTemporaire)
+      	 					FIN
+      					SINON
+      						bufMémo=fChargeBuffer(m_sEmplacementDesMémos+["\"]+sFichierTemporaire)
+      					FIN
+      				FIN
+      			FIN
+      		SINON SI cRéseau.Protocole(m_sEmplacementDesMémos)=cRéseau.EProtocoleRéseau.FTP ALORS
+      			clFTP est un cFTP(cFTP.ftp,m_sEmplacementDesMémos)
+      			SI clFTP.FichierExiste(sFichierTemporaire) ALORS
+      				SI PAS sRepCache~="" _ET_ fFichierExiste(sRepCache+sFichierTemporaire) _ET_ clFTP.FichierDateHeure(sFichierTemporaire)=fDateHeure(sRepCache+sFichierTemporaire,"",fModification) ALORS
+      					bufMémo=fChargeBuffer(sRepCache+sFichierTemporaire)
+      				SINON
+      					SI PAS sRepCache~="" ALORS 
+      						SI PAS clFTP.Télécharge(sFichierTemporaire,sRepCache+sFichierTemporaire) ALORS
+      							m_pclErreur.AjouteAvertissement(clFTP.p_serreur);renvoyer null 
+      						SINON
+      							fDateHeure(sRepCache+sFichierTemporaire,clFTP.fichierDateHeure(sFichierTemporaire),fModification)
+      							bufMémo=fChargeBuffer(sRepCache+sFichierTemporaire)
+      						FIN
+      					SINON
+      						SI PAS fRepCrée(cApplication._Application.p_sRépertoireTemporaire) ALORS m_pclErreur.AjouteErreurWx();clFTP.deconnecte();RENVOYER Null	//car on va y télécharger le fichier FTP
+      						SI PAS clFTP.Télécharge(sFichierTemporaire,cApplication._Application.p_sRépertoireTemporaire+sFichierTemporaire) ALORS
+      							m_pclErreur.AjouteAvertissement(clFTP.p_serreur);RENVOYER Null 
+      						SINON
+      							bufMémo=fChargeBuffer(cApplication._Application.p_sRépertoireTemporaire+sFichierTemporaire)
+      						FIN
+      					FIN
+      				FIN
+      			FIN
+      		sinon sI Gauche(m_sEmplacementDesMémos,6)~="ggl://" OU Gauche(m_sEmplacementDesMémos,9)~="google://"
+      			//...aller chercher les fichiers dans Google Drive
+      		fin	
+      	fin
+      FIN
+      
+      SI Taille(bufMémo)=0 ALORS MemoDéfaut()
+      m_taHashMémosChargés[Minuscule(sNomColonne)]=HashMemo(bufMémo)
+      RENVOYER bufMémo
+      
+      
+      	procédure interne MemoDéfaut()
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp>
+      		SI m_taMémosCache[sNomColonne]<>Null _ET_ Gauche(m_taMémosCache[sNomColonne],3)<>"0"+cGénérique._Sep+"0" ALORS
+      			//A FAIRE : Fichier Hyperfile, vérifier si il n'y a pas déjà une vignette qui convient
+      			//redimensionner l'image
+      			imgBuffer est une image = bufMémo
+      			nLargeur est un entier = Val(ExtraitChaîne(m_taMémosCache[sNomColonne],1,cGénérique._Sep))
+      			nHauteur est un entier = Val(ExtraitChaîne(m_taMémosCache[sNomColonne],2,cGénérique._Sep))
+      			
+      			SI imgBuffer.Valide _ET_ imgBuffer.Largeur>0 _ET_ imgBuffer.Hauteur>0 ALORS
+      				SI nLargeur/imgBuffer.Largeur*imgBuffer.Hauteur<nHauteur ALORS nHauteur=PartieEntière(nLargeur/imgBuffer.Largeur*imgBuffer.Hauteur)
+      				SI nHauteur/imgBuffer.Hauteur*imgBuffer.Largeur<nLargeur ALORS nLargeur=PartieEntière(nHauteur/imgBuffer.Hauteur*imgBuffer.Largeur)
+      				Redimensionne(imgBuffer,nLargeur,nHauteur)
+      				SI dSauveImageJPEG(imgBuffer,sRepCache+sHash) ALORS	//pour éviter les bords noirs en JPG 
+      					fRenomme(sRepCache+sHash+".jpg",sRepCache+sHash)	//car dSauveImagePNG ajoute .png à la fin
+      					bufMémo=fChargeBuffer(sRepCache+sHash)
+      				SINON
+      					m_pclErreur.AjouteAvertissement(erreurinfo()) //pas grave
+      				FIN
+      			SINON SI ExtraitChaîne(m_taMémosCache[sNomColonne],3,cGénérique._Sep)>"" _ET_ fFichierExiste(ExtraitChaîne(m_taMémosCache[sNomColonne],3,cGénérique._Sep)) ALORS
+      				bufMémo=fChargeBuffer(ExtraitChaîne(m_taMémosCache[sNomColonne],3,cGénérique._Sep))								
+      			FIN
+      		SINON
+      			SI PAS fSauveBuffer(sRepCache+sHash,bufMémo) ALORS m_pclErreur.AjouteAvertissement(erreurinfo()) //pas grave
+      		FIN
+      	
+      <fin>
+      
+      		
+      	FIN
+      	
+      	procédure interne Redimensionne(imgBuffer,nLargeur,nHauteur)
+      		
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      		dRedimensionne(imgBuffer,nLargeur,nHauteur,drHauteQualité+drHomothétiqueCentré)
+      	
+      <sinon si CibleExécution=SiteLinux ou CibleExécution=SitePHP ou CibleExécution=WebserviceLinux ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      	dRedimensionne(imgBuffer,nLargeur,nHauteur)
+      	
+      <fin>
+      
+      
+      	fin	
+     type : 458752
+   -
+     name : MémoTéléverse
+     procedure_id : 2007592895388181359
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui téléverse un mémo selon le nom de sa colonne. Utilisé dans la méthode Écrit().
+      PROCEDURE privé MémoTéléverse(local sNomColonneMemo est une chaine) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomColonneMemo)
+      m_pclErreur.Raz()
+      
+      sFichierTemporaire,sHash 	sont des chaines
+      bExiste 					est un booleen
+      bufContenu,bufHash 			sont des buffers
+      nIndice,nIndiceHash			sont des entiers
+      sRepCache					est une chaine = m_stConnexion.sRépertoireCache
+      
+      //vérifier que la rubrique demandée est bien binaire (mémo)
+      SI sNomColonneMemo="" ALORS
+      	SI cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémoBinaire="" ALORS m_pclErreur.AjouteErreur(<§$0004§>);RENVOYER faux
+      	SI contient(cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémoBinaire,",") alors m_pclErreur.AjouteErreur(<§$0003§>);renvoyer faux
+      	sNomColonneMemo=cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémoBinaire
+      fin
+      nIndice = tableaucherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sNomColonneMemo)	
+      SI PAS cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstMémoBinaire ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0005§>,sNomColonneMemo));renvoyer faux
+      nIndiceHash = TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sNomColonneMemo+"hash")
+      
+      SELON m_stConnexion.eAccès
+      	CAS cBaseDeDonnées.FonctionsH
+      		SI fFichierExiste({m_sAlias+"."+sNomColonneMemo,indRubrique}) ALORS //on a mis un nom de fichier dans la rubrique mémo	
+      			sFichierTemporaire={m_sAlias+"."+sNomColonneMemo,indRubrique}
+      			bufContenu=fChargeBuffer(sFichierTemporaire)		
+      		sinon
+      			bufContenu={m_sAlias+"."+sNomColonneMemo,indRubrique}
+      			//il faut sauver le contenu du buffer en fichier pour HAttacheMémo
+      			sFichierTemporaire = fFichierTemp("FMK",cApplication._Application.p_sRépertoireTemporaire)
+      			fSauveBuffer(sFichierTemporaire,bufContenu)
+      		FIN
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteTexte("Fichier temp = "+sFichierTemporaire)
+      	cas cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC
+      		sNomFichier est une chaine = {"m_sd."+sNomColonneMemo,indVariable}
+      		SI (NomLong() _ET_ Taille({"m_sd."+sNomColonneMemo,indVariable})<=32767) _OU_ (PAS NomLong() _ET_ Taille({"m_sd."+sNomColonneMemo,indVariable})<=260) ALORS
+      			SI fFichierExiste(sNomFichier) ALORS 			//on a mis un nom de fichier dans la rubrique mémo
+      				sFichierTemporaire=sNomFichier
+      				bufContenu=fChargeBuffer(sNomFichier)						
+      			FIN
+      		FIN
+      		SI sFichierTemporaire="" ALORS
+      			bufContenu={"m_sd."+sNomColonneMemo,indVariable}
+      			sFichierTemporaire = fFichierTemp("FMK",cApplication._Application.p_sRépertoireTemporaire)
+      			fSauveBuffer(sFichierTemporaire,bufContenu)
+      		FIN
+      fin		
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteTexte("Fichier temp = "+sFichierTemporaire)
+      
+      si taille(bufContenu)=0 alors
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteTexte("Mémo vide")
+      	si m_sEmplacementDesMémos~="" alors 	//dans la bd
+      		SELON m_stConnexion.eAccès
+      			CAS cBaseDeDonnées.FonctionsH
+      				si m_eStatutEnregistrement=EstInchangé _et_ ({m_sAlias+"."+sNomColonneMemo,indRubrique}<>"" ou pas {m_sAlias+"."+sNomColonneMemo,indRubrique}..null) alors m_eStatutEnregistrement=EstModifié
+      				SI pas HAttacheMémo(m_sAlias,sNomColonneMemo,"") ALORS m_pclErreur.AjouteErreurWx();renvoyer faux
+      			CAS cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC
+      				SI m_eStatutEnregistrement=EstInchangé _ET_ ({m_sd+"."+sNomColonneMemo,indRubrique}<>"" ET PAS {m_sd+"."+sNomColonneMemo,indRubrique}..Null) ALORS m_eStatutEnregistrement=EstModifié
+      				{m_sd+"."+sNomColonneMemo,indRubrique}..null=vrai;renvoyer vrai
+      		fin		
+      
+      	sinon si m_sEmplacementDesMémos[[2 a 3]]=":\" _ou_ m_sEmplacementDesMémos[[1 a 2]]="\\" alors	//dans un répertoire
+      		//on ne supprime pas le fichier au cas ou ce mémo était aussi dans un autre enregistrement
+      	sinon si cRéseau.Protocole(m_sEmplacementDesMémos)=cRéseau.EProtocoleréseau.FTP alors
+      		//on ne supprime pas le fichier au cas ou ce mémo était aussi dans un autre enregistrement
+      	sinon si Gauche(m_sEmplacementDesMémos,6)~="ggl://" ou Gauche(m_sEmplacementDesMémos,9)~="google://" alors
+      		//on ne supprime pas le fichier au cas ou ce mémo était aussi dans un autre enregistrement
+      	fin			
+      sinon
+      	bufHash	= HashMemo(bufContenu)
+      	sHash	= BufferVersHexa(bufHash,SansRegroupement,SansLigne)
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteTexte("Hash="+sHash)
+      	
+      	SI PAS sRepCache~="" ALORS 
+      		//Quand on sauve le mémo dans la BD et qu'on a un répertoire cache, le nom du fichier "cache" sera les 32 caractères 
+      		//du hash (hex en décimal) et le mémo commencera par 9 caractères unicode.  Ces caractères seront lus en priorité
+      		//dans la colonne mémo pour voir s'il faut télécharger tout le mémo ou s'il y a une version cache identique.
+      		//dans les autres cas
+      		//- pas de répertoire cache : rien à comparer, on télécharge le mémo
+      		//- mémo hors de la BD : forcément sous forme de fichier, nommé selon le hash
+      		SI PAS fFichierExiste(sRepCache+sHash) _et_ pas fSauveBuffer(sRepCache+sHash,bufContenu) alors 
+      			m_pclErreur.AjouteAvertissement(erreurinfo());renvoyer faux
+      		FIN
+      	FIN
+      	
+      	SI m_sEmplacementDesMémos~="" ALORS 	//m_sEmplacementDesMémos~="" veut dire "dans la BD"
+      		SELON m_stConnexion.eAccès
+      			CAS cBaseDeDonnées.FonctionsH
+      				SI m_eStatutEnregistrement=EstInchangé _ET_ {m_sAlias+"."+sNomColonneMemo,indRubrique}<>sFichierTemporaire _Et_ {m_sAlias+"."+sNomColonneMemo,indRubrique}<>bufContenu ALORS m_eStatutEnregistrement=EstModifié
+      				sInfo est une chaine = HInfoMémo(m_sAlias,sNomColonneMemo)
+      				SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteTexte("InfoMémo="+sInfo)
+      				SI ExtraitChaîne(sInfo,6)="" _ou_ extraitchaine(sInfo,6)<>sHash ALORS
+      					si pas HAttacheMémo(m_sAlias,sNomColonneMemo,sFichierTemporaire,hMémoBin,(m_stConnexion.cnxDonnées..Provider dans (hAccèsHF7,hAccèsHFClientServeur) ? sHash sinon "")) ALORS 
+      						m_pclErreur.AjouteErreurHF();renvoyer faux
+      					sinon si nIndiceHash>0 alors
+      						{m_sAlias+"."+sNomColonneMemo+"Hash",indRubrique}=(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_bEstMémoBinaire _OU_ cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_bEstBinaire ? bufHash SINON sHash)
+      					FIN
+      					//on ne peut pas supprimer le fichier temp avant de faire hAjoute ou hModifie
+      				SINON
+      					//même contenu ici que dans la BD
+      				FIN
+      			CAS cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC
+      				SI m_eStatutEnregistrement=EstInchangé _ET_ {m_sd+"."+sNomColonneMemo,indrubrique}<>bufContenu ALORS m_eStatutEnregistrement=EstModifié
+      				SI nIndiceHash>0 ALORS
+      					{m_sd+"."+sNomColonneMemo+"Hash",indRubrique}=(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_bEstMémoBinaire _OU_ cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_bEstBinaire ? bufHash SINON sHash)
+      				FIN
+      		FIN
+      	SINON SI m_sEmplacementDesMémos[[2 À 3]]=":\" _OU_ m_sEmplacementDesMémos[[1 À 2]]="\\" ALORS	//dans un répertoire
+      		SI PAS fRepCrée(m_sEmplacementDesMémos) ALORS
+      			m_pclErreur.AjouteErreurWx();renvoyer faux 
+      		SINON						
+      			bExiste=fFichierExiste(m_sEmplacementDesMémos+["\"]+sHash) 
+      			SI (bExiste _OU_ fCopieFichier(sFichierTemporaire,m_sEmplacementDesMémos+["\"]+sHash)) ALORS
+      				si pas bExiste _et_ m_eStatutEnregistrement=EstInchangé alors m_eStatutEnregistrement=EstModifié
+      				SELON m_stConnexion.eAccès		//on met seulement le hash dans le champ car ce hash est le nom du fichier (dans m_sEmplacementDesMémos)
+      					CAS cBaseDeDonnées.FonctionsH						: 
+      						{m_sAlias+"."+sNomColonneMemo,indRubrique}	= (cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstMémoBinaire _OU_ cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstBinaire ? bufHash SINON sHash)
+      						SI nIndiceHash>0 ALORS {m_sAlias+"."+sNomColonneMemo+"Hash",indRubrique}= (cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_bEstMémoBinaire _OU_ cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_bEstBinaire ? bufHash SINON sHash)
+      					CAS cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC	: 
+      						{m_sd+"."+sNomColonneMemo,indRubrique}		= (cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstMémoBinaire _OU_ cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstBinaire ? bufHash SINON sHash)
+      						SI nIndiceHash>0 ALORS {m_sd+"."+sNomColonneMemo+"Hash",indRubrique}	= (cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_bEstMémoBinaire _OU_ cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_bEstBinaire ? bufHash SINON sHash)
+      				FIN
+      				SI sRepCache~="" ALORS fSupprime(sFichierTemporaire)
+      			SINON 
+      				m_pclErreur.AjouteErreurWx();RENVOYER Faux 
+      			FIN
+      		fin
+      	SINON si créseau.Protocole(m_sEmplacementDesMémos)=creseau.EProtocoleréseau.FTP alors
+      		clFTP est un cFTP(cFTP.FTP,m_sEmplacementDesMémos)
+      		bExiste=clFTP.FichierExiste(sHash) 
+      		SI (bExiste _ou_ clFTP.Téléverse(sFichierTemporaire,sHash)) ALORS 
+      			SI PAS bExiste _ET_ m_eStatutEnregistrement=EstInchangé ALORS m_eStatutEnregistrement=EstModifié
+      			SELON m_stConnexion.eAccès		//on met seulement le hash dans le champ car ce hash est le nom du fichier (dans m_sEmplacementDesMémos)
+      				CAS cBaseDeDonnées.FonctionsH						: 
+      					{m_sAlias+"."+sNomColonneMemo,indRubrique}	= (cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstBinaire ? bufHash SINON sHash)
+      					SI nIndiceHash>0 ALORS {m_sAlias+"."+sNomColonneMemo+"Hash",indRubrique}= (cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_bEstBinaire ? bufHash SINON sHash)
+      				CAS cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC	: 
+      					{m_sd+"."+sNomColonneMemo,indRubrique}		= (cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstBinaire ? bufHash SINON sHash)
+      					SI nIndiceHash>0 ALORS {m_sd+"."+sNomColonneMemo+"Hash",indRubrique}	= (cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndiceHash].p_bEstBinaire ? bufHash SINON sHash)
+      			FIN
+      			SI sRepCache~="" ALORS fSupprime(sFichierTemporaire)
+      		SINON
+      			renvoyer faux
+      		FIN
+      	SINON SI Gauche(m_sEmplacementDesMémos,6)~="ggl://" OU Gauche(m_sEmplacementDesMémos,9)~="google://"
+      		//protocole à gérer
+      	sinon
+      		m_pclErreur.AjouteErreur(<§$0010§>);renvoyer faux		
+      	FIN
+      FIN
+      RENVOYER vrai
+     type : 458752
+   -
+     name : HashMemo
+     procedure_id : 2012050406302296119
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privé qui renvoie le hash d'un mémo. Utilisé dans Écrit() mais aussi Modifie, Ajoute et MémoTélécharge.
+      PROCEDURE PRIVÉE HashMemo(xMemo) : buffer	//xMemo non typé car ça peut être un buffer, une chaine ANSI ou Unicode
+      si m_bLectureSeule alors renvoyer ""
+      renvoyer hashChaîne(HA_MD5_128,xMemo)
+     type : 458752
+   -
+     name : MemoImageDéfaut
+     procedure_id : 2012096925277318765
+     type_code : 12
+     code : |1-
+      // Résumé : Définir un mémo image par défaut pour une colonne spécifiée dans une table. Cette fonctionnalité est utile lorsque des images par défaut doivent être affichées en l'absence de données spécifiques dans la colonne. Plusieurs format peuvent être ajoutés, ils sont distingués par leur hauteur et largeur.
+      // Syntaxe : [ <Résultat> = ] MemoImageDéfaut (<sNomColonne> est chaîne, <nLargeur> est entier, <nHauteur> est entier [, <sImageParDéfaut> est chaîne])
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Le nom de la colonne pour laquelle définir l'image par défaut.
+      //	nLargeur (entier) : La largeur de l'image par défaut.
+      //	nHauteur (entier) : La hauteur de l'image par défaut.
+      // 	sImageParDéfaut (chaîne UNICODE optionnelle) : Le chemin de l'image par défaut. Par défaut, cette valeur est une chaîne vide.
+      // Valeur de retour : booléen : Indique le succès de l'opération. Renvoie Vrai si l'opération est réussie, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE MemoImageDéfaut(sNomColonne est une chaine,nLargeur est un entier,nHauteur est un entier,sImageParDéfaut est une chaine = "") : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomColonne,nLargeur,nHauteur,sImageParDéfaut)
+      m_pclErreur.Raz()
+      
+      nIndice est un entier = tableaucherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",minuscule(sNomColonne))
+      si nIndice>0 alors 
+      	si cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstMémoBinaire _ou_ cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].p_bEstImage alors 
+      		m_taMémosCache[Minuscule(sNomColonne)]=nLargeur+cGénérique._Sep+nHauteur+cGénérique._Sep+sImageParDéfaut;renvoyer vrai
+      	sinon
+      		m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0005§>,sNomColonne))
+      	FIN
+      sinon
+      	m_pclerreur.ajouteerreur(chaineconstruit(<§$001c§>,sNomColonne,cApplication.mg_taInfo[m_sTableNomUnique].m_snom))
+      FIN
+      renvoyer faux
+     type : 458752
+   -
+     name : Importe
+     procedure_id : 2032863735642954857
+     type_code : 12
+     code : |1-
+      // Résumé : Importe un objet en utilisant la désérialisation. Elle prend en paramètre un objet de type variant.
+      // Syntaxe : Importe (<vVariant>)
+      // Paramètres :
+      // 	vVariant : Le variant représentant l'objet à importer.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Importe(vVariant)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(vVariant)
+      m_pclErreur.Raz()
+      procImporte est une procédure = _Deserialise()
+      procImporte(vVariant,objet)
+     type : 458752
+   -
+     name : Premier
+     procedure_id : 2033578595943980105
+     type_code : 12
+     code : |1-
+      // Résumé : Lit le premier enregistrement dans la base de données en fonction d'une valeur de clé spécifiée. La méthode utilise différentes stratégies en fonction de l'accès à la base de données (ODBC, requête SQL, fonctions Hxxxx) selon ce qui a été choisi lors de l'ouverture de la table.
+      // Syntaxe : [ <Résultat> = ] Premier ( [<sNomOuStructureClé> est chaîne [, <bBloque> est booléen [, <sColonnesALire> est chaîne]]])
+      // Paramètres :
+      //	sNomOuStructureClé (chaîne UNICODE optionnelle) : Colonne ou de la structure clé primaire pour effectuer la recherche du premier enregistrement. Par défaut, elle utilise la colonne clé primaire de la table.
+      // 	bBloque (booléen optionnel) : Indique s'il faut bloquer l'enregistrement pour l'écriture. Par défaut, il est défini sur Faux.
+      //	sColonnesALire (chaîne UNICODE) : Les colonnes à lire séparée par des virgules. Par défaut, elle lit toutes les colonnes.
+      // Valeur de retour : booléen : Renvoie Vrai si le premier enregistrement est trouvé et positionné, sinon Faux.
+      // Exemple :
+      //
+      PROCEDURE Premier(local sNomOuStructureClé est une chaine = cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire,bBloque est un booleen = faux,local sColonnesALire est une chaine = m_sColonnesALire) : booleen  
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomOuStructureClé,bBloque)
+      m_pclErreur.Raz()
+      m_sColonnesLues=""
+      
+      SI sNomOuStructureClé>"" ALORS
+      	SELON m_stConnexion.eAccès
+      		CAS cBaseDeDonnées.FonctionsH
+      			sColonne 	est une chaine= sNomOuStructureClé
+      			nIndice 	est un entier = tableaucherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabIndexes,tcLinéaire,"m_sNom",sNomOuStructureClé)
+      			SI nIndice<1 alors sColonne=cApplication.mg_taInfo[m_sTableNomUnique].ColonnesCléVersClé(sNomOuStructureClé);nIndice=TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonne)
+      			si nIndice>0 alors
+      				si Hlitpremier(m_sAlias,sColonne,(bBloque ? hBlocageEcriture SINON hBlocageNon)) ALORS
+      					m_eStatutEnregistrement	= cEnregistrement.EstInchangé
+      					SI m_bFaireFichierVersObjet ALORS SourceVersObjet(m_sAlias);AprèsLecture();m_bPointeur = Vrai
+      					RENVOYER Vrai
+      				FIN
+      			sinon
+      				si LectureParRequête() alors
+      					FichierVersMémoire(objet,m_sd)													//met le résultat dans l'objet pour ensuite aller cherche la clé unique
+      					m_eStatutEnregistrement	= cEnregistrement.EstInchangé
+      					HLitRecherchePremier(m_sAlias,cApplication.mg_taInfo[m_sTableNomUnique].p_sCléPrimaire,cApplication.mg_taInfo[m_sTableNomUnique].CléPrimaire(m_sd),hLimiteParcours)	//pour mettre le curseur sur l'enregistrement trouvé
+      					SI m_bFaireFichierVersObjet ALORS SourceVersObjet(m_sd);AprèsLecture();m_bPointeur = Vrai
+      					RENVOYER Vrai 
+      				FIN
+      			fin
+      		CAS cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC
+      			SI LectureParRequête() ALORS 
+      				m_eStatutEnregistrement	= cEnregistrement.EstInchangé
+      				SI m_bFaireFichierVersObjet ALORS SourceVersObjet(m_sd);AprèsLecture()
+      				RENVOYER Vrai 
+      			FIN
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      FIN
+      Raz()	//si l'enregistrement n'est pas trouvé, on vide son contenu (pour éviter qu'il y ait confusion dans la suite du code)
+      RENVOYER Faux
+      
+      	procédure interne LectureParRequête() : booleen
+      	clRecherche est un csql(m_nIndiceDeConnexion,cApplication.mg_taInfo[m_sTableNomUnique].m_sNom,cApplication.mg_taInfo[m_sTableNomUnique].m_sMotDePasse,cApplication.mg_taInfo[m_sTableNomUnique].m_sAnalyse,cApplication.mg_taInfo[m_sTableNomUnique].m_sMotDePasseAnalyse)
+      	nIndice		est un entier
+      	sPréLimite,sPostLimite,sOrdre sont des chaines
+      	
+      	POUR TOUTE CHAÎNE sColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire separee par ","
+      		m_sColonnesLues+=[","]+sColonne	//clé obligatoirement dans les colonnes à lire
+      	FIN
+      	POUR TOUTE CHAÎNE sColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesNonMémo separee par ","
+      		SI sColonnesALire="*" _OU_ Position((sColonnesALire="" ? m_sColonnesLues sinon sColonnesALire),sColonne,0,SansCasse+MotComplet)>0 ALORS m_sColonnesLues+=[","]+sColonne
+      	FIN
+      	sColonnes	est une chaine	= cApplication.mg_taInfo[m_sTableNomUnique].SQLColonnes(m_sColonnesLues,m_sLitAussiMemos)
+      	POUR TOUTE CHAÎNE sColonneClé de sNomOuStructureClé separee par ","
+      		nIndice = TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonneClé)
+      		SI nIndice<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$001c§>,sColonneClé,cApplication.mg_taInfo[m_sTableNomUnique].m_snom));renvoyer faux
+      		sOrdre+=[", "]+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL+" ASC"
+      	FIN
+      	
+      	(sPréLimite,sPostLimite)=clRecherche.SQLLimiteRéqueteA(1,faux)
+      	sReq est une chaine = "SELECT "+sPréLimite+[" "]+sColonnes+" FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" ORDER BY "+sOrdre+[" "]+sPostLimite
+      	SI clRecherche.Requête(sReq) ALORS
+      		SI m_stConnexion.eAccès<>cBaseDeDonnées.ODBC ALORS
+      			SI HNbEnr(clRecherche.m_sd)=1 ALORS 
+      				HLitPremier(clRecherche.m_sd);HCopieEnreg(m_sd,clRecherche.m_sd,hCopieIdAuto);m_bPointeur=Faux
+      				RENVOYER Vrai
+      			FIN
+      		SINON	
+      			SI clRecherche.SQLNbLig()=1 _ET_ clRecherche.SQLAvance(m_sAlias)=0 ALORS
+      				nCol est un entier
+      				m_bPointeur=Faux
+      				POUR TOUTE CHAÎNE sColonne de sColonnes separee par ","
+      					nCol++;{"m_sd."+sColonne,indVariable}=clRecherche.SQLLitCol(nCol)
+      				FIN
+      				RENVOYER Vrai
+      			FIN
+      		FIN
+      	SINON
+      		m_pclErreur.AjouteErreur(clRecherche.p_sErreur)
+      	fin
+      	renvoyer faux		
+      	FIN
+     type : 458752
+   -
+     name : Dernier
+     procedure_id : 2033578630303792355
+     type_code : 12
+     code : |1-
+      // Résumé : Lit le dernier enregistrement dans la base de données en fonction d'une valeur de clé spécifiée. La méthode utilise différentes stratégies en fonction de l'accès à la base de données (ODBC, requête SQL, fonctions Hxxxx) selon ce qui a été choisi lors de l'ouverture de la table.
+      // Syntaxe : [ <Résultat> = ] Premier ( [<sNomOuStructureClé> est chaîne [, <bBloque> est booléen [, <sColonnesALire> est chaîne]]])
+      // Paramètres :
+      //	sNomOuStructureClé (chaîne UNICODE optionnelle) : Colonne ou de la structure clé primaire pour effectuer la recherche du premier enregistrement. Par défaut, elle utilise la colonne clé primaire de la table.
+      // 	bBloque (booléen optionnel) : Indique s'il faut bloquer l'enregistrement pour l'écriture. Par défaut, il est défini sur Faux.
+      //	sColonnesALire (chaîne UNICODE) : Les colonnes à lire séparée par des virgules. Par défaut, elle lit toutes les colonnes.
+      // Valeur de retour : booléen : Renvoie Vrai si le premier enregistrement est trouvé et positionné, sinon Faux.
+      // Exemple :
+      //
+      PROCEDURE Dernier(LOCAL sNomOuStructureClé est une chaine = cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire,bBloque est un booleen = faux,local sColonnesALire est une chaine = m_sColonnesALire) : booleen  
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomOuStructureClé,bBloque)
+      m_pclErreur.Raz()
+      m_sColonnesLues=""
+      
+      SI sNomOuStructureClé>"" ALORS
+      	SELON m_stConnexion.eAccès
+      		CAS cBaseDeDonnées.FonctionsH
+      			sColonne 	est une chaine= sNomOuStructureClé
+      			nIndice 	est un entier = tableaucherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabIndexes,tcLinéaire,"m_sNom",sNomOuStructureClé)
+      			SI nIndice<1 ALORS sColonne=cApplication.mg_taInfo[m_sTableNomUnique].ColonnesCléVersClé(sNomOuStructureClé);nIndice=TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonne)
+      			SI nIndice>0 ALORS
+      				SI HLitdernier(m_sAlias,sColonne,(bBloque ? hBlocageEcriture SINON hBlocageNon)) ALORS
+      					m_sColonnesLues=cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesNonMémo
+      					m_eStatutEnregistrement	= cEnregistrement.EstInchangé
+      					SI m_bFaireFichierVersObjet ALORS SourceVersObjet(m_sAlias);AprèsLecture();m_bPointeur = Vrai
+      					RENVOYER Vrai
+      				FIN
+      			SINON
+      				SI LectureParRequête() ALORS
+      					FichierVersMémoire(objet,m_sd)													//met le résultat dans l'objet pour ensuite aller cherche la clé unique
+      					m_eStatutEnregistrement	= cEnregistrement.EstInchangé
+      					HLitRecherchePremier(m_sAlias,cApplication.mg_taInfo[m_sTableNomUnique].p_sCléPrimaire,cApplication.mg_taInfo[m_sTableNomUnique].CléPrimaire(m_sd),hLimiteParcours)	//pour mettre le curseur sur l'enregistrement trouvé
+      					SI m_bFaireFichierVersObjet ALORS SourceVersObjet(m_sd);AprèsLecture();m_bPointeur = Vrai
+      					RENVOYER Vrai 
+      				FIN
+      			FIN
+      		CAS cBaseDeDonnées.RequêteSQL,cBaseDeDonnées.ODBC
+      			SI LectureParRequête() ALORS 
+      				m_eStatutEnregistrement	= cEnregistrement.EstInchangé
+      				SI m_bFaireFichierVersObjet ALORS SourceVersObjet(m_sd);AprèsLecture()
+      				RENVOYER Vrai 
+      			FIN
+      	FIN
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      FIN
+      Raz()	//si l'enregistrement n'est pas trouvé, on vide son contenu (pour éviter qu'il y ait confusion dans la suite du code)
+      RENVOYER Faux
+      
+      	PROCÉDURE INTERNE LectureParRequête() : booléen
+      	clRecherche est un csql(m_nIndiceDeConnexion,cApplication.mg_taInfo[m_sTableNomUnique].m_sNom,cApplication.mg_taInfo[m_sTableNomUnique].m_sMotDePasse,cApplication.mg_taInfo[m_sTableNomUnique].m_sAnalyse,cApplication.mg_taInfo[m_sTableNomUnique].m_sMotDePasseAnalyse)
+      	nIndice 	est un entier
+      	sPréLimite,sPostLimite,sOrdre sont des chaines
+      	
+      	POUR TOUTE CHAÎNE sColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire separee par ","
+      		m_sColonnesLues+=[","]+sColonne	//clé obligatoirement dans les colonnes à lire
+      	FIN
+      	POUR TOUTE CHAÎNE sColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesNonMémo separee par ","
+      		SI sColonnesALire DANS ("","*") _OU_ Position(sColonnesALire,sColonne,0,SansCasse+MotComplet)>0 ALORS m_sColonnesLues+=[","]+sColonne
+      	FIN
+      	
+      	sColonnes 	est une chaine = cApplication.mg_taInfo[m_sTableNomUnique].SQLColonnes(m_sColonnesLues,m_sLitAussiMemos)
+      	POUR TOUTE CHAÎNE sColonneClé de sNomOuStructureClé separee par ","
+      		nIndice = TableauCherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonneClé)
+      		SI nIndice<1 ALORS m_pclErreur.AjouteErreur(ChaîneConstruit(<§$001c§>,sColonneClé,cApplication.mg_taInfo[m_sTableNomUnique].m_snom));renvoyer faux
+      		sOrdre+=[", "]+cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_sNomSQL+" DESC"
+      	FIN
+      	
+      	(sPréLimite,sPostLimite)=SQLLimiteRêqueteA(1,Faux)
+      	sReq est une chaine = "SELECT "+sPréLimite+[" "]+sColonnes+" FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sNomSQL+" ORDER BY "+sOrdre+[" "]+sPostLimite
+      	SI clRecherche.Requête(sReq) ALORS
+      		SI m_stConnexion.eAccès<>cBaseDeDonnées.ODBC ALORS
+      			SI HNbEnr(clRecherche.m_sd)=1 ALORS 
+      				HLitPremier(clRecherche.m_sd);HCopieEnreg(m_sd,clRecherche.m_sd,hCopieIdAuto);m_bPointeur=Faux
+      				RENVOYER Vrai
+      			FIN
+      		SINON	
+      			SI clRecherche.SQLNbLig()=1 _ET_ clRecherche.SQLAvance(m_sAlias)=0 ALORS
+      				nCol est un entier
+      				m_bPointeur=Faux
+      				POUR TOUTE CHAÎNE sColonne de sColonnes separee par ","
+      					nCol++;{"m_sd."+sColonne,indVariable}=clRecherche.SQLLitCol(nCol)
+      				FIN
+      				RENVOYER Vrai
+      			FIN
+      		FIN
+      	SINON
+      		m_pclErreur.AjouteErreur(clRecherche.p_sErreur)
+      	FIN
+      	RENVOYER Faux		
+      	FIN
+     type : 458752
+   -
+     name : AprèsLecture
+     procedure_id : 2035071451939660707
+     type_code : 12
+     code : |1+
+      // Résumé : Méthode virtuelle permettant de faire, dans la classe appelante, un traitement après lecture (ex : transformer une chaîne JSON d'un mémo texte en variant)
+      // Syntaxe : AprèsLecture ( [<sdSource>])
+      // Paramètres :
+      // 	sdSource (source de données) : source de données contant l'enregistrement en cours. Dans le cas d'une requête multi-table, contient aussi ces infos qu'il est nécessaire de traiter.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE virtuelle AprèsLecture(sdSource = null)
+     type : 458752
+   -
+     name : AvantÉcriture
+     procedure_id : 2035071559313868613
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode virtuelle permettant de faire, dans la classe appelante, un traitement avant écriture lecture (ex : transformer un variant en une chaîne JSON pour l'écrire dans un mémo texte)
+      // Syntaxe : AvantÉcriture ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE virtuelle AvantÉcriture()
+     type : 458752
+   -
+     name : CopieMembresDepuis
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2105956060353852337
+     type_code : 12
+     code : |1-
+      // Résumé : Copie les membres d'un objet dynamique référencé (pclRéférence) vers l'objet courant. Attention, ne copie que les membre dont le nom est parfaitement identique.
+      // Syntaxe : [ <Résultat> = ] CopieMembresDepuis (<pclRéférence> est objet dynamique)
+      // Paramètres :
+      //	pclRéférence (objet dynamique) : L'objet dynamique à partir duquel les membres doivent être copiés.
+      // Valeur de retour : booléen : Renvoie Vrai si la copie des membres est réussie, sinon Faux.
+      // Exemple :
+      //
+      PROCEDURE CopieMembresDepuis(pclRéférence est un objet dynamique) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(pclRéférence)
+      m_pclErreur.Raz()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=UniversalWindowsApp>
+      	defStructure 	est une Définition = RécupèreDéfinition(pclRéférence)
+      	sNom			est une chaîne
+      	
+      	POUR i=1 _À_ defStructure.Variable..Occurrence
+      		quand exception dans
+      			sNom=defStructure.Variable[i]..Nom
+      			{sNom,indvariable}={"pclRéférence."+sNom,indVariable}
+      		faire
+      			//rien, le membre dans cet objet n'existe pas
+      		fin
+      	FIN
+      	renvoyer vrai
+      	
+      <sinon si CibleExécution=Java>
+      	m_pclErreur.AjouteErreur(<§$0017§>);renvoyer faux
+      	
+      <fin>
+      
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();renvoyer faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();renvoyer faux
+     type : 458752
+   -
+     name : Relit
+     procedure_id : 2295612092388065619
+     type_code : 12
+     code : |1-
+      // Résumé : Force la relecture des données d'un enregistrement, existant dans la base de données pointé, par la clé en cours. Utile quand on affiche une liste avec des informations succinctes et que l'on ouvre ensuite le détail avec l'affichage de tous les champs.
+      // Syntaxe : [ <Résultat> = ] Relit ( [<bBloque> est booléen [, <sColonnesALire> est chaîne]])
+      // Paramètres :
+      //	bBloque (booléen optionnel) : Permet de bloquer l'enregistrement qui est relu.
+      //	sColonnesALire (chaîne UNICODE optionnel) : Liste des colonnes à lire, durant cette relecture, séparée par des virgules. Par défaut : toutes
+      // Valeur de retour : booléen : Renvoie Vrai si la lecture a bien été effectuée, Faux dans le cas contraire
+      // Exemple :
+      //
+      PROCEDURE Relit(bBloque est un booleen = Faux,sColonnesALire est une chaine = "") : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      SdStructureInit()	//car la précédente lecture pourrait avoir moins de colonnes
+      RENVOYER Recherche(m_sValCléEnCours,*,bBloque,sColonnesALire)
+     type : 458752
+   -
+     name : SdStructureInit
+     procedure_id : 1154947668742765449
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui initialise la source de données selon la structure de la table dont est issu cet enregistrement
+      PROCEDURE PRIVÉE SdStructureInit()
+      si m_sRequêteVide="" alors
+      	sPréLimite,sPostLimite sont des chaines
+      	(sPréLimite,sPostLimite)=SQLLimiteRêqueteA(0,Faux)
+      	m_sRequêteVide = "SELECT "+sPréLimite+[" "]+cApplication.mg_taInfo[m_sTableNomUnique].SQLColonnes()+[" "]+" FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sPremierAlias+" WHERE "+cApplication.mg_taInfo[m_sTableNomUnique].p_sCléPrimaire+"='¤'"+[" "]+sPostLimite
+      fin
+      SI PAS HExécuteRequêteSQL(m_sd,m_pclBaseDeDonnées.m_stConnexion.cnxDonnées,hRequêteSansCorrection,m_sRequêteVide) ALORS m_pclErreur.AjouteErreurHF()
+     type : 458752
+   -
+     name : _Désérialise
+     procedure_id : 1552755160846789933
+     type_code : 12
+     code : |1+
+      // Résumé : Méthode privée qui permet d'alimenter un objet de type cEnregistrement dynamique qui peut être structuré en comportant d'autres objets de type cEnregistrement ou cSourceDeDonnées, de tableaux de cEnregistrement dynamiques ou de tableaux simples
+      // Syntaxe : [ <Résultat> = ] _Désérialise ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Privé _Désérialise()
+      //L'utilisation des closures est importantes afin de permettre d'alimenter l'objet du type cEnregistrement en utilisant la méthode cEnregistrement.Importe()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp>
+      		
+      		Procédure interne DésérialiseRécursive(vVariant = null , pclObjet est un objet dynamique = null)
+      			maClasse est une definition 
+      			SELON vVariant..Type
+      				CAS wlVariantObjet
+      					DésérialiseObjectversVariant(vVariant,pclObjet,maClasse)
+      				CAS wlVariantTableau 
+      					POUR TOUT unElement, nCompteur de vVariant
+      						DésérialiseRécursive(unElement)
+      					FIN
+      				AUTRE CAS
+      			FIN	
+      		fin
+      	
+      	DésérialiseClosure est une Procédure = DésérialiseRécursive
+      	RENVOYER DésérialiseClosure
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : DésérialiseObjectVersVariant
+     procedure_id : 1552755165147459376
+     type_code : 12
+     code : |1-
+      // Résumé : Désérialise un objet vers un variant. Utilisé par _Désérialise().
+      PROCEDURE privé DésérialiseObjectVersVariant(vVariant,pclObject est un objet dynamique <utile = "Dans certains environnements">,MaDéfiniton <utile = "Dans certains environnements">)	//ne pas typer MyDefiniton pour éviter des erreurs dans les environnements pas compatibles
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp>
+      	
+      	SI pclObject = Null ALORS pclObject = objet
+      	proc_DeserialiseClosure est une Procédure =_Deserialise()
+      	POUR TOUT mMembre DE vVariant..Membre
+      		SELON mMembre..Type
+      			CAS wlVariant
+      				MaDéfiniton = RécupèreDéfinition(pclObject)
+      				pclObject 	= allouer un MaDéfiniton
+      				sJsonTemp est une chaîne = VariantVersJSON(mMembre)
+      				Désérialise(pclObject,mMembre,psdJSON)
+      			CAS wlVariantTableau	
+      				MaDéfiniton = RécupèreDéfinition(pclObject)
+      				POUR i=1 _À_ MaDéfiniton.Variable..Occurrence
+      					SI mMembre..Nom = MaDéfiniton.Variable[i]..Nom ALORS
+      						pDesc est une Définition = MaDéfiniton.Variable[i]..Définition
+      						pObjet est un objet dynamique 
+      						si pDesc..type = wlTableau ALORS
+      							sJSON est une chaîne ANSI = VariantVersJSON(mMembre)
+      							Désérialise({"pclObject:"+MaDéfiniton.Variable[i]..Nom,indVariable},sJSON ,psdJSON)
+      						sinon   
+      							pObjet = allouer un pDesc
+      							{"pclObject:"+MaDéfiniton.Variable[i]..Nom,indVariable} = pObjet
+      							pclUnObjetcoll est objet dynamique = pObjet
+      							POUR z = 1  _À_ mMembre..Occurrence
+      								sTemp est une chaîne 	= pclUnObjetcoll.m_vNomObjetFiche
+      								pObjet 					= allouer un sTemp 
+      								vVariantTemp est un Variant = mMembre[z]
+      								POUR TOUT unMembre DE mMembre[z]..Membre
+      									SI unMembre..Type  DANS (wlTableau,wlTableauAssociatif,wlTypeAvancé,wlVariantTableau) ALORS CONTINUER
+      									SI unMembre = "<NULL>" ALORS unMembre = "<NULL>"
+      								FIN
+      								sJSON est une chaîne ANSI = wl.VariantVersJSON(mMembre[z])
+      								
+      								proc_DeserialiseClosure(mMembre[z],pObjet)
+      								pclUnObjetcoll.ajoute(pObjet)
+      							FIN
+      						FIN
+      						SORTIR
+      					FIN
+      				FIN	
+      				
+      			CAS wlVariantObjet
+      				MaDéfiniton = RécupèreDéfinition(pclObject)
+      				POUR i=1 _À_ MaDéfiniton.Variable..Occurrence
+      					SI mMembre..Nom = MaDéfiniton.Variable[i]..Nom ALORS
+      						pDesc est une Définition = MaDéfiniton.Variable[i]..Définition
+      						{"pclObject:"+MaDéfiniton.Variable[i]..Nom,indVariable} = allouer un pDesc
+      						pclUnObjet est un objet dynamique = {"pclObject:"+MaDéfiniton.Variable[i]..Nom,indVariable}
+      						proc_DeserialiseClosure(mMembre,pclUnObjet)
+      						SORTIR
+      					FIN
+      				FIN	
+      			AUTRE CAS	
+      				MaDéfiniton = RécupèreDéfinition(pclObject)
+      				POUR i=1 _À_ MaDéfiniton.Variable..Occurrence
+      					SI mMembre..Nom = MaDéfiniton.Variable[i]..Nom ALORS
+      						{"pclObject:"+MaDéfiniton.Variable[i]..Nom,indVariable} = mMembre..Valeur
+      						SORTIR
+      					FIN
+      				FIN	
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+      	
+     type : 458752
+  properties :
+   -
+     name : p_bErreurDoublon
+     identifier : 0x1b352ce11e912cf8
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indication que l'écriture de l'enregistrement a généré une erreur de doublon
+         PROCEDURE PUBLIQUE p_bErreurDoublon() : booleen
+         renvoyer m_bErreurDoublon
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bErreurIntégrité
+     identifier : 0x1b352d061e92bfe3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indication que l'écriture de l'enregistrement a généré une erreur d'intégrité
+         PROCEDURE PUBLIQUE p_bErreurIntégrité() : booléen
+         renvoyer m_bErreurIntégrité
+        type : 1966080
+     template_refs : []
+   -
+     name : p_eStatutEnregistrement
+     identifier : 0x1b96afc40ca7a146
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut de l'enregistrement
+         PROCEDURE PUBLIQUE p_eStatutEnregistrement() : EEnregistrementStatut
+         renvoyer m_eStatutEnregistrement
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie le statut à l'enregistrement
+         PROCEDURE PUBLIQUE p_eStatutEnregistrement(Valeur)
+         SI Valeur=EstAjouté ALORS m_sGUIDEnregistrement=DonneGUID(guidBrut);m_sValCléEnCours=""		//si on force le statut à nouveau, on donne un autre guid (car cet objet peut avoir être rempli par copie d'un autre objet)
+         m_eStatutEnregistrement = Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_bufHashRecalcule
+     identifier : 0x1c24fdea228154cf
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le hash recalculé de l'enregistrement (ex : quand des membres ont été modifiés)
+         PROCEDURE PUBLIQUE p_bufHashRecalcule() : buffer
+         SI m_stConnexion.eAccès=cBaseDeDonnées.RequêteSQL ALORS ObjetVersSource(m_sd) SINON ObjetVersSource(m_sAlias)
+         RENVOYER HashEnregistrement()
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bufHashCourant
+     identifier : 0x1c24ff6e25d341db
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le hash courant de l'enregistrement
+         PROCEDURE PUBLIQUE p_bufHashCourant() : buffer
+         RENVOYER m_bufHashEnregistrement
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bLectureSeule
+     identifier : 0x11fd1cc74e643be7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut de lecture seule de l'enregistrement
+         PROCEDURE PUBLIQUE p_bLectureSeule() : booléen
+         RENVOYER m_bLectureSeule
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie le statut de lecture seule de l'enregistrement
+         PROCEDURE PUBLIQUE p_bLectureSeule(Valeur)
+         SI Valeur _ET_ m_sEnregistrement="" ALORS m_bufHashEnregistrement=HashEnregistrement()
+         m_bLectureSeule=Valeur
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1aa9647200b0849e
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Aucune clé de recherche
+      en-GB : No search key
+      fr-CA : Aucune clé de recherche
+      en-US : No search key
+     index : 0
+   -
+     text :
+      fr-FR : <vide>
+      en-GB : <empty>
+      fr-CA : <vide>
+      en-US : <empty>
+     index : 1
+   -
+     text :
+      fr-FR : "Répertoire cache inexistant ou invalide : "
+      en-GB : "Missing or invalid cache directory : "
+      fr-CA : "Répertoire cache inexistant ou invalide : "
+      en-US : "Missing or invalid cache directory : "
+     index : 2
+   -
+     text :
+      fr-FR : Plusieurs colonnes binaires dans la table
+      en-GB : Several binaries in the table
+      fr-CA : Plusieurs colonnes binaires dans la table
+      en-US : Several binaries in the table
+     index : 3
+   -
+     text :
+      fr-FR : Aucune colonne binaire dans la table
+      en-GB : No binary column in the table
+      fr-CA : Aucune colonne binaire dans la table
+      en-US : No binary column in the table
+     index : 4
+   -
+     text :
+      fr-FR : La colonne %1 n'est pas de type binaire ou image
+      en-GB : Column %1 is not binary or image
+      fr-CA : La colonne %1 n'est pas de type binaire ou image
+      en-US : Column %1 is not binary or image
+     index : 5
+   -
+     text :
+      fr-FR : "Impossible de mettre les données binaire en cache : "
+      en-GB : "Can not cache binary data : "
+      fr-CA : "Impossible de mettre les données binaire en cache : "
+      en-US : "Can not cache binary data : "
+     index : 6
+   -
+     text :
+      fr-FR : Contenu vide
+      en-GB : Empty content
+      fr-CA : Contenu vide
+      en-US : Empty content
+     index : 7
+   -
+     text :
+      fr-FR : Recherche avec buffer vide
+      en-GB : Search with empty buffer
+      fr-CA : Recherche avec buffer vide
+      en-US : Search with empty buffer
+     index : 8
+   -
+     text :
+      fr-FR : Le répertoire de destination est obligatoire pour l'utilisation des mémos dans un répertoire
+      en-GB : The destination directory is required for using memos in a directory
+      fr-CA : Le répertoire de destination est obligatoire pour l'utilisation des mémos dans un répertoire
+      en-US : The destination directory is required for using memos in a directory
+     index : 9
+   -
+     text :
+      fr-FR : "Le répertoire des mémos n'existe pas : "
+      en-GB : "The directory of memos does not exist : "
+      fr-CA : "Le répertoire des mémos n'existe pas : "
+      en-US : "The directory of memos does not exist : "
+     index : 10
+   -
+     text :
+      fr-FR : "Clé de recherche : "
+      en-GB : "Search key : "
+      fr-CA : "Clé de recherche : "
+      en-US : "Search key : "
+     index : 11
+   -
+     text :
+      fr-FR : ", Valeur (hexa) : "
+      en-GB : ", Value (hex) : "
+      fr-CA : ", Valeur (hexa) : "
+      en-US : ", Value (hex) : "
+     index : 12
+   -
+     text :
+      fr-FR : Aucun enregistrement en cours
+      en-GB : No current record
+      fr-CA : Aucun enregistrement en cours
+      en-US : No current record
+     index : 13
+   -
+     text :
+      fr-FR : Aucun enregistrement en cours
+      en-GB : No current record
+      fr-CA : Aucun enregistrement en cours
+      en-US : No current record
+     index : 14
+   -
+     text :
+      fr-FR : Enregistrement non trouvé
+      en-GB : Record not found
+      fr-CA : Enregistrement non trouvé
+      en-US : Record not found
+     index : 15
+   -
+     text :
+      fr-FR : Destination du mémo inconnue
+      en-GB : "Destination of memo is unknown "
+      fr-CA : Destination du mémo inconnue
+      en-US : "Destination of memo is unknown "
+     index : 16
+   -
+     text :
+      fr-FR : Aucune valeur de clé
+      en-GB : No key value
+      fr-CA : Aucune valeur de clé
+      en-US : No key value
+     index : 17
+   -
+     text :
+      fr-FR : Impossible de trouver l'enregistrement
+      en-GB : Can not find the record
+      fr-CA : Impossible de trouver l'enregistrement
+      en-US : Can not find the record
+     index : 18
+   -
+     text :
+      fr-FR : Impossible de forcer l'identifiant
+      en-GB : Can not force identifier
+      fr-CA : Impossible de forcer l'identifiant
+      en-US : Can not force identifier
+     index : 19
+   -
+     text :
+      fr-FR : Plusieurs enregistrements ont été trouvés
+      en-GB : Several records were found
+      fr-CA : Plusieurs enregistrements ont été trouvés
+      en-US : Several records were found
+     index : 20
+   -
+     text :
+      fr-FR : Impossible de lire le résultat de la recherche
+      en-GB : Could not read the search result
+      fr-CA : Impossible de lire le résultat de la recherche
+      en-US : Could not read the search result
+     index : 21
+   -
+     text :
+      fr-FR : L'enregistrement est en lecture seule
+      en-GB : The record is read-only
+      fr-CA : L'enregistrement est en lecture seule
+      en-US : The record is read-only
+     index : 22
+   -
+     text :
+      fr-FR : Cette méthode n'est pas compatible
+      en-GB : This method is not compatible
+      fr-CA : Cette méthode n'est pas compatible
+      en-US : This method is not compatible
+     index : 23
+   -
+     text :
+      fr-FR : Le mémo n'as pas un format reconnu
+      en-GB : The memo does not have a recognized format
+      fr-CA : Le mémo n'as pas un format reconnu
+      en-US : The memo does not have a recognized format
+     index : 24
+   -
+     text :
+      fr-FR : L'enregistrement n'a pas été trouvé
+      en-GB : The record was not found
+      fr-CA : L'enregistrement n'a pas été trouvé
+      en-US : The record was not found
+     index : 25
+   -
+     text :
+      fr-FR : Pas de clé pour télécharger la colonne binaire de l'enregistrement
+      en-GB : No key to download the binary column of the record
+      fr-CA : Pas de clé pour télécharger la colonne binaire de l'enregistrement
+      en-US : No key to download the binary column of the record
+     index : 26
+   -
+     text :
+      fr-FR : Enregistrement non modifié
+      en-GB : Unmodified record
+      fr-CA : Enregistrement non modifié
+      en-US : Unmodified record
+     index : 27
+   -
+     text :
+      fr-FR : La colonne %1 n'existe pas dans la table %2
+      en-GB : Column %1 does not exist in table %2
+      fr-CA : La colonne %1 n'existe pas dans la table %2
+      en-US : Column %1 does not exist in table %2
+     index : 28
+   -
+     text :
+      fr-FR : ")\r\n"
+      en-GB : ")\r\n"
+      fr-CA : ")\r\n"
+      en-US : ")\r\n"
+     index : 29
+   -
+     text :
+      fr-FR : Clé primaire inconnue
+      en-GB : Unknown primary key
+      fr-CA : Clé primaire inconnue
+      en-US : Unknown primary key
+     index : 30
+   -
+     text :
+      fr-FR : Pas de clé unique
+      en-GB : No unique key
+      fr-CA : Pas de clé unique
+      en-US : No unique key
+     index : 31
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

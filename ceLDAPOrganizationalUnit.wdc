@@ -1,0 +1,492 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : ceLDAPOrganizationalUnit
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f1f8ae03dd0308
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe de base de type OrganizationUnit dans le LDAP.  
+      
+      ceLDAPOrganizationalUnit est une Classe															//Pas déclarée comme abstraite car elle peut être appelée directement dans cSourceDeDonnées.Liste
+      	hérite de cEnregistrementLDAP
+      PRIVÉ
+      	m_pclUsers					est un csdLDAPUser dynamique 				<sérialise = faux>	//Liste des utilisateurs faisant partie du groupe (pas cSourceDeDonnéesLDAP() dynamique ou objet dynamique car p_pclUsers.m_tabUser affiche une erreur dans le code appelant)
+      	m_pclGroups					est un csdldapgroup dynamique				<sérialise = faux>	//Liste des sous-groupes faisant partie du groupe (pas cSourceDeDonnéesLDAP() dynamique ou objet dynamique car p_pclUsers.m_tabUser affiche une erreur dans le code appelant)
+      	m_pclContacts				est un csdLDAPContact dynamique				<sérialise = faux>	//Liste des contacts faisant partie du groupe (pas cSourceDeDonnéesLDAP() dynamique ou objet dynamique car p_pclUsers.m_tabUser affiche une erreur dans le code appelant)
+      	m_pclSubOU					est un csdLDAPOrganizationalUnit dynamique	<sérialise = faux>	//Liste des sous-unités d'organisation faisant partie du groupe (pas cSourceDeDonnéesLDAP() dynamique ou objet dynamique car p_pclUsers.m_tabUser affiche une erreur dans le code appelant)
+      GLOBAL PUBLIC
+      	mg_sAttributsALire			est une chaine								<Sérialise = Faux>	//Liste des attributs à lire pour le type Groupe séparés par des virgules
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1293087994304922376
+     type_code : 27
+     code : |1-
+      // Résumé : Initialisation de la classe lors de sa création.
+      // Syntaxe : Constructeur (<nIndiceDeConnexion> est entier [, <sOrganizationalUnit> est chaîne ANSI [, <bLectureSeule> est booléen [, <sAttributsALire> est chaîne]]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indique l'indice de connexion pour accéder au LDAP.
+      //	sOrganizationalUnit (chaîne ANSI optionnelle) : Nom de la OU à laquelle est liée l'unité d'organisation.
+      // 	bLectureSeule (booléen optionnel) : Indique de l'enregistrement est en lecture seule (dépend uniquement de la programmation)
+      //	sAttributsALire (chaîne UNICODE optionnelle) : Liste des attributs à lire séparés par des virgules, par défaut les attributs mis dans le membre global pour le type OU.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexion est un entier,sOrganizationalUnit est une chaine ansi = "",bLectureSeule est un booléen = Faux,sAttributsALire est une chaîne = ceLDAPOrganizationalUnit.mg_sAttributsALire)
+      cEnregistrementLDAP.Constructeur(nIndiceDeConnexion,cEnregistrementLDAP._ADTypeOrganizationalUnit,sOrganizationalUnit,bLectureSeule,sAttributsALire)
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1293087994304987912
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : RechercheSelonNomCommunDuOU
+     procedure_id : 1293088844708841542
+     type_code : 12
+     code : |1-
+      // Résumé : Recherche une unité d'organisation LDAP en utilisant son nom dans un contexte spécifié.
+      // Syntaxe : [ <Résultat> = ] RechercheSelonNomCommunDuOU (<sNomDuOU> est chaîne [, <sOrganizationalUnit> est chaîne ANSI [, <sLireAttributs> est chaîne]])
+      // Paramètres :
+      //	sNomDuOU (chaîne UNICODE) : Le nom de l'unité d'organisation à rechercher. 
+      //	sOrganizationalUnit (chaîne ANSI optionnelle) : L'unité organisationnelle LDAP dans laquelle rechercher l'unité d'organisation. Par défaut, celle passée dans le constructeur.
+      //	sLireAttributs (chaîne UNICODE optionnelles) : Liste des attributs à lire lors de la recherche, séparés par des virgules. Par défaut, celle passée dans le constructeur. 
+      // Valeur de retour : booléen : Vrai si la recherche aboutit à un groupe LDAP, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE RechercheSelonNomCommunDuOU(sNomDuOU est une chaine,sOrganizationalUnit est une chaine ansi = m_sOUouGroupe,sLireAttributs est une chaine = m_sAttributsALire) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomDuOU,sLireAttributs)	//on ne peut pas changer l'attribut de mot de passe donc pas de cryptage
+      m_pclErreur.Raz()
+      
+      SI m_sSessionAD~="" ALORS m_pclErreur.AjouteErreur(<§$0005§>)
+      SI sNomDuOU~="" 	ALORS m_pclErreur.AjouteErreur(<§$0004§>)
+      SI p_sErreur>"" 	ALORS RENVOYER Faux
+      
+      SI PAS Recherche("(&(objectCategory=organizationunit)(cn=" +sNomDuOU+"))",sOrganizationalUnit,sLireAttributs) ALORS
+      	SI Recherche("(ou=" +sNomDuOU+")",sOrganizationalUnit,sLireAttributs) ALORS m_eType=cEnregistrementLDAP._ADTypeOrganizationalUnit;RENVOYER Vrai
+      SINON
+      	m_eType=cEnregistrementLDAP._ADTypeGroup
+      	RENVOYER Vrai
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : SubOUCharge
+     procedure_id : 1293089141061654058
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les unités organisationnelles (OU) enfants de l'unité organisationnelle actuelle. 
+      // Syntaxe : [ <Résultat> = ] SubOUCharge ( [<xNomObjetListe> [, <xNomObjetFiche> [, <sFiltres> [, <nLimiteMax> est entier [, <sAttributsALire> est chaîne [, <bLectureSeule> est booléen]]]]]])
+      // Paramètres :
+      // 	xNomObjetListe (valeur optionnelle) : Objet liste représentant les unités organisationnelles. Si non spécifié, utilise la classe par défaut en fonction de la version du serveur LDAP.
+      // 	xNomObjetFiche (valeur optionnelle) : Objet fiche représentant les unités organisationnelles. Si non spécifié, utilise la classe par défaut en fonction de la version du serveur LDAP.
+      // 	sFiltres (optionnel) : Filtres à appliquer lors du chargement des unités organisationnelles.
+      // 	nLimiteMax (entier optionnel) : Limite maximale d'unités organisationnelles à charger, par défaut toutes.
+      //	sAttributsALire (chaîne UNICODE optionnelle) : Liste des attributs à lire pour chaque unité organisationnelle.
+      //	bLectureSeule (booléen optionnel) : Indique si l'opération de chargement doit être en mode lecture seule, par défaut le même indicateur que cette instance. 
+      // Valeur de retour : booléen : Vrai si le chargement des unités organisationnelles est réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE SubOUCharge(xNomObjetListe = null,xNomObjetFiche = null,sFiltres = "",nLimiteMax est un entier = 0,sAttributsALire est une chaine = "",bLectureSeule est un booleen = p_bLectureSeule) : booleen
+      VariableRAZ(m_pclSubOU)
+      SELON cBaseDeDonnéesLDAP.mg_taServeurVersion[cBaseDeDonnées.mg_tabConnexion[p_nIndiceDeConnexion].sNomUnique]
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2000..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2000OrganizationalUnit
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2000OrganizationalUnit
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2003..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2003OrganizationalUnit
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2003OrganizationalUnit
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2003R2..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2003R2OrganizationalUnit
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2003R2OrganizationalUnit
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2008..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2008OrganizationalUnit
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2008OrganizationalUnit
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2008R2..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2008R2OrganizationalUnit
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2008R2OrganizationalUnit
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2012..Valeur
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2012OrganizationalUnit
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2012OrganizationalUnit
+      FIN
+      SI xNomObjetListe<>Null _ET_ xNomObjetFiche<>Null ALORS
+      	m_pclSubOU = allouer un xNomObjetListe (p_nIndiceDeConnexion,xNomObjetFiche,"",bLectureSeule,sAttributsALire)
+      	RENVOYER m_pclSubOU.Liste(objet,sFiltres,nLimiteMax,bLectureSeule)
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : UsersCharge
+     procedure_id : 1293089312860451074
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les utilisateurs d'une unité d'organisation LDAP. 
+      // Syntaxe : [ <Résultat> = ] UsersCharge ( [<xNomObjetListe> [, <xNomObjetFiche> [, <sFiltres> [, <nLimiteMax> est entier [, <sAttributsALire> est chaîne [, <bLectureSeule> est booléen]]]]]])
+      // Paramètres :
+      // 	xNomObjetListe (valeur optionnelle) : L'objet représentant la liste des utilisateurs. Si la valeur est Null, la méthode sélectionne automatiquement la classe appropriée en fonction de la version du serveur LDAP.
+      // 	xNomObjetFiche (valeur optionnelle) : L'objet représentant la fiche d'un utilisateur. Si la valeur est Null, la méthode sélectionne automatiquement la classe appropriée en fonction de la version du serveur LDAP.
+      // 	sFiltres (optionnel) : Les filtres à appliquer lors de la récupération des utilisateurs. Par défaut, ceux dont le statut est actif.
+      // 	nLimiteMax (entier optionnel) : Le nombre maximum de utilisateurs à charger. Par défaut, la valeur est 0 pour charger tous les utilisateurs.
+      //	sAttributsALire (chaîne UNICODE optionnelle) : Les attributs à lire pour chaque utilisateur séparés par des virgules, par défaut Tous.
+      //	bLectureSeule (booléen optionnel) : Indique si l'opération de chargement doit être en mode lecture seule, par défaut le même indicateur que cette instance. 
+      // Valeur de retour : booléen : Vrai si le chargement des utilisateurs est réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE UsersCharge(xNomObjetListe = null,xNomObjetFiche = null,sFiltres = csdLDAPUser._ADUserFiltreStatutActifsSeulement,nLimiteMax est un entier = 0,sAttributsALire est une chaine = "",bLectureSeule est un booleen = p_bLectureSeule) : booleen
+      VariableRAZ(m_pclUsers)
+      SELON cBaseDeDonnéesLDAP.mg_taServeurVersion[cBaseDeDonnées.mg_tabConnexion[p_nIndiceDeConnexion].sNomUnique]
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2000..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2000User
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2000User
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2003..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2003User
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2003User
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2003R2..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2003R2User
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2003R2User
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2008..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2008User
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2008User
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2008R2..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2008R2User
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2008R2User
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2012..Valeur
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2012User
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2012User
+      	AUTRES CAS
+      		m_pclErreur.AjouteErreur(<§$0006§>+cBaseDeDonnéesLDAP.mg_taServeurVersion[cBaseDeDonnées.mg_tabConnexion[p_nIndiceDeConnexion].sNomUnique])
+      		RENVOYER Faux
+      FIN
+      SI xNomObjetListe<>Null _ET_ xNomObjetFiche<>Null ALORS
+      	m_pclUsers = allouer un xNomObjetListe (p_nIndiceDeConnexion,xNomObjetFiche,"",bLectureSeule,sAttributsALire)
+      	RENVOYER m_pclUsers.Liste(objet,sFiltres,nLimiteMax,bLectureSeule)
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : ContactsCharge
+     procedure_id : 1293089609213263887
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les contacts d'une unité d'organisation LDAP. 
+      // Syntaxe : [ <Résultat> = ] ContactsCharge ( [<xNomObjetListe> [, <xNomObjetFiche> [, <sFiltres> [, <nLimiteMax> est entier [, <sAttributsALire> est chaîne [, <bLectureSeule> est booléen]]]]]])
+      // Paramètres :
+      // 	xNomObjetListe (valeur optionnelle) : L'objet représentant la liste des contacts. Si la valeur est Null, la méthode sélectionne automatiquement la classe appropriée en fonction de la version du serveur LDAP.
+      // 	xNomObjetFiche (valeur optionnelle) : L'objet représentant la fiche d'un contact. Si la valeur est Null, la méthode sélectionne automatiquement la classe appropriée en fonction de la version du serveur LDAP.
+      // 	sFiltres (optionnel) : Les filtres à appliquer lors de la récupération des contacts. Par défaut, tous.
+      // 	nLimiteMax (entier optionnel) : Le nombre maximum de utilisateurs à charger. Par défaut, la valeur est 0 pour charger tous les utilisateurs.
+      //	sAttributsALire (chaîne UNICODE optionnelle) : Les attributs à lire pour chaque contact séparés par des virgules, par défaut Tous.
+      //	bLectureSeule (booléen optionnel) : Indique si l'opération de chargement doit être en mode lecture seule, par défaut le même indicateur que cette instance. 
+      // Valeur de retour : booléen : Vrai si le chargement des contacts est réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE ContactsCharge(xNomObjetListe = null,xNomObjetFiche = null,sFiltres = "",nLimiteMax est un entier = 0,sAttributsALire est une chaine = "",bLectureSeule est un booleen = p_bLectureSeule) : booleen
+      VariableRAZ(m_pclContacts)
+      SELON cBaseDeDonnéesLDAP.mg_taServeurVersion[cBaseDeDonnées.mg_tabConnexion[p_nIndiceDeConnexion].sNomUnique]
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2000..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2000Contact
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2000Contact
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2003..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2003Contact
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2003Contact
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2003R2..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2003R2Contact
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2003R2Contact
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2008..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2008Contact
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2008Contact
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2008R2..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2008R2Contact
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2008R2Contact
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2012..Valeur
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2012Contact
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2012Contact
+      	AUTRES CAS
+      		m_pclErreur.AjouteErreur(<§$0006§>+cBaseDeDonnéesLDAP.mg_taServeurVersion[cBaseDeDonnées.mg_tabConnexion[p_nIndiceDeConnexion].sNomUnique])
+      		RENVOYER Faux
+      FIN
+      SI xNomObjetListe<>Null _ET_ xNomObjetFiche<>Null ALORS
+      	m_pclContacts = allouer un xNomObjetListe (p_nIndiceDeConnexion,xNomObjetFiche,"",bLectureSeule,sAttributsALire)
+      	RENVOYER m_pclContacts.Liste(objet,sFiltres,nLimiteMax,bLectureSeule)
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : GroupsCharge
+     procedure_id : 1293089789601932221
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les groupes d'une unité d'organisation LDAP. 
+      // Syntaxe : [ <Résultat> = ] GroupsCharge ( [<xNomObjetListe> [, <xNomObjetFiche> [, <sFiltres> [, <nLimiteMax> est entier [, <sAttributsALire> est chaîne [, <bLectureSeule> est booléen]]]]]])
+      // Paramètres :
+      // 	xNomObjetListe (valeur optionnelle) : L'objet représentant la liste des groupes. Si la valeur est Null, la méthode sélectionne automatiquement la classe appropriée en fonction de la version du serveur LDAP.
+      // 	xNomObjetFiche (valeur optionnelle) : L'objet représentant la fiche d'un groupe. Si la valeur est Null, la méthode sélectionne automatiquement la classe appropriée en fonction de la version du serveur LDAP.
+      // 	sFiltres (optionnel) : Les filtres à appliquer lors de la récupération des groupes.
+      // 	nLimiteMax (entier optionnel) : Le nombre maximum de groupes à charger. Par défaut, la valeur est 0 pour charger tous les groupes.
+      //	sAttributsALire (chaîne UNICODE optionnelle) : Les attributs à lire pour chaque groupe séparés par des virgules, par défaut Tous.
+      //	bLectureSeule (booléen optionnel) : Indique si l'opération de chargement doit être en mode lecture seule, par défaut le même indicateur que cette instance. 
+      // Valeur de retour : booléen : Vrai si le chargement des groupes est réussi, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE GroupsCharge(xNomObjetListe = null,xNomObjetFiche = null,sFiltres = "",nLimiteMax est un entier = 0,sAttributsALire est une chaine = "",bLectureSeule est un booleen = p_bLectureSeule) : booleen
+      VariableRAZ(m_pclGroups)
+      SELON cBaseDeDonnéesLDAP.mg_taServeurVersion[cBaseDeDonnées.mg_tabConnexion[p_nIndiceDeConnexion].sNomUnique]
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2000..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2000Group
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2000Group
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2003..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2003Group
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2003Group
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2003R2..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2003R2Group
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2003R2Group
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2008..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2008Group
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2008Group
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2008R2..Valeur 	
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2008R2Group
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2008R2Group
+      	CAS cBaseDeDonnées.EVersionServeur.WindowsServer2012..Valeur
+      		SI MesParamètres[1]..Défaut ALORS xNomObjetListe=csdLDAP2012Group
+      		SI MesParamètres[2]..Défaut ALORS xNomObjetFiche=ceLDAP2012Group
+      	AUTRES CAS
+      		m_pclErreur.AjouteErreur(<§$0006§>+cBaseDeDonnéesLDAP.mg_taServeurVersion[cBaseDeDonnées.mg_tabConnexion[p_nIndiceDeConnexion].sNomUnique])
+      		RENVOYER Faux
+      FIN
+      SI xNomObjetListe<>Null _ET_ xNomObjetFiche<>Null ALORS
+      	m_pclGroups = allouer un xNomObjetListe (p_nIndiceDeConnexion,xNomObjetFiche,dn,bLectureSeule,sAttributsALire)
+      	RENVOYER m_pclGroups.Liste(objet,sFiltres,nLimiteMax,bLectureSeule)
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : EcritMembres
+     procedure_id : 1294236185346455287
+     type_code : 12
+     code : |1-
+      // Résumé : Écrit les membres (utilisateurs, contacts, groupes et sous-unités d'organisation) dans le groupe LDAP actuel. Elle supprime d'abord tous les membres existants du groupe, puis ajoute les membres actuels du groupe.
+      // Syntaxe : [ <Résultat> = ] EcritMembres ( [<bContinueQuandErreur> est booléen])
+      // Paramètres :
+      // 	bContinueQuandErreur (booléen optionnel) : Indique si le processus doit continuer même en cas d'erreur. Par défaut, ne continue pas.
+      // Valeur de retour : booléen : Vrai si l'écriture des membres est réussie, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE EcritMembres(bContinueQuandErreur est un booléen = Faux) : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bContinueQuandErreur)
+      m_pclErreur.Raz()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	//ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/57200-ldap-ajouter-membre-groupe/read.awp
+      	LDAPDébutModification(m_sSessionAD)
+      	sMembres 	est une chaine ansi = LDAPListeFils(m_sSessionAD,DN)
+      	sMembre		est une chaine ansi
+      	pour toute chaine sMembre de sMembres separee par RC
+      		LDAPSupprimeValeurAttribut(m_sSessionAD,"member",sMembre)
+      	FIN
+      	
+      	POUR TOUT pclUser de m_pclUsers.m_tabUser
+      		//on ne supprime pas ici l'élément du LDAP mais uniquement son lien avec le groupe père
+      		SI PAS LDAPAjouteAttribut(m_sSessionAD, "member", pclUser.cn) ALORS
+      			m_pclErreur.AjouteErreurWx()
+      			SI PAS bContinueQuandErreur ALORS RENVOYER Faux
+      		FIN
+      	FIN
+      	
+      	POUR TOUT pclContact DE m_pclContacts.m_tabContact
+      		SI PAS LDAPAjouteAttribut(m_sSessionAD,"member",pclContact.cn) ALORS
+      			m_pclErreur.AjouteErreurWx()
+      			SI PAS bContinueQuandErreur ALORS RENVOYER Faux
+      		FIN
+      	FIN
+      	
+      	POUR TOUT pclGroupe DE m_pclGroups.m_tabGroupe
+      		SI PAS LDAPAjouteAttribut(m_sSessionAD,"member",pclGroupe.cn) ALORS
+      			m_pclErreur.AjouteErreurWx()
+      			SI PAS bContinueQuandErreur ALORS RENVOYER Faux
+      		FIN
+      	FIN
+      	
+      	POUR TOUT pclOU DE m_pclSubOU.m_tabOU
+      		SI PAS LDAPAjouteAttribut(m_sSessionAD,"member",pclOU.cn) ALORS
+      			m_pclErreur.AjouteErreurWx()
+      			SI PAS bContinueQuandErreur ALORS RENVOYER Faux
+      		FIN
+      	FIN
+      	
+      	SI LDAPValideModification(m_sSessionAD, dn) ALORS RENVOYER Vrai SINON m_pclErreur.AjouteErreurWx()
+      	
+      <fin>
+      
+      
+      RENVOYER Faux
+     type : 458752
+  properties :
+   -
+     name : p_pclUsers
+     identifier : 0x11f1f8e003e0c5d9
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la liste des utilisateurs si UsersCharge() a bien été appelé avant.
+         PROCEDURE PUBLIQUE p_pclUsers()
+         SI m_pclUsers=Null ALORS m_pclErreur.AjouteAvertissement(<§$0000§>)
+         RENVOYER m_pclUsers
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie la liste des utilisateurs
+         PROCEDURE PUBLIQUE p_pclUsers(Valeur)
+         m_pclUsers = Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_pclContacts
+     identifier : 0x11f1f90f03e17efa
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la liste des contacts si ContactsCharge a bien été appelé avant.
+         PROCEDURE PUBLIQUE p_pclContacts()
+         SI m_pclContacts=Null ALORS m_pclErreur.AjouteAvertissement(<§$0001§>)
+         RENVOYER m_pclContacts
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie la liste des contacts
+         PROCEDURE PUBLIQUE p_pclContacts(Valeur)
+         m_pclContacts = Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_pclSubOU
+     identifier : 0x11f1f93003e2ff6f
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la liste des sous-unités d'organisation si SubOUCharge a bien été appelé avant.
+         PROCEDURE PUBLIQUE p_pclSubOU()
+         SI m_pclSubOU=Null ALORS m_pclErreur.AjouteAvertissement(<§$0002§>)
+         RENVOYER m_pclSubOU
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie la liste des sous-unités d'organisation
+         PROCEDURE PUBLIQUE p_pclSubOU(Valeur)
+         m_pclSubOU = Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_pclGroups
+     identifier : 0x11f1f95a03e3a214
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la liste des sous-groupes si SubGroupsCharge a bien été appelé avant.
+         PROCEDURE PUBLIQUE p_pclGroups()
+         SI m_pclGroups=Null ALORS m_pclErreur.AjouteAvertissement(<§$0003§>)
+         RENVOYER m_pclGroups
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie la liste des sous-groupes
+         PROCEDURE PUBLIQUE p_pclGroups(Valeur)
+         m_pclGroups = Valeur
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f1f8ab03d7f8db
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Utilisez d'abord UsersCharge()
+      en-GB : First use UsersCharge()
+      fr-CA : Utilisez d'abord UsersCharge()
+      en-US : First use UsersCharge()
+     index : 0
+   -
+     text :
+      fr-FR : Utilisez d'abord ContactsCharge()
+      en-GB : First use ContactsCharge()
+      fr-CA : Utilisez d'abord ContactsCharge()
+      en-US : First use ContactsCharge()
+     index : 1
+   -
+     text :
+      fr-FR : Utilisez d'abord SubOUCharge()
+      en-GB : First use SubOUCharge()
+      fr-CA : Utilisez d'abord SubOUCharge()
+      en-US : First use SubOUCharge()
+     index : 2
+   -
+     text :
+      fr-FR : Utilisez d'abord GroupsCharge()
+      en-GB : First use GroupsCharge()
+      fr-CA : Utilisez d'abord GroupsCharge()
+      en-US : First use GroupsCharge()
+     index : 3
+   -
+     text :
+      fr-FR : Le nom du OU est obligatoire
+      en-GB : The OU name is mandatory
+      fr-CA : Le nom du OU est obligatoire
+      en-US : The OU name is mandatory
+     index : 4
+   -
+     text :
+      fr-FR : Pas de session ouverte
+      en-GB : No open session
+      fr-CA : Pas de session ouverte
+      en-US : No open session
+     index : 5
+   -
+     text :
+      fr-FR : "La version du serveur n'est pas gérée : "
+      en-GB : "The server version is not supported : "
+      fr-CA : "La version du serveur n'est pas gérée : "
+      en-US : "The server version is not supported : "
+     index : 6
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

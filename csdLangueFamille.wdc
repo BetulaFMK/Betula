@@ -1,0 +1,118 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : csdLangueFamille
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12b681dc2e0bd794
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe charge toutes les familles de langues.
+      //Ref : https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+      
+      csdLangueFamille est une Classe
+      	hérite de cGénérique
+      global
+      	mg_tabFamilles est un tableau de ceLangueFamille dynamique	//Tableau des familles de langues (en global car chargé une fois pour toute car n'est pas modifié / en lecture seule)
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1348407921109424020
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1348407921109489556
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Liste
+     procedure_id : 1348408105793126153
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les familles de langues.
+      // Syntaxe : [ <Résultat> = ] Liste ()
+      // Paramètres :	Aucun
+      // Valeur de retour : booléen : 
+      // Exemple : Vrai si les familles de langues sont chargées avec succès ou si elles étaient déjà chargées, Faux en cas d'échec du chargement
+      //
+      PROCEDURE Liste() : booléen
+      si mg_tabFamilles..Occurrence<>0 alors renvoyer vrai
+      
+      pclFamille est un ceLangueFamille dynamique
+      pclFamille = allouer un ceLangueFamille("afro-asiatique,chamito-sémitique","afroasiatic,afro-Asiatic,afrasian,hamito-semitic,semito-hamitic,erythraean");tableauajoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("algique","algic");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("austroasiatique","austroasiatic,mon–khmer");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("austronésienne","austronesian");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("aymarane","aymaran");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("caucasienne de l'ouest,abkhazo-adygienne","west caucasian,abkhazo-adyghean,abkhazo-circassian,circassic,pontic");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("construite,planifiée,idéolangue,artificielle,conlang","constructed,conlang");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("créole","creole");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("dené–ienisseïenne","dené–Yeniseian");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("dravidienne","dravidian");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("eskimo-aléoute,inuite-yupik-unangax,eskaléoute,inuite-aléoute","eskimo–aleut,inuit–yupik–unangan,eskaleut");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("indo-européenne","indo-european");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("japonique","japonic,japanese–ryukyuan,japanic");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("kartvélienne","kartvelian,south caucasian");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("coréenne,coréanique","koreanic");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("isolat","isolate");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("mongole,mongolique","mongolic");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("nigéro-congolaise,niger-congo","niger-congo");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("nilo-saharienne","nilo-saharan");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("nakho-daghestanienne,caucasiennee du Nord-Est,nakho-daghestanaises,nakho-daguestaniennes,nakho-daguestanaises","northeast caucasian,east caucasian,nakh-daghestanian");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("quechua,quichua","quechua,runasimi");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("sino-tibétaine","sino-Tibetan,trans-himalayan");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("taï-kadaï,daïque","kra–dai,tai–kadai,daic");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("tupi,tupie","tupi,tupian");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("turcique","turkic");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("ouralienne","uralic,uralian");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("dené–ienisseïenne","dené–Yeniseian");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("amérindienne","amerindian");TableauAjoute(mg_tabFamilles,pclFamille)
+      pclFamille = allouer un ceLangueFamille("hmong-mien,miao-yao","hmong–mien,miao–yao,yangtzean");TableauAjoute(mg_tabFamilles,pclFamille)
+      renvoyer vrai
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x12b681d42e05b67d
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

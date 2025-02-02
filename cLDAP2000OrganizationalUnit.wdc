@@ -1,0 +1,98 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cLDAP2000OrganizationalUnit
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f1fcc30447f726
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe qui donne la structure d'un enregistrement OU sur un serveur Windows 2000.
+      
+      cLDAP2000OrganizationalUnit est une Classe, abstraite		//ref : https://docs.microsoft.com/en-us/windows/win32/adschema/c-organizationalunit#windows-2000-server-attributes
+      	businessCategory						est une chaîne 							//Descriptive text on an Organizational Unit.
+      	countryCode								est un entier sur 2 octets				//Specifies the country/region code for the user's language of choice. This value is not used by Windows 2000.
+      	c										est une chaîne							//The country/region in the address of the user. The country/region is represented as a 2-character code based on ISO-3166.
+      	defaultGroup							est une chaine //DN						//The group to which this object is assigned when it is created.
+      	desktopProfile							est une chaîne							//The location of the desktop profile for a user or group of users. Not used.
+      	destinationIndicator					est une chaîne							//This is part of the X.500 specification and not used by NTDS.
+      	facsimileTelephoneNumber				est une chaîne							//Contains telephone number of the user's business fax machine.
+      	gPLink									est une chaine							//A sorted list of Group Policy options. Each option is a DWORD. Use of the UNICODE string is a convenience.
+      	gPOptions								est une chaine							//Options that affect all group policies associated with the object hosting this property.
+      	internationalISDNNumber					est une chaîne	//numérique				//Specifies an International ISDN Number associated with an object.
+      	thumbnailLogo							est une chaine	//replica-link			//BLOB that contains a logo for this object.
+      	managedBy								est une chaine	//DN					//The distinguished name of the user that is assigned to manage this object.
+      	organizationalUnit						est une chaîne	//=ou					//The name of the organizational unit. Attention : on ne peut pas mettre OU car c'est un mot réservé
+      	physicalDeliveryOfficeName				est une chaîne							//Contains the office location in the user's place of business.
+      	postalAddress							est une chaîne							//The mailing address for the object.
+      	postalCode								est une chaîne							//The postal or zip code for mail delivery.
+      	postOfficeBox							est une chaîne							//The post office box number for this object.
+      	preferredDeliveryMethod					est un entier							//The X.500-preferred way to deliver to addressee.
+      	registeredAddress						est une chaîne 	//replica-link			//Specifies a mnemonic for an address associated with an object at a particular city location.
+      	searchGuide								est une chaine	//replica-limk			//Specifies information of suggested search criteria, which may be included in some entries that are expected to be a convenient base-object for the search operation, for example, country/region or organization.
+      	seeAlso									est une chaîne	//DN					//List of distinguished names that are related to an object.
+      	st										est une chaîne							//State-Or-Province-Name
+      	street									est une chaîne							//The street address.
+      	telephoneNumber							est une chaîne							//The primary telephone number.
+      	teletexTerminalIdentifier				est une chaîne	//replica-link			//Specifies the Teletex terminal identifier and, optionally, parameters, for a teletex terminal associated with an object.
+      	telexNumber								est une chaîne	//replica-link			//A list of alternate telex numbers.
+      	co										est une chaîne							//The country/region in which the user is located.
+      	uPNSuffixes								est une chaine							//The list of User-Principal-Name suffixes for a domain.
+      	userPassword							est une chaîne	//replica-link			//The user's password in UTF-8 format. This is a write-only attribute.
+      	x121Address								est une chaîne							//The X.121 address for an object.
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1293092482552756006
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1293092482552821542
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f1fcc10441ee21
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

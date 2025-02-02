@@ -1,0 +1,951 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cFormulaireValide
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1ee38fba010b151c
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet d'ajouter, par programmation, des champs obligatoires ainsi que les messages qui doivent s'afficher s'ils ne sont pas remplis. ErreurAffiche affiche les erreurs s'il y en a.
+      //Cette classe peut aussi vérifier le contenu des champs (en exécutant une procédure de vérification). Cela fonctionne avec les champs de saisie, les tables, les zones répétées, ... La classe gère aussi les plan et les onglets
+      
+      COValideLibelléObligatoire est une combinaison
+      	LibelléSans																//affichera un libellé sans mise en forme si obligatoire
+      	LibelléEnGras															//affichera un libellé en gras si obligatoire
+      	LibelléAvecÉtoile														//affichera un libellé suivi d'une étoile si obligatoire
+      FIN
+      EValideClouleurFondErreur est une enumération
+      	CouleurFond																//affichera une couleur de fond en cas d'erreur
+      	CouleurBord																//affichera juste un bord de couleur en cas d'erreur
+      FIN
+      STChampAVérifier est une structure
+      	bEstObligatoire						est un 	booleen						//en utilisant ChampObligatoire, c'est à vrai. En utilisant ChampAVérifier, c'est à faux
+      	sMsgErreurSiObligatoireEtVide		est une chaine						//erreur à afficher quand le champ est vide et obligatoire
+      	bEstEnErreur						est un 	booleen						//indicateur que le champ est en erreur/les champs sont en erreur
+      	bEstAffichéObligatoire				est un 	booleen						//champ affiché comme obligatoire (formatage visible du libellé)
+      	tabChamp 							est un 	tableau de champ			//tableau de champs qui fonctionnent ensemble. Un élément en utilisant ChampObligatoire, plusieurs en utilisant ChampsObligatoires
+      	sChamp								est une chaine						//nom du ou des champs concernés (sert de clé de recherche)
+      	coPrésentationObligatoire			est un 	COValideLibelléObligatoire	//mise en forme du libellé quand obligatoire
+      	tabChampLibellé 					est un 	tableau de champ			//nom du champ libellé original (ou des libellés si plusieurs champs)
+      	tabLibelléOriginal					est un 	tableau de chaine			//libellé original (ou des libellés si plusieurs champs)
+      	tabPortionDuLibellé 				est un 	tableau de chaines			//portion du libellé qui change de mise en forme quand il est affiché comme obligatoire
+      	nCouleurLibellé 					est un 	entier						//couleur du libellé original
+      	sCadrageLibellé						est une chaine						//cadrage du libellé
+      	procValidation						est une procédure					//procédure de validation du champ (ex : entre 2 valeurs)
+      	sProcMessage						est une chaine						//message d'erreur récupéré de l'exécution de la procédure de validation
+      	sAncienneBulle						est une chaine						//garde l'ancienne bulle en mémoire pour la remettre après l'affichage de l'erreur dans une bulle
+      	sCouleurFond						est une chaine						//couleur de fond original du champ, pas un entier car récupère les couleurs de fond des lignes de tables aussi
+      fin
+      cFormulaireValide est une Classe
+      	hérite de cGénérique	
+      	m_nBulleErreurCouleurFond			est un entier						<serialise = faux>
+      	m_nBulleErreurCouleurTexte			est un entier						<serialise = faux>
+      	m_nBulleNormaleCouleurFond			est un entier						<serialise = faux>
+      	m_nBulleNormaleCouleurTexte			est un entier						<serialise = faux>
+      	
+      	m_AffichageErreurDansChamp			est un EValideClouleurFondErreur	<serialise = faux>
+      	m_coPrésentationLibelléObligatoire	est un COValideLibelléObligatoire	<serialise = faux>
+      	m_nCouleurLibelléObligatoire		est un entier						<serialise = faux>
+      	m_sCadrageLibelléObligatoire		est une chaine						<serialise = faux>
+      	m_nChampCouleurErreur				est un entier						<serialise = faux>
+      PRIVÉ
+      	m_tabChampsAVérifier				est un tableau dynamique 			<serialise = faux> de STChampAVérifier
+      	
+      	m_bErreursAffichées					est un booleen						<serialise = faux>
+      	m_bBulleStatut						est un booleen						<serialise = faux>
+      	m_tabPlansActifs					est un tableau 						<serialise = faux> d'entiers
+      	m_procAffichage						est une procédure					<serialise = faux>
+      FIN
+      constante
+      	ErreurDeChampObligatoire	= 250
+      	
+      	typZoneMultiligne			= 97						//pas reconnus par certains OS
+      	typZoneTexteRiche			= 109						//pas reconnus par certains OS
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2225780669895415068
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise les propriétés de la classe 
+      // Syntaxe : Constructeur ( [<eAffichageErreurDansChamp> est cFormulaireValide.EErreurFond [, <coPrésentationLibelléObligatoire> est cFormulaireValide.COValideLibellé [, <nCouleurLibelléObligatoire> est entier [, <sCadrageLibelléObligatoire> est chaîne [, <nChampCouleurErreur> est entier [, <nBulleErreurCouleurTexte> est entier [, <nBulleErreurCouleurFond> est entier [, <nBulleNormaleCouleurTexte> est entier [, <nBulleNormaleCouleurFond> est entier]]]]]]]]])
+      // Paramètres :
+      //	eAffichageErreurDansChamp (cFormulaireValide.EErreurFond optionnel) : Type d'affichage des erreurs dans les champs. Par défaut adaptera la couleur de fond des champs.
+      //	coPrésentationLibelléObligatoire (cFormulaireValide.COValideLibellé optionnel) : Type d'affichage des champs obligatoires. Par défaut, les libellés des champs seront mis en gras.
+      //	nCouleurLibelléObligatoire (entier optionnel) : Couleur des libellés obligatoire. Par défaut, la couleur par défaut du champ.
+      // 	sCadrageLibelléObligatoire (chaîne UNICODE optionnel) : Cadrage des libellés obligatoires. Par défaut, en haut à gauche. Les valeurs sont prise de gCadrage()
+      // 	nChampCouleurErreur (entier optionnel) : Couleur des champs en erreur. Par défaut, RougePastel.
+      //	nBulleErreurCouleurTexte (entier optionnel) : Couleur de texte des bulles des champs en erreur. Par défaut, Noir.
+      //	nBulleErreurCouleurFond (entier optionnel) : Couleur de fond des bulles des champs en erreur. Par défaut, RougePastel.
+      //	nBulleNormaleCouleurTexte (entier optionnel) : Couleur de texte des bulles fond des champs sans erreur. Par défaut, Noir.
+      //	nBulleNormaleCouleurFond (entier optionnel) : Couleur de fond des bulles des champs sans erreur. Par défaut, JauneBulle.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(eAffichageErreurDansChamp est un EValideClouleurFondErreur = CouleurFond,coPrésentationLibelléObligatoire est un COValideLibelléObligatoire = LibelléEnGras,nCouleurLibelléObligatoire est un entier = couleurdéfaut,sCadrageLibelléObligatoire est une chaine = "GH",nChampCouleurErreur est un entier = rougepastel,nBulleErreurCouleurTexte est un entier = Noir,nBulleErreurCouleurFond est un entier = RougePastel,nBulleNormaleCouleurTexte est un entier = Noir,nBulleNormaleCouleurFond est un entier = JauneBulle)
+      m_AffichageErreurDansChamp			= eAffichageErreurDansChamp
+      m_coPrésentationLibelléObligatoire	= coPrésentationLibelléObligatoire
+      m_nCouleurLibelléObligatoire		= nCouleurLibelléObligatoire
+      m_sCadrageLibelléObligatoire		= sCadrageLibelléObligatoire
+      m_nChampCouleurErreur				= nChampCouleurErreur
+      m_nBulleErreurCouleurTexte			= nBulleErreurCouleurTexte	
+      m_nBulleErreurCouleurFond			= nBulleErreurCouleurFond	
+      m_nBulleNormaleCouleurTexte			= nBulleNormaleCouleurTexte	
+      m_nBulleNormaleCouleurFond			= nBulleNormaleCouleurFond	
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2225780669895480604
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : ChampObligatoire
+     procedure_id : 2225783629128112847
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de définir un champ comme obligatoire dans le formulaire. Elle prend en compte divers paramètres pour personnaliser la manière dont les champs obligatoires sont gérés.
+      // Syntaxe : ChampObligatoire (<xChamp> est champ, <sMsgSiObligatoireEtVide> est chaîne [, <sPortionDuLibellé> est chaîne [, <coPrésentation> est cFormulaireValide.COValideLibelléObligatoire [, <xChampLibellé> est champ [, <nCouleurLibellé> est entier [, <sCadrageLibellé> est chaîne [, <procValidation> est procédure]]]]]])
+      // Paramètres :
+      //	xChamp (champ) : Le champ à définir comme obligatoire.
+      //	sMsgSiObligatoireEtVide (chaîne UNICODE) : Le message d'erreur à afficher si le champ est vide et obligatoire.
+      //	sPortionDuLibellé (chaîne UNICODE optionnelle) : La portion du libellé qui change de mise en forme quand il est affiché comme obligatoire. Par défaut, tout le libellé.
+      //	coPrésentation (cFormulaireValide.COValideLibelléObligatoire optionnel) : La mise en forme du libellé quand il est obligatoire. Par défaut, celui passé au constructeur.
+      //	xChampLibellé (champ optionnel) : Le champ libellé associé au champs à vérifier. Par défaut, le libellé du champ en cours.
+      //	nCouleurLibellé (entier optionnel) : La couleur du libellé obligatoire. Par défaut, celle passé au constructeur.
+      //	sCadrageLibellé (chaîne UNICODE optionnelle) : Le cadrage du libellé obligatoire. Par défaut, celui passé au constructeur. Utiliser ici les constantes de gCadrage.
+      //	procValidation (procédure optionnel) : La procédure de validation du champ. Ça peut être une procédure interne dans le code d'initialisation de la fenêtre, une procédure globale, ...  La procédure s'exécutera sur le champs spécifié au moment de l'appel de Vérifie().
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE ChampObligatoire(xChamp est un champ,sMsgSiObligatoireEtVide est une chaine,sPortionDuLibellé est une chaine = "",coPrésentation est un COValideLibelléObligatoire = m_coPrésentationLibelléObligatoire,xChampLibellé est un champ = null,nCouleurLibellé est un entier = m_nCouleurLibelléObligatoire,sCadrageLibellé est une chaine = m_sCadrageLibelléObligatoire,procValidation est une procédure = null)
+      m_pclErreur.Raz()
+      sChamp est une chaîne
+      quand exception dans
+       	sChamp = xChamp..NomComplet
+      faire
+      	Erreurdéclenche(ErreurDeChampObligatoire,<§$0002§>)
+      sinon
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sChamp,sMsgSiObligatoireEtVide,sPortionDuLibellé)
+      	nIndice est un entier = TableauCherche(m_tabChampsAVérifier,tcLinéaire,"sChamp",sChamp)
+      	si nIndice<1 alors
+      		stUnChamp est un STChampAVérifier
+      		tableauajoute(stUnChamp.tabChamp,xChamp)
+      		stUnChamp.bEstObligatoire				= vrai
+      		stUnChamp.sChamp						= sChamp
+      		stUnChamp.sMsgErreurSiObligatoireEtVide	= sMsgSiObligatoireEtVide
+      		stUnChamp.coPrésentationObligatoire		= coPrésentation
+      		si xChampLibellé=null alors
+      			tableauajoute(stUnChamp.tabLibelléOriginal,xChamp..libellé)
+      		sinon
+      			tableauajoute(stUnChamp.tabChampLibellé,xChampLibellé)
+      			TableauAjoute(stUnChamp.tabLibelléOriginal,xChampLibellé..libelle)
+      		fin
+      		si sPortionDuLibellé>"" alors tableauajoute(stUnChamp.tabPortionDuLibellé,sPortionDuLibellé)
+      		stUnChamp.nCouleurLibellé	= nCouleurLibellé
+      		stUnChamp.sCadrageLibellé	= sCadrageLibellé
+      		stUnChamp.procValidation	= procValidation
+      		nIndice=tableauajoute(m_tabChampsAVérifier,stUnChamp)
+      	sinon
+      		m_tabChampsAVérifier[nIndice].bEstObligatoire				= Vrai
+      		m_tabChampsAVérifier[nIndice].sMsgErreurSiObligatoireEtVide	= sMsgSiObligatoireEtVide
+      		m_tabChampsAVérifier[nIndice].coPrésentationObligatoire		= coPrésentation
+      		TableauSupprimeTout(m_tabChampsAVérifier[nIndice].tabPortionDuLibellé)
+      		SI sPortionDuLibellé>"" ALORS TableauAjoute(m_tabChampsAVérifier[nIndice].tabPortionDuLibellé,sPortionDuLibellé)
+      		m_tabChampsAVérifier[nIndice].nCouleurLibellé				= nCouleurLibellé
+      		m_tabChampsAVérifier[nIndice].sCadrageLibellé				= sCadrageLibellé
+      		m_tabChampsAVérifier[nIndice].procValidation				= procValidation
+      	fin
+      	ChampObligatoireAffiche(m_tabChampsAVérifier[nIndice]) 
+      fin
+     type : 458752
+   -
+     name : ErreurAffiche
+     internal_properties : CQAAAAkAAADv8gaiNSVovnkiXi1R1/vIddDRk7OQzXNajlCK3j3nhVGl1HPWYm3ihRIfw70larjsws9b9AJ/Uohb4zaon1ErA3+Wzy0kWvFtsRdgcac1qFxaZDmnIBRvMXXNZ7XwcQCvwBsQNOqxnF3TYDgcWmOE39PkRUPsb5+8w9qLaQYSg2lY9++xeWODSY53Glp/iIOG3FG5F/0qRetcr/IYSHEjDnee+ywSKGNZoCZibC7praUGR3TOoCNCXiePayoswPdin/lu81XQuoRKN4CJaNIj4JoqzVgva/WvLQRwTdsUvlOawhhoAxFoL08NsyVXqRsoRFtdGSx5wxCx0qF5mrnK580I8iHZhfWslyx/qlN2Ba5FddLdAEzRxBC+hHn75jbW0az+G9dP/WESQW7OGqBFrIoVx82dH+XdGnlzeJLBFRWXbbnMM+Uwfb0FlCObDuJj
+     procedure_id : 2225783977020609949
+     type_code : 12
+     code : |1-
+      // Résumé : Gère l'affichage des erreurs dans les champs du formulaire. S'appelle généralement après Vérifie(). Détecte, dans les tables, la colonne COL_CouleurErreur dans lequel il met la couleur d'erreur ou la couleur par défaut selon le cas.
+      // Syntaxe : ErreurAffiche ( [<bAjouteErreurRemplaceBulleOriginale> est booléen])
+      // Paramètres :
+      // 	bAjouteErreurRemplaceBulleOriginale (booléen) : Indique si les erreurs doivent être affichées ou non.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE ErreurAffiche(bVisible est un booleen)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bVisible)
+      m_pclErreur.Raz()
+      
+      nLigne 		est un entier
+      bParLigne	est un booleen
+      
+      si bVisible _et_ pas m_bErreursAffichées alors	
+      	POUR TOUT stUnChamp DE m_tabChampsAVérifier
+      		si pas stUnChamp.bEstEnErreur alors continue
+      		pour nChamp = 1 _a_ stUnChamp.tabChamp..occurrence
+      			stUnChamp.sAncienneBulle 	= stUnChamp.tabChamp[nChamp]..Bulle
+      			stUnChamp.sCouleurFond		= ""
+      			QUAND EXCEPTION DANS
+      				SELON stUnChamp.tabChamp[nChamp]..Type
+      					CAS typTable,typTableHierarchique,typZoneRépétée
+      						bParLigne=faux
+      						//pour les tables, on met du rouge dans la colonne COL_CouleurErreur, la bulle de message reste au niveau de la table
+      						POUR TOUTE CHAÎNE sMessage de stUnChamp.sProcMessage separee par rc
+      							SI ExtraitChaîne(sMessage,1," ")~=<§$0000§> alors
+      								nLigne=Val(ExtraitChaîne(sMessage,2," "));bParLigne=vrai
+      								si champexiste({stUnChamp.sChamp+".COL_CouleurErreur",indChamp}) alors	//colonne spéciale pour afficher une couleur d'erreur
+      									stUnChamp.sCouleurFond+=[rc]+nLigne+tab+{stUnChamp.sChamp+".COL_CouleurErreur",indChamp}[nLigne]..CouleurFond
+      									{stUnChamp.sChamp+".COL_CouleurErreur",indChamp}[Val(ExtraitChaîne(sMessage,2," "))]..CouleurFond=m_nChampCouleurErreur
+      								sinon	//on colorise toute la ligne
+      									stUnChamp.sCouleurFond+=[RC]+Val(ExtraitChaîne(sMessage,2," "))+TAB+stUnChamp[Val(ExtraitChaîne(sMessage,2," "))]..CouleurFond
+      									stUnChamp[nLigne]..couleurfond=m_nChampCouleurErreur
+      								fin
+      							fin
+      						fin
+      						si pas bParLigne alors	//c'est la table elle-même (occurrence=0)
+      							SI m_AffichageErreurDansChamp=CouleurBord ALORS
+      															
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=WindowsMobile>
+      									UnCadre est un Cadre
+      									UnCadre..Bords						= BordDroite
+      									UnCadre..TraitDroite..Couleur		= m_nChampCouleurErreur
+      									UnCadre..TraitDroite..Epaisseur		= 5
+      									stUnChamp.tabChamp[nChamp]..Cadre	= UnCadre
+      	
+      <sinon si CibleExécution=SitePHP ou CibleExécution=Java ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp>
+      	stUnChamp.tabChamp[nChamp]..couleurfond=m_nChampCouleurErreur
+      	
+      <fin>
+      
+      							
+      							sinon SI m_AffichageErreurDansChamp=CouleurFond ALORS
+      								stUnChamp.sCouleurFond					= stUnChamp.tabChamp[nChamp]..CouleurFond
+      								stUnChamp.tabChamp[nChamp]..couleurfond	= m_nChampCouleurErreur
+      							FIN
+      						FIN
+      					AUTRE CAS
+      						SI m_AffichageErreurDansChamp=CouleurBord ALORS
+      						
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=WindowsMobile>
+      								UnCadre est un Cadre
+      								UnCadre..Bords						= BordDroite
+      								UnCadre..TraitDroite..Couleur		= m_nChampCouleurErreur
+      								UnCadre..TraitDroite..Epaisseur		= 5
+      								stUnChamp.tabChamp[nChamp]..Cadre	= UnCadre
+      	
+      <sinon si CibleExécution=SitePHP ou CibleExécution=Java ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp>
+      	stUnChamp.tabChamp[nChamp]..CouleurFond=m_nChampCouleurErreur
+      	
+      <fin>
+      
+      						
+      						SINON SI m_AffichageErreurDansChamp=CouleurFond ALORS
+      							stUnChamp.sCouleurFond			= stUnChamp.tabChamp[nChamp]..CouleurFond
+      							stUnChamp.tabChamp[nChamp]..CouleurFond	= m_nChampCouleurErreur
+      						FIN
+      				FIN
+      				stUnChamp.tabChamp[nChamp]..Bulle	= stUnChamp.sMsgErreurSiObligatoireEtVide+[rc]+stUnChamp.sProcMessage
+      			FAIRE
+      				//le champs lié à l'erreur n'existe peut être plus (onglet, champ clone, ...)
+      			FIN
+      		fin
+      	fin
+      	m_bErreursAffichées				= Vrai
+      sinon SI pas bVisible _et_ m_bErreursAffichées ALORS	
+      	POUR TOUT stUnChamp DE m_tabChampsAVérifier
+      		SI PAS stUnChamp.bEstEnErreur ALORS CONTINUE
+      		pour nChamp = 1 _a_ stUnChamp.tabChamp..occurrence
+      			stUnChamp.tabChamp[nChamp]..Bulle = stUnChamp.sAncienneBulle
+      			QUAND EXCEPTION DANS
+      				SELON stUnChamp.tabChamp[nChamp]..Type
+      					CAS typTable,typTableHierarchique,typZoneRépétée
+      						bParLigne=Faux
+      						POUR TOUTE CHAÎNE sMessage de stUnChamp.sProcMessage separee par rc
+      							SI ExtraitChaîne(sMessage,1," ")~=<§$0000§> alors
+      								nLigne=Val(ExtraitChaîne(sMessage,2," "));bParLigne=Vrai
+      								SI ChampExiste({stUnChamp.sChamp+".COL_CouleurErreur",indChamp}) ALORS
+      									{stUnChamp.sChamp+".COL_CouleurErreur",indChamp}[nLigne]..CouleurFond=Val(TrouveCouleurOriginale(stUnChamp.sCouleurFond,nLigne))
+      								SINON
+      									stUnChamp[nLigne]..CouleurFond=Blanc
+      								FIN
+      							FIN
+      						FIN
+      						SI PAS bParLigne ALORS	//c'est la table elle-même (occurrence=0)
+      							SI m_AffichageErreurDansChamp=CouleurBord ALORS
+      							
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=WindowsMobile>
+      	
+      									UnCadre est un Cadre
+      									UnCadre..Bords						= BordAucun
+      									stUnChamp.tabChamp[nChamp]..Cadre	= UnCadre
+      	
+      <sinon si CibleExécution=SitePHP ou CibleExécution=Java ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp>
+      	
+      	stUnChamp.tabChamp[nChamp]..CouleurFond=Transparent
+      	
+      <fin>
+      
+      							
+      							SINON SI m_AffichageErreurDansChamp=CouleurFond ALORS
+      								stUnChamp.tabChamp[nChamp]..CouleurFond=Transparent
+      							FIN
+      						FIN
+      					AUTRES CAS
+      						SI m_AffichageErreurDansChamp=CouleurBord ALORS
+      						
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=WindowsMobile>
+      	          
+      								UnCadre est un Cadre
+      								UnCadre..Bords						= BordAucun
+      								stUnChamp.tabChamp[nChamp]..Cadre	= UnCadre
+      	
+      <sinon si CibleExécution=SitePHP ou CibleExécution=Java ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp>
+      	
+      	stUnChamp.tabChamp[nChamp]..CouleurFond=Transparent
+      	
+      <fin>
+      
+      						
+      						SINON SI m_AffichageErreurDansChamp=CouleurFond ALORS
+      							stUnChamp.tabChamp[nChamp]..CouleurFond=Transparent
+      						FIN
+      				FIN
+      				stUnChamp.tabChamp[nChamp]..Bulle = stUnChamp.sAncienneBulle	//on remet la bulle d'origine
+      			FAIRE
+      				//le champs lié à l'erreur n'existe peut être plus (onglet, champ clone, ...)
+      			FIN
+      		fin
+      	FIN
+      	m_bErreursAffichées				= Faux
+      FIN
+      
+      	PROCÉDURE INTERNE TrouveCouleurOriginale(sCouleurs,nQuelleLigne) : entier
+      	POUR TOUTE CHAÎNE sCouleur de sCouleurs separee par rc
+      		SI ExtraitChaîne(sCouleur,1)=nQuelleLigne ALORS RENVOYER Val(ExtraitChaîne(sCouleur,2))
+      	FIN
+      	RENVOYER Blanc
+      	FIN
+     type : 458752
+   -
+     name : Vérifie
+     procedure_id : 2225784256193614372
+     type_code : 12
+     code : |1-
+      // Résumé : Effectue la validation des champs du formulaire.
+      // Syntaxe : [ <Résultat> = ] Vérifie ()
+      // Paramètres : Aucun
+      // Valeur de retour : entier : Renvoie le nombre total d'erreurs détectées.
+      // Exemple :
+      //
+      PROCEDURE Vérifie() : entier
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      sErr,sOnglet 	sont des chaines
+      nNumOnglet,nErr sont des entiers
+      
+      Erreuraffiche(faux)
+      si m_tabChampsAVérifier..occurrence=0 alors renvoyer 0
+      
+      POUR nChamp = 1 _a_ m_tabChampsAVérifier..occurrence
+      	m_tabChampsAVérifier[nChamp].bEstEnErreur	= faux
+      	m_tabChampsAVérifier[nChamp].sProcMessage	= ""
+      fin
+      
+      POUR TOUT stUnChamp de m_tabChampsAVérifier
+      	nErr=0
+      	POUR TOUT xChamp de stUnChamp.tabChamp
+      		si stUnChamp.bEstObligatoire alors
+      			si pas xChamp..visible alors continue																				//il n'est pas visible, on continue
+      			si m_tabPlansActifs..occurrence>0 _et_ tableaucherche(m_tabPlansActifs,tcLinéaire,xChamp..plan)<1 alors continue	//il est dans un plan qui n'est pas utilisé, on continue
+      			
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	
+      				sOnglet=OngletDuChamp(xChamp)
+      				SI sOnglet>"" ALORS 
+      					nNumOnglet=NumOngletDuChamp(xChamp)
+      					SI nNumOnglet>0 _ET_ (PAS {sOnglet,indChamp}[nNumOnglet]..Visible _OU_ {sOnglet,indChamp}[nNumOnglet]..Etat=Grisé) ALORS CONTINUE	//si l'onglet dans lequel se trouve le champ n'est pas visible ou pas actif, on continue
+      				FIN
+      	
+      <fin>
+      
+      			
+      			
+      			QUAND EXCEPTION DANS
+      				SELON xChamp..Type
+      					CAS typTable,typTableHierarchique,typZoneRépétée,typListe
+      						SI xChamp..Occurrence=0 ALORS nErr++
+      					CAS typNum
+      						SI xChamp=0 ALORS nErr++
+      					CAS typInterr
+      						sCoché est une chaine
+      						POUR nOption = 1 _a_ xChamp..occurrence
+      							si xChamp[nOption]..visible alors 
+      								si xChamp[nOption]<>0 alors sCoché+=xChamp[nOption]
+      							fin
+      						FIN
+      						SI sCoché="" ALORS nErr++
+      					cas typSélect
+      						si xChamp=-1 alors nErr++	//attention renvoie -1 aussi si SEL_SansNom1[1]..ValeurRenvoyée=-1
+      					CAS typComboSNS	
+      						SI (xChamp..ValeurAffichée~="" _et_ xChamp..ValeurMémorisée~="") _OU_ xChamp=-1 ALORS nErr++
+      					CAS typImage
+      						SI fExtraitChemin(xChamp..Valeur,fFichier) _ET_ xChamp="" ALORS nErr++
+      					CAS	typComboAVS,typDate,typDurée,typHeure,typTexte,typZoneMultiligne,typZoneTexteRiche
+      						SI xChamp~="" ALORS nErr++
+      					AUTRES CAS
+      						dbgAssertion(vrai,ChaîneConstruit("Type du champ %1 (%2) non géré",xChamp..nom,xChamp..Type))
+      				FIN
+      			FAIRE
+      				//le champs lié à l'erreur n'existe peut être plus (onglet, champ clone, ...)
+      			FIN
+      		fin
+      		si stUnChamp.procValidation<>null alors
+      			si xChamp..Type dans (typTable,typTableHierarchique,typZoneRépétée) ALORS
+      				POUR TOUTE ligne nLigne de xChamp
+      					sErr=stUnChamp.procValidation(nLigne)
+      					SI sErr>"" ALORS nErr++;stUnChamp.sProcMessage+=[rc]+<§$0001§>+nLigne+" : "+sErr
+      				FIN
+      			sinon 
+      				sErr=stUnChamp.procValidation()
+      				SI sErr>"" ALORS nErr++;stUnChamp.sProcMessage=sErr
+      			FIN
+      		fin
+      		nErr+=stUnChamp.bEstEnErreur;stUnChamp.bEstEnErreur=faux
+      	FIN
+      	stUnChamp.bEstEnErreur=(nErr=stUnChamp.tabChamp..Occurrence)
+      FIN
+      nErr = 0
+      pour tout stUnChamp de m_tabChampsAVérifier
+      	nErr+=stUnChamp.bEstEnErreur
+      FIN
+      RENVOYER nErr
+     type : 458752
+   -
+     name : ChampsObligatoires
+     procedure_id : 2225784440877251453
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute plusieurs champs obligatoires à la classe. Ceci est utile quand on veut, par exemple, vérifier qu'il y a quelque chose de saisi dans une description française ou anglaise d'un produit. Ajoutez les 2 champs ici, ne sera pas en erreur si un des deux est rempli.
+      // Syntaxe : ChampsObligatoires (<tabChamps> est tableau, <sMessageSiVide> est chaîne [, <tabPortionDuLibellé> est tableau [, <coPrésentation> est cFormulaireValide.COValideLibelléObligatoire [, <tabChampLibellé> est tableau [, <nCouleurLibellé> est entier [, <sCadrageLibellé> est chaîne [, <procValidation> est procédure]]]]]])
+      // Paramètres :
+      //	tabChamps (tableau) : Tableau des champs à spécifier comme obligatoires.
+      //	sMessageSiVide (chaîne UNICODE) : Message d'erreur à afficher si l'un des champs obligatoires est vide.
+      //	tabPortionDuLibellé (tableau optionnel) : Tableau optionnel spécifiant des portions de libellé qui changent de mise en forme lorsqu'un champ est affiché comme obligatoire. Par défaut, prend les libellés des champs.
+      //	coPrésentation (cFormulaireValide.COValideLibelléObligatoire) : Mise en forme du libellé lorsque le champ est obligatoire. Par défaut, celui passé dans le constructeur.
+      //	tabChampLibellé (champ optionnel) : Tableau de champs libellés associé au champs à vérifier. Par défaut, les libellés des champs en cours.
+      //	nCouleurLibellé (entier optionnel) : La couleur du/des libellés obligatoires. Par défaut, celle passé au constructeur.
+      //	sCadrageLibellé (chaîne UNICODE optionnelle) : Le cadrage du/des libellés obligatoires. Par défaut, celui passé au constructeur. Utiliser ici les constantes de gCadrage.
+      //	procValidation (procédure optionnel) : La procédure de validation du champ. Ça peut être une procédure interne dans le code d'initialisation de la fenêtre, une procédure globale, ... La procédure s'exécutera sur le champs spécifié au moment de l'appel de Vérifie().
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE ChampsObligatoires(tabChamps est un tableau de champs,sMessageSiVide est une chaine,tabPortionDuLibellé est un tableau de chaines = null,coPrésentation est un COValideLibelléObligatoire = m_coPrésentationLibelléObligatoire,tabChampLibellé est un tableau de champs = null,nCouleurLibellé est un entier = m_nCouleurLibelléObligatoire,sCadrageLibellé est une chaine = m_sCadrageLibelléObligatoire,procValidation est une procédure = null)
+      m_pclErreur.Raz()
+      sChamps est une chaine
+      POUR nChamp = 1 _a_ tabChamps..Occurrence
+      	quand exception dans
+      		sChamps+=[tab]+tabChamps[nChamp]..nomcomplet
+      	faire
+      		ErreurDéclenche(ErreurDeChampObligatoire,<§$0002§>);retour
+      	fin
+      fin
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sChamps,sMessageSiVide)
+      
+      nIndice est un entier = TableauCherche(m_tabChampsAVérifier,tcLinéaire,"sChamp",sChamps)
+      SI nIndice<1 ALORS
+      	stUnChamp est un STChampAVérifier
+      	VariableRAZ(stUnChamp)
+      	stUnChamp.tabChamp						= tabChamps
+      	stUnChamp.sChamp						= sChamps
+      	stUnChamp.sMsgErreurSiObligatoireEtVide	= sMessageSiVide
+      	stUnChamp.coPrésentationObligatoire		= coPrésentation
+      	si tabChampLibellé<>null alors stUnChamp.tabChampLibellé = tabChampLibellé
+      	POUR nChamp = 1 _a_ tabChamps..Occurrence
+      		tableauajoute(stUnChamp.tabLibelléOriginal,(stUnChamp.tabChampLibellé..occurrence=0 ? tabChamps[nChamp]..Libellé sinon tabChampLibellé[nchamp]..Libellé))
+      	fin
+      	si tabPortionDuLibellé<>null alors stUnChamp.tabPortionDuLibellé = tabPortionDuLibellé
+      	stUnChamp.nCouleurLibellé				= nCouleurLibellé
+      	stUnChamp.sCadrageLibellé				= sCadrageLibellé
+      	stUnChamp.procValidation				= procValidation
+      	nIndice=TableauAjoute(m_tabChampsAVérifier,stUnChamp)
+      sinon
+      	m_tabChampsAVérifier[nIndice].sMsgErreurSiObligatoireEtVide	= sMessageSiVide
+      	m_tabChampsAVérifier[nIndice].coPrésentationObligatoire		= coPrésentation
+      	m_tabChampsAVérifier[nIndice].nCouleurLibellé				= nCouleurLibellé
+      	m_tabChampsAVérifier[nIndice].sCadrageLibellé				= sCadrageLibellé
+      	m_tabChampsAVérifier[nIndice].procValidation				= procValidation
+      fin		
+      ChampObligatoireAffiche(m_tabChampsAVérifier[nIndice]) 
+     type : 458752
+   -
+     name : ChampObligatoireAffiche
+     procedure_id : 2225784969158286347
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée utilisée pour afficher visuellement un champ obligatoire.
+      PROCEDURE privé ChampObligatoireAffiche(stUnChamp est un STChampAVérifier)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(stUnChamp.sChamp)
+      m_pclErreur.Raz()
+      
+      pour nChamp = 1 _a_ stUnChamp.tabChamp..occurrence
+      	sLibellé est une chaine = stUnChamp.tabLibelléOriginal[nChamp]
+      	
+      	SI stUnChamp.coPrésentationObligatoire[LibelléEnGras] ALORS
+      		//on met le libellé en gras pour l'identifier comme obligatoire
+      		SI stUnChamp.tabPortionDuLibellé..occurrence>0 _et_ stUnChamp.tabPortionDuLibellé[nChamp]>"" _ET_ Position(sLibellé,stUnChamp.tabPortionDuLibellé[nChamp],0,SansCasse+DepuisDébut)>0 ALORS
+      			nPos est un entier = Position(sLibellé,stUnChamp.tabPortionDuLibellé[nChamp],0,SansCasse+DepuisDébut)
+      			sLibellé=Gauche(sLibellé,nPos-1)+gPoliceGras(vrai)+Milieu(sLibellé,nPos,Taille(stUnChamp.tabPortionDuLibellé[nChamp]))+gPoliceGras(faux)+Milieu(sLibellé,nPos+Taille(stUnChamp.tabPortionDuLibellé[nChamp])+1)
+      		SINON
+      			sLibellé=gPoliceGras(Vrai)+sLibellé+ESC+gPoliceGras(faux)
+      		FIN
+      	FIN
+      	SI stUnChamp.coPrésentationObligatoire[LibelléAvecÉtoile] ALORS sLibellé+=[" "]+"*"
+      	
+      	si stUnChamp.sCadrageLibellé>"" alors sLibellé=gcadrage(stUnChamp.sCadrageLibellé,sLibellé)
+      	si stUnChamp.tabChampLibellé..occurrence=0 alors 
+      		stUnChamp.tabchamp[nChamp]..Libellé			= sLibellé
+      		stUnChamp.tabchamp[nChamp]..Couleur			= (stUnChamp.nCouleurLibellé=-1 ? CouleurDéfaut SINON stUnChamp.nCouleurLibellé)
+      	sinon 
+      		stUnChamp.tabChampLibellé[nChamp]..Libellé	= sLibellé
+      		stUnChamp.tabChampLibellé[nChamp]..Couleur	= (stUnChamp.nCouleurLibellé=-1 ? CouleurDéfaut sinon stUnChamp.nCouleurLibellé) 
+      	FIN
+      fin
+      stUnChamp.bEstAffichéObligatoire = vrai
+     type : 458752
+   -
+     name : ChampNonObligatoire
+     procedure_id : 2225785282691103394
+     type_code : 12
+     code : |1-
+      // Résumé : Marque un champ comme non obligatoire dans la classe. Utile quand les champs obligatoires sont conditionnés par un autre champ (ex un sélecteur).
+      // Syntaxe : ChampNonObligatoire (<xChamp> est champ [, <sPortionDuLibellé> est chaîne [, <xChampLibellé> est champ]])
+      // Paramètres :
+      //	xChamp (champ) : Le champ à marquer comme non obligatoire.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE ChampNonObligatoire(xChamp est un champ)
+      m_pclErreur.Raz()
+      sChamp est une chaîne
+      QUAND EXCEPTION DANS
+      	sChamp = xChamp..NomComplet
+      FAIRE
+      	ErreurDéclenche(ErreurDeChampObligatoire,<§$0002§>)
+      SINON
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sChamp)
+      	nIndice est un entier = TableauCherche(m_tabChampsAVérifier,tcLinéaire,"sChamp",sChamp)
+      	SI nIndice>0 ALORS
+      		m_tabChampsAVérifier[nIndice].bEstAffichéObligatoire=faux
+      		ChampNonObligatoireAffiche(m_tabChampsAVérifier[nIndice])
+      	fin
+      fin
+     type : 458752
+   -
+     name : ChampsNonObligatoires
+     procedure_id : 2225785385770407840
+     type_code : 12
+     code : |1-
+      // Résumé : Marque des champs comme non obligatoires dans la classe. Utile quand les champs obligatoires sont conditionnés par un autre champ (ex un sélecteur).
+      // Syntaxe : ChampsNonObligatoires (<tabChamps> est tableau)
+      // Paramètres :
+      //	tabChamps (tableau) : tableau des champs à afficher comme non obligatoires.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE ChampsNonObligatoires(tabChamps est un tableau de champs)
+      m_pclErreur.Raz()
+      sChamps est une chaîne
+      POUR nChamp = 1 _a_ tabChamps..Occurrence
+      	QUAND EXCEPTION DANS
+      		sChamps+=[TAB]+tabChamps[nChamp]..NomComplet
+      	FAIRE
+      		ErreurDéclenche(ErreurDeChampObligatoire,chaineconstruit(<§$0002§>,tabChamps[nChamp]..NomComplet));retour
+      	fin
+      FIN
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sChamps)
+      nIndice est un entier = TableauCherche(m_tabChampsAVérifier,tcLinéaire,"sChamp",sChamps)
+      SI nIndice>0 ALORS ChampNonObligatoireAffiche(m_tabChampsAVérifier[nIndice])
+     type : 458752
+   -
+     name : BulleCouleur
+     procedure_id : 2225788052945260476
+     type_code : 12
+     code : |1+
+      // Résumé : Change la couleur de fond et de texte des bulles. Attention, ce changement est au niveau de l'application ! Si vous avez des onglets dans la fenêtre principale et qu'un onglet a des champs en erreur, penser à remettre les couleurs normales en passant sur un autre onglet.
+      // Syntaxe : BulleCouleur (<nCouleurTexte> est entier, <nCouleurFond> est entier)
+      // Paramètres :
+      //	nCouleurTexte (entier) : couleur du texte de la bulle
+      //	nCouleurFond (entier) : couleur de fond de la bulle
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	BulleCouleur(Noir, RougePastel)
+      //
+      PROCEDURE BulleCouleur(nCouleurTexte est un entier,nCouleurFond est un entier)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java>
+      	wl.bullecouleur(nCouleurTexte,nCouleurFond)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : ChampNonObligatoireAffiche
+     procedure_id : 1460350015435987120
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée utilisée pour afficher visuellement des champs obligatoires.
+      PROCEDURE PRIVÉE ChampNonObligatoireAffiche(stUnChamp est un STChampAVérifier)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(stUnChamp.sChamp)
+      m_pclErreur.Raz()
+      
+      pour nChamp = 1 _a_ stUnChamp.tabChamp..occurrence
+      	sLibellé est une chaine = stUnChamp.tabLibelléOriginal[nChamp]
+      	SI stUnChamp.sCadrageLibellé>"" ALORS sLibellé=gcadrage(stUnChamp.sCadrageLibellé,sLibellé)
+      	SI stUnChamp.tabChampLibellé..occurrence=0 ALORS 
+      		stUnChamp.tabChamp[nChamp]..Libellé			= sLibellé
+      		stUnChamp.tabChamp[nChamp]..Couleur			= CouleurDéfaut
+      	SINON 
+      		stUnChamp.tabChampLibellé[nChamp]..Libellé	= sLibellé
+      		stUnChamp.tabChampLibellé[nChamp]..Couleur	= CouleurDéfaut 
+      	FIN
+      fin
+      stUnChamp.bEstAffichéObligatoire 	= faux
+     type : 458752
+   -
+     name : PlanActifAjoute
+     procedure_id : 1460351510084691898
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute un numéro de plan à la liste des plans actifs s'il n'est pas déjà présent dans cette liste. La classe ne vérifiera que les champs présents dans les champs actifs.
+      // Syntaxe : PlanActifAjoute (<nPlan> est entier)
+      // Paramètres :
+      //	nPlan (entier) : Le numéro du plan à ajouter à la liste des plans actifs.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE PlanActifAjoute(nPlan est un entier)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nPlan)
+      m_pclErreur.Raz()
+      si TableauCherche(m_tabPlansActifs,tcLinéaire,nPlan)<1 alors tableauajoute(m_tabPlansActifs,nPlan)
+     type : 458752
+   -
+     name : PlanActifSupprime
+     procedure_id : 1460457454730480764
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de supprimer un numéro de plan de la liste des plans actifs. Voir PlanActifAjoute.
+      // Syntaxe : PlanActifSupprime (<nPlan> est entier)
+      // Paramètres :
+      //	nPlan (entier) : Le numéro du plan à supprimer de la liste des plans actifs.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE PlanActifSupprime(nPlan est un entier)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nPlan)
+      m_pclErreur.Raz()
+      nIndice est un entier = TableauCherche(m_tabPlansActifs,tcLinéaire,nPlan)
+      SI nIndice>0 ALORS Tableausupprime(m_tabPlansActifs,nIndice)
+     type : 458752
+   -
+     name : ChampAVérifier
+     procedure_id : 1504017454809713469
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter un champ à la liste des champs à vérifier mais qui ne serait pas obligatoire. La procédure s'exécutera sur le champs spécifié au moment de l'appel de Vérifie().
+      // Syntaxe : ChampAVérifier (<xChamp> est champ, <procValidation> est procédure)
+      // Paramètres :
+      //	xChamp (champ) : Le champ à ajouter à la liste.
+      //	procValidation (procédure) : La procédure de validation du champ. Ça peut être une procédure interne dans le code d'initialisation de la fenêtre, une procédure globale, ...
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE ChampAVérifier(xChamp est un champ,procValidation est une procédure)
+      m_pclErreur.Raz()
+      sChamp est une chaîne
+      QUAND EXCEPTION DANS
+      	sChamp = xChamp..NomComplet
+      FAIRE
+      	ErreurDéclenche(ErreurDeChampObligatoire,<§$0002§>)
+      SINON
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sChamp)
+      	nIndice est un entier = TableauCherche(m_tabChampsAVérifier,tcLinéaire,"sChamp",sChamp)
+      	SI nIndice<1 ALORS
+      		stUnChamp est un STChampAVérifier
+      		TableauAjoute(stUnChamp.tabChamp,xChamp)
+      		stUnChamp.bEstObligatoire	= faux
+      		stUnChamp.sChamp			= sChamp
+      		TableauAjoute(stUnChamp.tabLibelléOriginal,xChamp..Libellé)
+      		stUnChamp.procValidation	= procValidation
+      		nIndice=TableauAjoute(m_tabChampsAVérifier,stUnChamp)
+      	SINON
+      		m_tabChampsAVérifier[nIndice].bEstObligatoire	= faux
+      		m_tabChampsAVérifier[nIndice].procValidation	= procValidation
+      	FIN
+      	ChampObligatoireAffiche(m_tabChampsAVérifier[nIndice]) 
+      FIN
+     type : 458752
+  properties :
+   -
+     name : p_bBulleErreurActive
+     identifier : 0x1ee3924e010e2977
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Utilisée pour activer ou désactiver visuellement les bulles d'erreur. Applique une coloration aux bulles d'erreur (ex : RougePastel). Si désactivé, remet la couleur des bulles d'origine (et JauneBulle)
+         PROCEDURE PUBLIQUE p_bBulleErreurActive(Valeur)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(Valeur)
+         SI Valeur ALORS BulleCouleur(m_nBulleErreurCouleurTexte,m_nBulleErreurCouleurFond) sinon BulleCouleur(m_nBulleNormaleCouleurTexte,m_nBulleNormaleCouleurFond)	//on remet les bulles dans leur forme d'origine
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sToutesErreurs
+     identifier : 0x14458d5c21c454f4
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Utilisée pour récupérer toutes les erreurs rencontrées dans les champs à vérifier et renvoie le résultat sous forme de chaine. À utiliser après Vérifie().
+         PROCEDURE PUBLIQUE p_sToutesErreurs() : chaine
+         sRes est une chaine
+         pour tout stUnChamp de m_tabChampsAVérifier
+         	si stUnChamp.bEstEnErreur _et_ stUnChamp.sProcMessage>"" alors
+         		pour nChamp = 1 _a_ stUnChamp.tabChamp..occurrence
+         			sRes+=[rc]+stUnChamp.tabLibelléOriginal[nChamp]+[" : "]+stUnChamp.sProcMessage
+         		fin
+         	FIN
+         FIN
+         renvoyer sRes
+        type : 1966080
+     template_refs : []
+   -
+     name : p_tabPlanErreur
+     identifier : 0x14458e1d21c54951
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Utilisée pour générer un tableau d'entiers contenant les plans contenant des champs en erreur. À utiliser après Vérifie().
+         PROCEDURE PUBLIQUE p_tabPlanErreur() : tableau d'entiers
+         tabPlan 	est un tableau d'entier
+         POUR TOUT stUnChamp de m_tabChampsAVérifier
+         	SI stUnChamp.bEstEnErreur ALORS
+         		POUR TOUTE CHAÎNE sChamp de stUnChamp.sChamp
+         			SI TableauCherche(tabPlan,tcLinéaire,{sChamp,indChamp}..Plan)<1 ALORS TableauAjoute(tabPlan,{sChamp,indChamp}..Plan)
+         		FIN
+         	FIN
+         FIN
+         RENVOYER tabPlan
+        type : 1966080
+     template_refs : []
+   -
+     name : p_tabPlanObligatoire
+     identifier : 0x14458e6e21c68354
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : utilisée pour générer un tableau d'entiers contenant les indices des plans des champs obligatoires et visibles.
+         PROCEDURE PUBLIQUE p_tabPlanObligatoire() : tableau d'entiers
+         tabPlan 	est un tableau d'entier
+         sOnglet		est une chaine
+         nNumOnglet	est un entier
+         POUR TOUT stUnChamp de m_tabChampsAVérifier
+         	si stUnChamp.bEstObligatoire _et_ stUnChamp.bEstAffichéObligatoire alors
+         		POUR TOUT xChamp de stUnChamp.tabChamp
+         			SI PAS xChamp..Visible ALORS CONTINUE
+         			SI m_tabPlansActifs..Occurrence>0 _ET_ TableauCherche(m_tabPlansActifs,tcLinéaire,xChamp..Plan)<1 ALORS CONTINUE	//il est dans un plan qui n'est pas utilisé
+         
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+         	
+         				sOnglet=OngletDuChamp(xChamp)
+         				SI sOnglet>"" ALORS 
+         					nNumOnglet=NumOngletDuChamp(xChamp)
+         					SI nNumOnglet>0 _ET_ (PAS {sOnglet,indChamp}[nNumOnglet]..Visible _OU_ {sOnglet,indChamp}[nNumOnglet]..Etat=Grisé) ALORS CONTINUE	//si l'onglet dans lequel se trouve le champ n'est pas visible ou pas actif, on continue
+         				FIN
+         	
+         <fin>
+         
+         
+         			SI TableauCherche(tabPlan,tcLinéaire,xChamp..Plan)<1 ALORS TableauAjoute(tabPlan,xChamp..Plan)
+         		FIN
+         	fin
+         FIN
+         RENVOYER tabPlan
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bChampsObligatoiresRemplis
+     identifier : 0x144590a221c91eb8
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Utilisé pour déterminer si tous les champs obligatoires sont remplis dans le contexte de la vérification des champs à afficher comme obligatoires.
+         PROCEDURE PUBLIQUE p_bChampsObligatoiresRemplis() : booléen
+         renvoyer (p_nChampsObligatoiresNonRemplis=0)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_procAffichage
+     identifier : 0x144fe4e826694fbb
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // en développement
+         PROCEDURE PUBLIQUE p_procAffichage() : procédure
+         renvoyer m_procAffichage
+        type : 1966080
+      -
+        code : |1-
+         // en développement
+         PROCEDURE PUBLIQUE p_procAffichage(Valeur)
+         m_procAffichage = Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_nChampsObligatoires
+     identifier : 0x148c4ae40d92acbf
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Utilisé pour compter le nombre total de champs qui sont affichés comme obligatoires dans le contexte de la vérification des champs à afficher comme obligatoires.
+         PROCEDURE PUBLIQUE p_nChampsObligatoires() : entier
+         n est un entier
+         POUR TOUT stUnChamp de m_tabChampsAVérifier
+         	si stUnChamp.bEstAffichéObligatoire alors n+=1
+         FIN
+         renvoyer n
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nChampsObligatoiresNonRemplis
+     identifier : 0x148c4b770d93ec0f
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Utilisé pour compter le nombre de champs obligatoires non remplis dans le contexte de la vérification des champs à afficher comme obligatoires.
+         PROCEDURE PUBLIQUE p_nChampsObligatoiresNonRemplis()
+         sOnglet 		est une chaîne
+         nNumOnglet,n,m 	sont des entiers
+         POUR TOUT stUnChamp de m_tabChampsAVérifier
+         	si stUnChamp.bEstAffichéObligatoire alors
+         		m=0
+         		POUR TOUT xChamp de stUnChamp.tabChamp
+         			SI PAS xChamp..Visible ALORS CONTINUE																			//il n'est pas visible, on continue
+         			SI m_tabPlansActifs..Occurrence>0 _ET_ TableauCherche(m_tabPlansActifs,tcLinéaire,xChamp..Plan)<1 ALORS CONTINUE	//il est dans un plan qui n'est pas utilisé, on continue
+         			
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+         	
+         				sOnglet=OngletDuChamp(xChamp)
+         				SI sOnglet>"" ALORS 
+         					nNumOnglet=NumOngletDuChamp(xChamp)
+         					SI nNumOnglet>0 _ET_ (PAS {sOnglet,indChamp}[nNumOnglet]..Visible _OU_ {sOnglet,indChamp}[nNumOnglet]..Etat=Grisé) ALORS CONTINUE	//si l'onglet dans lequel se trouve le champ n'est pas visible ou pas actif, on continue
+         				FIN
+         	
+         <fin>
+         
+         			
+         			QUAND EXCEPTION DANS
+         				SELON xChamp..Type
+         					CAS typTable,typTableHierarchique,typZoneRépétée,typListe
+         						SI xChamp..Occurrence=0 ALORS m++
+         					CAS typNum
+         						SI xChamp=0 ALORS m++
+         					CAS typInterr
+         						sCoché est une chaine
+         						POUR nOption = 1 _a_ xChamp..occurrence
+         							SI xChamp[nOption]..Visible _ET_ xChamp[nOption]<>0 ALORS sCoché+=xChamp[nOption]
+         						FIN
+         						SI sCoché="" ALORS m++
+         					CAS typSélect
+         						SI xChamp=-1 ALORS m++	//attention renvoie -1 aussi si SEL_SansNom1[1]..ValeurRenvoyée=-1
+         					CAS typComboSNS	
+         						SI (xChamp..ValeurAffichée~="" _ET_ xChamp..ValeurMémorisée~="") _OU_ xChamp=-1 ALORS m++
+         					CAS typImage
+         						SI fExtraitChemin(xChamp..Valeur,fFichier) _ET_ xChamp="" ALORS m++
+         					CAS	typComboAVS,typDate,typDurée,typHeure,typTexte,typZoneMultiligne,typZoneTexteRiche
+         						SI xChamp~="" ALORS m++
+         					AUTRES CAS
+         						dbgAssertion(ChaîneConstruit("Type du champ %1 (%2) non géré",xChamp..Nom,xChamp..Type))
+         				FIN
+         			FAIRE
+         				//le champs lié à l'erreur n'existe peut être plus (onglet, champ clone, ...)
+         			FIN
+         		FIN
+         		n+=(m=stUnChamp.tabChamp..Occurrence)
+         	fin
+         FIN
+         RENVOYER n
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1ee38fb20105f695
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Ligne
+      en-GB : Line
+     index : 0
+   -
+     text :
+      fr-FR : "Ligne "
+      en-GB : Line
+     index : 1
+   -
+     text :
+      fr-FR : Le champ %1 n'existe pas
+      en-GB : The field %1 does not exist
+      fr-CA : Le champ %1 n'existe pas
+      en-US : The field %1 does not exist
+     index : 2
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

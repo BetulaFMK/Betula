@@ -1,0 +1,101 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : csdLangue
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12a9c44d017c07d4
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe hérite de cSourceDeDonnées pour récupérer toutes les langues. Pour l'utiliser, ouvrir le fichier Excel "langues_V1.xlsx" avec cBaseDeDonnéesExcel et ouvrez une instance de cette classe en passant l'indice de connexion.
+      
+      csdLangue est une Classe
+      	hérite de cSourceDeDonnées
+      GLOBAL
+      	mg_tabLangues est un tableau <serialise = faux> de celangue dynamique		//Tableau des langues chargées depuis le fichier Excel. Global car chargé une seule fois et ne sera pas modifié.
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1344821798763300820
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe
+      // Syntaxe : Constructeur (<nIndiceDeConnexion> est entier [, <sFeuille> est chaîne])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indique l'indice de connexion pour accéder au fichier Excel contenant les données des langues.
+      //	sFeuille (chaîne UNICODE optionnelle) : Nom de la feuille Excel à partir de laquelle les données des langues seront extraites. La valeur par défaut est "Langues".
+      // Valeur de retour : Aucune
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexion est une entier,sFeuille est une chaine = "Langues")
+      cSourceDeDonnées.Constructeur(sFeuille,nIndiceDeConnexion,mg_tabLangues,vrai)
+      cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire = "D"
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1344821798763366356
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Liste
+     procedure_id : 1348917264853918455
+     type_code : 12
+     code : |1-
+      // Résumé : Charge les langues depuis un fichier Excel.
+      // Syntaxe : [ <Résultat> = ] Liste ( [<sNomColonnes> est chaîne [, <sFiltre> est chaîne [, <sOrdre> est chaîne [, <nLimiteMax> est entier [, <bLectureSeule> est booléen [, <sJaugeOuCallBack> est chaîne [, <duRafraichiJauge> est durée [, <sChampLibelléJauge> est chaîne [, <sContenuLibelléJauge> est chaîne]]]]]]]]])
+      // Paramètres :
+      //	sNomColonnes (chaîne UNICODE optionnelle) : Liste des noms de colonnes à récupérer, par défaut toutes ("*").
+      //	sFiltre (chaîne UNICODE optionnelle) : Expression de filtrage des données, par défaut = "".
+      //	sOrdre (chaîne UNICODE optionnelle) : Expression de tri des données, par défaut = "".
+      //	nLimiteMax (entier optionnel) : Limite maximale du nombre d'enregistrements à charger, par défaut = 0.
+      //	bLectureSeule (booléen optionnel) : Indique si la lecture se fait en mode lecture seule (pas important car toujours mis à vrai).
+      //	sJaugeOuCallBack (chaîne UNICODE optionnelle) : Le nom de la jauge ou de la méthode de rappel pour indiquer la progression.
+      //	duRafraichiJauge (durée optionnelle) : La fréquence de rafraîchissement de la jauge, par défaut toutes les 100ms (10x par seconde).
+      //	sChampLibelléJauge (chaîne UNICODE optionnelle) : Le champ "libellé" de la jauge à mettre à jour.
+      //	sContenuLibelléJauge (chaîne UNICODE optionnelle) : Le contenu du champ libellé associé à la jauge à mettre à jour (voir cJauge pour le détail des balises reconnues).
+      // Valeur de retour : booléen : Vrai si les langues sont chargées avec succès ou si elles étaient déjà chargées, Faux en cas d'échec du chargement..
+      // Exemple :
+      //
+      PROCÉDURE Liste(sNomColonnes est une chaîne = "*",sFiltre est une chaîne = "",sOrdre est une chaîne = "",nLimiteMax est un entier = 0,LOCAL bLectureSeule est un booléen = vrai,LOCAL sJaugeOuCallBack est une chaîne = "",LOCAL duRafraichiJauge est une Durée = 100ms,LOCAL sChampLibelléJauge est une chaîne="",LOCAL sContenuLibelléJauge est une chaîne="") : booléen
+      m_pclErreur.Raz()	
+      SI mg_tabLangues..Occurrence<>0 ALORS RENVOYER Vrai
+      renvoyer Ancêtre.Liste(sNomColonnes,sFiltre,sOrdre,nLimiteMax,Vrai,sJaugeOuCallBack,duRafraichiJauge,sChampLibelléJauge,sContenuLibelléJauge)
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x12a9c4490176fa2e
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

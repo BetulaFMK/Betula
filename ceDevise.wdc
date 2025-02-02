@@ -1,0 +1,325 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : ceDevise
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12b2206a059b2eed
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe hérite de cEnregistrement pour décrire une devise. Pour l'utiliser, ouvrir le fichier Excel "devises_V1.xlsx" avec cBaseDeDonnéesExcel et ouvrez une instance de cette classe en passant l'indice de connexion.
+      //Référence : https://en.wikipedia.org/wiki/ISO_4217
+      
+      EAfficheDevise est une énumération
+      	International
+      	Régional
+      	CodeISO
+      fin
+      COAfficheDeviseOption est une combinaison
+      	SansCaractèresSpéciaux
+      	SigleALaFin
+      fin
+      STNombre est une structure
+      	sSingulier			est une chaine
+      	sPluriel			est une chaine
+      fin
+      ceDevise est une Classe
+      	hérite de cEnregistrement
+      public constant																		//Le MAPPING représente le nom de la colonne dans le fichier Excel
+      	m_sCode				est une chaîne	<mapping = "A", serialise = faux>			//Code ISO de la devise
+      	m_sNum				est une chaine	<mapping = "B", serialise = faux>			//Code numérique de la devise
+      	m_nDécimale			est un entier	<mapping = "C", serialise = faux>			//Nombre de décimale pour les "centimes"
+      	m_sSuffixe			est une chaine	<mapping = "E", serialise = faux>			//Suffixe éventuel (parfois le montant et sa devise terminent par /-)
+      	m_taDevise			est un tableau associatif <serialise = faux> de STNombre	//Noms de la devise au singulier et pluriel séparés par / (une devise peut s'écrire de plusieurs manière)
+      	m_taSubdivision		est un tableau associatif <serialise = faux> de STNombre	//Noms de la subdivision au singulier et pluriel séparés par /
+      	m_tabPaysISO2		est un tableau <serialise = faux> de chaines 				//Tableau des codes ISO2 des pays qui utilisent la devise
+      privé
+      	m_sSiglesDevise		est une chaine	<mapping = "D", serialise = faux>			//Sigle de la devise (séparateur / pour les synonymes et séparateur ,  pour les autres langues ou usages)
+      	m_sSiglesSubdiv		est une chaine	<mapping = "F", serialise = faux>			//Sigle de la subdivision
+      	m_sPaysISO2			est une chaine	<mapping = "G", serialise = faux>			//Codes pays ISO2
+      	m_sNomComplet3		est une chaine	<mapping = "H", serialise = faux>			//Nom complet de la devise en anglais (commence toujours par une majuscule), par exemple pour une liste déroulante
+      	m_sNomDevise3		est une chaine	<mapping = "I", serialise = faux>			//Nom au singulier et au pluriel, en anglais, de la devise séparés par une virgule (séparateur / pour synonymes), par exemple pour l'affichage d'un monétaire en texte
+      	m_sNomSubdiv3		est une chaine	<mapping = "J", serialise = faux>			//Nom au singulier et au pluriel, en anglais, de la subdivision séparés par une virgule (séparateur / pour synonymes), par exemple pour l'affichage d'un monétaire en texte
+      	m_sNomComplet5		est une chaine	<mapping = "K", serialise = faux>			//Nom complet de la devise en français (commence toujours par une majuscule), par exemple pour une liste déroulante
+      	m_sNomDevise5		est une chaine	<mapping = "L", serialise = faux>			//Nom au singulier et au pluriel, en français, de la devise séparés par une virgule (séparateur / pour synonymes), par exemple pour l'affichage d'un monétaire en texte
+      	m_sNomSubdiv5		est une chaine	<mapping = "M", serialise = faux>			//Nom au singulier et au pluriel, en français, de la subdivision séparés par une virgule (séparateur / pour synonymes), par exemple pour l'affichage d'un monétaire en texte
+      	m_sNomsDevise		est une chaine	<mapping = "N", serialise = faux>			//Nom de la devise dans d'autres langues (le code langue est entre parenthèse, si pas de code langue c'est la langue officielle du pays)
+      	m_sNomsSubdiv		est une chaine	<mapping = "O", serialise = faux>			//Nom de la subdivision dans d'autres langues (le code langue est entre parenthèse, si pas de code langue c'est la langue officielle du pays)
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1347174878269943533
+     type_code : 27
+     code : |1-
+      // Résumé : Initialisation de la classe lors de sa création.
+      // Syntaxe : Constructeur (<nIndiceDeConnexion> est entier [, <xFeuille> [, <bLectureSeule> est booléen]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indique l'indice de connexion pour accéder au fichier Excel contenant les données des devises.
+      //	xFeuille (valeur par défaut="Feuil1") : Nom de la feuille Excel à partir de laquelle les données des devises seront extraites. La valeur par défaut est "Feuil1".
+      // 	bLectureSeule (booléen optionnel) : Gardé pour compatibilité mais sera toujours forcé à Vrai dans Betula (le fichier Excel n'a pas vocation à être modifié)
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexion est un entier,xFeuille = "Feuil1",bLectureSeule est un booleen = vrai)
+      cEnregistrement.Constructeur(nIndiceDeConnexion,xFeuille,vrai)
+      cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire = "A"
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1347174878270009069
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : AprèsLecture
+     procedure_id : 1347178683611329977
+     type_code : 12
+     code : |1-
+      // Résumé : Traitement après lecture
+      // Syntaxe : AprèsLecture ( [<sdSource>])
+      // Paramètres :
+      // 	sdSource (source de données) : source de données contant l'enregistrement en cours. Dans le cas d'une requête multi-table, contient aussi ces infos qu'il est nécessaire de traiter.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE AprèsLecture(sdSource = null)
+      ChaîneVersTableau(m_sPaysISO2,m_tabPaysISO2,",")
+     type : 458752
+   -
+     name : Formate
+     procedure_id : 1347792143042094862
+     type_code : 12
+     code : |1-
+      // Résumé : Formate un montant monétaire selon la devise en cours et les règles spécifiées par les paramètres d'affichage et les options.
+      // Syntaxe : [ <Résultat> = ] Formate (<moMontant> est monétaire [, <eAffichage> est ceDevise.EAfficheDevise [, <coOptions> est ceDevise.COAfficheDeviseOption]])
+      // Paramètres :
+      //	moMontant (monétaire) : Montant monétaire à formater.
+      //	eAffichage (ceDevise.EAfficheDevise optionnel) : Indiquant le type d'affichage souhaité (International, Régional, CodeISO), par défaut : International
+      // 	coOptions (ceDevise.COAfficheDeviseOption optionnel) : Combinaison d'options d'affichage spécifiant des détails tels que la présence de caractères spéciaux ou le placement du sigle. Par défaut, aucune option.
+      // Valeur de retour : chaîne UNICODE : Représente le montant monétaire formaté selon les règles spécifiées.
+      // Exemple :
+      //
+      PROCEDURE Formate(moMontant est un monétaire,eAffichage est un EAfficheDevise = International, coOptions est un COAfficheDeviseOption = null) : chaine
+      sSigle est une chaîne
+      selon eAffichage
+      	CAS International	: sSigle=p_sSigleDeviseInternational
+      	CAS Régional		: sSigle=p_sSigleDeviseRégional
+      	CAS CodeISO			: sSigle=m_sCode
+      FIN
+      renvoyer (coOptions[SigleALaFin] ? "" sinon sSigle)+[" "]+sansespace(NumériqueVersChaîne(moMontant,"15"+(m_nDécimale=0 ? "" sinon ","+m_nDécimale)))+m_sSuffixe+(coOptions[SigleALaFin] ? " "+sSigle SINON "")
+     type : 458752
+   -
+     name : RechercheSelonCodeISO
+     procedure_id : 1347834551549350555
+     type_code : 12
+     code : |1-
+      // Résumé : Effectue une recherche dans la liste des devises en se basant sur le code ISO à trois caractères fourni en paramètre. Met à jour l'objet de la devise trouvée.
+      // Syntaxe : [ <Résultat> = ] RechercheSelonCodeISO (<sCodeISO3> est chaîne)
+      // Paramètres :
+      //	sCodeISO3 (chaîne UNICODE) : Code ISO à trois caractères de la devise à rechercher.
+      // Valeur de retour : booléen : Indique si la recherche a réussi (Vrai si la devise est trouvée, Faux sinon).
+      // Exemple :
+      //
+      PROCEDURE RechercheSelonCodeISO(sCodeISO3 est une chaine) : booleen
+      si sCodeISO3~="" _ou_ taille(sCodeISO3)<>3 alors m_pclErreur.AjouteErreur(<§$0001§>);renvoyer faux
+      si csdDevise.mg_tabDevises..occurrence = 0 alors
+      	//chargement de toutes les devises
+      	clDevises est un csdDevise(m_nIndiceDeConnexion,m_sTableReliée)
+      	clDevises.m_bNePasLirePremierEnreg=Vrai
+      	SI pas clDevises.Liste() ALORS m_pclErreur.AjouteErreur(clDevises.p_serreur);renvoyer faux
+      FIN
+      nIndice est un entier = tableaucherche(csdDevise.mg_tabDevises,tcLinéaire,"m_sCode",sCodeISO3)
+      si nIndice>0 alors CopieMembresDepuis(csdDevise.mg_tabDevises[nIndice]);renvoyer vrai
+      renvoyer faux
+     type : 458752
+  properties :
+   -
+     name : p_sNomComplet
+     identifier : 0x12b3b423263c3ab0
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom complet de la devise dans le langue en cours (par exemple pour l'affichage dans une liste déroulante)
+         PROCEDURE PUBLIQUE p_sNomComplet() : chaine
+         si nation() dans (nationFrançais,nationCanadienFrançais) _et_ pas m_sNomComplet5~="" alors 
+         	renvoyer minuscule(SansEspace(ExtraitChaîne(m_sNomComplet5,1,"/"))) 
+         sinon 
+         	renvoyer SansEspace(ExtraitChaîne(m_sNomComplet3,1,"/"))
+         FIN
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sNomDeviseSingulier
+     identifier : 0x12b3b438263d8ea9
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom au singulier de la devise dans le langue en cours
+         PROCEDURE PUBLIQUE p_sNomDeviseSingulier() : chaine
+         si Nation() DANS (nationFrançais,nationCanadienFrançais) _et_ pas m_sNomDevise3~="" alors 
+         	renvoyer Minuscule(SansEspace(ExtraitChaîne(extraitchaine(m_sNomDevise5,1,","),1,"/"))) 
+         sinon 
+         	RENVOYER SansEspace(ExtraitChaîne(ExtraitChaîne(m_sNomDevise3,1,","),1,"/"))
+         FIN
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sNomDevisePluriel
+     identifier : 0x12b3b442263eb29d
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom au pluriel de la devise dans le langue en cours
+         PROCEDURE PUBLIQUE p_sNomDevisePluriel() : chaine
+         SI Nation() DANS (nationFrançais,nationCanadienFrançais) _ET_ PAS m_sNomDevise3~="" ALORS 
+         	RENVOYER minuscule(SansEspace(ExtraitChaîne((position(m_sNomDevise5,",")>0 ? ExtraitChaîne(m_sNomDevise5,2,",") sinon m_sNomDevise5),1,"/")))
+         SINON 
+         	RENVOYER SansEspace(ExtraitChaîne((Position(m_sNomDevise3,",")>0 ? ExtraitChaîne(m_sNomDevise3,2,",") SINON m_sNomDevise3),1,"/"))
+         FIN
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sNomSubdivisionSingulier
+     identifier : 0x12b3b45b263f1739
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom au singulier de la subdivision dans le langue en cours
+         PROCEDURE PUBLIQUE p_sNomSubdivisionSingulier() : chaine
+         SI Nation() DANS (nationFrançais,nationCanadienFrançais) _ET_ PAS m_sNomSubdiv5~="" ALORS 
+         	RENVOYER minuscule(sansespace(extraitchaine(ExtraitChaîne(m_sNomSubdiv5,1,","),1,"/")))
+         SINON 
+         	RENVOYER sansespace(extraitchaine(ExtraitChaîne(m_sNomSubdiv3,1,","),1,"/"))
+         FIN
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sNomSubdivisionPluriel
+     identifier : 0x12b3b46d26405cef
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom au pluriel de la subdivision dans le langue en cours
+         PROCEDURE PUBLIQUE p_sNomSubdivisionPluriel() : chaine
+         SI Nation() DANS (nationFrançais,nationCanadienFrançais) _ET_ PAS m_sNomDevise3~="" ALORS 
+         	RENVOYER minuscule(SansEspace(ExtraitChaîne((Position(m_sNomSubdiv5,",")>0 ? ExtraitChaîne(m_sNomSubdiv5,2,",") SINON m_sNomSubdiv5),1,"/")))
+         SINON 
+         	RENVOYER SansEspace(ExtraitChaîne((Position(m_sNomSubdiv3,",")>0 ? ExtraitChaîne(m_sNomSubdiv3,2,",") SINON m_sNomSubdiv3),1,"/"))
+         FIN
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sSigleDeviseRégional
+     identifier : 0x12b3b7bc26414a69
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le sigle de la devise (notation régionale)
+         PROCEDURE PUBLIQUE p_sSigleDeviseRégional() : chaine
+         sRes est une chaine
+         pour toute chaine sSigle de m_sSiglesDevise separee par ","
+         	sRes=extraitchaine(sSigle,1,"/")	//le dernier
+         FIN
+         renvoyer sansespace(sRes)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sSigleDeviseInternational
+     identifier : 0x12b3b7cd264289c9
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le sigle de la devise (notation internationale)
+         PROCEDURE PUBLIQUE p_sSigleDeviseInternational() : chaine
+         renvoyer SansEspace(extraitchaine(extraitchaine(m_sSiglesDevise,1,","),1,"/"))
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sSigleSubdivision
+     identifier : 0x12b3b887264363a4
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le sigle de la subdivision
+         PROCEDURE PUBLIQUE p_sSigleSubdivision() : chaine
+         RENVOYER SansEspace(ExtraitChaîne(m_sSiglesSubdiv,1,","))
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sSuffixe
+     identifier : 0x12b44d602d15d324
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Renvoie le (premier) suffixe (parfois le montant et sa devise terminent par /-)
+         PROCEDURE PUBLIQUE p_sSuffixe() : chaine
+         renvoyer SansEspace(extraitchaine(m_sSuffixe,1,","))
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x12b2206305951610
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le code ISO de la devise est obligatoire et doit comporter 3 caractères
+     index : 0
+   -
+     text :
+      fr-FR : Le code ISO de la devise est obligatoire et doit comporter 3 caractères
+      en-GB : The currency ISO code is mandatory and must be 3 characters
+      fr-CA : Le code ISO de la devise est obligatoire et doit comporter 3 caractères
+      en-US : The currency ISO code is mandatory and must be 3 characters
+     index : 1
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

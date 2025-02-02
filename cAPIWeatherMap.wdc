@@ -1,0 +1,505 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cAPIWeatherMap
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x161af49e7088e645
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe permet de récupérer facilement la météo courante du service OpenWeatherMap. 
+      //Attention : d'abord s'inscrire gratuitement sur https://openweathermap.org/ pour avoir une clé API
+      
+      EWeatherUnité est une énumération
+      	UnitéStandard		= "standard"
+      	UnitéMétrique		= "metric"
+      	UnitéImpériale		= "imperial"
+      FIN
+      EWeahterIcône est une énumération
+      	IcôneTailleNormale	= ""		//50x50px
+      	IcôneTailleX2		= "@2x"		//100x100px
+      	IcôneTailleX4		= "@4x"		//200x200px
+      fin
+      EWeahterLangue est une énumération
+      	Aafrikaans			= "af"
+      	Aalbanais			= "al"
+      	Arabe				= "ar"
+      	Azerbaïdjanais		= "az"
+      	Bulgare				= "bg"
+      	Catalan				= "ca"
+      	Tchèque				= "cz"
+      	Danois				= "da"
+      	Allemand			= "de"
+      	Grec				= "el"
+      	Anglais				= "en"
+      	Basque				= "eu"
+      	Persan				= "fa"
+      	Finlandais			= "fi"
+      	Français			= "fr"
+      	Galicien			= "gl"
+      	Hébreu				= "he"
+      	Hindi				= "hi"
+      	Croate				= "hr"
+      	Hongrois			= "hu"
+      	Indonésien			= "id"
+      	Italien				= "it"
+      	Japonais			= "ja"
+      	Coréen				= "kr"
+      	Letton				= "la"
+      	Lituanien			= "lt"
+      	Macédonien			= "mk"
+      	Norvégien			= "No"
+      	Néerlandais			= "nl"
+      	Polonais			= "pl"
+      	Portugais			= "pt"
+      	PortuguêsBrésil		= "pt_br"
+      	Roumain				= "ro"
+      	Russe				= "ru"
+      	Suédois				= "se"
+      	Slovaque			= "sk"
+      	Slovène				= "sl"
+      	Espagnol			= "sp"
+      	Serbe				= "sr"
+      	Thaïlandais			= "th"
+      	Turc				= "tr"
+      	Ukrainien			= "ua"
+      	Vietnamien			= "vi"
+      	ChinoisSimplifié	= "zh_cn"
+      	ChinoisTraditionnel	= "zh_tw"
+      	Zoulou				= "zu"
+      FIN
+      
+      cAPIWeatherMap est une Classe
+      	hérite de cHTTPAPI
+      PUBLIC CONSTANT
+      	m_nCodeMétéo			est un entier				<Sérialise = Faux>
+      	m_rLongitude			est un réel            		<Sérialise = Faux>
+      	m_rLatitude				est un réel            		<Sérialise = Faux>
+      	m_nIDMétéo				est un entier          		<Sérialise = Faux>
+      	m_sNom					est une chaîne         		<Sérialise = Faux>
+      	m_sDescription			est une chaine         		<Sérialise = Faux>
+      	m_sIcône				est une chaine         		<Sérialise = Faux>
+      	m_rTempérature			est un réel            		<Sérialise = Faux>		//dépend de l'unité choisie
+      	m_rRessenti				est un reel            		<Sérialise = Faux>		//dépend de l'unité choisie
+      	m_rTempératureMin		est un reel            		<Sérialise = Faux>		//dépend de l'unité choisie
+      	m_rTempératureMax 		est un réel             	<Sérialise = Faux>		//dépend de l'unité choisie
+      	m_nPressionNiveauMer	est un entier           	<Sérialise = Faux>		
+      	m_nPressionNiveauSol	est un entier           	<Sérialise = Faux>
+      	m_nPression				est un entier           	<Sérialise = Faux>
+      	m_nPcHumidité			est un entier           	<Sérialise = Faux>
+      	m_nVisibilité			est un entier           	<Sérialise = Faux>
+      	m_rVentVitesse			est un réel             	<Sérialise = Faux>
+      	m_rVentRafale			est un réel             	<Sérialise = Faux>
+      	m_nVentDirection		est un entier           	<Sérialise = Faux>
+      	m_rQtéPluie1H			est un réel             	<Sérialise = Faux>
+      	m_rQtéPluie3H			est un réel             	<Sérialise = Faux>
+      	m_nPcNuage				est un entier           	<Sérialise = Faux>
+      	m_rQtéNeige1H			est un réel             	<Sérialise = Faux>
+      	m_rQtéNeige3H			est un réel             	<Sérialise = Faux>
+      	m_dhHeureRelevé			est une dateheure       	<Sérialise = Faux>
+      	m_nType					EST un entier           	<Sérialise = Faux>
+      	m_nIDVille				est un entier           	<Sérialise = Faux>
+      	m_sVille				est une chaine				<Sérialise = Faux>
+      	m_dhSoleilLevé			est une dateheure			<Sérialise = Faux>
+      	m_dhSoleilCouché		est une dateheure			<Sérialise = Faux>
+      	m_eUnitéTempérature		est une EUnitéTempérature	<sérialise = faux>
+      PROTÉGÉ
+      	m_vRéponse				est un variant				<serialise = faux>			//Réponse de l'appel API sous forme de variant
+      PRIVÉ
+      	m_sCléAPI				est une chaîne				<serialise = faux>			//Clé API pour accéder au service
+      	m_eUnité				est un EWeatherUnité		<serialise = faux>			//Unité dans laquelle la réponse doit être donnée
+      	m_duTimeOut				est une durée				<serialise = faux>			//Durée après laquelle le timeout se déclenche
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1592854379558987333
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe cAPI.
+      // Syntaxe : Constructeur (<sCléAPI> est chaîne [, <duTimeOut> est durée [, <eUnité> est cAPIWeatherMap.EWeatherUnité]])
+      // Paramètres :
+      //	sCléAPI (chaîne UNICODE) : La clé API pour permettre l'accès au service
+      //	duTimeOut (durée) : Durée après laquelle le timeout se déclenche, par défaut : 5 secondes
+      //	eUnité (cAPIWeatherMap.EWeatherUnité) : Une valeur de l'énumération EWeatherUnité représentant l'unité dans laquelle les informations météorologiques doivent être retournées. Par défaut, l'unité est définie en fonction de la nation. Si la nation est française ou canadienne-française, l'unité est métrique ; sinon, l'unité est impériale.
+      // Valeur de retour :
+      // 	Aucune
+      // Exemple :
+      PROCEDURE Constructeur(sCléAPI est une chaine,duTimeOut est une durée = 5s,eUnité est un EWeatherUnité = (nation dans (nationFrançais,nationCanadienFrançais) ? UnitéMétrique sinon UnitéImpériale))
+      cHTTPAPI.Constructeur("https://api.openweathermap.org/data/2.5/weather/")	
+      m_sCléAPI 	= sCléAPI
+      m_duTimeOut = duTimeOut
+      m_eUnité	= eUnité
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1592854379559052869
+     type_code : 28
+     code : |1+
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres :	Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : MétéoActuelleCoordonnées
+     procedure_id : 1592857093979737212
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'obtenir les informations météorologiques actuelles en fonction des coordonnées géographiques spécifiées.
+      // Syntaxe : [ <Résultat> = ] MétéoActuelleCoordonnées (<rLongitude> est réel, <rLatitude> est réel [, <eUnité> est cAPIWeatherMap.EWeatherUnité [, <eLangue> est cAPIWeatherMap.EWeahterLangue]])
+      // Paramètres :
+      //	rLongitude (réel) : longitude de l'emplacement pour lequel les informations météorologiques sont demandées.
+      //	rLatitude (réel) :  latitude de l'emplacement pour lequel les informations météorologiques sont demandées.
+      //	eUnité (cAPIWeatherMap.EWeatherUnité) : valeur de l'énumération EWeatherUnité indiquant l'unité dans laquelle les informations météorologiques doivent être retournées. Par défaut, elle prend la valeur de l'unité spécifiée lors de la création de l'objet
+      //	eLangue (cAPIWeatherMap.EWeahterLangue) : valeur de l'énumération EWeahterLangue spécifiant la langue dans laquelle les informations doivent être retournées. Par défaut, la langue est déterminée en fonction de la nation (française ou canadienne-française pour le français, sinon anglais).
+      // Valeur de retour : booléen : Vrai si la requête API s'est exécutée avec succès et a retourné des données météorologiques. Faux si une erreur s'est produite pendant l'exécution de la requête.
+      // Exemple :
+      //	clMeteo est un cAPIWeatherMap("abcdef1234567890",*,cAPIWeatherMap.UnitéMétrique)
+      //	SI clMeteo.MétéoActuelleCoordonnées(48.8601819,2.3377825,*,cAPIWeatherMap.Français) ALORS
+      //		//la réponse est dans clMeteo.m_stRéponse
+      //	SINON
+      //		Erreur(clMeteo.p_sErreurTout)
+      //	FIN
+      //
+      PROCEDURE MétéoActuelleCoordonnées(rLongitude est un reel,rLatitude est un reel,eUnité est un EWeatherUnité = m_eUnité,eLangue est un EWeahterLangue = (nation dans (nationFrançais,nationCanadienFrançais) ? francais sinon anglais)) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(rLongitude,rLatitude,eUnité..nom,eLangue..Nom)
+      m_pclErreur.Raz();RAZ()
+      SI m_sCléAPI~="" ALORS m_pclErreur.AjouteErreur(<§$0000§>)
+      SI PAS -90<=rLatitude<=90 _OU_ PAS -180<=rLongitude<=180 ALORS m_pclErreur.AjouteErreur(<§$0006§>)
+      SI m_pclErreur.p_sErreur>"" ALORS RENVOYER Faux
+      
+      m_stRequêteHTTPAPI.nTimeOutConnexion	= m_duTimeOut
+      RENVOYER APIWeaterRestExecute(m_sURLdeBase+ChaîneConstruit("?lat=%1&lon=%2&appid=%3&lang=%4&units=%5",rLongitude,rLatitude,m_sCléAPI,eLangue..Valeur,eUnité..Valeur))
+     type : 458752
+   -
+     name : MétéoActuelleVillePays
+     procedure_id : 1592857136929486301
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'obtenir les informations météorologiques actuelles en fonction du nom de la ville et du code ISO du pays spécifiés.
+      // Syntaxe : [ <Résultat> = ] MétéoActuelleVillePays (<sVille> est chaîne, <sPays> est chaîne [, <eUnité> est cAPIWeatherMap.EWeatherUnité [, <eLangue> est cAPIWeatherMap.EWeahterLangue]])
+      // Paramètres :
+      //	sVille (chaîne UNICODE) : chaîne représentant le nom de la ville pour laquelle les informations météorologiques sont demandées.
+      //	sPays (chaîne UNICODE) : chaîne représentant le code ISO 3166 du pays pour lequel les informations météorologiques sont demandées (en 3 caractères).
+      //	eUnité (cAPIWeatherMap.EWeatherUnité) :  valeur de l'énumération EWeatherUnité indiquant l'unité dans laquelle les informations météorologiques doivent être retournées. Par défaut, elle prend la valeur de l'unité spécifiée lors de la création de l'objet
+      //	eLangue (cAPIWeatherMap.EWeahterLangue) : valeur de l'énumération EWeahterLangue spécifiant la langue dans laquelle les informations doivent être retournées. Par défaut, la langue est déterminée en fonction de la nation (française ou canadienne-française pour le français, sinon anglais).
+      // Valeur de retour : booléen : Vrai si la requête API s'est exécutée avec succès et a retourné des données météorologiques. Faux si une erreur s'est produite pendant l'exécution de la requête.
+      //	clMeteo est un cAPIWeatherMap("abcdef1234567890",*,cAPIWeatherMap.UnitéMétrique)
+      //	SI clMeteo.MétéoActuelleVillePays("Bruxelles","BEL",*,cAPIWeatherMap.Français) ALORS
+      //		//la réponse est dans clMeteo.m_stRéponse
+      //	SINON
+      //		Erreur(clMeteo.p_sErreurTout)
+      //	FIN
+      //
+      PROCEDURE MétéoActuelleVillePays(LOCAL sVille est une chaine,local sPays est une chaine,eUnité est un EWeatherUnité = m_eUnité,eLangue est un EWeahterLangue = (nation dans (nationFrançais,nationCanadienFrançais) ? francais sinon anglais)) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sVille,sPays,eUnité..Nom,eLangue..Nom)
+      m_pclErreur.Raz();RAZ()
+      SI m_sCléAPI~="" 		ALORS m_pclErreur.AjouteErreur(<§$0000§>)
+      SI sVille~="" 			ALORS m_pclErreur.AjouteErreur(<§$0004§>)
+      SI sPays~="" 			ALORS 
+      	m_pclErreur.AjouteErreur(<§$0003§>)
+      SINON SI Taille(sPays)<>3 ALORS
+      	m_pclErreur.AjouteErreur(<§$0002§>)
+      FIN
+      SI m_pclErreur.p_sErreur>"" ALORS RENVOYER Faux
+      
+      m_stRequêteHTTPAPI.nTimeOutConnexion	= m_duTimeOut
+      sVille	= ChaîneFormate(sVille,ccSansAccent+ccSansEspace+ccMinuscule)
+      sPays	= ChaîneFormate(sPays,ccSansAccent+ccSansEspace+ccMajuscule)
+      selon eUnité
+      	CAS UnitéStandard	: m_eUnitéTempérature = EUnitéTempérature.Kelvin
+      	CAS UnitéMétrique	: m_eUnitéTempérature = EUnitéTempérature.Celsius
+      	CAS UnitéImpériale	: m_eUnitéTempérature = EUnitéTempérature.Fahrenheit
+      FIN
+      RENVOYER APIWeaterRestExecute(m_sURLdeBase+ChaîneConstruit("?q=%1,%2&appid=%3&lang=%4&units=%5",URLEncodeunicode(sVille),URLEncodeunicode(sPays),m_sCléAPI,eLangue..Valeur,eUnité..Valeur))
+     type : 458752
+   -
+     name : MétéoActuelleVilleÉtatProvincePays
+     procedure_id : 1592857201354075824
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'obtenir les informations météorologiques actuelles en fonction du nom de la ville, de l'état ou de la province, et du code ISO du pays spécifiés.
+      // Syntaxe : [ <Résultat> = ] MétéoActuelleVilleÉtatProvincePays (<sVille> est chaîne, <sÉtatProvince> est chaîne, <sPays> est chaîne [, <eUnité> est cAPIWeatherMap.EWeatherUnité [, <eLangue> est cAPIWeatherMap.EWeahterLangue]])
+      // Paramètres :
+      //	sVille (chaîne UNICODE) : chaîne représentant le nom de la ville pour laquelle les informations météorologiques sont demandées.
+      //	sÉtatProvince (chaîne UNICODE) : chaîne représentant le nom de l'état ou de la province associé à la ville (peut être spécifié en entier ou en code ISO 3166 en 2 ou 3 caractères).
+      //	sPays (chaîne UNICODE) : chaîne représentant le code ISO 3166 du pays pour lequel les informations météorologiques sont demandées (en 3 caractères).
+      //	eUnité (cAPIWeatherMap.EWeatherUnité) : valeur de l'énumération EWeatherUnité indiquant l'unité dans laquelle les informations météorologiques doivent être retournées. Par défaut, elle prend la valeur de l'unité spécifiée lors de la création de l'objet
+      //	eLangue (cAPIWeatherMap.EWeahterLangue) :valeur de l'énumération EWeahterLangue spécifiant la langue dans laquelle les informations doivent être retournées. Par défaut, la langue est déterminée en fonction de la nation (française ou canadienne-française pour le français, sinon anglais).
+      // Valeur de retour : booléen : Vrai si la requête API s'est exécutée avec succès et a retourné des données météorologiques. Faux si une erreur s'est produite pendant l'exécution de la requête.
+      //	clMeteo est un cAPIWeatherMap("abcdef1234567890",*,cAPIWeatherMap.UnitéMétrique)
+      //	SI clMeteo.MétéoActuelleVilleÉtatProvincePays("Montréal","QC","CAN",*,cAPIWeatherMap.Français) ALORS
+      //		//la réponse est dans clMeteo.m_stRéponse
+      //	SINON
+      //		Erreur(clMeteo.p_sErreurTout)
+      //	FIN
+      //
+      PROCEDURE MétéoActuelleVilleÉtatProvincePays(sVille est une chaine,sÉtatProvince est une chaine,sPays est une chaine,eUnité est un EWeatherUnité = m_eUnité,eLangue est un EWeahterLangue = (nation dans (nationFrançais,nationCanadienFrançais) ? francais sinon anglais)) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sVille,sÉtatProvince,sPays,eUnité..Nom,eLangue..Nom)
+      m_pclErreur.Raz();RAZ()
+      SI m_sCléAPI~="" 		ALORS m_pclErreur.AjouteErreur(<§$0000§>)
+      SI sVille~="" 			ALORS m_pclErreur.AjouteErreur(<§$0004§>)
+      SI sÉtatProvince~=""	ALORS m_pclErreur.AjouteErreur(<§$0005§>)
+      SI sPays~="" 			ALORS 
+      	m_pclErreur.AjouteErreur(<§$0003§>)
+      SINON SI Taille(sPays)<>3 ALORS
+      	m_pclErreur.AjouteErreur(<§$0002§>)
+      FIN
+      SI m_pclErreur.p_sErreur>"" ALORS RENVOYER Faux
+      
+      m_stRequêteHTTPAPI.nTimeOutConnexion	= m_duTimeOut
+      sVille			= ChaîneFormate(sVille,ccSansAccent+ccSansEspace+ccMinuscule)
+      sÉtatProvince	= ChaîneFormate(sÉtatProvince,ccSansAccent+ccSansEspace+ccMinuscule)
+      sPays			= ChaîneFormate(sPays,ccSansAccent+ccSansEspace+ccMajuscule)
+      
+      m_stRequêteHTTPAPI.nTimeOutConnexion	= m_duTimeOut
+      RENVOYER APIWeaterRestExecute(m_sURLdeBase+ChaîneConstruit("?q=%1,%2,%3&appid=%4&lang=%5&units=%6",URLEncodeunicode(sVille),URLEncodeUnicode(sÉtatProvince),URLEncodeUnicode(sPays),m_sCléAPI,eLangue..Valeur,eUnité..Valeur))
+     type : 458752
+   -
+     name : APIWeaterRestExecute
+     procedure_id : 1592857639440776262
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée est utilisée pour exécuter une requête REST vers l'API Weather Map en utilisant l'URL spécifiée.
+      PROCEDURE PRIVÉE APIWeaterRestExecute(sURL est une chaine) : booleen
+      m_stRequêteHTTPAPI.sURL=sURL
+      SI RestExecute(cHTTPAPI.Aucune) ALORS	//cHTTPAPI.Aucune car la clé API est déjà dans l'URL
+      	vRéponse 	est un variant 	= RéponseJSONUnicodeVersVariant()
+      	SI vRéponse<>Null ALORS
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(RéponseBufferVersChaineUnicode())
+      		
+      		SI vRéponse.cod=200 ALORS
+      			m_vRéponse = vRéponse
+      			VariantVersRéponse()
+      			RENVOYER Vrai
+      		SINON
+      			m_pclErreur.AjouteErreur(vRéponse.cod + ":" + vRéponse.message)
+      		FIN
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0001§>)
+      	FIN
+      FIN
+      RENVOYER Faux
+     type : 458752
+   -
+     name : VariantVersRéponse
+     procedure_id : 1592857746815049744
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée convertit un variant représentant la réponse de l'API Weather en une structure structurée m_stRéponse contenant les données météorologiques.
+      PROCEDURE PRIVÉE VariantVersRéponse()
+      nDateHeure	est un entier
+      SI m_vRéponse=Null ALORS RETOUR
+      SI m_vRéponse.coord<>Null ALORS
+      	m_rLongitude		= m_vRéponse.coord.lon
+      	m_rLatitude			= m_vRéponse.coord.lat
+      FIN
+      SI m_vRéponse.weather<>Null ALORS
+      	m_nIDMétéo			= m_vRéponse.weather[1].id
+      	m_sNom				= m_vRéponse.weather[1].main		//toujours en anglais
+      	m_sDescription		= m_vRéponse.weather[1].description	//dans la langue choisie
+      	m_sIcône			= m_vRéponse.weather[1].icon
+      FIN
+      SI m_vRéponse.main<>Null ALORS
+      	m_rTempérature		= m_vRéponse.main.temp
+      	m_rRessenti			= m_vRéponse.main.feels_like
+      	m_rTempératureMin	= m_vRéponse.main.temp_min
+      	m_rTempératureMax 	= m_vRéponse.main.temp_max
+      	m_nPressionNiveauMer= m_vRéponse.main.sea_level
+      	m_nPressionNiveauSol= m_vRéponse.main.grnd_level
+      	m_nPression			= m_vRéponse.main.pressure
+      	m_nPcHumidité		= m_vRéponse.main.humidity
+      FIN
+      m_nVisibilité			= m_vRéponse.visibility
+      SI m_vRéponse.wind<>Null ALORS
+      	m_rVentVitesse		= m_vRéponse.wind.speed	
+      	m_nVentDirection	= m_vRéponse.wind.deg
+      	m_rVentRafale		= m_vRéponse.wind.gust
+      FIN
+      SI m_vRéponse.rain<>Null ALORS
+      	m_rQtéPluie1H		= m_vRéponse.rain."1h"
+      	m_rQtéPluie3H		= m_vRéponse.rain."3h"
+      FIN
+      SI m_vRéponse.clouds<>Null ALORS
+      	m_nPcNuage			= m_vRéponse.clouds.all	
+      FIN
+      SI m_vRéponse.snow<>Null ALORS
+      	m_rQtéNeige1H		= m_vRéponse.snow."1h"
+      	m_rQtéNeige3H		= m_vRéponse.snow."3h"
+      FIN
+      nDateHeure				= m_vRéponse.dt
+      m_dhHeureRelevé			= DateUnixVersWD(nDateHeure)
+      SI m_vRéponse.sys<>Null ALORS		//id et country ignorés car n'apporte pas d'info pertinente
+      	m_nType				= m_vRéponse.sys.type
+      	nDateHeure			= m_vRéponse.sys.sunrise
+      	m_dhSoleilLevé		= DateUnixVersWD(nDateHeure)	
+      	nDateHeure			= m_vRéponse.sys.sunset
+      	m_dhSoleilCouché	= DateUnixVersWD(nDateHeure)	
+      FIN
+      m_nIDVille				= m_vRéponse.id
+      m_sVille				= m_vRéponse.name		
+      //timezone et name ignorés car n'apporte pas d'info pertinente
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 1592857832714415227
+     type_code : 12
+     code : |1-
+      // Résumé : Réinitialiser les données de la classe cAPIWeatherMap en remettant à zéro les champs liés à la réponse de l'API et en appelant également la méthode Raz de l'ancêtre de la classe.
+      // Syntaxe : Raz ()
+      // Paramètres :	Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	Raz()
+      //
+      PROCEDURE Raz()
+      m_vRéponse=Null
+      VariableRAZ(m_nCodeMétéo)			
+      VariableRAZ(m_rLongitude)			
+      VariableRAZ(m_rLatitude)				
+      VariableRAZ(m_nIDMétéo)				
+      VariableRAZ(m_sNom)					
+      VariableRAZ(m_sDescription)			
+      VariableRAZ(m_sIcône)				
+      VariableRAZ(m_rTempérature)			
+      VariableRAZ(m_rRessenti)				
+      VariableRAZ(m_rTempératureMin)		
+      VariableRAZ(m_rTempératureMax) 		
+      VariableRAZ(m_nPressionNiveauMer)	
+      VariableRAZ(m_nPressionNiveauSol)	
+      VariableRAZ(m_nPression)				
+      VariableRAZ(m_nPcHumidité)			
+      VariableRAZ(m_nVisibilité)			
+      VariableRAZ(m_rVentVitesse)			
+      VariableRAZ(m_rVentRafale)			
+      VariableRAZ(m_nVentDirection)		
+      VariableRAZ(m_rQtéPluie1H)			
+      VariableRAZ(m_rQtéPluie3H)			
+      VariableRAZ(m_nPcNuage)				
+      VariableRAZ(m_rQtéNeige1H)			
+      VariableRAZ(m_rQtéNeige3H)			
+      VariableRAZ(m_dhHeureRelevé)			
+      VariableRAZ(m_nType)					
+      VariableRAZ(m_nIDVille)				
+      VariableRAZ(m_sVille)				
+      VariableRAZ(m_dhSoleilLevé)			
+      VariableRAZ(m_dhSoleilCouché)
+      VariableRAZ(m_eUnitéTempérature)		
+      ancetre.RAZ()
+     type : 458752
+   -
+     name : imgMétéo
+     procedure_id : 1592912409976246720
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère l'icône météorologique sous forme de buffer en fonction de la taille spécifiée. L'image est stockée dans la cache si cApplication.m_sRépertoireCacheMémo est configuré.
+      // Syntaxe : [ <Résultat> = ] imgMétéo ( [<eTaille> est cAPIWeatherMap.EWeahterIcône])
+      // Paramètres :
+      //	eTaille (cAPIWeatherMap.EWeahterIcône) : Taille de l'icône météorologique à récupérer, par défaut : la taille normale (50x50px). IcôneTailleX2 offre du 100x100px et IcôneTailleX4 offre du 200x200px
+      // Valeur de retour : buffer : Image de l'icône sous forme de buffer
+      // Exemple :
+      //	imgMétéo(IcôneTailleX2)
+      //
+      PROCEDURE imgMétéo(eTaille est un EWeahterIcône = IcôneTailleNormale) : buffer
+      imgMétéo est un buffer
+      SI m_sIcône>"" ALORS
+      	sIcôneCache est une chaine = cApplication._Application.m_sRépertoireCacheMémo+m_sIcône+eTaille..Valeur+".png"
+      	SI cApplication._Application.m_sRépertoireCacheMémo~="" _OU_ PAS fFichierExiste(sIcôneCache) ALORS
+      		clReqImage 	est un chttp
+      		stReqImage 	est un chttp.STHTTPRequête
+      		stReqImage.sURL = "https://openweathermap.org/img/wn/"+m_sIcône+eTaille..Valeur+".png"
+      		stRepImage	est un chttp.STHTTPRéponse = clReqImage.Requête(stReqImage)
+      		SI stRepImage.nCodeÉtat=200 ALORS 
+      			imgMétéo = stRepImage.bufContenu
+      			SI PAS cApplication._Application.m_sRépertoireCacheMémo~="" ALORS fSauveBuffer(sIcôneCache,imgMétéo)
+      		FIN
+      	SINON
+      		imgMétéo = fChargeBuffer(sIcôneCache)
+      	FIN
+      fin
+      renvoyer imgMétéo
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x161af48e7082aa55
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : La clé API est obligatoire
+      en-GB : API key is mandatory
+      fr-CA : La clé API est obligatoire
+      en-US : API key is mandatory
+     index : 0
+   -
+     text :
+      fr-FR : Réponse vide du serveur
+      en-GB : Empty response from server
+      fr-CA : Réponse vide du serveur
+      en-US : Empty response from server
+     index : 1
+   -
+     text :
+      fr-FR : Le pays doit être un code ISO 3166 en 3 caractères
+      en-GB : The country must be an ISO 3166 code in 3 characters
+      fr-CA : Le pays doit être un code ISO 3166 en 3 caractères
+      en-US : The country must be an ISO 3166 code in 3 characters
+     index : 2
+   -
+     text :
+      fr-FR : Le code ISO du pays est obligatoire
+      en-GB : Country ISO code is mandatory
+      fr-CA : Le code ISO du pays est obligatoire
+      en-US : Country ISO code is mandatory
+     index : 3
+   -
+     text :
+      fr-FR : Le nom de la ville est obligatoire
+      en-GB : The city name is mandatory
+      fr-CA : Le nom de la ville est obligatoire
+      en-US : The city name is mandatory
+     index : 4
+   -
+     text :
+      fr-FR : Le nom de l'état ou de la province est obligatoire (en entier ou en code ISO 3166 en 2 ou 3 caractères)
+      en-GB : The name of the state or province is mandatory (in full or in ISO 3166 code in 2 or 3 characters)
+      fr-CA : Le nom de l'état ou de la province est obligatoire (en entier ou en code ISO 3166 en 2 ou 3 caractères)
+      en-US : The name of the state or province is mandatory (in full or in ISO 3166 code in 2 or 3 characters)
+     index : 5
+   -
+     text :
+      fr-FR : Les coordonnées sont incorrectes (latitude entre -90 et 90 et longitude entre -180 et 180)
+      en-GB : The coordinates are incorrect (latitude between -90 and 90 and longitude between -180 and 180)
+      fr-CA : Les coordonnées sont incorrectes (latitude entre -90 et 90 et longitude entre -180 et 180)
+      en-US : The coordinates are incorrect (latitude between -90 and 90 and longitude between -180 and 180)
+     index : 6
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

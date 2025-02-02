@@ -1,0 +1,2280 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_WIN
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1bbb6c3747cc45f5
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //structures nécessaires aux fonctions des API appelés
+      STRaccourci est une Structure
+      	TargetPath					est une chaîne			// Chemin complet de la cible du raccourci
+      	WindowStyle					est un entier système 	// Style de la fenêtre d'exécution : 1 Fenêtre normale ; 3 Fenêtre maximisée ; 7 Fenêtre minimisée
+      	IconLocation				est une chaîne			// Chemin et index de l’icône du raccourci (voir IconLocation Property)
+      	IconIndex					est un entier
+      	Hotkey						est une chaîne			// Touches assignées au raccourci (voir Hotkey Property)
+      	WorkingDirectory			est une chaîne			// Répertoire de travail du raccourci
+      	Description					est une chaîne			// Description du raccourci
+      	Arguments					est une chaine			// Collection d'arguments de l'objet
+      FIN
+      STStartupInformation est une Structure
+      	cb 						est un entier système
+      	lpReserved 				est un entier système 
+      	lpDesktop 				est un entier système 
+      	lpTitle 				est un entier système 	
+      	dwX 					est un entier  
+      	dwY 					est un entier  	
+      	dwXSize 				est un entier  
+      	dwYSize 				est un entier  	
+      	dwXCountChars 			est un entier  
+      	dwYCountChars 			est un entier  
+      	dwFillAttribute 		est un entier  
+      	dwFlags 				est un entier  	
+      	wShowWindow 			est un entier système
+      	lpReserved2 			est un entier système
+      	hStdInput 				est un entier système 
+      	hStdOutput		 		est un entier système 
+      	hStdError 				est un entier système 
+      FIN
+      STProcessInformation est une Structure
+      	hProcess 				est un entier système 
+      	hThread 				est un entier système 
+      	dwProcessId 			est un entier système 
+      	dwThreadId 				est un entier système 
+      FIN
+      STSecurityAttributes est une Structure
+      	nLength 				est un entier système  	
+      	lpSecurityDescriptor 	est un entier système 
+      	bInheritHandle 			est un entier système
+      FIN
+      
+      STWindowInfoRectangle est une Structure
+      	nGauche			est un entier
+      	nHaut			est un entier
+      	nDroite			est un entier
+      	nBas			est un entier
+      END
+      STWindowInfo est une Structure
+      	cbSize			est un entier
+      	rcWindow		est un stWindowInfoRectangle
+      	rcClient		est un stWindowInfoRectangle
+      	dwStyle			est un entier
+      	dwExStyle		est un entier
+      	dwWindowStatus	est un entier
+      	cxWindowBorders	est un entier
+      	cyWindowBorders	est un entier
+      	atomWindowType	est un entier sans signe sur 2 octets
+      	wCreatorVersion	est un entier sans signe sur 2 octets
+      END
+      stTempsSystème est une Structure									//https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime
+      	nAnnée 			est un entier sans signe sur 2 octets
+      	nMois 			est un entier sans signe sur 2 octets
+      	nJourDeSemaine	est un entier sans signe sur 2 octets
+      	nJour 			est un entier sans signe sur 2 octets
+      	nHeure 			est un entier sans signe sur 2 octets
+      	nMinute 		est un entier sans signe sur 2 octets
+      	nSeconde 		est un entier sans signe sur 2 octets
+      	nMilliseconde 	est un entier sans signe sur 2 octets			//nombre à 3 chiffres
+      FIN
+      
+      EDOSExécutionPriorité est une énumération							//ref : https://docs.microsoft.com/fr-fr/windows/win32/api/processthreadsapi/nf-processthreadsapi-getpriorityclass
+      	NORMAL_PRIORITY_CLASS			= 0x00000020
+      	IDLE_PRIORITY_CLASS				= 0x00000040
+      	HIGH_PRIORITY_CLASS				= 0x00000080
+      	REALTIME_PRIORITY_CLASS			= 0x00000100
+      	BELOW_NORMAL_PRIORITY_CLASS		= 0x00004000
+      	ABOVE_NORMAL_PRIORITY_CLASS		= 0x00008000
+      FIN
+      EDossierWindows est une énumération	//contient plus de répertoires que SysRep mais utilisé pour ouvrir l'explorateur de fichiers sur ces répertoires (SysRep renvoie le chemin du répertoire)
+      	RepObjects3D					= "3D Objects"					//Objects 3D
+      	RepAccountPictures				= "AccountPictures"				//Avatars de comptes
+      	RepAddNewProgramsFolder			= "AddNewProgramsFolder"		//Installation depuis le réseau
+      	RepAdministrativeTools			= "Administrative Tools"		//Outils Windows
+      	RepAppData						= "AppData"                 	//Utilisateurs/UtilisateurLoggué/AppData/Roaming
+      	RepAppDataDesktop				= "AppDataDesktop"				//?
+      	RepAppDataDocuments				= "AppDataDocuments"			//?
+      	RepAppDataFavorites				= "AppDataFavorites"			//?
+      	RepAppDataProgramData			= "AppDataProgramData"			//?
+      	RepApplicationShortcuts			= "Application Shortcuts"		//Raccourcis de l'application
+      	RepAppMods						= "AppMods"						//?
+      	RepAppsFolder					= "AppsFolder"					//Menu Applications (tous les raccourcis)
+      	RepAppUpdatesFolder				= "AppUpdatesFolder"			//Windows update / désinstaller des mises à jour
+      	RepCache						= "Cache"						//Cache Internet Explorer
+      	RepCameraRoll					= "Camera Roll"					//Pellicule
+      	RepCameraRollLibrary			= "CameraRollLibrary"			//Bibliothèque de pellicule
+      	RepCaptures						= "Captures"					//Captures vidéo
+      	RepCDBurning					= "CD Burning"					//Dossier de gravure temporaire
+      	RepCommonAdministrativeTools	= "Common Administrative Tools"	//Outils Windows commun
+      	RepCommonAppData				= "Common AppData"				//ProgramData commun
+      	RepCommonDesktop				= "Common Desktop"				//Bureau commun
+      	RepCommonDocuments				= "Common Documents"			//Documents communs
+      	RepCommonPrograms				= "Common Programs"				//Menu Démarrer/Programmes
+      	RepCommonStartMenu				= "Common Start Menu"			//Menu Démarrer
+      	RepCommonStartMenuPlaces		= "Common Start Menu Places"	//?
+      	RepCommonStartup				= "Common Startup"				//Menu Démarrer/Programmes/Démarrage
+      	RepCommonTemplates				= "Common Templates"			//ProgramData/Microsoft/Windows/Templates
+      	RepCommonDownloads				= "CommonDownloads"				//Utilisateurs/Public/Téléchargements Publics
+      	RepCommonMusic					= "CommonMusic"					//Utilisateurs/Public/Musique Publique
+      	RepCommonPictures				= "CommonPictures"				//Utilisateurs/Public/Images Publiques
+      	RepCommonRingtones				= "CommonRingtones"				//ProgramData/Microsoft/Windows/Ringtones
+      	RepCommonVideo					= "CommonVideo"					//Utilisateurs/Public/Vidéos Publiques
+      	RepContacts						= "Contacts"					//Utilisateurs/UtilisateurLoggué/Contacts
+      	RepCookies						= "Cookies"						//Cookies Internet Explorer
+      	RepCredentialManager			= "CredentialManager"			//Utilisateurs/UtilisateurLoggué/AppData/Roaming/Microsoft/Credentials
+      	RepCryptoKeys					= "CryptoKeys"					//Utilisateurs/UtilisateurLoggué/AppData/Roaming/Microsoft/Crypto
+      	RepCSCFolder					= "CSCFolder"					//?
+      	RepDesktop						= "Desktop"						//Bureau
+      	RepDevelopmentFiles				= "Development Files"			//?
+      	RepDeviceMetadataStore			= "Device Metadata Store"		//ProgramData/Microsoft/Windows/DeviceMetadataStore
+      	RepDocumentsLibrary				= "DocumentsLibrary"			//?
+      	RepDownloads					= "Downloads"					//Téléchargements
+      	RepDpapiKeys					= "DpapiKeys"					//Utilisateurs/UtilisateurLoggué/AppData/Roaming/Microsoft/Protect
+      	RepFavorites					= "Favorites"					//Utilisateurs/UtilisateurLoggué/Favoris
+      	RepFonts						= "Fonts"						//Windows/Fonts
+      	RepGameTasks					= "GameTasks"					//Utilisateurs/UtilisateurLoggué/AppData/Local/Microsoft/Windows/GameExplorer
+      	RepHistory						= "History"						//Utilisateurs/UtilisateurLoggué/AppData/Local/Microsoft/Windows/History
+      	RepImplicitAppShortcuts			= "ImplicitAppShortcuts"		//Utilisateurs/UtilisateurLoggué/AppData/Roaming/Microsoft/Internet Explorer/Quick Launch/User Pinned/ImplicitAppShortcuts
+      //	RepInternetFolder				= "InternetFolder"				//erreur !
+      	RepLibraries					= "Libraries"					//Bibliothèques
+      	RepLinks						= "Links"						//Utilisateurs/UtilisateurLoggué/Liens
+      	RepLocalAppData 				= "Local AppData"				//Utilisateurs/UtilisateurLoggué/AppData/Local
+      	RepLocalDocuments				= "Local Documents"				//Documents
+      	RepLocalDownloads				= "Local Downloads"				//Téléchargements
+      	RepLocalMusic					= "Local Music"					//Musique
+      	RepLocalPictures				= "Local Pictures"				//Images
+      	RepLocalVideos					= "Local Videos"				//Vidéos
+      	RepLocalAppDataLow				= "LocalAppDataLow"				//Utilisateurs/UtilisateurLoggué/AppData/LocalLow
+      	RepLocalizedResourcesDir		= "LocalizedResourcesDir"		//?
+      	RepMAPIFolder					= "MAPIFolder"					//?
+      	RepMusicLibrary					= "MusicLibrary"				//Musique
+      	RepMyMusic						= "My Music"					//Musique
+      	RepMyPictures					= "My Pictures"					//Images
+      	RepMyVideo						= "My Video"					//Vidéos
+      	RepMyComputerFolder				= "MyComputerFolder"			//Ce PC
+      	RepNetHood						= "NetHood"						//Utilisateurs/UtilisateurLoggué/AppData/Roaming/Microsoft/Windows/Network Shortcuts
+      	RepNetworkPlacesFolder			= "NetworkPlacesFolder"			//Réseau
+      	RepOEMLinks 					= "OEM Links"					//?
+      	RepOneDrive						= "OneDrive"					//OneDrive/Nom utilisateur - personnel
+      	RepOneDriveCameraRoll			= "OneDriveCameraRoll"			//?
+      	RepOneDriveDocuments			= "OneDriveDocuments"			//OneDrive/Nom utilisateur - personnel/Documents
+      	RepOneDriveMusic				= "OneDriveMusic"				//?
+      	RepOneDrivePictures				= "OneDrivePictures"			//?
+      	RepOriginalImages				= "Original Images"				//?
+      	RepPersonal						= "Personal"					//?
+      	RepPhotoAlbums					= "PhotoAlbums"					//?
+      	RepPicturesLibrary				= "PicturesLibrary"				//Images
+      	RepPlaylists					= "Playlists"					//?
+      	RepPrintHood					= "PrintHood"					//AppData/Roaming/Microsoft/Windows/Printer Shortcuts
+      	RepProfile						= "Profile"						//Utilisateurs/UtilisateurLoggué
+      	RepProgramFiles					= "ProgramFiles"				//Program Files
+      	RepProgramFilesCommon			= "ProgramFilesCommon"			//Program Files/Common Files
+      	RepProgramFilesCommonX64		= "ProgramFilesCommonX64"		//Program Files/Common Files
+      	RepProgramFilesCommonX86		= "ProgramFilesCommonX86"		//Program Files (x86)/Common Files
+      	RepProgramFilesX64				= "ProgramFilesX64"				//Program Files
+      	RepProgramFilesX86				= "ProgramFilesX86"				//Program Files (x86)
+      	RepPrograms						= "Programs"					//Users/UtilisateurLoggué/AppData/Roaming/Microsoft/Windows/Start Menu/Programs
+      	RepPublic						= "Public"						//Users/Public
+      	RepPublicAccountPictures		= "PublicAccountPictures"		//Users/Public/AccountPictures
+      	RepPublicGameTasks				= "PublicGameTasks"				//ProgramData/Microsoft/Windows/GameExplorer
+      	RepPublicLibraries				= "PublicLibraries"				//Users/Public/Libraries
+      	RepQuickLaunch					= "Quick Launch"				//Users/UtilisateurLoggué/AppData/Roaming/Microsoft/Internet Explorer/Quick Launch
+      	RepRecent						= "Recent"						//Users/UtilisateurLoggué/AppData/Roaming/Microsoft/Windows/Recent
+      	RepRecordedCalls				= "Recorded Calls"				//?
+      	RepRecordedTVLibrary			= "RecordedTVLibrary"			//?
+      	RepRecycleBinFolder				= "RecycleBinFolder"			//Corbeille
+      	RepResourceDir					= "ResourceDir"					//Windows/Resources
+      	RepRetailDemo					= "Retail Demo"					//ProgramData/Microsoft/Windows/RetailDemo
+      	RepRingtones					= "Ringtones"					//Users/UtilisateurLoggué/AppData/Local/Microsoft/Windows/Ringtones
+      	RepRoamedTileImages				= "Roamed Tile Images"			//?
+      	RepRoamingTiles					= "Roaming Tiles"				//Users/UtilisateurLoggué/AppData/Local/Microsoft/Windows/RoamingTiles
+      	RepSavedGames					= "SavedGames"					//Users/UtilisateurLoggué/Saved Games
+      	RepSavedPictures				= "SavedPictures"				//Users/UtilisateurLoggué/Pictures/Saved Pictures
+      	RepSavedPicturesLibrary			= "SavedPicturesLibrary"		//Bibliothèques/Images enregistrées
+      	RepScreenshots					= "Screenshots"					//Users/UtilisateurLoggué/Pictures/Screenshots
+      	RepSearches						= "Searches"					//Users/UtilisateurLoggué/Searches
+      	RepSearchHistoryFolder			= "SearchHistoryFolder"			//?
+      	RepSearchHomeFolder				= "SearchHomeFolder"			//search-ms:
+      	RepSearchTemplatesFolder		= "SearchTemplatesFolder"		//?
+      	RepSendTo						= "SendTo"						//Users/UtilisateurLoggué/AppData/Roaming/Microsoft/Windows/SendTo
+      	RepStartMenu					= "Start Menu"					//Users/UtilisateurLoggué/AppData/Roaming/Microsoft/Windows/Start Menu
+      	RepStartup						= "Startup"						//Users/UtilisateurLoggué/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup
+      	RepSystem						= "System"						//Windows/System32
+      	SystemCertificates				= "SystemCertificates"			//Users/UtilisateurLoggué/AppData/Roaming/Microsoft/SystemCertificates
+      	SystemX86						= "SystemX86"					//Windows/SysWOW64
+      	Templates						= "Templates"					//Users/UtilisateurLoggué/AppData/Roaming/Microsoft/Windows/Templates
+      	ThisDeviceFolder				= "ThisDeviceFolder"			//Ce périphérique
+      	ThisPCDesktopFolder				= "ThisPCDesktopFolder"			//?
+      	UserPinned						= "User Pinned"					//Users/UtilisateurLoggué/AppData/Roaming/Microsoft/Internet Explorer/Quick Launch/User Pinned
+      	UserProfiles					= "UserProfiles"				//C:\Users
+      	UserProgramFiles				= "UserProgramFiles"			//Users/UtilisateurLoggué/AppData/Local/Programs
+      	UserProgramFilesCommon			= "UserProgramFilesCommon"		//Users/UtilisateurLoggué/AppData/Local/Programs/Common
+      	UsersFilesFolder				= "UsersFilesFolder"			//UtilisateurLoggué
+      	UsersLibrariesFolder			= "UsersLibrariesFolder"		//Bibliothèques
+      	VideosLibrary					= "VideosLibrary"				//Bibliothèques\Vidéos
+      	Windows							= "Windows"						//C:\Windows
+      fin
+      EFonctionWindows est une énumération
+      	WinChangeRemoveProgramsFolder	= "ChangeRemoveProgramsFolder"	//Désinstallation/modification de programme
+      	WinConflictFolder				= "ConflictFolder"				//Panneau de configuration/Centre de synchronisation/Conflits
+      	WinConnectionsFolder			= "ConnectionsFolder"			//Panneau de configuration/Connexions réseau
+      	WinControlPanelFolder			= "ControlPanelFolder"			//Panneau de configuration (ancienne version)
+      	WinPrintersFolder				= "PrintersFolder"				//Panneau de configuration/Imprimantes
+      	WinSyncCenterFolder				= "SyncCenterFolder"			//Panneau de configuration/Centre de synchronisation
+      	WinSyncResultsFolder			= "SyncResultsFolder"			//Panneau de configuration/Centre de synchronisation/Résultat de la synchronisation
+      	WinSyncSetupFolder				= "SyncSetupFolder"				//Panneau de configuration/Centre de synchronisation/Configuration de la synchronisation
+      fin
+      
+      gnExécuteCommandeLire		est un 	entier = 128					//nombre d'octets à lire lors de la réponse à une commande DOS ou PowerShell ou Batch
+      gFileExécuteCommandeHandle	est une file d'entiers système			//file de handle à fermer suite à l'appel d'une commande DOS ou PowerShell ou Batch (se fera dans un thread)
+      PRIVÉ
+      	STObjetEnfant est une structure
+      		nLargeur	est un entier
+      		nHauteur	est un entier
+      		nHandle		est un entier système
+      		nCellule	est un entier
+      	FIN
+      	CONSTANTE
+      		ErreurWindows	= 210
+      	FIN
+      	gtabWindowInfo 		est un tableau de STElementWindows
+      	gbFermetureHandle	est un booleen
+     type : 720896
+   -
+     code : |1+
+      //
+     type : 720898
+  procedures :
+   -
+     name : UACEstActif
+     procedure_id : 1998309852942519855
+     type_code : 15
+     group : 1
+     code : |1-
+      // Résumé : Cette procédure vérifie si le Contrôle de compte d'utilisateur (UAC) est activé sur le système.
+      // Syntaxe : [ <Résultat> = ] UACEstActif ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Vrai si l'UAC est activé, Faux sinon.
+      // Exemple :
+      //	SI UACEstActif() ALORS Trace("L'UAC est activé sur ce système.") SINON Trace("L'UAC n'est pas activé sur ce système.")
+      //
+      PROCEDURE UACEstActif() : booleen
+      bUACActive est un booleen 
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	bUACActive = (RegistreLit("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System","EnableLUA")=1)	// Le paramétrage de l'UAC est conservé dans une clé de registre
+      	
+      <fin>
+      
+      
+      renvoyer bUACActive
+     type : 458752
+   -
+     name : UACEstDisponible
+     procedure_id : 1998309857237553046
+     type_code : 15
+     group : 1
+     code : |1-
+      // Résumé : Cette procédure vérifie la disponibilité de l'UAC (User Account Control) sur la plateforme Windows actuelle.
+      // Syntaxe : [ <Résultat> = ] UACEstDisponible ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Renvoie Vrai si l'UAC est disponible, Faux sinon.
+      // Exemple :
+      //	bUACDisponible est un booléen = UACEstDisponible()
+      //	SI bUACDisponible ALORS Info("L'UAC est disponible sur cette plateforme Windows.") SINON Erreur("L'UAC n'est pas disponible sur cette plateforme Windows.")
+      //
+      PROCEDURE UACEstDisponible() : booleen	// L'UAC n'existe que sous Windows, sur les plateformes NT et qu'à partir de Windows Vista
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	SI cApplication.mg_sWindowsVersion="NT" _ET_ SysVersionWindows(sysVersionNuméro)>5 ALORS RENVOYER Vrai
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : BarreNotificationVisible
+     procedure_id : 1998309968906794205
+     type_code : 15
+     group : 2
+     code : |1+
+      // Résumé : Cette procédure permet de masquer ou d'afficher la barre de notifications, également appelée la zone de notification, située à droite de la barre des tâches de Windows. Cette barre contient les icônes système et l'heure.
+      // Syntaxe : BarreNotificationVisible (<bVisible> est booléen)
+      // Paramètres :
+      //	bVisible (booléen) : indique si la barre de notifications doit être visible (Vrai) ou masquée (Faux).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	BarreNotificationVisible(faux)	masquer la barre
+      //
+      PROCEDURE BarreNotificationVisible(bVisible est un booleen)	//Masquer la barre de notifications (icônes à droite et heure)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	nTray 		est un entier systeme 	= api("User32","FindWindowA","Shell_TrayWnd",Null)
+      	nTrayNotify est un entier systeme 	= api("user32","FindWindowExA",nTray,Null,"TrayNotifyWnd",Null)
+      	api("user32","ShowWindow",nTrayNotify,bVisible)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : BarreProgrammeVisible
+     procedure_id : 1998309968906860022
+     type_code : 15
+     group : 2
+     code : |1+
+      // Résumé : Cette procédure permet de masquer ou d'afficher la partie de la barre des tâches qui affiche les programmes en cours. Il est important de noter que cette fonctionnalité peut ne pas fonctionner correctement sous Windows 7.
+      // Syntaxe : BarreProgrammeVisible (<bVisible> est booléen)
+      // Paramètres :
+      //	bVisible (booléen) : indique si la partie de la barre des tâches affichant les programmes en cours doit être visible (Vrai) ou masquée (Faux).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	BarreProgrammeVisible(vrai)
+      //
+      PROCEDURE BarreProgrammeVisible(bVisible est un booleen)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	nTray 		est un entier système 	= api("User32","FindWindowA","Shell_TrayWnd",Null)
+      	nTrayEnfant est un entier système	= api("user32","FindWindowExA",nTray,Null,"RebarWindow32",Null)
+      	SI nTrayEnfant ALORS
+      		nTrayEnfant = api("user32","FindWindowExA",nTrayEnfant,Null,"MSTaskSwWclass",Null)
+      		SI nTrayEnfant ALORS
+      			nTrayEnfant = api("user32","FindWindowExA",nTrayEnfant,Null,"SysTabControl32",Null)
+      	//		SI AppelDLL32("user32","IsWindowVisible",hwndtraychild) ALORS
+      			api("user32","ShowWindow",nTrayEnfant,bVisible)
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : BarreSupprimeIcône
+     procedure_id : 1998309968906925901
+     type_code : 15
+     group : 2
+     code : |1-
+      // Résumé : Permet de supprimer l'icône associée à une fenêtre spécifiée de la barre des tâches. Elle modifie le style de la fenêtre pour exclure l'affichage dans la barre des tâches.
+      // Syntaxe : BarreSupprimeIcône (<sNomFenêtre> est chaîne)
+      // Paramètres :
+      //	sNomFenêtre (chaîne UNICODE) : Le nom de la fenêtre dont l'icône doit être supprimée de la barre des tâches.
+      // Valeur de retour : booléen : Renvoie Vrai si l'opération a réussi, sinon renvoie Faux.
+      // Exemple :
+      //	bSuppressionIcône est un booléen = BarreSupprimeIcône("FEN_Principale")
+      //	SI bSuppressionIcône ALORS Info("L'icône de la barre des tâches a été supprimée.") SINON Erreur("Échec de la suppression de l'icône de la barre des tâches.")
+      //
+      PROCEDURE BarreSupprimeIcône(sNomFenêtre est une chaine) : booleen
+      //ref : https://forum.pcsoft.fr/pt-BR/pcsoft.fr.windev/69278-supprimer-icone-barre-tache/read.awp
+      
+      si sNomFenêtre~="" alors erreurdéclenche(ErreurWindows,<§@1bbb6c3047ca2b160000§>);renvoyer faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	GWL_EXSTYLE 		est un entier = -20
+      	WS_EX_TOOLWINDOW 	est un entier = 128
+      	HWND_NOTOPMOST 		est un entier = -2
+      	SWP_NOMOVE 			est un entier = 2
+      	SWP_NOSIZE 			est un entier = 1
+      	SWP_NOZORDER 		est un entier = 4
+      	SWP_FRAMECHANGED 	est un entier = 32
+      	//Permet de ne pas afficher la fenêtre dans la barre des tâches
+      	si API("user32","SetWindowLongA",Handle(sNomFenêtre),GWL_EXSTYLE,WS_EX_TOOLWINDOW) _et_ ...
+      		API("user32","SetWindowPos",Handle(sNomFenêtre),HWND_NOTOPMOST,0,0,0,0,OUBinaire(OUBinaire(OUBinaire(SWP_NOMOVE,SWP_NOSIZE),SWP_NOZORDER),SWP_FRAMECHANGED)) alors renvoyer vrai
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : BarreTâchesVisible
+     procedure_id : 1998309973202024597
+     type_code : 15
+     group : 2
+     code : |1+
+      // Résumé : Cette procédure permet de masquer ou d'afficher toute la barre des tâches, à l'exception du bouton "Démarrer". Elle utilise des fonctions d'API Windows pour effectuer cette opération.
+      // Syntaxe : BarreTâchesVisible (<bVisible> est booléen)
+      // Paramètres :
+      //	bVisible (booléen) : Indique si la barre des tâches doit être rendue visible (Vrai) ou masquée (Faux).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	BarreTâchesVisible(faux);Multitâche(5000);BarreTâchesVisible(vrai)	//pour faire une blague :)
+      //
+      PROCEDURE BarreTâchesVisible(bVisible est un booleen)	//Masquer ou afficher toute la barre des tâches : programmes ouverts, icônes de notification et heure (sauf bouton "Démarrer")
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	API("User32", "ShowWindow", API("User32", "FindWindowA", "Shell_TrayWnd",Null), bVisible)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : BarreTâchesInfo
+     procedure_id : 1998309973202090383
+     type_code : 15
+     group : 2
+     code : |1-
+      // Résumé : Cette procédure permet de récupérer les dimensions et les positions de la barre des tâches du système.
+      // Syntaxe : [ <Résultat> = ] BarreTâchesInfo ()
+      // Paramètres : Aucun
+      // Valeur de retour : (entier,entier,entier,entier) : renvoie un quadruplet d'entiers sous la forme (nPositionX, nPositionY, nHauteur, nLargeur). Ces valeurs représentent respectivement la position en X, la position en Y, la hauteur et la largeur de la barre des tâches.
+      // Exemple :
+      //	nPosX, nPosY, nHauteur, nLargeur sont des entiers
+      //	(nPosX, nPosY, nHauteur, nLargeur) = BarreTâchesInfo()
+      //	Info("Position X : " + nPosX)
+      //
+      PROCEDURE BarreTâchesInfo() : (entier,entier,entier,entier)	// Récupérer les dimensions (et positions) de la barre de tâches
+      nPositionX,nPositionY,nHauteur,nLargeur sont des entiers
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	stInfo est composé de
+      		l est un entier
+      		t est un entier
+      		r est un entier
+      		b est un entier
+      	FIN
+      	nTray est un entier systeme = api("user32","FindWindowA","Shell_TrayWnd", Null)
+      	SI nTray>0 ALORS
+      		api("user32","GetWindowRect",nTray,&stInfo)
+      		nPositionX	= stInfo.l
+      		nPositionY	= stInfo.t
+      		nLargeur	= stInfo.r-stInfo.l
+      		nHauteur	= stInfo.b-stInfo.t
+      	sinon 
+      		nTray = api("user32","FindWindowW","Shell_TrayWnd", Null)
+      		SI nTray>0 ALORS
+      			API("user32","GetWindowRect",nTray,&stInfo)
+      			nPositionX	= stInfo.l
+      			nPositionY	= stInfo.t
+      			nLargeur	= stInfo.r-stInfo.l
+      			nHauteur	= stInfo.b-stInfo.t
+      		fin	
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer (nPositionX,nPositionY,nHauteur,nLargeur)
+     type : 458752
+   -
+     name : BoutonDémarrerVisible
+     procedure_id : 1998309973202156168
+     type_code : 15
+     group : 2
+     code : |1+
+      // Résumé : Permet de masquer ou d'afficher le bouton "Démarrer" de la barre des tâches du système. Cependant, il est important de noter que cette fonctionnalité peut ne pas fonctionner sur les systèmes d'exploitation Windows 7.
+      // Syntaxe : BoutonDémarrerVisible (<bVisible> est booléen)
+      // Paramètres :
+      //	bVisible (booléen) : indique si le bouton "Démarrer" doit être rendu visible (Vrai) ou masqué (Faux).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	BoutonDémarrerVisible(Faux)
+      //
+      PROCEDURE BoutonDémarrerVisible(bVisible est un booleen)	//Masquer ou afficher le bouton Démarrer : NE FONCTIONNE PAS EN WIN7
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	nTray 	est un entier système 	= api("User32","FindWindowA","Shell_TrayWnd",Null)
+      	nBouton est un entier système 	= api("user32","FindWindowExA",nTray,Null,"Button",Null)
+      	api("user32","ShowWindow",nBouton,bVisible)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : FichierRécentAjoute
+     procedure_id : 1998309973202221969
+     type_code : 15
+     group : 3
+     code : |1-
+      // Résumé : Cette procédure  permet d'ajouter un fichier spécifié à la liste des fichiers récemment utilisés du système. Le chemin complet du fichier doit être fourni en tant que paramètre.
+      // Syntaxe : [ <Résultat> = ] FichierRécentAjoute (<sCheminFichier> est chaîne)
+      // Paramètres :
+      //	sCheminFichier (chaîne UNICODE) : Le chemin complet du fichier à ajouter à la liste des fichiers récemment utilisés.
+      // Valeur de retour : booléen : renvoie un booléen. Elle renvoie Vrai si l'ajout du fichier à la liste des fichiers récemment utilisés s'est déroulé avec succès, sinon elle renvoie Faux.
+      // Exemple :
+      //	sCheminFichier est une chaîne = "C:\Chemin\vers\MonFichier.txt"
+      //	bAjoutRécent est un booléen = FichierRécentAjoute(sCheminFichier)
+      //	SI bAjoutRécent ALORS Info("Le fichier a été ajouté aux fichiers récemment utilisés.") SINON Erreur("L'ajout du fichier aux fichiers récemment utilisés a échoué.")
+      //
+      PROCEDURE FichierRécentAjoute(sCheminFichier est une chaine) : booleen
+      si sCheminFichier~="" alors erreurdéclenche(ErreurWindows,<§@1bbb6c3047ca2b160001§>);renvoyer faux
+      si pas ffichierexiste(sCheminFichier) alors ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b160002§>);renvoyer faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	szNomFichier est une chaîne ASCIIZ de 128 = sCheminFichier					//A FAIRE : vérifier la taille du nom de fichier (255 ou + sur Win10)
+      	RENVOYER api( "shell32.dll","SHAddToRecentDocs",2,&szNomFichier)
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : FichierRécentSupprimeTout
+     procedure_id : 1998309977497255067
+     type_code : 15
+     group : 3
+     code : |1+
+      // Résumé : Cette procédure permet de supprimer tous les fichiers de la liste des fichiers récemment utilisés du système.
+      // Syntaxe : FichierRécentSupprimeTout ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE FichierRécentSupprimeTout()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	api( "shell32.dll","SHAddToRecentDocs",2,Null)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : HeureDémarrage
+     procedure_id : 1998309977497320618
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure renvoie l'heure approximative du démarrage du système, basée sur le compteur système GetTickCount.
+      // Syntaxe : [ <Résultat> = ] HeureDémarrage ()
+      // Paramètres : Aucun
+      // Valeur de retour : heure : renvoie une valeur représentant l'heure approximative du démarrage du système.
+      // Exemple :
+      //	hDémarrage est une heure = HeureDémarrage()
+      //	Info("L'heure approximative du démarrage est : " + HeureVersChaine(hDémarrage))
+      //
+      PROCEDURE HeureDémarrage() : heure
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	RENVOYER EntierVersHeure(api("Kernel32.dll","GetTickCount")/10)
+      	
+      <fin>
+      
+      
+      renvoyer 0
+     type : 458752
+   -
+     name : OuvreFenêtrePourArrêter
+     procedure_id : 1998309977497386170
+     type_code : 15
+     code : |1+
+      // Résumé : Cette procédure ouvre la fenêtre permettant d'arrêter le système d'exploitation Windows. Elle envoie un message à la barre des tâches pour déclencher l'affichage de la boîte de dialogue d'arrêt.
+      //	Cette procédure simule l'action d'appuyer sur le bouton "Arrêter" de la barre des tâches, ce qui affiche la boîte de dialogue d'arrêt du système d'exploitation Windows. La disponibilité et le comportement de cette fonctionnalité peuvent varier en fonction de la version de Windows et de la configuration du système.
+      // Syntaxe : OuvreFenêtrePourArrêter ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE OuvreFenêtrePourArrêter()	// Pour afficher la boite d'arrêt de Windows
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	SendMessage(api("user32","FindWindowA","Shell_TrayWnd",Null),0x111,506,0) 
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : FacteurAgrandissementPolice
+     procedure_id : 1998309977497451955
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure récupère les informations sur la résolution des points par pouce (DPI) de l'écran. Elle permet d'obtenir les valeurs des DPI horizontaux et verticaux, qui peuvent ensuite être utilisées pour calculer un facteur d'agrandissement de la police en fonction de la configuration d'affichage de l'écran.
+      //	Un facteur tel que 1.5 pour 150% par exemple
+      // Syntaxe : [ <Résultat> = ] FacteurAgrandissementPolice ()
+      // Paramètres :	Aucun
+      // Valeur de retour : (entier système,entier système) : renvoie un couple d'entiers représentant les DPI horizontaux (dpix) et verticaux (dpiy). 
+      // Exemple :
+      //	dpix, dpiy sont des entiers système
+      //	(dpix, dpiy) = FacteurAgrandissementPolice()
+      //	facteur est un réel = dpix / 96.0
+      //	Info("DPI horizontaux : " + dpix + " DPI verticaux : " + dpiy + " Facteur d'agrandissement : " + facteur)
+      //
+      PROCEDURE FacteurAgrandissementPolice() : (entier système,entier système)
+      //ref : https://www.developpez.net/forums/d1386767/environnements-developpement/windev/eviter-agrandissement-police-ecran-125-a/
+      dpix,dpiy sont des entiers système
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	
+      	//nDC est un entier système = API("gdi32","CreateICA","Display",Null,Null,Null)	//ne fonctionne pas correctement
+      	nDC est un entier système = API("user32", "GetDC", 0)
+      	SI nDC ALORS
+      		LOGPIXELSX est un entier = 88
+      		LOGPIXELSY est un entier = 90
+      		dpix = API("gdi32","GetDeviceCaps",nDC,LOGPIXELSX)
+      		dpiy = API("gdi32","GetDeviceCaps",nDC,LOGPIXELSY)
+      		API("gdi32","DeleteDC",nDC)
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER (dpix,dpiy)
+     type : 458752
+   -
+     name : RaccourciInfo
+     procedure_id : 1998309977497583386
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure utilise un script shell Windows pour récupérer les paramètres d'un raccourci (.lnk ou .url)
+      // Syntaxe :
+      // [ <Résultat> = ] RaccourciInfo (<sCheminDuRaccourci> est chaîne)
+      // Paramètres :
+      //	sCheminDuRaccourci (chaîne UNICODE) :Le chemin du raccourci (.lnk ou .url) dont vous souhaitez récupérer les informations.
+      // Valeur de retour : STRaccourci : renvoie une structure (STRaccourci) 
+      // Exemple :
+      //	sCheminDuRaccourci est une chaîne = "C:\Chemin\vers\MonRaccourci.lnk"
+      //	stInfo est une STRaccourci = RaccourciInfo(sCheminDuRaccourci)
+      //	Info("Chemin de la cible : " + stInfo.TargetPath + RC + " Style de la fenêtre : " + stInfo.WindowStyle + RC + " Emplacement de l'icône : " + stInfo.IconLocation + RC + " Index de l'icône : " + stInfo.IconIndex)
+      //
+      PROCEDURE RaccourciInfo(sCheminDuRaccourci est une chaine) : STRaccourci	// Utilisation d'un script shell Windows pour récupérer les paramètres d'un raccourci (.lnk ou .url)
+      //ref1 : http://msdn.microsoft.com/en-us/library/aew9yb99(VS.85).aspx
+      //ref2 : http://softprotect.canalblog.com/archives/2010/01/11/16482945.html
+      //ref3 : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/161476-recuperer-cible-raccourci/read.awp
+      
+      stLINK 		est un STRaccourci
+      SI PAS fFichierExiste(sCheminDuRaccourci) ALORS ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b160002§>);renvoyer stLINK
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	WshShell	est un objet Automation "WScript.Shell"
+      	oShellLink	est un objet Automation dynamique
+      	
+      	QUAND EXCEPTION DANS
+      		oShellLink = WshShell>>CreateShortcut(sCheminDuRaccourci)
+      		stLINK.TargetPath		= oShellLink>>TargetPath
+      		stLINK.WindowStyle		= oShellLink>>WindowStyle
+      		stLINK.IconLocation		= ExtraitChaîne(oShellLink>>IconLocation,1,",")		
+      		stLINK.IconIndex		= ExtraitChaîne(oShellLink>>IconLocation,2,",")		
+      		stLINK.Hotkey			= oShellLink>>Hotkey
+      		stLINK.WorkingDirectory	= oShellLink>>WorkingDirectory
+      		stLINK.Description		= oShellLink>>Description
+      		stLINK.Arguments		= oShellLink>>Arguments
+      	FAIRE
+      		SI stLINK.TargetPath	~="" ALORS ErreurDéclenche(ErreurWindows,ExceptionInfo(errComplet))	
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER stLINK
+     type : 458752
+   -
+     name : VariableEnvironnement
+     procedure_id : 1998309981792682113
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure permet de manipuler les variables d'environnement Windows.
+      // Syntaxe : [ <Résultat> = ] VariableEnvironnement (<szVariable> est chaîne ASCIIZ [, <szValeur> est chaîne ASCIIZ])
+      // Paramètres :
+      //	szVariable (chaîne ASCIIZ) : Le nom de la variable d'environnement à manipuler.
+      //	szValeur (chaîne ASCIIZ) : La valeur à définir pour la variable d'environnement. Si cette chaîne est vide, la procédure récupère la valeur de la variable spécifiée.
+      // Valeur de retour : chaîne Unicode : renvoie une chaîne représentant la valeur actuelle de la variable d'environnement après l'opération. Si la valeur n'est pas définie ou si une erreur se produit, la procédure renvoie une chaîne vide.
+      // Exemple :
+      // 	szNomVariable est une chaîne ASCIIZ de 32 = "MA_VARIABLE"
+      //	szValeurVariable est une chaîne ASCIIZ de 128 = "ValeurInitiale"
+      //	// Appel pour définir la variable d'environnement
+      //	VariableEnvironnement(szNomVariable, szValeurVariable)
+      // 	// Appel pour récupérer la valeur de la variable d'environnement
+      //	szValeurRécupérée est une chaîne = VariableEnvironnement(szNomVariable)
+      //
+      PROCEDURE VariableEnvironnement(szVariable est une chaine asciiz de 32,szValeur est une chaine asciiz de 128 = "") : chaine
+      
+      si szVariable~="" alors erreurdéclenche(ErreurWindows,<§@1bbb6c3047ca2b160003§>);renvoyer ""
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	SI szValeur>"" ALORS 
+      		RENVOYER api("kernel32","SetEnvironmentVariableA",&szVariable,&szValeur)
+      	SINON
+      		nNbCaract est un entier système = api("kernel32","GetEnvironmentVariableA",&szVariable,&szValeur,256)
+      		SI nNbCaract<1 ALORS RENVOYER "" SINON RENVOYER szValeur
+      	FIN
+      	
+      <fin>
+      
+      
+      Renvoyer ""
+     type : 458752
+   -
+     name : VistaEstAéro
+     procedure_id : 2008047655269990604
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure permet de déterminer si la fonctionnalité Aero est activée sur un système d'exploitation Windows Vista ou ultérieur. Aero est une interface utilisateur graphique qui inclut des effets de transparence, de verre et d'animations.
+      // Syntaxe : [ <Résultat> = ] VistaEstAéro ()
+      // Paramètres : Aucun
+      // Valeur de retour : 	booléen : renvoie un booléen indiquant si la fonctionnalité Aero est activée. Elle renvoie Vrai si Aero est activé, sinon elle renvoie Faux.
+      // Exemple :
+      //	bAeroActivé est un booléen = VistaEstAéro()
+      //	SI bAeroActivé ALORS Info("Aero est activé sur ce système.") SINON Info("Aero n'est pas activé sur ce système.")
+      //
+      PROCEDURE VistaEstAéro() : booleen
+      //ref : code de Patrice Terrier sur http://windev.dev4u.org
+      nHandle,nEstAéro sont des entiers système
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	nHandle = API("KERNEL32","LoadLibraryA","dwmapi.dll")
+      	SI nHandle>0 ALORS
+      		SI DLLAdresseProcédure(nHandle,"DwmIsCompositionEnabled")>0 ALORS 
+      			nHandle = API("dwmapi.dll","DwmIsCompositionEnabled",&nEstAéro)
+      			API("KERNEL32","FreeLibrary",nHandle)
+      		FIN
+      	fin
+      	
+      <fin>
+      
+      
+      renvoyer (nEstAéro>0)
+     type : 458752
+   -
+     name : ÉcranVeilleDéclenche
+     procedure_id : 2008065440731607547
+     type_code : 15
+     code : |1+
+      // Résumé : Déclenche l'écran de veille paramétré dans les propriétés d'affichage de Windows.
+      // Syntaxe : ÉcranVeilleDéclenche ()
+      // Paramètres :	Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE ÉcranVeilleDéclenche()
+      //ref : code publié par Emmanuel Haefelé sur WinDev.Dev4u.org
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	WM_SYSCOMMAND est un entier = 0x112
+      	SC_SCREENSAVE est un entier = 0xF140
+      	nHandle est un entier systeme = Handle()
+      	api("user32","SendMessageA",nHandle,WM_SYSCOMMAND,SC_SCREENSAVE,0)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : LanceAppliWin
+     procedure_id : 2051086535849867668
+     type_code : 15
+     code : |1+
+      // Résumé : Cette procédure en WinDev du framework Betula permet de lancer une application Windows avec différentes options de configuration.
+      // Syntaxe : [ <Résultat> = ] LanceAppliWin (<sCheminUNCAppliALancer> est chaîne ANSI, <sLigneDeCommande> est chaîne [, <nMode> est entier [, <sRepertoireDeTravail> est chaîne [, <sLoginUtilisateur> est chaîne [, sMotDePasseUtilisateur est chaîne ]]]])
+      // Paramètres :
+      //	sCheminUNCAppliALancer (chaîne): Le chemin UNC de l'application à lancer.
+      //	sLigneDeCommande (chaîne optionnelle): La ligne de commande à exécuter avec l'application.
+      // 	nMode (entier optionnel) : Le mode d'affichage de la fenêtre de l'application. Les valeurs possibles sont : exeActif : Fenêtre normale (par défaut), exeMaximise : Fenêtre maximisée, exeIconise : Fenêtre minimisé, exeInactif : Fenêtre invisible.
+      //	sRepertoireDeTravail (chaîne optionnelle): Le répertoire de travail pour l'application.
+      //	sLoginUtilisateur (chaîne optionnelle): Le nom d'utilisateur pour l'exécution du processus.
+      //	sMotDePasseUtilisateur (chaîne optionnelle): Le mot de passe de l'utilisateur pour l'exécution du processus.
+      // Valeur de retour : chaîne ANSI : renvoie l'identifiant du processus lancé (PID) en cas de succès, sinon elle renvoie 0. En cas d'échec, la fonction renvoie également Faux.
+      // Exemple :
+      //	sCheminAppli est une chaîne = "C:\ChemindelApplication.exe"
+      //	sCommande est une chaîne = "/parametre1 /parametre2"
+      //	nPID est un entier = LanceAppliWin(sCheminAppli, sCommande, nModeAffichage, sRepertoireTravail)
+      //	SI nPID <> 0 ALORS Info("Application lancée avec succès. PID : " + Chaîne(nPID)) SINON Erreur("Échec du lancement de l'application.")
+      //
+      
+      PROCEDURE LanceAppliWin(LOCAL sCheminUNCAppliALancer est une chaîne,local sLigneDeCommande est une chaîne = "",LOCAL nMode=exeActif ,LOCAL sRepertoireDeTravail est une chaîne="", LOCAL sLoginUtilisateur  est une chaîne="",LOCAL sMotDePasseUtilisateur = "") : entier	//ne pas typer le mot de passe afin qu'il soit compatible avec le passage d'une chaîne indétectable
+      //ref : projet WD Tesseract : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.webdev/65781-pcsoft-webinaire-jeudi-13-septembre-2018-11h-dematerialisation/read.awp
+      PROCESS_INFORMATION est une Structure
+      	hProcess est un entier
+      	hThread est un entier
+      	dwProcessId est un entier sans signe sur 4 octets
+      	dwThreadId est un entier sans signe sur 4 octets
+      FIN
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	pi 				est une PROCESS_INFORMATION //Voir déclaration de la structure après ce code
+      	bufLogin 		est un Buffer = sLoginUtilisateur
+      	bufDomaine 		est un Buffer = ExtraitChaîne(SysEnvironnement("COMPUTERNAME"),2,"=")
+      	bufMotDePasse 	est un Buffer = sMotDePasseUtilisateur
+      	bufRepTravail	est un buffer = sRepertoireDeTravail
+      	wLogon 			est un entier = 0
+      	wShowWindow		est un entier
+      	nCreationFlag 	est un entier
+      	
+      	SI fExtraitChemin(sCheminUNCAppliALancer,fExtension)~=".msi" ALORS
+      		sLigneDeCommande	= "/i "+sCheminUNCAppliALancer
+      		sCheminUNCAppliALancer	= SysRep(srWindows)+"\system32\msiexec.exe"
+      	FIN
+      	sCheminUNCAppliALancer=""""+sCheminUNCAppliALancer+""" "+sLigneDeCommande
+      	
+      	SELON nMode	
+      		CAS exeMaximise		: wShowWindow = 3		//SW_SHOWMAXIMIZED
+      		CAS exeIconise		: wShowWindow = 2		//SW_SHOWMINIMIZED	
+      		CAS exeInactif		: wShowWindow = 4		//SW_SHOWNOACTIVATE
+      		CAS -1				: wShowWindow = 0		//SW_HIDE avec -1 = exeInvisible
+      		AUTRE CAS 			: wShowWindow = 1		//dont exeActif	//SW_SHOWNORMAL		
+      	FIN
+      	
+      	nRes est un entier système = API("advapi32.dll", "CreateProcessWithLogonW", ...
+      	&bufLogin,... 			// LPCWSTR lpUsername,
+      	&bufDomaine,... 		// LPCWSTR lpDomain,
+      	&bufMotDePasse,... 		// LPCWSTR lpPassword,
+      	wLogon,... 				// DWORD dwLogonFlags,
+      	Null,... 				// LPCWSTR lpApplicationName,
+      	sCheminUNCAppliALancer,... // LPWSTR lpCommandLine,
+      	nCreationFlag,... 		// DWORD dwCreationFlags,
+      	Null,... 				// LPVOID lpEnvironment,
+      	&bufRepTravail,... 		// LPCWSTR lpCurrentDirectory,
+      	&wShowWindow,... 		// LPSTARTUPINFOW lpStartupInfo,
+      	&pi) 					// LPPROCESS_INFORMATION lpProcessInformation
+      	
+      	SI nRes = 0 ALORS RENVOYER 0 SINON RENVOYER pi.dwProcessId
+      	
+      <fin>
+      
+      RENVOYER Faux
+     type : 458752
+   -
+     name : FichierIcône
+     procedure_id : 2053998750115801727
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure permet d'extraire une icône associée à un fichier ou à un répertoire et de la convertir en format PNG.
+      // Syntaxe : [ <Résultat> = ] FichierIcône (<sCheminFichierOuRep> est chaîne ANSI, <sNomImageTemp> est chaîne [, <nIndiceIcone> est entier])
+      // Paramètres :
+      //	sCheminFichierOuRep (chaîne ANSI) : Le chemin du fichier ou du répertoire pour lequel extraire l'icône.
+      //	sNomImageTemp (chaîne UNICODE) : Le champ image temporaire où dessiner l'icône avant de la convertir en PNG.
+      // 	nIndiceIcone (entier optionnel) : L'indice de l'icône dans le fichier. Par défaut, l'indice est 0.
+      // Valeur de retour : chaîne ANSI : renvoie un buffer contenant l'icône convertie au format PNG.
+      // Exemple :
+      //	sCheminFichier est une chaîne = "C:\Chemin\Fichier.txt"
+      //	bufIconePNG est un buffer = FichierIcône(sCheminFichier, IMG_Icone, 0)
+      //	fSauveBuffer("C:\Chemin\icone.png",bufIconePNG)
+      //
+      PROCEDURE FichierIcône(sCheminFichierOuRep est une chaine ansi,xChampImageTemp est un champ,nIndiceIcone est un entier = 0) : buffer
+      bufIcone est un buffer
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	nHandleIcone est un entier systeme = api("Shell32.dll", "ExtractAssociatedIconA", SysInstance(), &sCheminFichierOuRep, &nIndiceIcone)
+      	SI nHandleIcone<>Null ALORS
+      		nDC est un entier systeme = dDébutDessin(xChampImageTemp)
+      		SI nDC<>0 ALORS api("User32.dll", "DrawIcon", nDC, 0, 0, nHandleIcone)
+      	FIN
+      	bufIcone = dSauveImagePNG(xChampImageTemp, enMémoire,Blanc)
+      	api("User32.dll", "DestroyIcon", nHandleIcone)
+      	
+      <fin>
+      
+      
+      RENVOYER bufIcone
+     type : 458752
+   -
+     name : NomLong
+     procedure_id : 2212392390570905732
+     type_code : 15
+     code : |1-
+      // Résumé : Cette procédure permet de vérifier si le système d'exploitation est Windows 10 version 1607 (Anniversary Update) ou une version ultérieure, et si la clé de registre LongPathsEnabled dans le registre système est définie à la valeur 1. L'objectif est de déterminer si les noms de fichiers peuvent dépasser la limite standard de 256 caractères.
+      // Syntaxe : [ <Résultat> = ] NomLong ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : renvoie Vrai si le système d'exploitation est Windows 10 version 1607 ou supérieur et si la clé de registre LongPathsEnabled est définie à 1. Sinon, elle renvoie Faux.
+      // Exemple :
+      //	SI NomLong() ALORS Info("Les noms de fichiers longs sont activés.") SINON Info("Les noms de fichiers longs ne sont pas activés.")
+      //
+      PROCEDURE NomLong() : booleen
+      //renvoie vrai si en Win10 V1607 et supérieur et la clé de registre ci-dessous mise à vrai. Ceci permet de dépasser 256 caractères pour les noms de fichiers
+      bExec est un booleen
+      nValeur est un entier = registrelit("HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem","LongPathsEnabled",bExec)
+      si bExec et nValeur=1 alors renvoyer vrai
+      renvoyer faux
+     type : 458752
+   -
+     name : EnumèreChampFenêtreExt
+     procedure_id : 1176360309829516448
+     type_code : 15
+     group : 3
+     code : |1-
+      // Résumé : Permet d'énumérer les éléments enfants d'une fenêtre parente spécifiée par son titre (qui doit être parfaitement identique au nom vu dans le gestionnaire des tâches).
+      // Syntaxe : [ <Résultat> = ] EnumèreChampFenêtreExt (<sTitreDeLaFenêtre> est chaîne)
+      // Paramètres :
+      //	sTitreDeLaFenêtre (chaîne UNICODE) : Le titre de la fenêtre externe dont on souhaite énumérer les éléments.
+      // Valeur de retour : tableau de STElementWindows : Tableau contenant l'ensemble des champs de la fenêtre 
+      // Exemple :
+      //	sNomFenetreParente est une chaîne = "Nom de la Fenêtre Externe"
+      //	tabInfosElements est un tableau de STElementWindows = EnumèreChampFenêtreExt(sNomFenetreParente)
+      //	POUR TOUT stInfo DE tabInfosElements
+      //		// Traitement de chaque élément (fenêtre enfant)
+      //	FIN
+      //
+      PROCEDURE EnumèreChampFenêtreExt(sTitreDeLaFenêtre est une chaine) : tableau de STElementWindows
+      VariableRAZ(gtabWindowInfo) 		
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	nHandleFen est un entier systeme = SysFenHandle(sTitreDeLaFenêtre)
+      	SI nHandleFen>0 ALORS nRéponse est un entier = AppelDLL32("User32", "EnumChildWindows", nHandleFen, &EnumèreEnfant, 0)
+      	
+      <fin>
+      
+      
+      renvoyer gtabWindowInfo
+     type : 458752
+   -
+     name : EnumèreEnfant
+     procedure_id : 1176360318419583859
+     type_code : 15
+     group : 3
+     code : |1-
+      // Résumé : Cette procédure privée fait partie du processus d'énumération des éléments enfants d'une fenêtre parente. Est utilisée par EnumèreChampFenêtreExt() et EnumèreChampFenêtreInt()
+      PROCEDURE privé EnumèreEnfant(nHandle est un entier système, nLParam est un entier = Null )
+      stRectangle est une structure
+      	nGauche 		est un entier
+      	nHaut 			est un entier
+      	nDroite 		est un entier
+      	nBas 			est un entier
+      END
+      
+      WINDOWINFO est une Structure								//https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-windowinfo
+      	cbSize 			est un entier							//The size of the structure, in bytes. The caller must set this member to sizeof(WINDOWINFO).
+      	rcWindow 		est un stRectangle						//The coordinates of the window.
+      	rcClient 		est un stRectangle						//The coordinates of the client area.
+      	dwStyle 		est un entier							//The window styles. For a table of window styles, see Window Styles.
+      	dwExStyle 		est un entier							//The extended window styles. For a table of extended window styles, see Extended Window Styles.
+      	dwWindowStatus 	est un entier							//The window status. If this member is WS_ACTIVECAPTION (0x0001), the window is active. Otherwise, this member is zero.
+      	cxWindowBorders est un entier							//The width of the window border, in pixels.
+      	cyWindowBorders est un entier							//The height of the window border, in pixels.
+      	atomWindowType 	est un entier sans signe sur 2 octets	//The window class atom (see RegisterClass).
+      	wCreatorVersion est un entier sans signe sur 2 octets	//The Windows version of the application that created the window.
+      END
+      
+      szSTitreElement		est une chaîne ASCIIZ sur 255
+      stWindowInfo 		est un WINDOWINFO
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	nLg32 			est un entier = AppelDLL32("User32", "GetWindowTextLengthA", nHandle)
+      	nRet32 			est un entier = AppelDLL32("User32", "GetWindowTextA", nHandle, &szSTitreElement, nLg32+1)
+      	API("USER32.DLL", "GetWindowInfo",nHandle, &stWindowInfo)
+      	
+      <fin>
+      
+      
+      ElementWindows 			est un STElementWindows
+      ElementWindows.sTitre	= szSTitreElement
+      ElementWindows.nGauche	= stWindowInfo.rcclient.nGauche
+      ElementWindows.nDroite	= stWindowInfo.rcclient.nDroite
+      ElementWindows.nHaut	= stWindowInfo.rcClient.nHaut
+      ElementWindows.nBas		= stWindowInfo.rcClient.nBas
+      ElementWindows.nLargeur = ElementWindows.nDroite-ElementWindows.nGauche
+      ElementWindows.nhauteur = ElementWindows.nBas-ElementWindows.nHaut
+      TableauAjoute(gtabWindowInfo,ElementWindows)
+      renvoyer vrai
+     type : 458752
+   -
+     name : FichierPropriétés
+     procedure_id : 1363156975483920189
+     type_code : 15
+     code : |1-
+      // Résumé : Permet de récupérer les propriétés détaillées d'un fichier en utilisant PowerShell.
+      // Syntaxe : [ <Résultat> = ] FichierPropriétés (<sCheminDuFichier> est chaîne)
+      // Paramètres :
+      //	sCheminDuFichier (chaîne UNICODE) : Le chemin du fichier pour lequel les propriétés doivent être récupérées.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne contenant les propriétés détaillées du fichier spécifié, ou une chaîne vide si le fichier n'existe pas.
+      // Exemple :
+      //	sCheminFichier est une chaîne = "C:\WINDEV\28\Desinstallation.exe"
+      //	sPropriétés est une chaîne = FichierPropriétés(sCheminFichier)
+      //	sPropriétés contiendra :
+      //		Répertoire 	   : C:\WINDEV\28
+      //		Name           : Desinstallation.exe
+      //		Length         : 117312000
+      //		CreationTime   : 2022-12-02 14:30:06
+      //		LastWriteTime  : 2022-12-02 14:30:06
+      //		LastAccessTime : 2023-12-22 10:34:45
+      //		Mode           : -a----
+      //		LinkType       :
+      // 		Target         : {}
+      //		VersionInfo    : File:             C:\WINDEV\28\Desinstallation.exe
+      //						 InternalName: 
+      // 						 OriginalFilename: 
+      // 						 FileVersion:      28.0.1.0
+      // 						 FileDescription:  Désinstallation / Uninstall
+      // 						 Product:          Desinstallation
+      // 						 ProductVersion:   28.0.1.0
+      // 						 Debug:            False
+      // 						 Patched:          False
+      // 						 PreRelease:       False
+      // 						 PrivateBuild:     False
+      // 						 SpecialBuild:     False	
+      // 						 Language:         Français (France)		
+      //		SignerCertificate      : 
+      //		TimeStamperCertificate : 
+      // 		Status                 : NotSigned
+      // 		StatusMessage          : Le fichier C:\WINDEV\28\Desinstallation.exe n'est pas signé numériquement. Vous ne pouvez pas
+      // 								 exécuter ce script sur le système actuel. Pour plus d'informations sur l'exécution de scripts 
+      // 								 et la définition de stratégies d'exécution, voir la rubrique about_Execution_Policies à
+      // 								 l'adresse https://go.microsoft.com/fwlink/?LinkID=135170
+      // 		Path                   : C:\WINDEV\28\Desinstallation.exe
+      // 		SignatureType          : None	
+      //		IsOSBinary             : False	
+      PROCEDURE FichierPropriétés(sCheminDuFichier est une chaine) : chaine
+      sRésultat		est une chaine
+      si fFichierExiste(sCheminDuFichier) ALORS
+      	sRésultat	=ExecuteCommandePowerShell("Get-ItemProperty '"+sCheminDuFichier+"' | fl")
+      	sRésultat	+=ExecuteCommandePowerShell("Get-AuthenticodeSignature '"+sCheminDuFichier+"' | fl")
+      	renvoyer sRésultat
+      fin
+      renvoyer ""
+     type : 458752
+   -
+     name : MiseEnVeilleAutorisée
+     procedure_id : 1387901553958574915
+     type_code : 15
+     code : |1+
+      // Résumé : Cette procédure permet de contrôler la mise en veille du système en utilisant des fonctions d'API. Elle autorise ou interdit la mise en veille en fonction du paramètre booléen fourni.
+      // Syntaxe : MiseEnVeilleAutorisée (<bAutoriser> est booléen)
+      // Paramètres : bAutoriser (booléen) : Un booléen indiquant si la mise en veille doit être autorisée (Vrai) ou interdite (Faux).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	// Autoriser la mise en veille
+      //	MiseEnVeilleAutorisée(Vrai)
+      //
+      PROCEDURE MiseEnVeilleAutorisée(bAutoriser est un booleen)
+      //ref :  https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/260070-stop-mise-veille-windows-via-api/read.awp
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	SI bAutoriser ALORS
+      		API("kernel32.dll", "SetThreadExecutionState", 0x80000000)				//0x80000000 = ES_CONTINUOUS ; Autoriser la veille
+      	SINON
+      		API("kernel32.dll", "SetThreadExecutionState", 0x00000001+0x80000000)	//0x00000001 = ES_SYSTEM_REQUIRED ; Interdire la veille
+      	FIN
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : CodeMachineExécute
+     procedure_id : 1515915863038021442
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure permet d'exécuter du code machine dans un thread en utilisant des fonctions d'API.
+      // Syntaxe : MiseEnVeille (<sCodeBinaire> est chaîne, <ParamètreUtilisateur>)
+      // Paramètres :
+      //	sCodeBinaire (chaîne) : Une chaîne représentant le code machine en format texte. Chaque octet doit obligatoirement être séparé par une virgule ",". Il y a 3 formes autorisées pour représenter un octet : 0x5E, 5Eh, 5E. Les 0 de gauche sont ignorés.
+      //	ParamètreUtilisateur (indéfini) : Objet quelconque dont windev peut obtenir un pointeur.Info : Un tableau de pointeurs permet de gérer plusieurs paramètres user. C'est une valeur optionnelle et peut être NULL.
+      // Valeur de retour : booléen : Renvoie Vrai si tout s'est bien passé et Faux dans le cas contraire.
+      // Exemple :
+      //	texte_titre 	est une Chaîne ASCIIZ sur 100 = "Je suis le titre passé en paramètre"
+      //	texte_message 	est une Chaîne ASCIIZ sur 256 = "Je suis le texte passé en paramètre"
+      //	parametre_user 	est un tableau fixe de 2 entiers système
+      //	parametre_user[1]= &texte_titre
+      //	parametre_user[2]= &texte_message
+      //
+      //	// Test d'exécution du code avec passage d'une table de 2 paramètres
+      //	SI PAS (CodeMachineExécute(code_binaire_texte, parametre_user))ALORS Erreur ("Le code machine avec paramètres n'a pas pu être exécuté :",ErreurInfo())
+      //
+      //	// Test d'exécution du code sans paramètres
+      //	SI PAS (CodeMachineExécute(code_binaire_texte,Null)) ALORS Erreur ("Le code machine sans paramètre n'a pas pu être exécuté :",ErreurInfo())
+      //
+      Procédure CodeMachineExécute(sCodeBinaire est une chaine, ParamètreUtilisateur) : booleen
+      
+      ThreadMode (threadSectionCritique)
+      SI exeinfo(exemode)=32 ALORS 										//uniquement en 32 bits car n'a pas encore été adapté au 64 bits
+      	QUAND EXCEPTION DANS
+      		nCodeBinaire 	est un entier systeme						//sans signe sur 4 octets
+      		tabParametres 	est un tableau fixe de 3 entiers systeme	//sans signe sur 4 octets
+      		nIDThread 		est un entier systeme						//sans signé sur 4 octets 
+      		nHandleThread 	est un entier systeme
+      		nTailleCode 	est un entier systeme
+      		nExitCode 		est un entier systeme
+      		
+      		// Préparer les paramètres à passer au code machine
+      		nHandleKernel32 est un entier systeme = ChargeDLL("Kernel32.dll")
+      		
+      		// Paramètres de base
+      		tabParametres[1] = DLLAdresseProcédure(nHandleKernel32,"LoadLibraryA") 
+      		tabParametres[2] = DLLAdresseProcédure(nHandleKernel32,"GetProcAddress") 
+      		
+      		// Paramètre Optionnel (Pointeur mémoire ou NULL)
+      		// Pointeur sur les paramètres user 
+      		SI (TypeVar(ParamètreUtilisateur)=wlVariant) _ET_ (ParamètreUtilisateur..Type=wlEntier) _ET_ (ParamètreUtilisateur=Null) ALORS tabParametres[3] = 0 SINON tabParametres[3] = &ParamètreUtilisateur
+      		
+      		nTailleCode 	= ChaîneOccurrence(sCodeBinaire,",")+1 												// Allouer la mémoire pour le code binaire
+      		nCodeBinaire 	= AppelDLL32("kernel32", "VirtualAlloc" , 0, nTailleCode, 0x1000, 0x40) 
+      		
+      		SI PAS CodeString2CodeBin (sCodeBinaire, nCodeBinaire) ALORS										// Convertir le  code (format texte) en code binaire
+      			AppelDLL32("kernel32", "VirtualFree", nCodeBinaire, 0, 0x8000)									// Libérer la mémoire contenant le code machine
+      			ErreurPropage();RENVOYER Faux
+      		FIN
+      		
+      		nHandleThread = AppelDLL32("Kernel32","CreateThread",0,0,nCodeBinaire,&tabParametres,0,&nIDThread)	// Exécuter le code machine dans un thread
+      		
+      		AppelDLL32("kernel32", "WaitForSingleObject", nHandleThread, 0xFFFF) 								// Attendre la fin du Thread
+      		AppelDLL32("kernel32", "VirtualFree", nCodeBinaire, 0, 0x8000) 										// Libérer la mémoire contenant le code machine
+      		AppelDLL32("kernel32", "GetExitCodeThread" , nHandleThread, &nExitCode)								// Vérifier le code de retour du thread
+      		SI (nExitCode=0) ALORS ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b160028§>);RENVOYER Faux	
+      		
+      		RENVOYER Vrai																						// Tout va bien :)
+      	FAIRE
+      		AppelDLL32("kernel32", "TerminateThread" , nHandleThread, 0) 
+      		AppelDLL32("kernel32", "VirtualFree", nCodeBinaire, 0, 0x8000)
+      		ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b160029§>)		
+      		RENVOYER Faux
+      	FIN
+      
+      	PROCÉDURE INTERNE CodeString2CodeBin(sCodeString est une chaine, nCodeBin est un entier)
+      	nChar 			est un entier sans signe sur 1 octet		
+      	sCodeClean 		est une chaine	
+      	nNbOctetsRetour est un entier sans signe sur 4 octet
+      	nTailleOctets	est un entier sans signe sur 4 octets = ChaîneOccurrence(sCodeString,",")+1 
+      	tabBuffer	 	est un tableau dynamique de nTailleOctets entiers sans signe sur 1 octet
+      	nCompteur 		est un entier sans signe sur 4 octet
+      	
+      	POUR TOUTE CHAÎNE sCode de sCodeString separee par ","
+      		nCompteur++
+      		sCodeClean 	= CodeNettoie(sCode)
+      		nChar 		= Val (sCodeClean,"x")		
+      		SI ((nChar=0 ET sCodeClean<>"00") OU (nChar<>0 ET nChar=Val(Gauche (sCodeClean,1)))) ALORS
+      			ErreurDéclenche(ErreurWindows,chaineconstruit(<§@1bbb6c3047ca2b16002a§>,sCode,(nCompteur-1)));RENVOYER Faux
+      		FIN		
+      		tabBuffer[nCompteur] = nChar
+      	FIN		
+      	SI (nCompteur=0) ALORS ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b16002b§>);RENVOYER Faux
+      	
+      	// Copier le buffer dans la zone mémoire allouée par VirtualAlloc
+      	AppelDLL32("kernel32", "WriteProcessMemory" , -1, nCodeBin, &tabBuffer, nCompteur, &nNbOctetsRetour)
+      	
+      	SI (nCompteur<>nNbOctetsRetour) ALORS ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b16002c§>);RENVOYER Faux
+      	
+      	RENVOYER Vrai 
+      	FIN	
+      
+      	PROCÉDURE INTERNE CodeNettoie(OctetsANettoyer est une chaine)
+      	s est une chaine = majuscule(sansespacE(OctetsANettoyer))
+      	SI s="" ALORS RENVOYER "INVALIDE"		// octet invalide		
+      	
+      	// enlever les infos sur la base 16
+      	SI (Gauche (s,2)="0X") ALORS 
+      		s = Droite (s,Taille(s)-2)   	
+      	SINON
+      		SI (Droite(s,1)="H") ALORS s = Gauche (s,Taille(s)-1)	
+      	FIN
+      	
+      	// Nettoyer les zéros de gauche
+      	TANTQUE (Taille(s)>0 ET Gauche (s,1)="0")
+      		s = Droite (s,Taille(s)-1)
+      	FIN
+      	
+      	// vérifier et fromater l'octet texte nettoyé
+      	SI (Taille(s)>=0 ET Taille (s)<=2) ALORS RENVOYER Droite ("00"+s,2)				// texte octet sur 2 caractères  :)
+      	FIN
+      
+      sinon
+      	renvoyer faux
+      fin
+     type : 458752
+   -
+     name : ÉcritDernièreErreur
+     procedure_id : 1516779052674546840
+     type_code : 15
+     code : |1+
+      // Résumé : La procédure en WinDev du framework Betula, nommée ÉcritDernièreErreur, permet de définir le code de la dernière erreur en utilisant la fonction d'API SetLastError. Cela peut être utile pour indiquer manuellement une erreur personnalisée.
+      // Syntaxe : ÉcritDernièreErreur ( [<nCodeErreur> est entier sans signe sur 4 octets])
+      // Paramètres :
+      // 	nCodeErreur (entier sans signe sur 4 octets optionnel) : Un entier représentant le code de l'erreur à définir. La valeur par défaut est 0.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	ÉcritDernièreErreur(123)
+      //
+      PROCEDURE ÉcritDernièreErreur(nCodeErreur est un entier sans signe sur 4 octets = 0)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	API("Kernel32.dll","SetLastError",nCodeErreur)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : LitDernièreErreur
+     procedure_id : 1516779056969645848
+     type_code : 15
+     code : |1-
+      // Résumé : Permet de lire le code de la dernière erreur en utilisant la fonction d'API GetLastError. Cela peut être utile pour obtenir le code d'erreur après l'exécution d'une opération potentiellement sujette à des erreurs.
+      // Syntaxe : [ <Résultat> = ] LitDernièreErreur ()
+      // Paramètres : Aucun
+      // Valeur de retour : entier système : représentant le code de la dernière erreur.
+      // Exemple :
+      //	nDernierCodeErreur est un entier système = LitDernièreErreur()
+      //
+      PROCEDURE LitDernièreErreur() : entier systeme
+      nError est un entier systeme
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	nError = API("Kernel32.dll","GetLastError")
+      	
+      <fin>
+      
+      
+      RENVOYER(nError)
+     type : 458752
+   -
+     name : GestionnaireDesTâchesActive
+     procedure_id : 1516796374445000476
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure permet d'activer ou de désactiver le Gestionnaire des tâches de Windows en manipulant les clés de registre appropriées. L'activation ou la désactivation du Gestionnaire des tâches est utile pour restreindre l'accès à cet outil système.
+      // Syntaxe : [ <Résultat> = ] GestionnaireDesTâchesActive (<bActive> est booléen)
+      // Paramètres :
+      //	bActive (booléen) : Un booléen indiquant si le Gestionnaire des tâches doit être activé (Vrai) ou désactivé (Faux).
+      // Valeur de retour : booléen :  indiquant le succès de l'opération
+      // Exemple :
+      //	// Désactiver le Gestionnaire des tâches
+      //	SI GestionnaireDesTâchesActive(Faux) ALORS Info("Le Gestionnaire des tâches a été désactivé avec succès.")
+      //
+      PROCEDURE GestionnaireDesTâchesActive(bActive est un booleen) : booleen
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	si RegistreExiste("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\") alors
+      		si pas RegistreExiste("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\System") alors 
+      			RegistreCréeClé("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\System")
+      		FIN
+      		si RegistreExiste("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\System") alors
+      			renvoyer RegistreEcrit("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\System","DisableTaskMgr",bActive)
+      		sinon
+      			ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b16002e§>)
+      		fin
+      	sinon
+      		ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b16002d§>)
+      	END
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : NomFichierValide
+     procedure_id : 1537441410144910915
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure permet de nettoyer un chemin de fichier en remplaçant les caractères invalides par un caractère spécifié.
+      // Syntaxe : [ <Résultat> = ] NomFichierValide (<sCheminDeFichier> est chaîne [, <cCaractèreDeRemplacement> est caractère])
+      // Paramètres :
+      //	sCheminDeFichier (chaîne UNICODE) : Une chaîne contenant le chemin du fichier à nettoyer.
+      // 	cCaractèreDeRemplacement (caractère optionnel) : Un caractère utilisé pour remplacer les caractères invalides. Par défaut, il est défini sur le caractère underscore (_).
+      // Valeur de retour : chaîne UNICODE : représentant le chemin de fichier nettoyé et valide.
+      // Exemple :
+      // 	sCheminNettoyé est une chaine = NomFichierValide("C:\Dossier?Projet", "_")
+      //	sCheminNettoyé contiendra "C:\Dossier_Projet"
+      //
+      PROCEDURE NomFichierValide(LOCAL sCheminDeFichier est une chaine,cCaractèreDeRemplacement est un caractere = "_") : chaine	//remplacement = 1 caractère, ainsi la taille ne change pas
+      sFileDirCaractèresInterdits est une chaine = ":/""|?><*"	//pas le \ servant de séparateur de répertoire
+      sRes est une chaine
+      SI Position(sFileDirCaractèresInterdits,cCaractèreDeRemplacement)>0 alors ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b16002f§>);renvoyer ""
+      SI sCheminDeFichier>"" ALORS
+      	SI Taille(sCheminDeFichier)>3 _et_ sCheminDeFichier[[2 À 3]]=":\" ALORS	//on ne teste que les chemins locaux, ceux en réseaux sont liés aux paramètres du serveur
+      		sRes			= gauche(sCheminDeFichier,3)
+      		sCheminDeFichier= gauche(sCheminDeFichier,(NomLong() ? 32767 sinon 260))
+      		pour nCaract = 4 _à_ taille(sCheminDeFichier)
+      			si position(sFileDirCaractèresInterdits,sCheminDeFichier[nCaract])>0 alors sRes+=cCaractèreDeRemplacement sinon sRes+=sCheminDeFichier[nCaract]
+      		FIN
+      	sinon
+      		sRes=sCheminDeFichier
+      	fin
+      fin
+      renvoyer sRes
+     type : 458752
+   -
+     name : TexteVersReg
+     procedure_id : 1552675916827976765
+     type_code : 15
+     code : |1-
+      // Résumé : Transforme une chaîne de texte pour l'enregistrement dans le Registre Windows, en appliquant des remplacements spécifiques pour les caractères réservés. Utilisé dans DDEInit.
+      // Syntaxe : [ <Résultat> = ] TexteVersReg (<sTexte> est chaîne)
+      // Paramètres :
+      //	sTexte (chaîne UNICODE) : La chaîne de texte à convertir pour l'enregistrement dans le Registre.
+      // Valeur de retour : chaîne UNICODE : renvoie la chaîne de texte modifiée, prête à être utilisée dans une clé du Registre Windows.
+      // Exemple :
+      //
+      PROCEDURE TexteVersReg(sTexte est une chaîne) : chaîne
+      //ref : https://flylib.com/books/en/1.271.1.106/1/
+      RENVOYER Remplace(Remplace(Replace(Remplace(sTexte,"\","\\"),cGénérique._Guillemet,"\"+cGénérique._Guillemet),Caract(10),"\n"),Caract(12),"\r")
+     type : 458752
+   -
+     name : ZoneMémoireZéro
+     procedure_id : 1556462956931823778
+     type_code : 15
+     code : |1-
+      // Résumé : Remplir la zone de mémoire spécifiée avec des zéros. Utilisé dans cFichierMP3
+      // Syntaxe : ZoneMémoireZéro (<nMémoireDestination> est entier système, <nTaille> est entier)
+      // Paramètres :
+      //	nMémoireDestination (entier système) : L'adresse de départ de la zone de mémoire à remplir avec des zéros.
+      //	nTaille (entier) : La taille en octets de la zone de mémoire à remplir.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	sTemp est une chaine sur 128
+      //	VideMémoire(&sTemp, Dimension(sTemp))
+      //
+      PROCEDURE ZoneMémoireZéro(nMémoireDestination est un entier système,nTaille est un entier)
+      API("NtosKrnl.exe", "RtlZeroMemory", nMémoireDestination, nTaille)
+     type : 458752
+   -
+     name : DLLAdresseProcédure
+     procedure_id : 1556463592711257270
+     type_code : 15
+     code : |1-
+      // Résumé : Permet d'obtenir l'adresse d'une procédure exportée par une DLL (Bibliothèque Dynamique) déjà chargée en mémoire (par l'utilisation par exemple de DLLCharge).
+      // Syntaxe : [ <Résultat> = ] DLLAdresseProcédure (<nInstanceDLL> est entier système, <sNomProcédure> est chaîne ANSI)
+      // Paramètres :
+      //	nInstanceDLL (entier système) : L'identifiant de l'instance de la DLL préalablement chargée en mémoire.
+      //	sNomProcédure (chaîne ANSI) : Le nom de la procédure dont on souhaite obtenir l'adresse.
+      // Valeur de retour : 	entier système : renvoie l'adresse mémoire de la procédure spécifiée dans la DLL.
+      // Exemple :
+      //
+      PROCEDURE DLLAdresseProcédure(nInstanceDLL est un entier système,sNomProcédure est une chaine ansi) : entier système
+      SI nInstanceDLL>0 ALORS 
+      	RENVOYER API("KERNEL32", "GetProcAddress", nInstanceDLL, sNomProcédure) 
+      SINON 
+      	ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b160030§>)
+      FIN
+      RENVOYER 0
+     type : 458752
+   -
+     name : FinSessionExécute
+     procedure_id : 1559115374235024888
+     type_code : 15
+     code : |1+
+      // Résumé : Permet d'exécuter une procédure pour fermer l'application proprement quand la session Windows est fermée (en cas de fermeture de Windows, de changement de compte, ...). A mettre dans le code d'initialisation du projet. 
+      // Syntaxe : FinSessionExécute (<procFinDeSession> est procédure)
+      // Paramètres :
+      //	procFinDeSession (procédure) : Procédure à exécuter pour fermer l'application proprement
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	Procédure Interne ProcFinSession()
+      //	FinProgramme()	//on peut ici fermer les connexions, mettre une entrée dans le fichier log, ...
+      //	FIN
+      //
+      //	FinSessionExécute(ProcFinSession)
+      //
+      PROCEDURE FinSessionExécute(procFinDeSession est une procédure)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	Evénement(procFinDeSession, "*.", 17)	//pour fermer l'appli correctement quand on quitte la session Windows
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : EnumèreChampFenêtreInt
+     procedure_id : 1567890022854021233
+     type_code : 15
+     group : 3
+     code : |1-
+      // Résumé : Énumère les éléments enfants d'une fenêtre parente spécifiée par son handle.
+      // Syntaxe : [ <Résultat> = ] EnumèreChampFenêtreInt (<nHandleFenêtre> est entier système)
+      // Paramètres :
+      //	nHandleFenêtre (entier système) : Le handle de la fenêtre parente dont on souhaite énumérer les éléments.
+      // Valeur de retour : tableau de STElementWindows : Tableau contenant l'ensemble des champs de la fenêtre 
+      // Exemple :
+      //	tabInfosElements est un tableau de STElementWindows = EnumèreChampFenêtreInt(Handle(MaFenêtre))
+      //	POUR TOUT stInfo DE tabInfosElements
+      //		// Traitement de chaque élément
+      //	FIN
+      //
+      PROCEDURE EnumèreChampFenêtreInt(nHandleFenêtre est un entier système) : tableau de STElementWindows
+      VariableRAZ(gtabWindowInfo)
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	
+      	SI nHandleFenêtre>0 ALORS 
+      		nRéponse est un entier = AppelDLL32("User32", "EnumChildWindows", nHandleFenêtre, &EnumèreEnfant, 0)
+      	FIN
+      	
+      <fin>
+      
+      
+      RENVOYER gtabWindowInfo
+     type : 458752
+   -
+     name : EnumèreFenêtre
+     procedure_id : 1568248299604290721
+     type_code : 15
+     group : 3
+     code : |1-
+      // Résumé : Énumère les fenêtres ouvertes (IsWindowVisible) dans Windows. Attention, certaines fenêtres non visibles/ouvertes pourraient faire partie du résultat.
+      // Syntaxe : [ <Résultat> = ] EnumèreFenêtre ()
+      // Paramètres : Aucun
+      // Valeur de retour : tableau associatif : Liste des fenêtres avec leur handle et leur nom
+      // Exemple :
+      // 	EnumèreFenêtre()
+      //
+      PROCEDURE EnumèreFenêtre() : tableau associatif de chaines
+      //ref : https://www.developpez.net/forums/d1120462/environnements-developpement/windev/api-windows-enumwindows/
+      taFenêtre est un tableau associatif de chaines
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	
+      	nLg, nOk, nHWnd sont des entiers système
+      	lpString est une chaîne fixe sur 255
+      	nHWnd = AppelDLL32("User32", "GetWindow", Handle(), 2)
+      	
+      	TANTQUE  nHWnd <> 0
+      		nLg = AppelDLL32("User32", "GetWindowTextLengthA",  nHWnd)
+      		nOk = AppelDLL32("User32", "GetWindowTextA",  nHWnd, &lpString, nLg+1)
+      		SI nOk>0 _Et_ AppelDLL32("user32","IsWindowVisible", nHWnd) ALORS taFenêtre[nHWnd]=lpString
+      		nHWnd = AppelDLL32("User32", "GetWindow",  nHWnd, 2)
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer taFenêtre
+     type : 458752
+   -
+     name : EstAdministrateur
+     procedure_id : 1588319710749551924
+     type_code : 15
+     code : |1-
+      // Résumé : La procédure détermine si l'utilisateur exécutant le processus actuel a des privilèges d'administrateur.
+      // Syntaxe : [ <Résultat> = ] EstAdministrateur ()
+      // Paramètres :	Aucun
+      // Valeur de retour : booléen : Vrai si le compte loggué est administrateur
+      // Exemple :
+      //	SI EstAdministrateur() ALORS Info("L'utilisateur est un administrateur.") SINON Info("L'utilisateur n'est pas un administrateur.")
+      //
+      PROCEDURE EstAdministrateur()
+      bAdmin 				est un booléen = Faux
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	SI PAS (cApplication.mg_sWindowsVersion="NT") ALORS RENVOYER bAdmin	//ne fonctionne que sur NT et équivalent
+      	
+      	stID_AND_ATTRIBUTES est une Structure
+      		nSID 			est un entier système
+      		nAttribut 		est un entier système
+      	FIN
+      	
+      	stIDAdmin est composée de
+      		byRev 			est un entier sur 1 octet
+      		bySubCount 		est un entier sur 1 octet
+      		byAuth1 		est un entier sur 1 octet
+      		byAuth2 		est un entier sur 1 octet
+      		byAuth3 		est un entier sur 1 octet
+      		byAuth4 		est un entier sur 1 octet
+      		byAuth5 		est un entier sur 1 octet
+      		byAuth6 		est un entier sur 1 octet
+      		dwFirstSubAuth 	est un entier sur 4 octets
+      		dwSecondSubAuth est un entier sur 4 octets
+      	FIN
+      	
+      	si exeinfo(exeMode)="32" alors
+      		HEAP_ZERO_MEMORY 			est un entier			= 0x00000008
+      		nProcessHeap 				est un entier système 	= API("kernel32.dll","GetProcessHeap")
+      		sGsMessageErreur 			est une chaîne 			= ""
+      		
+      		PROCESS_QUERY_INFORMATION 	est un entier 			= 0x400
+      		nProcessId 					est un entier système 	= API("kernel32.dll","GetCurrentProcessId")											// Ouverture du process
+      		nProcess 					est un entier système 	= API("kernel32.dll","OpenProcess",PROCESS_QUERY_INFORMATION,0,nProcessId)
+      		nToken 						est un entier système
+      		TOKEN_QUERY 				est un entier système 	= 0x0008
+      		bRes						est un booléen 			= API("advapi32.dll","OpenProcessToken",nProcess,TOKEN_QUERY,&nToken)				// Ouverture du token du process
+      		nTailleGroupes 				est un entier système 	= 0
+      		API("advapi32.dll","GetTokenInformation",nToken,2,Null,0,&nTailleGroupes)																// Demande de la taille des infos de groupe
+      		nBuffer 					est un entier système 	= API("kernel32.dll","HeapAlloc",nProcessHeap,HEAP_ZERO_MEMORY,nTailleGroupes+16)	// Allocation de la structure
+      		API("advapi32.dll","GetTokenInformation",nToken,2,nBuffer,nTailleGroupes,nTailleGroupes)												// Récup de la liste des groupes
+      		nNbGroupes 					est un entier système
+      		Transfert(&nNbGroupes,nBuffer,4)																										// Conversion du buffer "raw" en une structure
+      		nTailleAlloc 				est un entier = nNbGroupes + 1
+      		tabInfoGroupe 				est un tableau dynamique = allouer un tableau de nTailleAlloc stID_AND_ATTRIBUTES
+      		Transfert(&tabInfoGroupe,nBuffer+4,nNbGroupes*8)
+      		//On récupère le SID administrateur
+      		stIDAdmin.byRev 			= 1
+      		stIDAdmin.bySubCount 		= 2
+      		stIDAdmin.byAuth1 			= 0
+      		stIDAdmin.byAuth2 			= 0
+      		stIDAdmin.byAuth3 			= 0
+      		stIDAdmin.byAuth4 			= 0
+      		stIDAdmin.byAuth5 			= 0
+      		stIDAdmin.byAuth6 			= 5
+      		stIDAdmin.dwFirstSubAuth 	= 32
+      		stIDAdmin.dwsecondSubAuth 	= 544
+      		
+      		nStIDAdmin est un entier système = &stIDAdmin
+      		SI nStIDAdmin <> 0 ALORS
+      			sListeGroupes 	est une chaîne = ""
+      			nSID1 			est un entier système
+      			POUR nGroupe = 1 _À_ nNbGroupes	// Parcours de la liste des groupes
+      				nSID1 = tabInfoGroupe[nGroupe].nSID
+      				SI api("advapi32","EqualSid",nSID1,nStIDAdmin) ALORS bAdmin = Vrai
+      			FIN
+      		SINON
+      			bAdmin = Faux
+      		FIN
+      		
+      		API("kernel32.dll","HeapFree",nProcessHeap,0,nBuffer);nBuffer = Null
+      	
+      	sinon si ExeInfo(exeMode)="64" alors
+      		//vérifier si c'est un utilisateur local (toujours admin)
+      		sLocalUser est une chaine = [
+      		Get-LocalUser -name "%1"                                                   
+      		]
+      		nRésultat 	est un entier
+      		sRésultat	est une chaine
+      		(nRésultat,sRésultat)=ExécuteCommandePowerShell(chaineconstruit(sLocalUser,RéseauUtilisateur()))
+      		si nRésultat=0 alors 
+      			pour tout chaine sLigne de sRésultat
+      				si position(sLigne,RéseauUtilisateur())>0 _et_ Position(sLigne,"True")>0 alors bAdmin=vrai
+      			FIN
+      		fin
+      		si pas bAdmin alors bAdmin=(api("shell32.dll","IsUserAnAdmin")=1)
+      		//si la fonction précédente est dépréciée, utiliser ce qui suit
+      	//	sCommande est une chaine = [
+      	//		function IsUserAdmin {
+      	//		$currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+      	//		$currentUserPrincipal = New-Object System.Security.Principal.WindowsPrincipal($currentUser)
+      	//		return $currentUserPrincipal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
+      	//		}
+      	//		IsUserAdmin
+      	//	]
+      	//	(nRésultat,sRésultat)=ExécuteCommandePowerShell(sCommande)	
+      	fin
+      	
+      <fin>
+      
+      
+      RENVOYER bAdmin
+     type : 458752
+   -
+     name : MiseEnVeille
+     procedure_id : 1588706443246919939
+     type_code : 15
+     code : |1+
+      // Résumé : Met l'ordinateur en veille normale ou prolongée
+      // Syntaxe : MiseEnVeille ( [<bProlongée> est booléen])
+      // Paramètres :
+      //	bProlongée (booléen - valeur par défaut=0) : si mis à vrai, l'ordinateur se met alors en veille prolongée
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	MiseEnVeille()
+      //
+      PROCEDURE MiseEnVeille(bProlongée est un booleen = faux)
+      //ref : http://centrewd.free.fr/?page=ficheapi&t=f&n=SetSystemPowerState
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	bForce est un booléen	//sans effet 
+      	si cApplication.mg_sWindowsVersion dans ("XP","2003S") alors
+      		api("Kernel32.dll", "SetSystemPowerState", bProlongée, bForce)		//https://learn.microsoft.com/fr-ca/windows/win32/api/winbase/nf-winbase-setsystempowerstate
+      	sinon
+      		api("PowrProf.dll", "SetSuspendState", bProlongée, bForce,True)		//https://learn.microsoft.com/fr-fr/windows/win32/api/powrprof/nf-powrprof-setsuspendstate
+      	fin
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : ExécuteCommandeDOS
+     procedure_id : 1592710591792025750
+     type_code : 15
+     code : |1-
+      // Résumé : Exécute la commande DOS spécifiée (attention de mettre les guillemets " comme \" ).
+      // Syntaxe : [ <Résultat> = ] ExécuteCommandeDOS (<sCommande> est chaîne [, <ePriorité> est COL_WIN.EDOSExécutionPriorité [, <bTraceRéponse> est booléen [, <xTailleMaxRésultatOuDétecteChaine>]]])
+      // Paramètres :
+      //	sCommande (chaîne UNICODE) : Commande à exécuter
+      //	ePriorité (COL_WIN.EDOSExécutionPriorité) : Exécution avec la priorité normale du système.
+      //        - IDLE_PRIORITY_CLASS (0x00000040) : Exécution avec la priorité la plus basse, réservée pour les tâches de fond.
+      //        - HIGH_PRIORITY_CLASS (0x00000080) : Exécution avec une priorité élevée.
+      //        - REALTIME_PRIORITY_CLASS (0x00000100) : Exécution en temps réel avec la priorité la plus élevée.
+      //        - BELOW_NORMAL_PRIORITY_CLASS (0x00004000) : Exécution avec une priorité légèrement inférieure à la normale.
+      //        - ABOVE_NORMAL_PRIORITY_CLASS (0x00008000) : Exécution avec une priorité légèrement supérieure à la normale.
+      //	bTraceRéponse (booléen) : Si vrai, ajoute la réponse au fichier de trace (faux par défaut)
+      //	xTailleMaxRésultatOuDétecteChaine : Si de type "chaine" de caractères : sort après sa détection, si de type "entier" : sort après que cette taille de résultat est atteint (mettre -1 pour avoir tout le résultat, c'est la valeur par défaut). Mettre à 0 pour ne pas avoir la réponse sous forme de chaine (seulement le code retour).
+      // Valeur de retour : entier et chaîne UNICODE : Code retour et résultat de la commande exécutée (-1 et "" en cas d'erreur)
+      // Exemple :
+      //
+      PROCEDURE ExécuteCommandeDOS(sCommande est une chaine,ePriorité est un EDOSExécutionPriorité = NORMAL_PRIORITY_CLASS,bTraceRéponse est un booleen = faux,xTailleMaxRésultatOuDétecteChaine = -1) : (entier,chaine)
+      //ref auteurs originaux : http://sourceforge.net/projects/wdforge/files/Classes/WD7Dos/
+      //ref version 64 bits 	: http://tuto.nowwweb.com/sujet-40-executer_des_commandes_dos_san.html
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sCommande,ePriorité..Valeur,bTraceRéponse,xTailleMaxRésultatOuDétecteChaine)
+      sRéponse			est une chaine					//Résultat de l'exécution de la commande
+      nExitCode 			est un entier
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	stProcInfo 			est un STProcessInformation		//Process utilisé
+      	nHandleLecturePipe	est un entier système			//Handle de lecture du "pipe"
+      	nHandleEcriturePipe	est un entier système			//Handle d"écriture du "pipe"
+      	nRésultat			est un entier systeme			//Variable contenant le résultat des fonction API
+      	stStartupInfo		est un STStartupInformation		//Variable Structure utilisée par l"API CreateProcessA
+      	stSecurity			est un STSecurityAttributes		//Variable Structure utilisée par l"API CreateProcessA
+      	nNbOctetsLus		est un entier					//Variable contenant le nombre d"octet lus dans le "pipe"
+      	
+      	SI Taille(sCommande) = 0 ALORS ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b160031§>);RENVOYER (-1,"")	
+      	
+      	//Renseignement de la structure SECURITY_ATTRIBUTES
+      	stSecurity.nLength 				= Dimension(stSecurity)
+      	stSecurity.bInheritHandle 		= Vrai
+      	stSecurity.lpSecurityDescriptor = Null
+      	
+      	//Création du "Pipe" et Test du résultat
+      	SI PAS API("Kernel32.dll","CreatePipe",&nHandleLecturePipe,&nHandleEcriturePipe,&stSecurity,0) ALORS
+      		ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b160032§> +erreurinfo());RENVOYER (-1,"")
+      	FIN
+      	
+      	//Renseignement de la structure STARTUPINFO
+      	stStartupInfo.cb 			= Dimension(stStartupInfo)
+      	stStartupInfo.dwFlags 		= 0x00000100+0x00000001	//STARTF_USESTDHANDLES + STARTF_USESHOWWINDOW    ref : https://docs.microsoft.com/fr-fr/windows/win32/api/processthreadsapi/ns-processthreadsapi-startupinfoa
+      	stStartupInfo.hStdOutput 	= nHandleEcriturePipe
+      	stStartupInfo.HStdError 	= nHandleEcriturePipe
+      	
+      	//Création du process = Exécution de la commande
+      	lpCurrentDirectory 	est un entier système = 0 	// Type C :LPCSTR, c"est l"adresse d"une chaîne, il est aussi possible de spécifier directement une chaîne
+      	lpEnvironment 		est un entier système = 0
+      	lpApplicationName 	est un entier système = 0 	// Type C :LPCSTR, c"est l"adresse d"une chaîne, il est aussi possible de spécifier directement une chaîne
+      	bInheritHandles 	est un booléen = Vrai 		// Type C :BOOL
+      	
+      	SI API("kernel32","CreateProcessW",lpApplicationName,&sCommande,&stSecurity,&stSecurity,bInheritHandles,ePriorité..valeur,lpEnvironment,lpCurrentDirectory,&stStartupInfo,&stProcInfo) <> 1 ALORS
+      		//Si une erreur, fermeture des Handles
+      		nRésultat = API("Kernel32.dll","CloseHandle",nHandleLecturePipe)
+      		nRésultat = API("Kernel32.dll","CloseHandle",nHandleEcriturePipe)
+      		ErreurDéclenche(ErreurWindows,<§@1bbb6c3047ca2b160033§>);RENVOYER (-1,"")
+      	FIN
+      	
+      	//Fermeture du "pipe" de sortie
+      	nRésultat 	= API("Kernel32.dll","CloseHandle",nHandleEcriturePipe)
+      	sRéponse 	= ""
+      	
+      	si TypeVar(xTailleMaxRésultatOuDétecteChaine) DANS (wlChaîne,wlChaîneUnicode) _ou_ xTailleMaxRésultatOuDétecteChaine<>0 alors
+      		// code ajouté pour voir l"erreur lors de la lecture du "pipe"
+      		LpOverlapped 			est un 	entier =  Null 	// Pointeur sur structure LPOVERLAPPED
+      		LpBuffer 				est une chaîne = Complète("",gnExécuteCommandeLire) // Type C :LPVOID
+      		bufRéponse 				est un 	buffer
+      		
+      		//Lecture du "pipe" en lecture pour récupérer les infos !
+      		BOUCLE
+      			nRésultat = API("Kernel32.dll","ReadFile",nHandleLecturePipe, &LpBuffer, gnExécuteCommandeLire, &nNbOctetsLus, LpOverlapped)
+      			SI nRésultat = 0 ALORS SORTIR
+      			bufRéponse=LpBuffer
+      			sRéponse += oemversansi(Gauche(bufRéponse, nNbOctetsLus))
+      			SI TypeVar(xTailleMaxRésultatOuDétecteChaine) dans (wlchaine,wlChaîneUnicode) alors
+      				si position(sRéponse,xTailleMaxRésultatOuDétecteChaine)>0 alors sortir
+      			sinon
+      				si xTailleMaxRésultatOuDétecteChaine>0 _et_ taille(sRéponse)>=xTailleMaxRésultatOuDétecteChaine alors sortir
+      			FIN
+      			//Multitâche(-5)	//sans doute pas pertinent et -1 bloque parfois le processus (ex 7z.dll)
+      		FIN
+      	fin
+      	
+      	//Force la fermeture du process en cours
+      	API("Kernel32.dll","GetExitCodeProcess",stProcInfo.hProcess,&nExitCode)
+      	API("Kernel32.dll","TerminateProcess",&stProcInfo.hProcess, 0)
+      	
+      	//Fermeture de tous les Handles
+      	si gbFermetureHandle alors
+      		Enfile(gFileExécuteCommandeHandle,&stProcInfo.hProcess)
+      		Enfile(gFileExécuteCommandeHandle,&stProcInfo.hThread)
+      		Enfile(gFileExécuteCommandeHandle,&nHandleLecturePipe)
+      	sinon
+      		API("Kernel32.dll","CloseHandle",&stProcInfo.hProcess)
+      		API("Kernel32.dll","CloseHandle",&stProcInfo.hThread)
+      		API("Kernel32.dll","CloseHandle",&nHandleLecturePipe)
+      	FIN
+      	
+      <fin>
+      
+      
+      SI bTraceRéponse _et_ cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété("Réponse:"+sRéponse)
+      RENVOYER (nExitCode,sRéponse)
+     type : 458752
+   -
+     name : ExécuteCommandePowerShell
+     procedure_id : 1592712541782540126
+     type_code : 15
+     code : |1-
+      // Résumé : Exécute la commande PowerShell spécifiée (attention de mettre les guillemets " comme \" ).
+      // Syntaxe : [ <Résultat> = ] ExécuteCommandePowerShell (<sCommande> est chaîne [, <ePriorité> est COL_WIN.EDOSExécutionPriorité [, <bTraceRéponse> est booléen [, <xTailleMaxRésultatOuDétecteChaine>]]])
+      // Paramètres :
+      //	sCommande (chaîne UNICODE) : Commande à exécuter
+      //	ePriorité (COL_WIN.EDOSExécutionPriorité) : Exécution avec la priorité normale du système.
+      //        - IDLE_PRIORITY_CLASS (0x00000040) : Exécution avec la priorité la plus basse, réservée pour les tâches de fond.
+      //        - HIGH_PRIORITY_CLASS (0x00000080) : Exécution avec une priorité élevée.
+      //        - REALTIME_PRIORITY_CLASS (0x00000100) : Exécution en temps réel avec la priorité la plus élevée.
+      //        - BELOW_NORMAL_PRIORITY_CLASS (0x00004000) : Exécution avec une priorité légèrement inférieure à la normale.
+      //        - ABOVE_NORMAL_PRIORITY_CLASS (0x00008000) : Exécution avec une priorité légèrement supérieure à la normale.
+      //	bTraceRéponse (booléen) : Si vrai, ajoute la réponse au fichier de trace (faux par défaut)
+      //	xTailleMaxRésultatOuDétecteChaine : Si de type "chaine" de caractères : sort après sa détection, si de type "entier" : sort après que cette taille de résultat est atteint (mettre -1 pour avoir tout le résultat, c'est la valeur par défaut). Mettre à 0 pour ne pas avoir la réponse sous forme de chaine (seulement le code retour).
+      // Valeur de retour : entier et chaîne UNICODE : Code retour et résultat de la commande exécutée (-1 et "" en cas d'erreur)
+      // Exemple :
+      //
+      PROCEDURE ExécuteCommandePowerShell(sCommande est une chaine,ePriorité est un EDOSExécutionPriorité = NORMAL_PRIORITY_CLASS,bTraceRéponse est un booleen = faux,xTailleMaxRésultatOuDétecteChaine = -1) : (entier,chaine)
+      renvoyer ExécuteCommandeDOS("Powershell.exe -Command "+sCommande,ePriorité,bTraceRéponse,xTailleMaxRésultatOuDétecteChaine)
+     type : 458752
+   -
+     name : ExécuteBatch
+     procedure_id : 1592736070003693303
+     type_code : 15
+     code : |1-
+      // Résumé : Exécute le fichier batch spécifiée (ne pas y mettre des guillemets).
+      // Syntaxe : [ <Résultat> = ] ExécuteBatch (<sFichierBat> est chaîne [, <ePriorité> est COL_WIN.EDOSExécutionPriorité [, <bTraceRéponse> est booléen [, <xTailleMaxRésultatOuDétecteChaine>]]])
+      // Paramètres :
+      //	sFichierBat (chaîne UNICODE) : Chemin du fichier batch a exécuter
+      //	ePriorité (COL_WIN.EDOSExécutionPriorité) : Exécution avec la priorité normale du système.
+      //        - IDLE_PRIORITY_CLASS (0x00000040) : Exécution avec la priorité la plus basse, réservée pour les tâches de fond.
+      //        - HIGH_PRIORITY_CLASS (0x00000080) : Exécution avec une priorité élevée.
+      //        - REALTIME_PRIORITY_CLASS (0x00000100) : Exécution en temps réel avec la priorité la plus élevée.
+      //        - BELOW_NORMAL_PRIORITY_CLASS (0x00004000) : Exécution avec une priorité légèrement inférieure à la normale.
+      //        - ABOVE_NORMAL_PRIORITY_CLASS (0x00008000) : Exécution avec une priorité légèrement supérieure à la normale.
+      //	bTraceRéponse (booléen) : Si vrai, ajoute la réponse au fichier de trace (faux par défaut)
+      //	xTailleMaxRésultatOuDétecteChaine : Si de type "chaine" de caractères : sort après sa détection, si de type "entier" : sort après que cette taille de résultat est atteint (mettre -1 pour avoir tout le résultat, c'est la valeur par défaut). Mettre à 0 pour ne pas avoir la réponse sous forme de chaine (seulement le code retour).
+      // Valeur de retour : entier et chaîne UNICODE : Code retour et résultat de la commande exécutée (-1 et "" en cas d'erreur)
+      // Exemple :
+      //
+      PROCEDURE ExécuteBatch(sFichierBat est une chaine,ePriorité est un EDOSExécutionPriorité = NORMAL_PRIORITY_CLASS,bTraceRéponse est un booleen = faux,xTailleMaxRésultatOuDétecteChaine = -1) : (entier,chaine)
+      si ffichierexiste(sFichierBat) alors RENVOYER ExécuteCommandeDOS("cmd.exe /c "+cgenerique._Guillemet+sFichierBat+cGénérique._Guillemet,ePriorité,bTraceRéponse,xTailleMaxRésultatOuDétecteChaine)
+      ErreurDéclenche(ErreurWindows,(sFichierBat~="" ? <§@1bbb6c3047ca2b160034§> sinon <§@1bbb6c3047ca2b160035§>))
+      renvoyer (-1,"")
+     type : 458752
+   -
+     name : API
+     procedure_id : 1600110535953225406
+     type_code : 15
+     code : |1-
+      // Résumé : Cette méthode surchage la procédure API afin de pouvoir tracer les appels
+      // Syntaxe : [ <Résultat> = ] API (<sDLL> est chaîne, <sCommande> est chaîne [, ...])
+      // Paramètres :
+      //	sDLL (chaîne UNICODE) : Nom de la DLL à charger pour l'appel de la fonction
+      //	sCommande (chaîne UNICODE) : Nom de la fonction à appeler
+      // 	<*> : Tous les autres paramètres de la fonction
+      // Valeur de retour : entier système : valeur de retour de la fonction
+      // Exemple :
+      //
+      PROCEDURE API(sDLL est une chaîne, sCommande est une chaîne,*) : entier systeme
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null _ET_ cApplication._Application.m_pclTrace.m_bTraceAppelAPI ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sDLL,sCommande,mesparamètres)
+      nRésultat est un entier systeme 
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	
+      	nRésultat = WL.API(MesParamètres)
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null _ET_ cApplication._Application.m_pclTrace.m_bTraceAppelAPI ALORS cApplication._Application.m_pclTrace.AjouteMéthode("Résultat:"+nRésultat)
+      	
+      <fin>
+      
+      
+      renvoyer nRésultat
+     type : 458752
+   -
+     name : ExécuteCommandeCloseHandle
+     internal_properties : CQAAAAkAAAAZ3HKBO8N8cHkrM+h5JzRRBciQ0AhMEiRhtLQd4Dm/o4eymlylPfQqEuibgx4/lbkLTQb97wVSNxs64NgCW/9A7wNrpjRfsntQS4ZW5IwxBjM8cRJtgTJlYJOJreJ6/KWnOiinlcuJuh8fKGLplr3IxzmsvInVvfBWZXxVgN9x5ZEJENc=
+     procedure_id : 1601715906426078336
+     type_code : 15
+     code : |1-
+      // Résumé : Est utilisée pour fermer les handles de fichiers ouverts afin de libérer les ressources système associées aux handles après leur utilisation dans ExécuteCommandeDOS et ExécuteCommandePowerShell. Juste lancer cette procédure dans l'initiation de la fenêtre ou du projet, Betula s'adaptera.
+      // Syntaxe : ExécuteCommandeCloseHandle ()
+      // Paramètres :	Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	ExécuteCommandeCloseHandle()
+      //
+      PROCEDURE ExécuteCommandeCloseHandle()
+      nHandle est un entier système
+      gbFermetureHandle=vrai
+      boucle
+      	TANTQUE Défile(gFileExécuteCommandeHandle,nHandle)
+      		API("Kernel32.dll","CloseHandle",nHandle);ThreadPause(3)
+      	FIN
+      	ThreadPause(10)
+      fin
+      gbFermetureHandle=faux
+     type : 458752
+   -
+     name : OuvreDossierWindows
+     procedure_id : 1603110088826904627
+     type_code : 15
+     code : |1-
+      // Résumé : Permet d'ouvrir un dossier spécifique dans l'explorateur de fichiers de Windows. Elle prend en paramètre un type d'enumération EDossierWindows qui représente le dossier à ouvrir.
+      // Syntaxe : OuvreDossierWindows (<eDossier> est COL_WIN.EDossierWindows)
+      // Paramètres :
+      //	eDossier (COL_WIN.EDossierWindows) : Enumération représentant le dossier à ouvrir dans l'explorateur Windows.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	OuvreDossierWindows(Downloads)
+      //
+      PROCEDURE OuvreDossierWindows(eDossier est un EDossierWindows)
+      sLigneCommande est une chaine = [
+      explorer "shell:%1"
+      ]
+      LanceAppli(ChaîneConstruit(sLigneCommande,eDossier..Valeur))
+     type : 458752
+   -
+     name : OuvreFonctionnalitéWindows
+     procedure_id : 1603162887486698521
+     type_code : 15
+     code : |1-
+      // Résumé : Permet d'ouvrir une fonctionnalité spécifique de Windows en utilisant l'explorateur de fichiers. Elle prend en paramètre une enumération EFonctionWindows qui représente la fonctionnalité à ouvrir.
+      // Syntaxe : OuvreFonctionnalitéWindows (<eFonctionnalité> est COL_WIN.EFonctionWindows)
+      // Paramètres :
+      //	eFonctionnalité (COL_WIN.EFonctionWindows) : Enumération représentant la fonctionnalité de Windows à ouvrir.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	OuvreFonctionnalitéWindows(ControlPanelFolder)
+      //
+      PROCEDURE OuvreFonctionnalitéWindows(eFonctionnalité est un EFonctionWindows)
+      sLigneCommande est une chaine = [
+      explorer "shell:%1"
+      ]
+      LanceAppli(ChaîneConstruit(sLigneCommande,eFonctionnalité..Valeur))
+     type : 458752
+   -
+     name : TempsSystèmeVersDateHeure
+     procedure_id : 1605412287009784051
+     type_code : 15
+     code : |1-
+      // Résumé : Convertit une structure de temps système (stTempsSystème) en un objet de type DateHeure en format local
+      // Syntaxe : [ <Résultat> = ] TempsSystèmeVersDateHeure (<stTemps> est stTempsSystème)
+      // Paramètres :
+      //	stTemps (stTempsSystème) : Une structure contenant les composants de date et heure en format système.
+      // Valeur de retour : dateheure : La date et l'heure converties en format local.
+      // Exemple :
+      //	stTemps est un stTempsSystème
+      //	stTemps.nAnnée = 2023
+      //	stTemps.nMois = 5
+      //	stTemps.nJour = 18
+      //	stTemps.nHeure = 14
+      //	stTemps.nMinute = 30
+      //	stTemps.nSeconde = 45
+      //	stTemps.nMilliseconde = 123
+      //	dtDateHeureLocale est un DateHeure = TempsSystèmeVersDateHeure(stTemps)
+      //	Trace(dtDateHeureLocale)
+      //
+      PROCEDURE TempsSystèmeVersDateHeure(stTemps est un stTempsSystème) : dateheure
+      sDate est une chaine 
+      sDate=stTemps.nAnnée+NumériqueVersChaîne(stTemps.nMois,"02d")+NumériqueVersChaîne(stTemps.njour,"02d")+NumériqueVersChaîne(stTemps.nheure,"02d")+NumériqueVersChaîne(stTemps.nMinute,"02d")+NumériqueVersChaîne(stTemps.nSeconde,"02d")+NumériqueVersChaîne(stTemps.nMilliseconde,"03d")
+      renvoyer DateHeureUTCVersLocale(sDate)
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1bbb6c3047ca2b16
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Le nom de la fenêtre est vide
+      en-GB : The window name is empty
+      fr-CA : Le nom de la fenêtre est vide
+      en-US : The window name is empty
+     index : 0
+   -
+     text :
+      fr-FR : Le nom de fichier est vide
+      en-GB : The file name is empty
+      fr-CA : Le nom de fichier est vide
+      en-US : The file name is empty
+     index : 1
+   -
+     text :
+      fr-FR : Le fichier n'existe pas
+      en-GB : File does not exist
+      fr-CA : Le fichier n'existe pas
+      en-US : File does not exist
+     index : 2
+   -
+     text :
+      fr-FR : La variable est vide
+      en-GB : The variable is empty
+      fr-CA : La variable est vide
+      en-US : The variable is empty
+     index : 3
+   -
+     text :
+      fr-FR : "Erreur de syntaxe (client = *, sujet = *, etc.)"
+      en-GB : "Syntax error (client = *, subject = *, etc.)"
+      fr-CA : "Erreur de syntaxe (client = *, sujet = *, etc.)"
+      en-US : "Syntax error (client = *, subject = *, etc.)"
+     index : 4
+   -
+     text :
+      fr-FR : Erreur d'initialisation
+      en-GB : Initialization error
+      fr-CA : Erreur d'initialisation
+      en-US : Initialization error
+     index : 5
+   -
+     text :
+      fr-FR : Le programme est déjà terminé
+      en-GB : The program is already stopped
+      fr-CA : Le programme est déjà terminé
+      en-US : The program is already stopped
+     index : 6
+   -
+     text :
+      fr-FR : Le programme en cours d'exécution est lancé alors qu'il est toujours enregistré auprès de WinDev/WebDev (le programme n'a pas appelé la fonction DDEDéconnecte lors d'une précédente exécution)
+      en-GB : The program currently run is started while it is still registered toward WINDEV/WEBDEV (the program did not call DDEDisconnect during a previous execution)
+      fr-CA : Le programme en cours d'exécution est lancé alors qu'il est toujours enregistré auprès de WinDev/WebDev (le programme n'a pas appelé la fonction DDEDéconnecte lors d'une précédente exécution)
+      en-US : The program currently run is started while it is still registered toward WINDEV/WEBDEV (the program did not call DDEDisconnect during a previous execution)
+     index : 7
+   -
+     text :
+      fr-FR : Trop de programmes sont enregistrés auprès de WDDE.DLL (50 programmes maximum)
+      en-GB : Too many programs are registered toward WDDE.DLL (up to 50 programs)
+      fr-CA : Trop de programmes sont enregistrés auprès de WDDE.DLL (50 programmes maximum)
+      en-US : Too many programs are registered toward WDDE.DLL (up to 50 programs)
+     index : 8
+   -
+     text :
+      fr-FR : Trop de messages sont en mémoire (400 messages maximum)
+      en-GB : Too many messages are found in memory (up to 400 messages)
+      fr-CA : Trop de messages sont en mémoire (400 messages maximum)
+      en-US : Too many messages are found in memory (up to 400 messages)
+     index : 9
+   -
+     text :
+      fr-FR : Destinataire inconnu
+      en-GB : Unknown recipient
+      fr-CA : Destinataire inconnu
+      en-US : Unknown recipient
+     index : 10
+   -
+     text :
+      fr-FR : "Aucun message n'est à récupérer : la file des messages est vide pour le sujet demandé"
+      en-GB : "No message to retrieve: the pile of messages is empty for the requested subject"
+      fr-CA : "Aucun message n'est à récupérer : la file des messages est vide pour le sujet demandé"
+      en-US : "No message to retrieve: the pile of messages is empty for the requested subject"
+     index : 11
+   -
+     text :
+      fr-FR : Pas assez de mémoire pour lancer le serveur
+      en-GB : Insufficient memory to start the server
+      fr-CA : Pas assez de mémoire pour lancer le serveur
+      en-US : Insufficient memory to start the server
+     index : 12
+   -
+     text :
+      fr-FR : Programme appelé inconnu (chemin incorrect)
+      en-GB : The program called is unknown (invalid path)
+      fr-CA : Programme appelé inconnu (chemin incorrect)
+      en-US : The program called is unknown (invalid path)
+     index : 13
+   -
+     text :
+      fr-FR : Programme appelé déjà lancé
+      en-GB : The program called is already run
+      fr-CA : Programme appelé déjà lancé
+      en-US : The program called is already run
+     index : 14
+   -
+     text :
+      fr-FR : Erreur de lancement du programme
+      en-GB : Error while starting the program
+      fr-CA : Erreur de lancement du programme
+      en-US : Error while starting the program
+     index : 15
+   -
+     text :
+      fr-FR : Erreur lors d'une allocation mémoire
+      en-GB : Error during a memory allocation
+      fr-CA : Erreur lors d'une allocation mémoire
+      en-US : Error during a memory allocation
+     index : 16
+   -
+     text :
+      fr-FR : Erreur lors de l'initialisation DDE
+      en-GB : Error during the DDE initialization
+      fr-CA : Erreur lors de l'initialisation DDE
+      en-US : Error during the DDE initialization
+     index : 17
+   -
+     text :
+      fr-FR : Erreur lors de la connexion à l'application (serveur)
+      en-GB : Error while connecting to the application (server)
+      fr-CA : Erreur lors de la connexion à l'application (serveur)
+      en-US : Error while connecting to the application (server)
+     index : 18
+   -
+     text :
+      fr-FR : Erreur lors de la transaction DDE
+      en-GB : Error during the DDE transaction
+      fr-CA : Erreur lors de la transaction DDE
+      en-US : Error during the DDE transaction
+     index : 19
+   -
+     text :
+      fr-FR : Erreur lors de la récupération d'une donnée DDE
+      en-GB : Error while retrieving a DDE data
+      fr-CA : Erreur lors de la récupération d'une donnée DDE
+      en-US : Error while retrieving a DDE data
+     index : 20
+   -
+     text :
+      fr-FR : Temps d'attente d'accusé de réception trop long
+      en-GB : Timeout waiting for an advise acknowledge
+      fr-CA : Temps d'attente d'accusé de réception trop long
+      en-US : Timeout waiting for an advise acknowledge
+     index : 21
+   -
+     text :
+      fr-FR : Le destinataire est occupé
+      en-GB : The recipient is busy
+      fr-CA : Le destinataire est occupé
+      en-US : The recipient is busy
+     index : 22
+   -
+     text :
+      fr-FR : Temps d'attente d'accusé de réception (données) trop long
+      en-GB : Timeout waiting for an advise data acknowledge
+      fr-CA : Temps d'attente d'accusé de réception (données) trop long
+      en-US : Timeout waiting for an advise data acknowledge
+     index : 23
+   -
+     text :
+      fr-FR : DDEML.DLL n'a pas été initialisé
+      en-GB : DDEML.DLL has not been initialized
+      fr-CA : DDEML.DLL n'a pas été initialisé
+      en-US : DDEML.DLL has not been initialized
+     index : 24
+   -
+     text :
+      fr-FR : Erreur générale dans la bibliothèque DDE
+      en-GB : General error in the DDE library
+      fr-CA : Erreur générale dans la bibliothèque DDE
+      en-US : General error in the DDE library
+     index : 25
+   -
+     text :
+      fr-FR : Temps d'attente d'accusé de réception (exécutable) trop long
+      en-GB : Timeout waiting for an exec acknowledgment
+      fr-CA : Temps d'attente d'accusé de réception (exécutable) trop long
+      en-US : Timeout waiting for an exec acknowledgment
+     index : 26
+   -
+     text :
+      fr-FR : Paramètre invalide lors de l'appel à une fonction DDEML
+      en-GB : Invalid parameter to DDEML function call
+      fr-CA : Paramètre invalide lors de l'appel à une fonction DDEML
+      en-US : Invalid parameter to DDEML function call
+     index : 27
+   -
+     text :
+      fr-FR : La mémoire est devenue trop basse
+      en-GB : The memory is becoming too low
+      fr-CA : La mémoire est devenue trop basse
+      en-US : The memory is becoming too low
+     index : 28
+   -
+     text :
+      fr-FR : La mémoire est pleine
+      en-GB : Memory is exhausted
+      fr-CA : La mémoire est pleine
+      en-US : Memory is exhausted
+     index : 29
+   -
+     text :
+      fr-FR : La tâche reçue était une message sans intérêt
+      en-GB : Receiving task was not interested in message
+      fr-CA : La tâche reçue était une message sans intérêt
+      en-US : Receiving task was not interested in message
+     index : 30
+   -
+     text :
+      fr-FR : Aucune conversation DDE ne peut être établie
+      en-GB : No DDE conversation could be established
+      fr-CA : Aucune conversation DDE ne peut être établie
+      en-US : No DDE conversation could be established
+     index : 31
+   -
+     text :
+      fr-FR : Temps d'attente d'accusé de réception (poke) trop long
+      en-GB : Timeout waiting for a poke acknowledge
+      fr-CA : Temps d'attente d'accusé de réception (poke) trop long
+      en-US : Timeout waiting for a poke acknowledge
+     index : 32
+   -
+     text :
+      fr-FR : Une tentative d'envoi d'un message Windows a échoué
+      en-GB : Attempt to post a window message failed
+      fr-CA : Une tentative d'envoi d'un message Windows a échoué
+      en-US : Attempt to post a window message failed
+     index : 33
+   -
+     text :
+      fr-FR : La bibliothèque DDE a été appelée durant un appel bloquant
+      en-GB : The DDE library was re-entered during a blocking call
+      fr-CA : La bibliothèque DDE a été appelée durant un appel bloquant
+      en-US : The DDE library was re-entered during a blocking call
+     index : 34
+   -
+     text :
+      fr-FR : Le serveur DDE a été fermé
+      en-GB : DDE server has died
+      fr-CA : Le serveur DDE a été fermé
+      en-US : DDE server has died
+     index : 35
+   -
+     text :
+      fr-FR : Un appel DDE a causé une erreur système
+      en-GB : A DDE call has caused a system error
+      fr-CA : Un appel DDE a causé une erreur système
+      en-US : A DDE call has caused a system error
+     index : 36
+   -
+     text :
+      fr-FR : Temps d'attente d'accusé de réception trop long
+      en-GB : Timeout waiting for an unadvised acknowledge
+      fr-CA : Temps d'attente d'accusé de réception trop long
+      en-US : Timeout waiting for an unadvised acknowledge
+     index : 37
+   -
+     text :
+      fr-FR : La file d'attente DDE n'a pas été trouvée
+      en-GB : DDE queue id could not be found
+      fr-CA : La file d'attente DDE n'a pas été trouvée
+      en-US : DDE queue id could not be found
+     index : 38
+   -
+     text :
+      fr-FR : "Erreur inconnue [%1]"
+      en-GB : "Unknown error [%1]"
+      fr-CA : "Erreur inconnue [%1]"
+      en-US : "Unknown error [%1]"
+     index : 39
+   -
+     text :
+      fr-FR : Le code relogeable a eu un problème lors de son exécution.
+      en-GB : The relocatable code had a problem while executing.
+      fr-CA : Le code relogeable a eu un problème lors de son exécution.
+      en-US : The relocatable code had a problem while executing.
+     index : 40
+   -
+     text :
+      fr-FR : Le code relogeable n'a pas pu être exécuté.
+      en-GB : Relocatable code could not be executed.
+      fr-CA : Le code relogeable n'a pas pu être exécuté.
+      en-US : Relocatable code could not be executed.
+     index : 41
+   -
+     text :
+      fr-FR : "L'octet 0x%1 n°%2 n'est valide ! Syntaxes autorisées : 0xEF,0x14,0EFh,14h,EF,14 et séparés par un virgule."
+      en-GB : "Byte 0x%1 #%2 is not valid! Authorized syntaxes: 0xEF,0x14,0EFh,14h,EF,14 and separated by a comma."
+      fr-CA : "L'octet 0x%1 n°%2 n'est valide ! Syntaxes autorisées : 0xEF,0x14,0EFh,14h,EF,14 et séparés par un virgule."
+      en-US : "Byte 0x%1 #%2 is not valid! Authorized syntaxes: 0xEF,0x14,0EFh,14h,EF,14 and separated by a comma."
+     index : 42
+   -
+     text :
+      fr-FR : "Aucun code machine n'a pu être trouvé dans la chaine ! Syntaxes autorisées : 0xEF,0x14,0EFh,14h,EF,14 et séparés par un virgule."
+      en-GB : "No machine code could be found in the chain! Authorized syntaxes: 0xEF,0x14,0EFh,14h,EF,14 and separated by a comma."
+      fr-CA : "Aucun code machine n'a pu être trouvé dans la chaine ! Syntaxes autorisées : 0xEF,0x14,0EFh,14h,EF,14 et séparés par un virgule."
+      en-US : "No machine code could be found in the chain! Authorized syntaxes: 0xEF,0x14,0EFh,14h,EF,14 and separated by a comma."
+     index : 43
+   -
+     text :
+      fr-FR : Il y a eu un problème lors de la copie du code machine en mémoire.
+      en-GB : There was a problem copying machine code into memory.
+      fr-CA : Il y a eu un problème lors de la copie du code machine en mémoire.
+      en-US : There was a problem copying machine code into memory.
+     index : 44
+   -
+     text :
+      fr-FR : La clé des Policies n'a pas été trouvée
+      en-GB : The Policies key was not found
+      fr-CA : La clé des Policies n'a pas été trouvée
+      en-US : The Policies key was not found
+     index : 45
+   -
+     text :
+      fr-FR : La clé Policies n'a pas pu être créée dans la base de registre
+      en-GB : The Policies key could not be created in the registry
+      fr-CA : La clé Policies n'a pas pu être créée dans la base de registre
+      en-US : The Policies key could not be created in the registry
+     index : 46
+   -
+     text :
+      fr-FR : Un caractère de remplacement fait partie des caractères interdits
+      en-GB : A replacement character is one of the prohibited characters
+      fr-CA : Un caractère de remplacement fait partie des caractères interdits
+      en-US : A replacement character is one of the prohibited characters
+     index : 47
+   -
+     text :
+      fr-FR : L'instance de AudioGenie3 n'existe pas
+      en-GB : Instance of AudioGenie3 does not exist
+      fr-CA : L'instance de AudioGenie3 n'existe pas
+      en-US : Instance of AudioGenie3 does not exist
+     index : 48
+   -
+     text :
+      fr-FR : La commande à lancer n'a pas été renseignée
+      en-GB : The command to launch has not been entered
+      fr-CA : La commande à lancer n'a pas été renseignée
+      en-US : The command to launch has not been entered
+     index : 49
+   -
+     text :
+      fr-FR : "Erreur de création du Pipe : "
+      en-GB : "Error creating the pipe : "
+      fr-CA : "Erreur de création du Pipe : "
+      en-US : "Error creating the pipe : "
+     index : 50
+   -
+     text :
+      fr-FR : Fichier ou commande non trouvé
+      en-GB : File or command not found
+      fr-CA : Fichier ou commande non trouvé
+      en-US : File or command not found
+     index : 51
+   -
+     text :
+      fr-FR : Fichier non renseigné
+      en-GB : File not specified
+      fr-CA : Fichier non renseigné
+      en-US : File not specified
+     index : 52
+   -
+     text :
+      fr-FR : Fichier batch non trouvé
+      en-GB : Batch file not found
+      fr-CA : Fichier batch non trouvé
+      en-US : Batch file not found
+     index : 53
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

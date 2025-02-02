@@ -1,0 +1,128 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : csdContinentRégion
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12b67c3d2df4e0b8
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe crée toute les régions du monde.
+      //Le découpage a été fait selon les données de https://restcountries.com/#api-endpoints-v3
+      
+      csdContinentRégion est une Classe
+      	hérite de cGénérique
+      	m_tabRégions 		est un tableau de ceContinentRégion	dynamique	//Liste de régions sur das leur continent (pas global car on peut choisir le tri)
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1348401740649980088
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1348401740650045624
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      Procédure Destructeur()
+     type : 655360
+   -
+     name : Liste
+     procedure_id : 1348401916743745492
+     type_code : 12
+     code : |1-
+      // Résumé : Génère une liste de régions en fonction du tri des nations (nTriNation). 
+      // Syntaxe : [ <Résultat> = ] Liste ([ <nTriNation> est entier])
+      // Paramètres :
+      //	nTriNation (entier optionnel) : Paramètre permettant de définir le tri des continents en fonction de la nation, par défaut = Nation().
+      // Valeur de retour : booléen : Vrai si la génération de la liste des régions est réussie, Faux en cas d'échec.
+      // Exemple :
+      //
+      PROCEDURE Liste(nTriNation est un entier = nation()) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(nTriNation)
+      si m_tabRégions..Occurrence<>0 alors renvoyer Vrai
+      
+      pclRégion est un ceContinentRégion dynamique
+      pclRégion = allouer un ceContinentRégion("Afrique centrale","Middle Africa");Tableauajoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Afrique de l'Est","Eastern Africa");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Afrique de l'Ouest","Western Africa");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Afrique du Nord","Northern Africa");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Afrique du Sud","Southern Africa");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Amérique Centrale","Central America");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Amérique du Nord","North America");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Amérique du Sud","South America");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Asie Centrale","Central Asia");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Asie de l'Est","Eastern Asia");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Asie du Sud","Southern Asia");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Asie du Sud-Est","South-Eastern Asia");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Asie Occidentale","Western Asia");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Australie et Nouvelle-Zélande","Australia and New Zealand");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Caraïbes","Caribbean");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Europe de l'Est","Eastern Europe");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Europe de l'Ouest","Western Europe");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Europe du Nord","Northern Europe");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Europe du Sud","Southern Europe");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Mélanésie","Melanesia");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Micronésie","Micronesia");TableauAjoute(m_tabRégions,pclRégion)
+      pclRégion = allouer un ceContinentRégion("Polynésie","Polynesia");TableauAjoute(m_tabRégions,pclRégion)
+      tableautrie(m_tabRégions,ttmembre,"m_sNom"+(nTriNation dans (nationFrançais,nationCanadienFrançais) ? "5" sinon "3"))
+      
+      renvoyer vrai
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 1348918076602926784
+     type_code : 12
+     code : |1-
+      // Résumé : Réinitialise la liste des continents.
+      // Syntaxe : Raz ()
+      // Paramètres :	Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Raz()
+      TableauSupprimeTout(m_tabRégions)
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x12b67c362deec5f7
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

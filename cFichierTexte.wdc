@@ -1,0 +1,311 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cFichierTexte
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1c004a2031bf9347
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe permettant de gérer les fichiers texte selon 4 formats. 
+      
+      EFormatFichier est une énumération
+      	FormatANSI				= 1
+      	FormatUnicode_BE		= 2	//big endian
+      	FormatUnicode_LE		= 3	//little endian
+      	FormatUTF8				= 4
+      FIN
+      
+      cFichierTexte est une Classe
+      	hérite de cGénérique
+      privé
+      	m_sRetourLigne			est une chaine					//caractère(s) identifiant un retour à la ligne
+      	m_eFormat				est un EFormatFichier			//format du fichier (voir énumération ci-dessus)
+      	m_pclFichier			est un cfichier dynamique		//objet fichier utilisé pour manipuler le fichier
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2017694135196095303
+     type_code : 27
+     code : |1-
+      // Résumé : Utilisée pour initialiser une nouvelle instance de la classe. Elle définit les valeurs par défaut pour les propriétés internes de l'objet, telles que le format du fichier, le caractère de retour à la ligne, et instancie un objet cFichier pour la gestion des opérations sur le fichier.
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur()
+      m_eFormat		= FormatANSI
+      m_sRetourLigne	= rc
+      m_pclFichier	= allouer un cfichier()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2017694135196160839
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : AjouteLigne
+     procedure_id : 2017694324182039898
+     type_code : 12
+     code : |1-
+      // Résumé : Permet d'ajouter une nouvelle ligne de texte au fichier actuellement ouvert. Elle vérifie au préalable si le fichier est ouvert en mode écriture et s'il existe des erreurs potentielles, renvoyant false en cas d'échec.
+      // Syntaxe : [ <Résultat> = ] AjouteLigne ( [<sTexte> est chaîne])
+      // Paramètres :
+      //	sTexte (chaîne UNICODE optionnel) : Le texte à ajouter comme nouvelle ligne dans le fichier.
+      // Valeur de retour : booléen : Vrai si l'ajout de la ligne est réussi, Faux sinon. En cas d'échec, la méthode ajoute une erreur à l'objet m_pclErreur.
+      // Exemple :
+      //
+      PROCEDURE AjouteLigne(sTexte est une chaine = "") : booleen
+      SI m_pclFichier.m_nIDFichier=-1 ALORS
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      SINON
+      	si m_pclFichier.m_eModeOuverture dans (cFichier.eModeOuverture.foLecture,cFichier.eModeOuverture.foBloqueLecture) alors
+      		m_pclErreur.AjouteErreur(<§$0001§>)
+      	sinon
+      		si m_pclFichier.p_nposition<m_pclFichier.p_ntaille alors m_pclFichier.Positionne(0,cfichier.EOriginePosition.fpFin)
+      		renvoyer m_pclFichier.ecrit(sTexte+p_sRetourLigne)
+      	FIN
+      fin
+      RENVOYER Faux
+     type : 458752
+   -
+     name : DétecteFormat
+     procedure_id : 2017694324182105544
+     type_code : 12
+     code : |1-
+      // Résumé : détecte le format du fichier texte. Utilisé dans Ouvre si le dernier paramètre est fiDétectionAutomatique
+      PROCEDURE privé DétecteFormat() : EFormatFichier
+      //ref : https://forum.pcsoft.fr/fr-FR/pcsoft.fr.windev/148170-wd17-convertir-utf-16le-ansi-avec-code-wlangage/read.awp
+      c1 est un caractère
+      c2 est un caractère
+      c3 est un caractère
+      eFormat est un EFormatFichier = FormatANSI
+      
+      SI m_pclFichier.m_nIDFichier=-1 ALORS
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      SINON
+      	eFormat=FormatANSI
+      	c1=m_pclFichier.lit(1);c2=m_pclFichier.Lit(1);c3=m_pclFichier.Lit(1)
+      	SELON Asc(c1)
+      		CAS 254 : SI Asc(c2)=255 ALORS eFormat=FormatUnicode_BE
+      		CAS 255	: SI Asc(c2)=254 ALORS eFormat=FormatUnicode_LE
+      		CAS 239 : SI Asc(c2)=187 _et_ Asc(c3)=191 ALORS eFormat=FormatUTF8
+      	FIN
+      FIN
+      renvoyer eFormat
+     type : 458752
+   -
+     name : Parcours
+     procedure_id : 2017694328477138968
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de parcourir un fichier texte ligne par ligne en appliquant une procédure de rappel (CallBack) sur chaque ligne. Elle lit le fichier en morceaux de taille définie, appelée nTailleBuffer, et exécute la procédure de rappel sur chaque ligne extraite. Le parcours s'arrête lorsque la fin du fichier est atteinte ou lorsque la procédure de rappel renvoie Vrai (sinon elle doit renvoyer faux).
+      //	La procédure callback doit recevoir, en paramètre : (sLigneLue est une chaine, nLu est un entier sur 8 octets, nTaille est un entier sur 8 octets) et renvoyer Faux si le parcours doit continuer (Vrai si le parcours doit s'arrêter). nLu et nTaille permettent de gérer une jauge de chargement.
+      // Syntaxe : Parcours (<procProcédureCallBack> est procédure)
+      // Paramètres : ProcProcédureCallBack (procédure) : procédure de rappel (CallBack) à appliquer sur chaque ligne du fichier.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Parcours(procProcédureCallBack est une procédure)
+      SI m_pclFichier.m_nIDFichier=-1 ALORS
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      SINON
+      	nLu,nRC,nLigne	sont des entiers sur 8 octets
+      	sLigne,sBuffer 	sont des chaines
+      	nTailleBuffer 	est un entier = 1000
+      	bSortir			est un booleen
+      	sBuffer = m_pclFichier.lit(nTailleBuffer);nLu=Taille(sBuffer)
+      	TANTQUE sBuffer>""
+      		nRC = Position(sBuffer,m_sRetourLigne)
+      		SI nRC<1 ALORS
+      			sLigne=sBuffer;sBuffer=""
+      		SINON
+      			sLigne=Gauche(sBuffer,nRC-1);sBuffer=Milieu(sBuffer,nRC+taille(m_sRetourLigne))
+      		FIN
+      		TANTQUE sLigne<>EOT
+      			nLigne++
+      			bSortir=procProcédureCallBack(sLigne,nLu,m_pclFichier.p_nTaille)			
+      			si bSortir _ou_ sBuffer="" ALORS SORTIR
+      			nRC=Position(sBuffer,m_sRetourLigne)
+      			SI nRC < 1 ALORS
+      				SI nLu < m_pclFichier.p_nTaille ALORS SORTIR//pour y ajouter un autre buffer, sinon c'est la dernière ligne à traiter
+      				sLigne=sBuffer;sBuffer=""
+      			SINON
+      				sLigne=Gauche(sBuffer,nRC-1);sBuffer=Milieu(sBuffer,nRC+Taille(m_sRetourLigne))
+      			FIN
+      		FIN
+      		SI nLu=m_pclFichier.p_nTaille ALORS SORTIR
+      		sLigne=m_pclFichier.Lit(nTailleBuffer)
+      		nLu+=Taille(sLigne);sBuffer+=sLigne
+      	fin
+      fin
+     type : 458752
+   -
+     name : Ouvre
+     procedure_id : 2017697575483394357
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisé pour ouvrir un fichier avec les paramètres spécifiés tels que le chemin du fichier, le mode d'ouverture, le mode de création, et le format interne. La méthode prend en charge la détection automatique du format si celui-ci est spécifié comme "DétectionAutomatique".
+      // Syntaxe : [ <Résultat> = ] Ouvre (<sCheminDuFichier> est chaîne, <eModeOuverture> est cFichier.EModeOuverture [, <eCréation> est cFichier.EModeCréation [, <eFormat> est cFichier.EFormatInterne]])
+      // Paramètres :
+      //	sCheminDuFichier (chaîne UNICODE) : Le chemin complet du fichier à ouvrir.
+      //	eModeOuverture (cFichier.EModeOuverture) : Le mode d'ouverture du fichier.
+      //	eCréation (cFichier.EModeCréation optionnel) : Le mode de création du fichier (par défaut, ne pas créer s'il n'existe pas).
+      //	eFormat (cFichier.EFormatInterne optionnel) : Le format interne du fichier (par défaut, ANSI).
+      // Valeur de retour : booléen : Vrai si l'ouverture du fichier est réussie, Faux sinon. En cas d'échec, la méthode ajoute une erreur à l'objet m_pclErreur.
+      // Exemple :
+      //
+      PROCEDURE Ouvre(sCheminDuFichier est une chaine,eModeOuverture est un cFichier.EModeOuverture,eCréation est un cFichier.EModeCréation = cFichier.EModeCréation.foNePasCréer,eFormat est un cfichier.EFormatinterne = cfichier.EFormatInterne.fiANSI) : booléen
+      si eFormat=cfichier.EFormatInterne.fiDétectionAutomatique ALORS
+      	SI (eCréation=cFichier.EModeCréation.foCréationSiInexistant OU eCréation=cFichier.EModeCréation.foCréation) alors
+      		m_pclErreur.AjouteErreur(<§$0002§>);renvoyer faux
+      	sinon
+      		si m_pclFichier.ouvre(sCheminDuFichier,eModeOuverture,eCréation,cFichier.EFormatInterne.fiANSI) alors
+      			m_eFormat = detecteformat()
+      			m_pclFichier.Ferme()
+      			si m_eFormat DANS (EFormatFichier.FormatUnicode_BE,EFormatFichier.FormatUnicode_LE) alors
+      				renvoyer m_pclFichier.Ouvre(sCheminDuFichier,eModeOuverture,eCréation,cFichier.EFormatInterne.fiUnicode)
+      			sinon
+      				m_pclFichier.Ouvre(sCheminDuFichier,eModeOuverture,eCréation,cFichier.EFormatInterne.fiANSI)
+      			FIN
+      		sinon
+      			renvoyer faux
+      		FIN
+      	fin
+      sinon
+      	si eFormat=cfichier.EFormatInterne.fiUnicode alors m_eFormat=EFormatFichier.FormatUnicode_LE
+      	renvoyer m_pclFichier.Ouvre(sCheminDuFichier,eModeOuverture,eCréation,eFormat)
+      fin			
+     type : 458752
+   -
+     name : Positionne
+     procedure_id : 1556484118853118048
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode utilisable par les classes dérivée. Obligatoire car on cette classe n'hérite pas de cFichier mais ouvre un objet m_pclFichier.
+      PROCEDURE Positionne(nPosition est un entier,eDepuis est un cFichier.EOriginePosition = fpDébut) : booleen
+      renvoyer m_pclFichier.Positionne(nPosition,eDepuis)
+     type : 458752
+   -
+     name : Ferme
+     procedure_id : 1556484398026056819
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode utilisable par les classes dérivée. Obligatoire car on cette classe n'hérite pas de cFichier mais ouvre un objet m_pclFichier.
+      PROCEDURE Ferme() : booléen
+      RENVOYER m_pclFichier.Ferme()
+     type : 458752
+   -
+     name : Écrit
+     procedure_id : 1556484922012123833
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode utilisable par les classes dérivée. Obligatoire car on cette classe n'hérite pas de cFichier mais ouvre un objet m_pclFichier.
+      PROCEDURE Écrit(sTexte) : booleen
+      renvoyer m_pclFichier.Ecrit(sTexte)
+     type : 458752
+  properties :
+   -
+     name : p_sRetourLigne
+     identifier : 0x1c0560fa160e15b3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le(s) caractère(s) déterminant le retour à la ligne (ex : RC ou LF ou caract(10))
+         PROCEDURE PUBLIQUE p_sRetourLigne()
+         renvoyer m_sRetourLigne
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie le(s) caractère(s) déterminant le retour à la ligne (ex : RC ou LF ou caract(10))
+         PROCEDURE PUBLIQUE p_sRetourLigne(Valeur)
+         m_sRetourLigne = Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_bOuvert
+     identifier : 0x1ed6f6df097f7345
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Indicateur de fichier ouvert
+         PROCEDURE PUBLIQUE p_bOuvert() : booleen
+         renvoyer m_pclFichier.p_bouvert
+        type : 1966080
+     template_refs : []
+   -
+     name : p_nTaille
+     identifier : 0x1ed6f77e09dce20e
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la taille du fichier
+         PROCEDURE PUBLIQUE p_nTaille()
+         renvoyer m_pclfichier.p_ntaille
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1c004a1c31b98091
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Aucun fichier ouvert
+      en-GB : No open file
+      fr-CA : Aucun fichier ouvert
+      en-US : No open file
+     index : 0
+   -
+     text :
+      fr-FR : Le fichier est en lecture seule
+      en-GB : The file is read-only
+      fr-CA : Le fichier est en lecture seule
+      en-US : The file is read-only
+     index : 1
+   -
+     text :
+      fr-FR : "Lors de la création d'un fichier, il faut spécifier s'il est Unicode ou pas"
+      en-GB : "When creating a file, you must specify whether it is Unicode or not"
+      fr-CA : "Lors de la création d'un fichier, il faut spécifier s'il est Unicode ou pas"
+      en-US : "When creating a file, you must specify whether it is Unicode or not"
+     index : 2
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

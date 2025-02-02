@@ -1,0 +1,1541 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cColonne
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1e94516d033c983a
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe est une structure permettant de mettre en mémoire le détail d'une colonne de table.
+      
+      STHFVignette est une structure
+      	nIndice		est un entier
+      	nLargeur	est un entier
+      	nHauteur	est un entier
+      	sErreur		est un entier
+      fin
+      cColonne est une Classe
+      hérite de cGénérique
+      public
+      	m_sValeurDéfaut						est un chaine  	<Sérialise = Faux>					//Non constant à cause d'Oracle (cBaseDeDonnéesOrale.TableColonnes)
+      	m_bEstAutomatique					est un booleen	<serialise = faux>					//Identifier, colonne calculée ou virtuelle, .. sont automatiques
+      	m_nTypeWD							est un entier   <Sérialise = Faux>					//Voir hRubxxx, mis public car non constant : si les index connaissent cette colonne comme clé primaire, le type WD change en hRubIdAuto4 ou hRubIdAuto
+      public constant                                                             				
+      	m_sNom								est une chaine  <Sérialise = Faux>					//Nom en minuscule de la colonne
+      	m_sNomOriginal						est une chaine  <Sérialise = Faux>					//Nom original de la colonne dans la BD
+      	m_sNomUnique						est une chaine 	<Sérialise = Faux>					//Nom unique de la colonne dans l'application (m_sNomUniqueTable + cGénérique._Sep + m_sNom)
+      	m_sNomSQL							est une chaine  <serialise = faux>					//Nom SQL de la colonne (nom de la table + . + nom de la colonne originale)
+      	m_sDomaine							est une chaîne	<Sérialise = faux>					//Domaine de la colonne
+      	m_nOrdrePhysique					est un entier   <Sérialise = Faux>					//Numéro de colonne selon l'ordre physique
+      	m_sLibellé							est une chaine  <Sérialise = Faux>					//Libellé "en clair" de la colonne
+      	m_nIndices							est un entier   <Sérialise = Faux>					//Nombre d'indice si plusieurs valeurs indicée dedans (spécificité des tables HyperFileSQL)
+      	m_sTypeOriginal						est une chaine  <Sérialise = Faux>					//Nom original du type de la rubrique
+      	m_nTaille							est un entier   <Sérialise = Faux>					//Taille de la colonne en octets
+      	m_sGUID								est une chaine  <Sérialise = Faux> 					//GUID récupéré des tables HyperFile
+      	m_sFormuleCalcule					est une chaine 	<serialise = faux>					//Formule permettant de calculer la colonne
+      	m_bEstNullable						est un booleen 	<Sérialise = Faux>					//Indique si la colonne est nullable
+      	m_bÉtatEtRequête					est un booleen 	<Sérialise = Faux>					//Indique si la colonne peut être utilisée dans États & Requêtes
+      	//valeur spécifiques à la BD utilisée                                   				
+      	m_sOracleSéquence					est une chaine  <Sérialise = Faux>					//Numéro de séquence Oracle
+      	
+      	m_nHFOrdreLogique					est un entier  	<Sérialise = Faux>					//Numéro de colonne selon l'ordre logique
+      	m_nHFNbVignettesDécrit				est un entier 	<Sérialise = Faux>					//Nombre de vignette d'une colonne image en Hyperfile
+      	m_tabHFVignettes					est un tableau 	<Sérialise = Faux> de STHFVignette	//Tableau contenant les vignette d'une colonne image
+      	m_sHFTypeCombinaisonÉnumération		est une chaine  <Sérialise = Faux>					//Type de combinaison ou d'énumération d'une colonne de table Hyperfile
+      	m_bHFPersistanceRubriqueCalculée	est un booleen 	<Sérialise = Faux>					//Indique si la colonne a une persistance du résultat de la formule qui lui est appliquée
+      	m_nHFTimeStampType					est un entier 	<Sérialise = Faux>					//Type de timestamp (htsAucun, htsCréation ou htsDernièreModification)
+      	m_bHFTimeStampUTC					est un booleen 	<Sérialise = Faux>					//Indique le le timestamp est en UTC
+      	m_sHFLangue							est une chaine  <Sérialise = Faux>					//Langue utilisée pour les colonnes texte Unicode pour le tri et la recherche
+      privé
+      	m_sTableNomUnique					est une chaine 	<Sérialise = Faux>					//Nom unique de la table à laquelle est reliée la colonne
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2203475646338668602
+     type_code : 27
+     code : |1-
+      // Résumé : Permet d'initialiser la classe avec l'ensemble des informations d'une colonne de table.
+      // Syntaxe : Constructeur (<pclBaseDeDonnées> est objet dynamique, <sTableNomUnique> est chaîne, <sNomOriginal> est chaîne, <nOrdrePhysique> est entier, <nTypeWD> est entier, <sType> est chaîne, <nTaille> est entier [, <bEstNullable> est booléen [, <sFormuleCalcule> est chaîne [, <bFormulePersiste> est booléen [, <nIndices> est entier [, <sLibellé> est chaîne [, <xValeurDéfaut> [, <sGUID> est chaîne [, <bEtatEtRequête> est booléen [, <nVignettes> est entier [, <tabVignette> est tableau [, <sTypeCombiEnum> est chaîne [, <sLangue> est chaîne [, <nTimeStamp> est entier [, <bTimeStamp> est booléen [, <nOrdreLogique> est entier [, <sDomaine> est chaîne]]]]]]]]]]]]]]]])
+      // Paramètres :
+      //	pclBaseDeDonnées (objet dynamique) : Base de données associée à la colonne.
+      //	sTableNomUnique (chaîne UNICODE) : Nom unique de la table.
+      //	sNomOriginal (chaîne UNICODE) : Nom original de la colonne dans la base de données.
+      //	nOrdrePhysique (entier) : Ordre physique de la colonne dans la table.
+      //	nTypeWD (entier) : Type WinDev de la colonne (voir hRubxxx)
+      //	sType (chaîne UNICODE) : Type original de la colonne.
+      //	nTaille (entier) : Taille de la colonne.
+      // 	bEstNullable (booléen optionnel) : Indique si la colonne autorise les valeurs nulles (par défaut à Faux).
+      //	sFormuleCalcule (chaîne UNICODE optionnelle) : Formule de calcul associée à la colonne (par défaut à "").
+      // 	bFormulePersiste (booléen optionnel) : Indiquant si la formule de calcul doit être persistante (par défaut à Faux).
+      // 	nIndices (entier optionnel) : Nombre d'indices de la colonne (par défaut à 0).
+      //	sLibellé (chaîne UNICODE optionnelle) : Libellé de la colonne (par défaut à "").
+      // 	xValeurDéfaut (valeur par défaut=0) : Valeur par défaut de la colonne (par défaut à Null).
+      //	sGUID (chaîne UNICODE optionnelle) : GUID associé à la colonne (par défaut à "").
+      // 	bEtatEtRequête (booléen optionnel) : Indique si la colonne fait partie de l'état ou de la requête (par défaut à Faux).
+      // 	nVignettes (entier optionnel) : Nombre de vignettes associées à la colonne (par défaut à 0).
+      // 	tabVignette (tableau optionnel) : Informations sur les vignettes (par défaut à Null).
+      //	sTypeCombiEnum (chaîne UNICODE optionnelle) : Type de combinaison ou d'énumération associé à la colonne (par défaut à "").
+      //	sLangue (chaîne UNICODE optionnelle) : Langue associée à la colonne (par défaut à "").
+      // 	nTimeStamp (entier optionnel) : Timestamp associé à la colonne (par défaut à htsAucun).
+      // 	bTimeStamp (booléen optionnel) : Indique si le timestamp est en mode UTC (par défaut à Faux).
+      // 	nOrdreLogique (entier optionnel) : Ordre logique de la colonne (par défaut à 0).
+      //	sDomaine (chaîne UNICODE optionnelle) : Domaine de la colonne (par défaut à "").
+      // Valeur de retour : 	Aucune
+      //
+      PROCEDURE Constructeur(pclBaseDeDonnées est un objet dynamique,sTableNomUnique est une chaine,sNomOriginal est une chaine,nOrdrePhysique est un entier,nTypeWD est un entier,sType est une chaine,...
+      	nTaille est un entier,bEstNullable est un booleen = faux,sFormuleCalcule est une chaine = "",bFormulePersiste est un booleen=faux,nIndices est un entier = 0,sLibellé est une chaine = "",...
+      	xValeurDéfaut = null,sGUID est une chaine = "",bEtatEtRequête est un booleen = faux, nVignettes est un entier = 0,tabVignette est un tableau de ccolonne.STHFVignette = null,...
+      	sTypeCombiEnum est une chaine = "",	sLangue est une chaine = "",nTimeStamp est un entier = htsAucun,bTimeStampUTC est un booleen = faux,nOrdreLogique est un entier=0,sDomaine est une chaîne ="")
+      
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sTableNomUnique,sNomOriginal,nOrdrePhysique,nTypeWD,sType,nTaille,bEstNullable,sFormuleCalcule,bFormulePersiste,sLibellé,xValeurDéfaut)
+      
+      m_sTableNomUnique				= sTableNomUnique
+      m_sNomOriginal					= sNomOriginal
+      m_sNom							= minuscule(m_sNomOriginal)
+      m_sNomUnique					= m_sTableNomUnique+cgenerique._Sep+m_sNom
+      m_sDomaine						= sDomaine
+      m_nOrdrePhysique				= nOrdrePhysique
+      m_nhfOrdreLogique				= nOrdreLogique
+      m_nTypeWD						= nTypeWD
+      m_sTypeOriginal					= sType
+      m_nTaille						= nTaille
+      m_bEstNullable					= bEstNullable
+      m_sFormuleCalcule				= sFormuleCalcule
+      m_bHFPersistanceRubriqueCalculée= bFormulePersiste
+      m_nIndices						= nIndices
+      m_sLibellé						= sLibellé
+      m_sValeurDéfaut					= xValeurDéfaut
+      m_sGUID							= sGUID
+      m_bÉtatEtRequête				= bEtatEtRequête
+      m_nHFNbVignettesDécrit			= nVignettes
+      si tabVignette<>null alors m_tabHFVignettes	= tabVignette
+      m_sHFTypeCombinaisonÉnumération	= sTypeCombiEnum
+      m_sHFLangue						= sLangue	//3 valeurs, attention peut contenir "##CREATION##","##BINARY##","##FASTSORT##"
+      m_nHFTimeStampType				= nTimeStamp
+      m_bHFTimeStampUTC				= bTimeStampUTC
+      m_sNomSQL						= (pclBaseDeDonnées.SQLTableAvantColonne() ? cApplication.mg_taInfo[m_sTableNomUnique].m_sPremierAlias+"." sinon "")+pclBaseDeDonnées.SQLAvantColonne()+Remplace(m_sNomOriginal,",",pclBaseDeDonnées.SQLAprèsColonne()+","+pclBaseDeDonnées.SQLAvantColonne())+pclBaseDeDonnées.SQLAprèsColonne()
+      m_bEstAutomatique				= (m_nTypeWD DANS (hRubIdAuto,hRubIdAuto4) _ou_ m_sFormuleCalcule>"")
+      
+      cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnes					= m_sNom
+      SI m_nTypeWD DANS (hRubMémoBinaire,hRubMémoBinaire4,hRubImage) ALORS
+      	cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémoBinaire	= m_sNom
+      SINON SI m_nTypeWD DANS (hRubMémoTexte,hRubMémoUnicode) alors
+      	cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémoTexte		= m_sNom
+      SINON
+      	cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesNonMémo		= m_sNom
+      FIN
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2203475646338734138
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+  properties :
+   -
+     name : p_bEstCalculée
+     identifier : 0x1e9451f903ffbba2
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est calculée
+         PROCEDURE PUBLIQUE p_bEstCalculée() : booléen
+         renvoyer m_sFormuleCalcule>""
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstAutomatique
+     identifier : 0x1e9452490400f21c
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est automatique
+         PROCEDURE PUBLIQUE p_bEstAutomatique() : booléen
+         renvoyer m_bEstAutomatique
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstUnicode
+     identifier : 0x1e94527f0401c5b0
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est Unicode
+         PROCEDURE PUBLIQUE p_bEstUnicode() : booléen
+         RENVOYER m_nTypeWD DANS (hRubMémoUnicode,hRubTexteUnicode)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstNullable
+     identifier : 0x1e94529504021b6d
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est nullable
+         PROCEDURE PUBLIQUE p_bEstNullable() : booléen
+         RENVOYER m_bEstNullable
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : p_bEstImage
+     identifier : 0x1e9461df0514d470
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est une image
+         PROCEDURE PUBLIQUE p_bEstImage() : booléen
+         renvoyer m_nTypeWD=hRubImage
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstBinaire
+     identifier : 0x1e94633705151650
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est binaire
+         PROCEDURE PUBLIQUE p_bEstBinaire() : booléen
+         RENVOYER m_nTypeWD=hRubBinaire
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstNumérique
+     identifier : 0x1e9464340516efae
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est numérique
+         PROCEDURE PUBLIQUE p_bEstNumérique() : booleen
+         renvoyer m_nTypeWD DANS (hRubEntier1,hRubEntier2,hRubEntier4,hRubEntier8,hRubEntierNonSigné1,hRubEntierNonSigné2,hRubEntierNonSigné4,hRubEntierNonSigné8,hRubRéel4,hRubRéel8,hRubMonétaire,hRubNumérique,hRubIdAuto,hRubIdAuto4)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstTexte
+     identifier : 0x1e946471051ae014
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est alphanumérique
+         PROCEDURE PUBLIQUE p_bEstTexte() : booléen
+         renvoyer m_nTypeWD DANS (hRubTexte,hRubMémoUnicode,hRubMémoTexte,hRubTexteUnicode,hRubCaractère)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstMémoTexte
+     identifier : 0x1e9464fc051eff57
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est un mémo texte
+         PROCEDURE PUBLIQUE p_bEstMémoTexte() : booléen
+         renvoyer m_nTypeWD DANS (hRubMémoTexte,hRubMémoUnicode)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstMémoBinaire
+     identifier : 0x1e94650b051f3786
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est un mémo binaire
+         PROCEDURE PUBLIQUE p_bEstMémoBinaire() : booleen
+         renvoyer m_nTypeWD DANS (hRubMémoBinaire,hRubMémoBinaire4,hrubimage)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstHeure
+     identifier : 0x1e94655d05207a40
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //// Résumé : Renvoie l'indicateur que la colonne est une heure
+         PROCEDURE PUBLIQUE p_bEstHeure() : booléen
+         renvoyer m_nTypeWD=hRubHeure
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstDateHeure
+     identifier : 0x1e94658705211db0
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est une dateheure
+         PROCEDURE PUBLIQUE p_bEstDateHeure() : booléen
+         renvoyer m_nTypeWD=hRubDateHeure
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstDate
+     identifier : 0x1e9465cd081a2e82
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est une date
+         PROCEDURE PUBLIQUE p_bEstDate() : booléen
+         renvoyer m_nTypeWD DANS (hRubDate6,hRubDate8)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstDateOuHeure
+     identifier : 0x1e9465ea081ba009
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est une date ou une heure (ou les deux)
+         PROCEDURE PUBLIQUE p_bEstDateOuHeure() : booleen
+         renvoyer p_bEstDate _ou_ p_bEstHeure _ou_ p_bEstDateHeure
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstBooléen
+     identifier : 0x1e9488c70832d158
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est un booléen
+         PROCEDURE PUBLIQUE p_bEstBooléen() : booleen
+         renvoyer m_nTypeWD=hRubBooléen
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sNomSQL
+     identifier : 0x1e94ad490b5c6b1a
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom SQL de la colonne (nom de la table + . + nom de la colonne originale)
+         PROCEDURE PUBLIQUE p_sNomSQL() : chaine
+         RENVOYER m_sNomSQL
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sSéquenceOracle
+     identifier : 0x1e94b8ef0b60ec6a
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la séquence Oracle à laquelle la colonne est soumise pour son identifiant
+         PROCEDURE PUBLIQUE p_sSéquenceOracle() : chaine
+         renvoyer m_sOracleSéquence
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Affecte une séquence Oracle à la colonne
+         PROCEDURE PUBLIQUE p_sSéquenceOracle(Valeur)
+         m_sOracleSéquence=Valeur
+         m_bEstAutomatique=pas (m_sOracleSéquence="")
+        type : 2031616
+     template_refs : []
+   -
+     name : p_bEstMémo
+     identifier : 0x1ec1cbe621eb1e8d
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est un mémo (texte ou binaire)
+         PROCEDURE PUBLIQUE p_bEstMémo() : booleen
+         renvoyer p_bEstMémoBinaire _ou_ p_bEstMémoTexte
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bEstEntier
+     identifier : 0x1ec1cc2521ec1588
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur que la colonne est un numérique entier
+         PROCEDURE PUBLIQUE p_bEstEntier() : booleen
+         renvoyer m_nTypeWD dans (hRubEntier1,hRubEntier2,hRubEntier4,hRubEntier8,hRubEntierNonSigné1,hRubEntierNonSigné2,hRubEntierNonSigné4,hRubEntierNonSigné8)
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1e94513b0336d450
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : Arabe
+      en-GB : Arabic
+      fr-CA : Arabe
+      en-US : Arabic
+     index : 0
+   -
+     text :
+      fr-FR : Assamais
+      en-GB : Assamese
+      fr-CA : Assamais
+      en-US : Assamese
+     index : 1
+   -
+     text :
+      fr-FR : Biélorusse
+      en-GB : Byelorussian
+      fr-CA : Biélorusse
+      en-US : Byelorussian
+     index : 2
+   -
+     text :
+      fr-FR : Bulgare
+      en-GB : Bulgarian
+      fr-CA : Bulgare
+      en-US : Bulgarian
+     index : 3
+   -
+     text :
+      fr-FR : inconnu
+      en-GB : unknown
+      fr-CA : inconnu
+      en-US : unknown
+     index : 4
+   -
+     text :
+      fr-FR : Tchèque
+      en-GB : Czech
+      fr-CA : Tchèque
+      en-US : Czech
+     index : 5
+   -
+     text :
+      fr-FR : Danois
+      en-GB : Danish
+      fr-CA : Danois
+      en-US : Danish
+     index : 6
+   -
+     text :
+      fr-FR : Allemand
+      en-GB : German
+      fr-CA : Allemand
+      en-US : German
+     index : 7
+   -
+     text :
+      fr-FR : Grec moderne
+      en-GB : Modern Greek
+      fr-CA : Grec moderne
+      en-US : Modern Greek
+     index : 8
+   -
+     text :
+      fr-FR : Anglais
+      en-GB : English
+      fr-CA : Anglais
+      en-US : English
+     index : 9
+   -
+     text :
+      fr-FR : Espagnol
+      en-GB : Spanish
+      fr-CA : Espagnol
+      en-US : Spanish
+     index : 10
+   -
+     text :
+      fr-FR : Estonien
+      en-GB : Estonian
+      fr-CA : Estonien
+      en-US : Estonian
+     index : 11
+   -
+     text :
+      fr-FR : Persan
+      en-GB : Farsi
+      fr-CA : Persan
+      en-US : Farsi
+     index : 12
+   -
+     text :
+      fr-FR : Finnois
+      en-GB : Finnish
+      fr-CA : Finnois
+      en-US : Finnish
+     index : 13
+   -
+     text :
+      fr-FR : Féroïen
+      en-GB : Faroese
+      fr-CA : Féroïen
+      en-US : Faroese
+     index : 14
+   -
+     text :
+      fr-FR : Français
+      en-GB : French
+      fr-CA : Français
+      en-US : French
+     index : 15
+   -
+     text :
+      fr-FR : Irlandais
+      en-GB : Irish
+      fr-CA : Irlandais
+      en-US : Irish
+     index : 16
+   -
+     text :
+      fr-FR : Goudjrati
+      en-GB : Gujarati
+      fr-CA : Goudjrati
+      en-US : Gujarati
+     index : 17
+   -
+     text :
+      fr-FR : Hébreu
+      en-GB : Hebrew
+      fr-CA : Hébreu
+      en-US : Hebrew
+     index : 18
+   -
+     text :
+      fr-FR : Croate
+      en-GB : Croatian
+      fr-CA : Croate
+      en-US : Croatian
+     index : 19
+   -
+     text :
+      fr-FR : Hongrois
+      en-GB : Hungarian
+      fr-CA : Hongrois
+      en-US : Hungarian
+     index : 20
+   -
+     text :
+      fr-FR : Indonésien
+      en-GB : Indonesian
+      fr-CA : Indonésien
+      en-US : Indonesian
+     index : 21
+   -
+     text :
+      fr-FR : Islandais
+      en-GB : Icelandic
+      fr-CA : Islandais
+      en-US : Icelandic
+     index : 22
+   -
+     text :
+      fr-FR : Italien
+      en-GB : Italian
+      fr-CA : Italien
+      en-US : Italian
+     index : 23
+   -
+     text :
+      fr-FR : Japonais
+      en-GB : Japanese
+      fr-CA : Japonais
+      en-US : Japanese
+     index : 24
+   -
+     text :
+      fr-FR : Groenlandais
+      en-GB : Greenlandic
+      fr-CA : Groenlandais
+      en-US : Greenlandic
+     index : 25
+   -
+     text :
+      fr-FR : Coréen
+      en-GB : Korean
+      fr-CA : Coréen
+      en-US : Korean
+     index : 26
+   -
+     text :
+      fr-FR : Lituanien
+      en-GB : Lithuanian
+      fr-CA : Lituanien
+      en-US : Lithuanian
+     index : 27
+   -
+     text :
+      fr-FR : Letton
+      en-GB : Latvian
+      fr-CA : Letton
+      en-US : Latvian
+     index : 28
+   -
+     text :
+      fr-FR : Macédonien
+      en-GB : Macedonian
+      fr-CA : Macédonien
+      en-US : Macedonian
+     index : 29
+   -
+     text :
+      fr-FR : Marathe
+      en-GB : Marathi
+      fr-CA : Marathe
+      en-US : Marathi
+     index : 30
+   -
+     text :
+      fr-FR : Malais
+      en-GB : Malay
+      fr-CA : Malais
+      en-US : Malay
+     index : 31
+   -
+     text :
+      fr-FR : Maltais
+      en-GB : Maltese
+      fr-CA : Maltais
+      en-US : Maltese
+     index : 32
+   -
+     text :
+      fr-FR : Norvégien bokmål
+      en-GB : Norwegian bokmål
+      fr-CA : Norvégien bokmål
+      en-US : Norwegian bokmål
+     index : 33
+   -
+     text :
+      fr-FR : Néerlandais
+      en-GB : Dutch
+      fr-CA : Néerlandais
+      en-US : Dutch
+     index : 34
+   -
+     text :
+      fr-FR : Norvégien nynorsk
+      en-GB : Norwegian nynorsk
+      fr-CA : Norvégien nynorsk
+      en-US : Norwegian nynorsk
+     index : 35
+   -
+     text :
+      fr-FR : Pendjabi
+      en-GB : Punjabi
+      fr-CA : Pendjabi
+      en-US : Punjabi
+     index : 36
+   -
+     text :
+      fr-FR : Polonais
+      en-GB : Polish
+      fr-CA : Polonais
+      en-US : Polish
+     index : 37
+   -
+     text :
+      fr-FR : Portugais
+      en-GB : Portuguese
+      fr-CA : Portugais
+      en-US : Portuguese
+     index : 38
+   -
+     text :
+      fr-FR : Roumain
+      en-GB : Romanian
+      fr-CA : Roumain
+      en-US : Romanian
+     index : 39
+   -
+     text :
+      fr-FR : Russe
+      en-GB : Russian
+      fr-CA : Russe
+      en-US : Russian
+     index : 40
+   -
+     text :
+      fr-FR : Serbe latin
+      en-GB : Latin Serbian
+      fr-CA : Serbe latin
+      en-US : Latin Serbian
+     index : 41
+   -
+     text :
+      fr-FR : Slovaque
+      en-GB : Slovakian
+      fr-CA : Slovaque
+      en-US : Slovakian
+     index : 42
+   -
+     text :
+      fr-FR : Slovène
+      en-GB : Slovenian
+      fr-CA : Slovène
+      en-US : Slovenian
+     index : 43
+   -
+     text :
+      fr-FR : Albanais
+      en-GB : Albanian
+      fr-CA : Albanais
+      en-US : Albanian
+     index : 44
+   -
+     text :
+      fr-FR : Serbe
+      en-GB : Serbian
+      fr-CA : Serbe
+      en-US : Serbian
+     index : 45
+   -
+     text :
+      fr-FR : Suédois
+      en-GB : Swedish
+      fr-CA : Suédois
+      en-US : Swedish
+     index : 46
+   -
+     text :
+      fr-FR : Tamoul
+      en-GB : Tamil
+      fr-CA : Tamoul
+      en-US : Tamil
+     index : 47
+   -
+     text :
+      fr-FR : Télougou
+      en-GB : Telugu
+      fr-CA : Télougou
+      en-US : Telugu
+     index : 48
+   -
+     text :
+      fr-FR : Thaï
+      en-GB : Thai
+      fr-CA : Thaï
+      en-US : Thai
+     index : 49
+   -
+     text :
+      fr-FR : Turc
+      en-GB : Turkish
+      fr-CA : Turc
+      en-US : Turkish
+     index : 50
+   -
+     text :
+      fr-FR : Ukrainien
+      en-GB : Ukrainian
+      fr-CA : Ukrainien
+      en-US : Ukrainian
+     index : 51
+   -
+     text :
+      fr-FR : Vietnamien
+      en-GB : Vietnamese
+      fr-CA : Vietnamien
+      en-US : Vietnamese
+     index : 52
+   -
+     text :
+      fr-FR : Chinois
+      en-GB : Chinese
+      fr-CA : Chinois
+      en-US : Chinese
+     index : 53
+   -
+     text :
+      fr-FR : Émirats Arabes Unis
+      en-GB : United Arab Emirates
+      fr-CA : Émirats Arabes Unis
+      en-US : United Arab Emirates
+     index : 54
+   -
+     text :
+      fr-FR : Albanie
+      en-GB : Albania
+      fr-CA : Albanie
+      en-US : Albania
+     index : 55
+   -
+     text :
+      fr-FR : Argentine
+      en-GB : Argentina
+      fr-CA : Argentine
+      en-US : Argentina
+     index : 56
+   -
+     text :
+      fr-FR : Autriche
+      en-GB : Austria
+      fr-CA : Autriche
+      en-US : Austria
+     index : 57
+   -
+     text :
+      fr-FR : Australie
+      en-GB : Australia
+      fr-CA : Australie
+      en-US : Australia
+     index : 58
+   -
+     text :
+      fr-FR : Bosnie-Herzégovine
+      en-GB : Bosnia-Herzegovina
+      fr-CA : Bosnie-Herzégovine
+      en-US : Bosnia-Herzegovina
+     index : 59
+   -
+     text :
+      fr-FR : Belgique
+      en-GB : Belgium
+      fr-CA : Belgique
+      en-US : Belgium
+     index : 60
+   -
+     text :
+      fr-FR : Bulgarie
+      en-GB : Bulgaria
+      fr-CA : Bulgarie
+      en-US : Bulgaria
+     index : 61
+   -
+     text :
+      fr-FR : Bahreïn
+      en-GB : Bahrain
+      fr-CA : Bahreïn
+      en-US : Bahrain
+     index : 62
+   -
+     text :
+      fr-FR : Bolivie
+      en-GB : Bolivia
+      fr-CA : Bolivie
+      en-US : Bolivia
+     index : 63
+   -
+     text :
+      fr-FR : Brésil
+      en-GB : Brazil
+      fr-CA : Brésil
+      en-US : Brazil
+     index : 64
+   -
+     text :
+      fr-FR : Biélorussie
+      en-GB : Belarus
+      fr-CA : Biélorussie
+      en-US : Belarus
+     index : 65
+   -
+     text :
+      fr-FR : Suisse
+      en-GB : Switzerland
+      fr-CA : Suisse
+      en-US : Switzerland
+     index : 66
+   -
+     text :
+      fr-FR : Chili
+      en-GB : Chile
+      fr-CA : Chili
+      en-US : Chile
+     index : 67
+   -
+     text :
+      fr-FR : Chine
+      en-GB : China
+      fr-CA : Chine
+      en-US : China
+     index : 68
+   -
+     text :
+      fr-FR : Colombie
+      en-GB : Colombia
+      fr-CA : Colombie
+      en-US : Colombia
+     index : 69
+   -
+     text :
+      fr-FR : Tchéquie
+      en-GB : Czech Republic
+      fr-CA : Tchéquie
+      en-US : Czech Republic
+     index : 70
+   -
+     text :
+      fr-FR : Allemagne
+      en-GB : Germany
+      fr-CA : Allemagne
+      en-US : Germany
+     index : 71
+   -
+     text :
+      fr-FR : Danemark
+      en-GB : Denmark
+      fr-CA : Danemark
+      en-US : Denmark
+     index : 72
+   -
+     text :
+      fr-FR : République Dominicaine
+      en-GB : Dominican Republic
+      fr-CA : République Dominicaine
+      en-US : Dominican Republic
+     index : 73
+   -
+     text :
+      fr-FR : Algérie
+      en-GB : Algeria
+      fr-CA : Algérie
+      en-US : Algeria
+     index : 74
+   -
+     text :
+      fr-FR : Equateur
+      en-GB : Ecuador
+      fr-CA : Equateur
+      en-US : Ecuador
+     index : 75
+   -
+     text :
+      fr-FR : Estonie
+      en-GB : Estonia
+      fr-CA : Estonie
+      en-US : Estonia
+     index : 76
+   -
+     text :
+      fr-FR : Egypte
+      en-GB : Egypt
+      fr-CA : Egypte
+      en-US : Egypt
+     index : 77
+   -
+     text :
+      fr-FR : Espagne
+      en-GB : Spain
+      fr-CA : Espagne
+      en-US : Spain
+     index : 78
+   -
+     text :
+      fr-FR : Ethiopie
+      en-GB : Ethiopia
+      fr-CA : Ethiopie
+      en-US : Ethiopia
+     index : 79
+   -
+     text :
+      fr-FR : Finlande
+      en-GB : Finland
+      fr-CA : Finlande
+      en-US : Finland
+     index : 80
+   -
+     text :
+      fr-FR : Iles Féroé
+      en-GB : Faroe Islands
+      fr-CA : Iles Féroé
+      en-US : Faroe Islands
+     index : 81
+   -
+     text :
+      fr-FR : Grande Bretagne
+      en-GB : Great Britain
+      fr-CA : Grande Bretagne
+      en-US : Great Britain
+     index : 82
+   -
+     text :
+      fr-FR : Groenland
+      en-GB : Greenland
+      fr-CA : Groenland
+      en-US : Greenland
+     index : 83
+   -
+     text :
+      fr-FR : Grèce
+      en-GB : Greece
+      fr-CA : Grèce
+      en-US : Greece
+     index : 84
+   -
+     text :
+      fr-FR : Croatie
+      en-GB : Croatia
+      fr-CA : Croatie
+      en-US : Croatia
+     index : 85
+   -
+     text :
+      fr-FR : Hongrie
+      en-GB : Hungary
+      fr-CA : Hongrie
+      en-US : Hungary
+     index : 86
+   -
+     text :
+      fr-FR : Indonésie
+      en-GB : Indonesia
+      fr-CA : Indonésie
+      en-US : Indonesia
+     index : 87
+   -
+     text :
+      fr-FR : Irlande
+      en-GB : Ireland
+      fr-CA : Irlande
+      en-US : Ireland
+     index : 88
+   -
+     text :
+      fr-FR : Israël
+      en-GB : Israel
+      fr-CA : Israël
+      en-US : Israel
+     index : 89
+   -
+     text :
+      fr-FR : Inde
+      en-GB : India
+      fr-CA : Inde
+      en-US : India
+     index : 90
+   -
+     text :
+      fr-FR : Irak
+      en-GB : Iraq
+      fr-CA : Irak
+      en-US : Iraq
+     index : 91
+   -
+     text :
+      fr-FR : Islande
+      en-GB : Iceland
+      fr-CA : Islande
+      en-US : Iceland
+     index : 92
+   -
+     text :
+      fr-FR : Italie
+      en-GB : Italy
+      fr-CA : Italie
+      en-US : Italy
+     index : 93
+   -
+     text :
+      fr-FR : Jordanie
+      en-GB : Jordan
+      fr-CA : Jordanie
+      en-US : Jordan
+     index : 94
+   -
+     text :
+      fr-FR : Japon
+      en-GB : Japan
+      fr-CA : Japon
+      en-US : Japan
+     index : 95
+   -
+     text :
+      fr-FR : Corée du sud
+      en-GB : South Korea
+      fr-CA : Corée du sud
+      en-US : South Korea
+     index : 96
+   -
+     text :
+      fr-FR : Koweït
+      en-GB : Kuwait
+      fr-CA : Koweït
+      en-US : Kuwait
+     index : 97
+   -
+     text :
+      fr-FR : Liban
+      en-GB : Lebanon
+      fr-CA : Liban
+      en-US : Lebanon
+     index : 98
+   -
+     text :
+      fr-FR : Lituanie
+      en-GB : Lithuania
+      fr-CA : Lituanie
+      en-US : Lithuania
+     index : 99
+   -
+     text :
+      fr-FR : Lettonie
+      en-GB : Latvia
+      fr-CA : Lettonie
+      en-US : Latvia
+     index : 100
+   -
+     text :
+      fr-FR : Libye
+      en-GB : Libya
+      fr-CA : Libye
+      en-US : Libya
+     index : 101
+   -
+     text :
+      fr-FR : Maroc
+      en-GB : Morocco
+      fr-CA : Maroc
+      en-US : Morocco
+     index : 102
+   -
+     text :
+      fr-FR : Macédoine
+      en-GB : Macedonia
+      fr-CA : Macédoine
+      en-US : Macedonia
+     index : 103
+   -
+     text :
+      fr-FR : Macao
+      en-GB : Macau
+      fr-CA : Macao
+      en-US : Macau
+     index : 104
+   -
+     text :
+      fr-FR : Malte
+      en-GB : Malta
+      fr-CA : Malte
+      en-US : Malta
+     index : 105
+   -
+     text :
+      fr-FR : Mexique
+      en-GB : Mexico
+      fr-CA : Mexique
+      en-US : Mexico
+     index : 106
+   -
+     text :
+      fr-FR : Malaisie
+      en-GB : Malaysia
+      fr-CA : Malaisie
+      en-US : Malaysia
+     index : 107
+   -
+     text :
+      fr-FR : Pays-Bas
+      en-GB : Netherlands
+      fr-CA : Pays-Bas
+      en-US : Netherlands
+     index : 108
+   -
+     text :
+      fr-FR : Norvège
+      en-GB : Norway
+      fr-CA : Norvège
+      en-US : Norway
+     index : 109
+   -
+     text :
+      fr-FR : Nouvelle-Zélande
+      en-GB : New Zealand
+      fr-CA : Nouvelle-Zélande
+      en-US : New Zealand
+     index : 110
+   -
+     text :
+      fr-FR : Pérou
+      en-GB : Peru
+      fr-CA : Pérou
+      en-US : Peru
+     index : 111
+   -
+     text :
+      fr-FR : Pologne
+      en-GB : Poland
+      fr-CA : Pologne
+      en-US : Poland
+     index : 112
+   -
+     text :
+      fr-FR : Roumanie
+      en-GB : Romania
+      fr-CA : Roumanie
+      en-US : Romania
+     index : 113
+   -
+     text :
+      fr-FR : Russie
+      en-GB : Russia
+      fr-CA : Russie
+      en-US : Russia
+     index : 114
+   -
+     text :
+      fr-FR : Arabie Saoudite
+      en-GB : Saudi Arabia
+      fr-CA : Arabie Saoudite
+      en-US : Saudi Arabia
+     index : 115
+   -
+     text :
+      fr-FR : Soudan
+      en-GB : Sudan
+      fr-CA : Soudan
+      en-US : Sudan
+     index : 116
+   -
+     text :
+      fr-FR : Suède
+      en-GB : Sweden
+      fr-CA : Suède
+      en-US : Sweden
+     index : 117
+   -
+     text :
+      fr-FR : Singapour
+      en-GB : Singapore
+      fr-CA : Singapour
+      en-US : Singapore
+     index : 118
+   -
+     text :
+      fr-FR : Slovénie
+      en-GB : Slovenia
+      fr-CA : Slovénie
+      en-US : Slovenia
+     index : 119
+   -
+     text :
+      fr-FR : Slovaquie
+      en-GB : Slovakia
+      fr-CA : Slovaquie
+      en-US : Slovakia
+     index : 120
+   -
+     text :
+      fr-FR : Salvador
+      en-GB : El Salvadore
+      fr-CA : Salvador
+      en-US : El Salvadore
+     index : 121
+   -
+     text :
+      fr-FR : Syrie
+      en-GB : Syria
+      fr-CA : Syrie
+      en-US : Syria
+     index : 122
+   -
+     text :
+      fr-FR : Thaïlande
+      en-GB : Thailand
+      fr-CA : Thaïlande
+      en-US : Thailand
+     index : 123
+   -
+     text :
+      fr-FR : Tunisie
+      en-GB : Tunisia
+      fr-CA : Tunisie
+      en-US : Tunisia
+     index : 124
+   -
+     text :
+      fr-FR : Turquie
+      en-GB : Turkey
+      fr-CA : Turquie
+      en-US : Turkey
+     index : 125
+   -
+     text :
+      fr-FR : Etats-Unis
+      en-GB : Unites States
+      fr-CA : Etats-Unis
+      en-US : Unites States
+     index : 126
+   -
+     text :
+      fr-FR : Îles Vierges Des États-Unis
+      en-GB : Virgin Islands of the United States
+      fr-CA : Îles Vierges Des États-Unis
+      en-US : Virgin Islands of the United States
+     index : 127
+   -
+     text :
+      fr-FR : Bosnie-Herzégovine
+      en-GB : Bosnia-Herzegovina
+      fr-CA : Bosnie-Herzégovine
+      en-US : Bosnia-Herzegovina
+     index : 128
+   -
+     text :
+      fr-FR : Yémen
+      en-GB : Yemen
+      fr-CA : Yémen
+      en-US : Yemen
+     index : 129
+   -
+     text :
+      fr-FR : Afrique du sud
+      en-GB : South Africa
+      fr-CA : Afrique du sud
+      en-US : South Africa
+     index : 130
+   -
+     text :
+      fr-FR : Traditionnel
+      en-GB : Traditional
+      fr-CA : Traditionnel
+      en-US : Traditional
+     index : 131
+   -
+     text :
+      fr-FR : Catalan
+      en-GB : Catalan
+      fr-CA : Catalan
+      en-US : Catalan
+     index : 132
+   -
+     text :
+      fr-FR : Hindi
+      en-GB : Hindi
+      fr-CA : Hindi
+      en-US : Hindi
+     index : 133
+   -
+     text :
+      fr-FR : Kazakh
+      en-GB : Kazakh
+      fr-CA : Kazakh
+      en-US : Kazakh
+     index : 134
+   -
+     text :
+      fr-FR : Galla
+      en-GB : Galla
+      fr-CA : Galla
+      en-US : Galla
+     index : 135
+   -
+     text :
+      fr-FR : Patcho
+      en-GB : Patcho
+      fr-CA : Patcho
+      en-US : Patcho
+     index : 136
+   -
+     text :
+      fr-FR : Brunei
+      en-GB : Brunei
+      fr-CA : Brunei
+      en-US : Brunei
+     index : 137
+   -
+     text :
+      fr-FR : Botswana
+      en-GB : Botswana
+      fr-CA : Botswana
+      en-US : Botswana
+     index : 138
+   -
+     text :
+      fr-FR : Canada
+      en-GB : Canada
+      fr-CA : Canada
+      en-US : Canada
+     index : 139
+   -
+     text :
+      fr-FR : Costa Rica
+      en-GB : Costa Rica
+      fr-CA : Costa Rica
+      en-US : Costa Rica
+     index : 140
+   -
+     text :
+      fr-FR : France
+      en-GB : France
+      fr-CA : France
+      en-US : France
+     index : 141
+   -
+     text :
+      fr-FR : Guatemala
+      en-GB : Guatemala
+      fr-CA : Guatemala
+      en-US : Guatemala
+     index : 142
+   -
+     text :
+      fr-FR : Hong Kong
+      en-GB : Hong Kong
+      fr-CA : Hong Kong
+      en-US : Hong Kong
+     index : 143
+   -
+     text :
+      fr-FR : Honduras
+      en-GB : Honduras
+      fr-CA : Honduras
+      en-US : Honduras
+     index : 144
+   -
+     text :
+      fr-FR : Iran
+      en-GB : Iran
+      fr-CA : Iran
+      en-US : Iran
+     index : 145
+   -
+     text :
+      fr-FR : Kenya
+      en-GB : Kenya
+      fr-CA : Kenya
+      en-US : Kenya
+     index : 146
+   -
+     text :
+      fr-FR : Kazakhstan
+      en-GB : Kazakhstan
+      fr-CA : Kazakhstan
+      en-US : Kazakhstan
+     index : 147
+   -
+     text :
+      fr-FR : Oman
+      en-GB : Oman
+      fr-CA : Oman
+      en-US : Oman
+     index : 148
+   -
+     text :
+      fr-FR : Panama
+      en-GB : Panama
+      fr-CA : Panama
+      en-US : Panama
+     index : 149
+   -
+     text :
+      fr-FR : Puerto Rico
+      en-GB : Puerto Rico
+      fr-CA : Puerto Rico
+      en-US : Puerto Rico
+     index : 150
+   -
+     text :
+      fr-FR : Philippines
+      en-GB : Philippines
+      fr-CA : Philippines
+      en-US : Philippines
+     index : 151
+   -
+     text :
+      fr-FR : Portugal
+      en-GB : Portugal
+      fr-CA : Portugal
+      en-US : Portugal
+     index : 152
+   -
+     text :
+      fr-FR : Paraguay
+      en-GB : Paraguay
+      fr-CA : Paraguay
+      en-US : Paraguay
+     index : 153
+   -
+     text :
+      fr-FR : Qatar
+      en-GB : Qatar
+      fr-CA : Qatar
+      en-US : Qatar
+     index : 154
+   -
+     text :
+      fr-FR : Taiwan
+      en-GB : Taiwan
+      fr-CA : Taiwan
+      en-US : Taiwan
+     index : 155
+   -
+     text :
+      fr-FR : Ukraine
+      en-GB : Ukraine
+      fr-CA : Ukraine
+      en-US : Ukraine
+     index : 156
+   -
+     text :
+      fr-FR : Uruguay
+      en-GB : Uruguay
+      fr-CA : Uruguay
+      en-US : Uruguay
+     index : 157
+   -
+     text :
+      fr-FR : Venezuela
+      en-GB : Venezuela
+      fr-CA : Venezuela
+      en-US : Venezuela
+     index : 158
+   -
+     text :
+      fr-FR : Vietnam
+      en-GB : Vietnam
+      fr-CA : Vietnam
+      en-US : Vietnam
+     index : 159
+   -
+     text :
+      fr-FR : Zimbabwe
+      en-GB : Zimbabwe
+      fr-CA : Zimbabwe
+      en-US : Zimbabwe
+     index : 160
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

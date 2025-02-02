@@ -1,0 +1,139 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cLDAP2000Top
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f1fdf2047a96ce
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe qui donne la structure d'un enregistrement Top sur un serveur Windows 2000.
+      
+      cLDAP2000Top est une Classe, abstraite		//ref : https://docs.microsoft.com/en-us/windows/win32/adschema/c-top#windows-2000-server-attributes
+      	adminDescription						est une chaîne							//The description displayed on admin screens.
+      	adminDisplayName						est une chaîne							//The name to be displayed on admin screens.
+      	allowedAttributes						est une chaîne							//Attributes that will be permitted to be assigned to a class.
+      	allowedAttributesEffective				est un tableau de chaîne				//A list of attributes that can be modified on the object.
+      	allowedChildClasses						est une chaîne							//Classes that can be contained by a class.
+      	allowedChildClassesEffective			est un tableau de chaîne				//A list of classes that can be modified.
+      	bridgeheadServerListBL					est un tableau de chaîne	//DN		//The list of servers that are bridgeheads for replication.
+      	canonicalName							est une chaîne							//The name of the object in canonical format.
+      	cn										est une chaîne sur 64//obligatoire		//The name that represents an object. Used to perform searches.
+      	createTimeStamp							est une chaine	//dateheure				//The date when this object was created. This value is replicated.
+      	description								est une chaîne							//Contains the description to display for an object. 
+      	displayName								est une chaîne							//The display name for an object. This is usually the combination of the users first name, middle initial, and last name.
+      	displayNamePrintable					est une chaîne							//The printable display name for an object. The printable display name is usually the combination of the user's first name, middle initial, and last name.
+      	dSASignature							est une chaîne	//replica-link			//The DSA-Signature of an object is the Invocation-ID of the last directory to modify the object.
+      	dSCorePropagationData					est un tableau de chaine	//UTC		//The DS-Core-Propagation-Data attribute is for internal use only.
+      	extensionName							est une chaîne							//The name of a property page used to extend the UI of a directory object.
+      	flags									est un entier							//To be used by the object to store bit information.
+      	fromEntry								est un booléen							//This is a constructed attribute that is TRUE if the object is writable and FALSE if it is read-only, for example, a GC replica instance.
+      	frsComputerReferenceBL					est une chaîne	//DN					//Reference to replica sets to which this computer belongs.
+      	fRSMemberReferenceBL					est une chaîne	//DN					//Reference to subscriber objects for this member.
+      	fSMORoleOwner							est une chaîne	//DN					//Flexible Single-Master Operation: The distinguished name of the DC where the schema can be modified.
+      	instanceType							est un entier	//obligatoire			//A bitfield that dictates how the object is instantiated on a particular server. The value of this attribute can differ on different replicas even if the replicas are in sync.
+      	isCriticalSystemObject					est un booléen							//If TRUE, the object hosting this attribute must be replicated during installation of a new replica.
+      	isDeleted								est un booléen							//If TRUE, this object has been marked for deletion and cannot be instantiated. After the tombstone period has expired, it will be removed from the system.
+      	memberOf								est une chaîne	//DN					//The distinguished name of the groups to which this object belongs.
+      	isPrivilegeHolder						est une chaîne	//DN					//Backward link to privileges held by a given principal.
+      	lastKnownParent							est une chaîne	//DN					//The Distinguished Name (DN) of the last known parent of an orphaned object.
+      	l										est une chaîne							//Represents the name of a locality, such as a town or city.
+      	managedObjects							est une chaîne	//DN					//Contains the list of objects that are managed by the user.
+      	masteredBy								est une chaîne	//DN					//Backward link for Has-Master-NCs attribute.
+      	modifyTimeStamp							est une chaine	//dateheure				//A computed attribute that represents the date when this object was last changed. This value is not replicated.
+      	mS_DS_ConsistencyChildCount				est un entier							//This attribute is used to check consistency between the directory and another object, database, or application, by comparing a count of child objects.
+      	mS_DS_ConsistencyGuid					est une chaîne	//replica-link			//This attribute is used to check consistency between the directory and another object, database, or application, by comparing GUIDs.
+      	msDs_masteredBy							est une chaîne	//DN					//Backward link for msDS-hasMasterNCs.
+      	netbootSCPBL							est un tableau de chaîne	//DN		//A list of service connection points that reference this NetBoot server.
+      	nonSecurityMemberBL						est un tableau de chaîne	//DN		//List of nonsecurity-members for an Exchange distribution list.
+      	nTSecurityDescriptor					est une chaîne	//obligatooire			//The Windows NT security descriptor for the schema object. 
+      	objectCategory							est une chaîne	//DN					//An object class name used to group objects of this or derived classes.
+      	objectClass								est un tableau de chaînes//OID			//The list of classes from which this class is derived.
+      	objectGUID								est une chaîne ansi	//replica-link		//The unique identifier for an object.
+      	objectVersion							est un entier							//This can be used to store a version number for the object.
+      	otherWellKnownObjects					est une chaîne	//DN bin				//Contains a list of containers by GUID and Distinguished Name. 
+      	partialAttributeDeletionList			est une chaîne	//replica-link			//Tracks the internal replication state of partial replicas
+      	partialAttributeSet						est une chaîne	//replica-link			//Tracks the internal replication state of partial replicas
+      	possibleInferiors						est un tableau de chaîne	//OID		//The list of objects that this object can contain.
+      	proxiedObjectName						est une chaîne	//DN bin				//This attribute is used internally by Active Directory to help track interdomain moves.
+      	proxyAddresses							est un tableau de chaîne				//A proxy address is the address by which a Microsoft Exchange Server recipient object is recognized in a foreign mail system. 
+      	QueryPolicyBL							est un tableau de chaîne	//DN		//List of all objects holding references to a given Query-Policy.
+      	RDN										est une chaine							//The Relative Distinguished Name (RDN) of an object. An RDN is the relative portion of a distinguished name (DN), which uniquely identifies an LDAP object.
+      	replPropertyMetaData					est une chaîne	//replica-link			//Tracks internal replication state information for DS objects.
+      	replUpToDateVector						est une chaîne	//replica-link			//Tracks internal replication state information for an entire NC.
+      	directReports							est une chaîne	//DN					//Contains the list of users that directly report to the user. 
+      	repsFrom								est un tableau de chaîne//replica-link	//Lists the servers that the directory will notify of changes and servers to which the directory will send changes on Request for the defined naming context.
+      	repsTo									est un tableau de chaîne//replica-link	//Lists the servers that the directory will notify of changes and servers to which the directory will send changes on Request for the defined naming context.
+      	revision								est un entier							//The revision level for a security descriptor or other change. Only used in the sam-server and ds-ui-settings objects.
+      	sDRightsEffective						est un entier							//This constructed attribute returns a single DWORD value that can have up to three bits set: OWNER_SECURITY_INFORMATION, DACL_SECURITY_INFORMATION, SACL_SECURITY_INFORMATION 
+      	serverReferenceBL						est une chaîne	//DN					//Found in the domain naming context. The distinguished name of a computer under the sites folder.
+      	showInAdvancedViewOnly					est un booléen							//TRUE if this attribute is to be visible in the Advanced mode of the UI.
+      	siteObjectBL							est un tableau de chaîne	//DN		//The list of distinguished names for subnets that belong to this site.
+      	uSNChanged								est un entier sur 8 octets				//The update sequence number (USN) assigned by the local directory for the latest change, including creation.
+      	uSNCreated								est un entier sur 8 octets				//The update sequence number (USN) assigned at object creation. 
+      	uSNDSALastObjRemoved					est un entier sur 8 octets				//Contains the update sequence number (USN) for the last system object that was removed from a server.
+      	USNIntersite							est un entier							//The update sequence number (USN) for inter-site replication.
+      	uSNLastObjRem							est un entier sur 8 octets				//Contains the update sequence number (USN) for the last non-system object that was removed from a server.
+      	uSNSource								est un entier sur 8 octets				//Value of the USN-Changed attribute of the object from the remote directory that replicated the change to the local server.
+      	wbemPath								est une chaîne							//References to objects in other ADSI namespaces.
+      	wellKnownObjects						est une chaîne	//DN bin				//This attribute contains a list of well-known object containers by GUID and distinguished name. Ref : https://docs.microsoft.com/en-us/windows/win32/adschema/a-wellknownobjects 
+      	whenChanged								est une chaine	//dateheure				//The date when this object was last changed. This value is not replicated and exists in the global catalog.
+      	whenCreated								est une chaine	//dateheure				//The date when this object was created. This value is replicated and is in the global catalog.
+      	wWWHomePage								est une chaîne							//A web page that is the primary landing page of a website.
+      	url										est un tableau de chaîne				//A list of alternate webpages.
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1293093783931164366
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1293093783931229902
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f1fdf004748dd9
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

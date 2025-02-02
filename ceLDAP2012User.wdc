@@ -1,0 +1,112 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : ceLDAP2012User
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x11f866901d37753e
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Classe User pour LDAP sur serveur Windows 2012.
+      
+      CONSTANTE
+      	//ref (seulement pour 2012) : https://docs.microsoft.com/en-us/troubleshoot/windows-server/identity/useraccountcontrol-manipulate-account-properties
+      	ADUSER_SCRIPT							= 0x0001		//The logon script will be run.	
+      	ADUSER_ACCOUNTDISABLE					= 0x0002		//The user account is disabled.
+      	ADUSER_HOMEDIR_REQUIRED					= 0x0008		//The home folder is required.
+      	ADUSER_LOCKOUT							= 0x0010		//
+      	ADUSER_PASSWD_NOTREQD					= 0x0020		//No password is required.
+      	ADUSER_PASSWD_CANT_CHANGE				= 0x0040		//The user can't change the password. It's a permission on the user's object. You can't assign this permission by directly modifying the UserAccountControl attribute. For information about how to set the permission programmatically, see the Property flag descriptions section.
+      	ADUSER_ENCRYPTED_TEXT_PWD_ALLOWED		= 0x0080		//The user can send an encrypted password.
+      	ADUSER_TEMP_DUPLICATE_ACCOUNT			= 0x0100		//It's an account for users whose primary account is in another domain.
+      	ADUSER_NORMAL_ACCOUNT					= 0x0200		//It's a default account type that represents a typical user.
+      	ADUSER_INTERDOMAIN_TRUST_ACCOUNT		= 0x0800		//It's a permit to trust an account for a system domain that trusts other domains.
+      	ADUSER_WORKSTATION_TRUST_ACCOUNT		= 0x1000		//It's a computer account for a computer that is running Microsoft Windows NT 4.0 Workstation, Microsoft Windows NT 4.0 Server, Microsoft Windows 2000 Professional, or Windows 2000 Server and is a member of this domain.
+      	ADUSER_SERVER_TRUST_ACCOUNT				= 0x2000		//It's a computer account for a domain controller that is a member of this domain.
+      	ADUSER_DONT_EXPIRE_PASSWORD				= 0x10000		//Represents the password, which should never expire on the account.
+      	ADUSER_MNS_LOGON_ACCOUNT				= 0x20000		//It's an MNS logon account.
+      	ADUSER_SMARTCARD_REQUIRED				= 0x40000		//When this flag is set, it forces the user to log on by using a smart card.
+      	ADUSER_TRUSTED_FOR_DELEGATION			= 0x80000		//When this flag is set, the service account (the user or computer account) under which a service runs is trusted for Kerberos delegation.
+      	ADUSER_NOT_DELEGATED					= 0x100000		//When this flag is set, the security context of the user isn't delegated to a service even if the service account is set as trusted for Kerberos delegation.
+      	ADUSER_USE_DES_KEY_ONLY					= 0x200000		//(Windows 2000/Windows Server 2003) Restrict this principal to use only Data Encryption Standard (DES) encryption types for keys.
+      	ADUSER_DONT_REQ_PREAUTH					= 0x400000		//(Windows 2000/Windows Server 2003) This account doesn't require Kerberos pre-authentication for logging on.
+      	ADUSER_PASSWORD_EXPIRED					= 0x800000		//(Windows 2000/Windows Server 2003) The user's password has expired.
+      	ADUSER_TRUSTED_TO_AUTH_FOR_DELEGATION	= 0x1000000		//(Windows 2000/Windows Server 2003) The account is enabled for delegation. It's a security-sensitive setting.
+      	ADUSER_PARTIAL_SECRETS_ACCOUNT			= 0x4000000		//(Windows Server 2008/Windows Server 2008 R2) The account is a read-only domain controller (RODC).
+      FIN
+      
+      ceLDAP2012User est une Classe
+      	hérite de ceLDAPUser
+      	hérite de cLDAP2012Top
+      	hérite de cLDAP2003Security
+      	hérite de cLDAP2012User
+      	hérite de cLDAP2003Employee
+      	hérite de cLDAP2012Mail
+      	hérite de cLDAP2013MailExchange
+      	hérite de cLDAP2003Person
+      GLOBAL CONSTANT                             
+      	mg_sLDAP2012UserAttributs	est une chaine	<sérialise = faux>
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1294897662020580670
+     type_code : 27
+     code : |1-
+      // Résumé : Initialisation de la classe lors de sa création.
+      // Syntaxe : Constructeur (<nIndiceDeConnexion> est entier, [, <sOrganizationalUnit> est chaîne ANSI [, <bLectureSeule> est booléen [, <sAttributsALire> est chaîne]]])
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : Indice de la connexion LDAP à utiliser.
+      //	sOrganizationalUnit (chaîne ANSI optionnelle) : L'unité organisationnelle pour laquelle la classe sera initialisée (par défaut, chaîne vide).
+      // 	bLectureSeule (booléen optionnel) : Indique si la classe doit être en mode lecture seule (par défaut, Faux).
+      //	sAttributsALire (chaîne UNICODE optionnelle) : Liste des attributs à lire pour les utilisateurs (par défaut, liste d'attributs prédéfinie).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexion est un entier = 0,sOrganizationalUnit est une chaine ansi = "",bLectureSeule est un booléen = Faux,sAttributsALire est une chaîne = ceLDAPUser.mg_sAttributsALire)
+      ceLDAPUser.Constructeur(nIndiceDeConnexion,sOrganizationalUnit,bLectureSeule,sAttributsALire)
+      SI mg_sLDAP2012UserAttributs="" ALORS mg_sLDAP2012UserAttributs=p_sAttributs SINON m_sAttributs=mg_sLDAP2012UserAttributs
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1294897662020646206
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x11f8668e1d316bad
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

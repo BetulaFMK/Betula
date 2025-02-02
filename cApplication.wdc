@@ -1,0 +1,840 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cApplication
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1aa964ca00bade13
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //La classe cApplication rassemble tout ce qu'il faut pour gérer correctement l'application (Win,Web ou mobile)
+      //Les objets dynamiques qu'elle contient sont strictement liés à cette classe et ne peuvent donc pas être instanciée en dehors de cette classe
+      //Cette classe doit être appelée dans l'initialisation du projet, voir fenêtre d'exemple ci-joint
+      
+      EEnvironnement est une énumération																	//Permet de savoir dans quel environnement d'exécution l'application se trouve, détermine le suffixe du fichier INI
+      	Inconnu				
+      	Développement		
+      	Test
+      	UAT				
+      	Production			
+      FIN
+      COAuthentification est une Combinaison																//Méthodes d'authentification de l'utilisateur selon 3 possibilités, voir AssocieUtilisateur
+      	ADFS
+      	LDAP
+      fin
+      
+      cApplication est une Classe
+      	hérite de cGénérique
+      	
+      	m_pclUtilisateur				est un objet dynamique 	<Sérialise = Faux>						//Objet pour connaître toute les information de l'utilisateur en cours (ou forcé)
+      	m_pclParamètres					est un objet dynamique 	<Sérialise = Faux>						//Objet pour lire et écrire les paramètres nécessaires au fonctionnement de l'application (ex : information de connexion à une BD)
+      	m_pclLog						est un objet dynamique 	<Sérialise = Faux>						//Objet qui va historiser l'utilisation de l'application (utile aux utilisateurs)
+      	m_pclTrace						est un objet dynamique 	<Sérialise = Faux>						//Objet qui va historiser l'exécution du framework (utile aux développeurs)
+      	m_bufPersonnalisations			est un Buffer 			<Sérialise = Faux>						//Permet de garder, par exemple, les paramètres personnalisée de l'utilisateur (voir FAAExporteParamètre en WD24+
+      PUBLIC CONSTANT                                                                 					
+      	m_sNomMachine					est une chaîne 			<Sérialise = Faux>						//Nom de la machine
+      	m_sAdresseIP					est une chaîne 			<Sérialise = Faux>						//Adresse IP de la machine
+      privé                                                                           					
+      	m_sConfiguration				est une chaine 			<Sérialise = Faux>						//Configuration du projet (voir arborescence projet), typiquement : ProjetInfo(piConfiguration)
+      	m_nTypeDeCryptage				est un entier 			<Sérialise = Faux>						//CrypteSécurité pour Mobile, crypteAnsi pour tous les autres
+      	m_sProcessus					est une chaine 			<Sérialise = Faux>						//# du processus dans Windows
+                                                                                      					
+      	m_eSuffixeIni					est un EEnvironnement 	<Sérialise = Faux>						//Voir l'énumération d'environnement ci-dessus, suffixe du fichier ini (voir appParamètres)
+      	m_sNom							est une chaine 			<Sérialise = Faux>						//Nom de l'application (voir constructeur de la classe)
+      	m_sNomExe						est une chaine 			<Sérialise = Faux>						//Nom de l'exécutable l'application
+      	m_sVersion						est une chaîne 			<Sérialise = Faux>						//Version de l'application
+      	m_sMotDePasseCryptage			est une chaine 			<Sérialise = Faux>						//Mot de passe général pour utiliser Crypte et Décrypte de cette classe
+      	                                                    			            					
+      	m_sRepertoireSystème			est une chaine 			<Sérialise = Faux>						//Répertoire des données selon le standard
+      	m_sRépertoireDonnées			est une chaine 			<Sérialise = Faux>						//Répertoire des données personnalisé dans le constructeur (par défaut, répertoireSystème ci-dessus)
+      	m_sRépertoireTemporaire			est une chaine 			<Sérialise = Faux>						//Répertoire pour les données temporaires
+      	m_sRépertoireCacheMémo			est une chaine 			<Sérialise = Faux>						//Répertoire local pour faire une "cache" des mémos (voir cBaseDeDonnées)
+      	                                                                            					
+      	m_sSupportTéléphone				est une chaîne 			<Sérialise = Faux>						//Coordonnées téléphonique du support de l'application
+      	m_sSupportCourriel				est une chaîne 			<Sérialise = Faux>						//Coordonnées e-mail du support de l'application
+      
+      	m_sPersonnalisationChemin		est une chaîne 			<Sérialise = Faux>						//Voir 	m_bufPersonnalisations
+      	
+      GLOBAL PUBLIC
+      	_Application 					est un objet dynamique 	<Sérialise = Faux>						//Contiendra un cApplication (ou un héritier), permet l'accès à l'objet depuis les autres (voir constructeur)
+      	mg_taInfo						est un tableau associatif <Sérialise = Faux> de cTable dynamique//Toutes les tables auquel on a accédé par l'application
+      	
+      GLOBAL CONSTANT                 	
+      	mg_sTablesAnalyse				est une chaine 			<sérialise = faux>						//Tables de l'analyse Windev
+      	mg_taValeurParDéfaut			est un tableau associatif <Sérialise = Faux> de chaine			//Valeurs par défaut dans les tables
+      	mg_bSécurité					est un booleen 			<serialise = faux>						//Indique si le module betula-secu est utilisé
+      	mg_sWindowsVersion				est une chaine			<serialise = faux>						//Version de Windows
+      GLOBAL PRIVÉ
+      	//membres globaux (affectation par propriété globale) pour permettre de lire des paramètres avant l’instanciation de cette classe
+      	mg_eEmplacementDesParamètres 	est un cAppParamètres.ETypeEmplacementParamètres <Sérialise = Faux>	
+      	mg_sCheminOuAppliModule		 	est une chaine <Sérialise = Faux>
+      	mg_bÉcritQuandLit 				est un booleen <Sérialise = Faux>
+      	mg_sMotDePasseCryptage 			est une chaine <Sérialise = Faux>
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Destructeur
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921177534808776211
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Destructeur()
+      m_pclErreur.RAZ()
+      //m_pclTrace.AjouteMéthode()				//WD23 20180915 : fait planter l'appli en Java
+      //cBaseDeDonnées.TransactionAnnuleTout()	//annule toutes les transactions qui n'ont pas été fermées (on quitte le programme !). Mis en commentaire car créée des erreurs à l'exécution
+      libérer m_pclParamètres
+      libérer m_pclUtilisateur
+      libérer m_pclLog
+      libérer m_pcltrace
+      fFichierTempSupprimeTout()
+      libérer m_pclErreur
+      
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 655360
+   -
+     name : Crypte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921872662417760625
+     type_code : 12
+     code : |1-
+      // Résumé : La méthode Crypte de la classe cApplication permet de crypter une chaîne de texte en utilisant l'algorithme de cryptage spécifié. Permet d'utiliser la même méthode de cryptage pour l'ensemble du programme sans devoir la répéter.
+      // Syntaxe : [ <Résultat> = ] Crypte (<sTexte> est chaîne)
+      // Paramètres :
+      //	sTexte (chaîne UNICODE) : La chaîne de texte à crypter.
+      // Valeur de retour : chaîne UNICODE : renvoie la version cryptée de la chaîne d'origine.
+      // Exemple :
+      // 	sChaineCryptée est une chaîne = gpclApp.Crypte("Texte à crypter")
+      //
+      PROCEDURE Crypte(sTexte est une chaine) : chaine
+      m_pclErreur.RAZ()
+      m_pclTrace.AjouteMéthode(sTexte)
+      
+      //pas de test sur le mot de passe car on peut utiliser Crypte sans mot de passe
+      renvoyer wl.crypte(sTexte,m_sMotDePasseCryptage,m_nTypeDeCryptage) 
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();renvoyer ""
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();renvoyer ""
+     type : 458752
+   -
+     name : Décrypte
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921872688187636114
+     type_code : 12
+     code : |1-
+      // Résumé : La méthode Décrypte de la classe cApplication permet de décrypter une chaîne de texte en utilisant l'algorithme de cryptage spécifié. Permet d'utiliser la même méthode de décryptage pour l'ensemble du programme sans devoir la répéter.
+      // Syntaxe : [ <Résultat> = ] Décrypte (<sTexte> est chaîne)
+      // Paramètres :
+      //	sTexte (chaîne UNICODE) : La chaîne de texte à décrypter.
+      // Valeur de retour : chaîne UNICODE : renvoie une chaîne UNICODE représentant la version décryptée de la chaîne d'origine.
+      // Exemple :
+      // 	sChaineDéryptée est une chaîne = gpclApp.Décrypte("Texte à crypter")
+      //
+      PROCEDURE Décrypte(sTexte est une chaine) : chaine
+      m_pclErreur.RAZ()
+      m_pclTrace.AjouteMéthode(sTexte)
+      
+      //pas de test sur le mot de passe car on peut utiliser Décrypte sans mot de passe
+      RENVOYER WL.Décrypte(sTexte,m_sMotDePasseCryptage,m_nTypeDeCryptage)
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER ""
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER ""
+     type : 458752
+   -
+     name : AssocieUtilisateur
+     procedure_id : 1938947309193527953
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de "logguer" l'utilisateur au démarrage de l'application et ainsi récupérer ses infos
+      // Syntaxe : [ <Résultat> = ] AssocieUtilisateur (<coAuthentification> est COAuthentification [, <sNomDuFichier> est chaîne [, <sMotDePasse> est chaîne ]])
+      // Paramètres : 
+      //	coAuthentification (COAuthentification) : Les méthodes d'authentification à utiliser.
+      // 	sCompteUtilisateur (chaîne UNICODE optionnel) : Le nom du compte de l'utilisateur (par défaut : chaîne vide).
+      //	sMotDePasse (chaîne UNICODE optionnel) : Le mot de passe de l'utilisateur (par défaut : chaîne vide).
+      // Valeur de retour : booléen : indique le succès de l'analyse.
+      // Exemple :
+      //	gpclApp(COAuthentification.ADFS)
+      //
+      PROCEDURE AssocieUtilisateur(coATypesAuthentification est un COAuthentification,sCompteUtilisateur est une chaine = "",sMotDePasse = "") : booleen	//ne pas typer le mot de passe afin qu'il soit compatible avec le passage d'une chaîne indétectable
+      SI coATypesAuthentification[ADFS] _et_ pas m_pclUtilisateur.LoginADFS() alors m_pclErreur.AjouteErreur(m_pclUtilisateur.p_sErreur);renvoyer faux
+      si coATypesAuthentification[LDAP] ALORS
+      	clLDAP est un cBaseDeDonnéesLDAP()
+      	nConnexionLDAP est un entier = clLDAP.Connecte("ldap_appl")	//laisser en minuscule
+      	si nConnexionLDAP>0 alors
+      		si m_pclUtilisateur.LoginLDAP("ldap_appl",sCompteUtilisateur,sMotDePasse) alors 
+      			clLDAP.deconnecte()
+      			renvoyer vrai 	//on traite les aspects actif et compte générique dans l'appli elle-même
+      		sinon
+      			m_pclErreur.AjouteErreur(m_pclUtilisateur.p_sErreur);RENVOYER Faux
+      		FIN
+      	sinon
+      		m_pclErreur.AjouteErreur(m_pclUtilisateur.p_sErreur);RENVOYER Faux
+      	FIN
+      FIN
+      renvoyer faux
+     type : 458752
+   -
+     name : WindowsProcessus
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1939002031396186638
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée qui renvoie le numéro de processus de l'application en cours d'exécution. Est appelé dans le constructeur.
+      PROCEDURE PRIVÉE WindowsProcessus()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	RENVOYER API("KERNEL32.dll","GetCurrentProcessId")
+      	
+      <fin>
+      
+      
+      renvoyer "#process"
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurwx();RENVOYER ""
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreurWx();RENVOYER ""
+     type : 458752
+   -
+     name : Constructeur
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921177534808710675
+     type_code : 27
+     code : |1-
+      // Résumé : Cette méthode sert à initialiser une nouvelle instance de la classe cApplication. Elle configure divers paramètres tels que le nom de l'application, le répertoire principal, le format de la trace, l'environnement pour la gestion des paramètres, le répertoire de stockage des traces, et les instances des classes associées.
+      // Syntaxe : Constructeur ( [<sNom> est chaîne [, <sRépertoireDonnées> est chaîne [, <eTrace> est cTrace.ETraceFormat [, <eExtensionIni> est cApplication.EEnvironnement [, <sRépertoireTrace> est chaîne [, <pclUtilisateur> [, <pclParamètres> [, <pclLog> [, <pclTrace>]]]]]]]]])
+      // Paramètres :
+      //	sNom (chaîne UNICODE optionnelle) : Nom de l'application (par défaut, le nom du projet).
+      //	sRépertoireDonnées (chaîne UNICODE optionnelle) : Répertoire principal de l'application (par défaut, le répertoire courant).
+      //	eTrace (cTrace.ETraceFormat optionnel) : Format de la trace (par défaut, cTrace.TraceUnicode).
+      //	eExtensionIni (cApplication.EEnvironnement optionnel) : Environnement pour la gestion des paramètres (par défaut, EnModeTest() ? Développement SINON Production).
+      //	sRépertoireTrace (chaîne UNICODE optionnelle) : Répertoire de stockage des traces (par défaut, le répertoire des données).
+      // 	pclUtilisateur (instance optionnelle) : Instance de la classe personnalisée cUtilisateur pour la gestion des informations utilisateur (par défaut, nulle, prend la classe de Betula).
+      // 	pclParamètres (instance optionnelle) : Instance personnalisée de la classe cParamètres pour la gestion des paramètres (par défaut, nulle, prend la classe de Betula).
+      // 	pclLog (instance optionnelle) : Instance personnalisée de la classe cLog pour la gestion des logs (par défaut, nulle, prend la classe de Betula).
+      // 	pclTrace (instance optionnelle) : Instance personnalisée de la classe cTrace pour la gestion des traces (par défaut, nulle, prend la classe de Betula).
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	gclApp est un cApplication()	//c'est tout ce qu'il faut faire pour utiliser Betula (sans la gestion des messages de plantage qui demande 2 lignes supplémentaire)
+      //
+      PROCÉDURE Constructeur(sNom est une chaîne = "",sRépertoireDonnées est une chaîne = "",eTrace est un cTrace.ETraceFormat = cTrace.TraceUnicode,eExtensionIni est un EEnvironnement = (EnModeTest() ? Développement SINON Production),sRépertoireTrace est une chaîne = sRépertoireDonnées,pclUtilisateur=Null,pclParamètres=Null,pclLog=Null,pclTrace=Null)
+      _Application 		= object			//astuce de programmation pour avoir accès à tous le contenu de cette classe dans les autres
+      
+      mg_sTablesAnalyse 	= HListeFichier()
+      m_eSuffixeIni		= eExtensionIni
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	m_nTypeDeCryptage	= crypteAnsi
+      	HSurErreur("*",hErrTout,"")	//désactive toutes les erreurs automatiques de Wx
+      	
+      <sinon si CibleExécution=Java ou CibleExécution=Android>
+      	m_nTypeDeCryptage	= crypteSécurisé
+      	//n'intercepte que la perte de connexion
+      	
+      <fin>
+      
+      
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64>
+      	mg_sWindowsVersion=SysVersionWindows() 
+      	si mg_sWindowsVersion dans ("XP","ME","NT 4") alors 
+      		ThreadMode(threadMonoProcesseur+threadSectionCritique)
+      	sinon
+      		ThreadMode(threadMultiProcesseur+threadSectionCritique)	//"NT 5","2003S","2008S","2012S","VISTA","7","8","10"
+      	FIN
+      	
+      <fin>
+      
+      
+      m_sRepertoireSystème	= fRepExe()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	m_sRepertoireSystème	= SysRep(srAppDataCommun)
+      	m_sNomMachine			= NetNomMachine()
+      	
+      <fin>
+      
+      
+      m_sRepertoireSystème	= ComplèteRep(m_sRepertoireSystème)
+      
+      si sNom~="" alors
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	m_sNom					= ProjetInfo(piNomProjet)
+      	
+      <sinon si CibleExécution=Site ou CibleExécution=Webservice>
+      	m_sNom=ProjetInfo(piNomSiteDéployé)
+      	
+      <fin>
+      
+      
+      sinon
+      	m_sNom				= sNom
+      fin
+      m_sNomExe=ExeInfo(exeNom)
+      SI fFichierExiste(fExtraitChemin(m_sNomExe,fDisque+fFichier+fRépertoire)+".wdl") ALORS
+      	m_sVersion 			= ComposantInfo("",ciVersion,fExtraitChemin(m_sNomExe,fDisque+fFichier+fRépertoire)+".wdl")
+      SINON
+      	m_sVersion 			= ExeInfo(exeVersion)
+      FIN
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=AssemblageDotNet>
+      	//désactivation des effets graphiques pour améliorer la réactivité en mode TSE
+      	SI EnModeTSE() ALORS FenDésactiveEffet(effetAnimation+effetCadreTranslucide+effetGFI+effetHalo)	
+      	
+      <fin>
+      
+      
+      m_sProcessus			= WindowsProcessus()
+      m_sConfiguration 		= ProjetInfo(piConfiguration)															//A FAIRE : Mémoriser toutes les variables projet
+      
+      p_sRépertoireDonnées	= sRépertoireDonnées
+      
+      //instanciation des objets (respecter cet ordre)
+      SI MesParamètres[9]..Défaut ALORS m_pclTrace = allouer un cTrace()  SINON  m_pclTrace = allouer un pclTrace () 	//en premier, la trace est configurée dans le répertoire des données, ça peut changer ensuite
+      si m_pclTrace.TraceInitTexte(sRépertoireTrace) alors															//initialisé avec les valeurs par défaut
+      	m_pclTrace.m_bTraceActive = eTrace<>cTrace.AucuneTrace														//active la trace selon le paramètre du constructeur (trace active par défaut en ModeTest)
+      	m_pclTrace.Ajoute("============== L'application a démarré ==============")
+      	m_pclTrace.AjouteMéthode()											
+      	m_pclTrace.Ajoute("Répertoire des données : "+p_sRépertoireDonnées)
+      fin
+      m_sRépertoireTemporaire	= fRépertoireTemp(Vrai)
+      m_sRépertoireCacheMémo	= ""
+      
+      sComposants est une chaîne = ComposantListe()
+      si position(sComposants,"betula-secu",0,SansCasse)>0 alors
+      	nComposant est un entier = ComposantCharge("betula-secu")
+      	si nComposant=cieChargé alors
+      		mg_bSécurité=vrai
+      		m_pclTrace.Ajoute("Sécurité des accès aux données détectée") 
+      	sinon 
+      		m_pclTrace.Ajoute("Erreur de chargement de la sécurité des accès aux données : "+nComposant)
+      	fin
+      FIN
+      
+      m_pclErreur	= allouer un cErreur()																										//classe de gestion centralisée des erreurs
+      SI MesParamètres[7]..Défaut ALORS m_pclParamètres = allouer un cAppParamètres 	SINON m_pclParamètres = allouer un pclParamètres		//classe de lecture/écriture de paramètres
+      m_pclParamètres.ParamètresCharge(mg_eEmplacementDesParamètres,mg_sCheminOuAppliModule,mg_bÉcritQuandLit,mg_sMotDePasseCryptage)
+      SI MesParamètres[8]..Défaut ALORS m_pclLog = allouer un cLog 					SINON m_pclLog = allouer un pclLog						//classe centralisée de log
+      SI MesParamètres[6]..Défaut ALORS m_pclUtilisateur = allouer un cUtilisateur 	SINON m_pclUtilisateur = allouer un pclUtilisateur		//classe qui récupère les informations de l'utilisateur qui exécute l'application
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 589824
+   -
+     name : ParamètresCharge
+     procedure_id : 2009083412397327552
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode privée, utilisée dans le constructeur, pour initialiser des variables avant l’instanciation des classes cLog, cUtilisateur, ...
+      PROCEDURE Privée GLOBALE ParamètresCharge(eEmplacementDesParamètres est un cAppParamètres.ETypeEmplacementParamètres = cAppParamètres.FichierIni,sCheminOuAppliModule est une chaine = "",
+      		bÉcritQuandLit est un booleen = vrai,sMotDePasseCryptage = "")
+      mg_eEmplacementDesParamètres = 	eEmplacementDesParamètres	
+      mg_sCheminOuAppliModule		 = 	sCheminOuAppliModule		
+      mg_bÉcritQuandLit 			 = 	bÉcritQuandLit 				
+      mg_sMotDePasseCryptage 		 = 	sMotDePasseCryptage		
+     type : 458752
+   -
+     name : PersonnalisationCharge
+     procedure_id : 1193809692063176924
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de charger les données de personnalisation à partir d'un fichier ou d'une source spécifiée.
+      //	Le chemin du fichier de personnalisation est modifiable via p_sPersonnalisationChemin. Les données de ces personnalisation peuvent venir de FAAExporteParamètre() 
+      // Syntaxe : [ <Résultat> = ] PersonnalisationCharge ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Renvoie Vrai si le chargement des données de personnalisation s'est effectué avec succès, Faux sinon.
+      // Exemple :
+      //	PersonnalisationCharge()
+      //
+      PROCEDURE PersonnalisationCharge() : booléen
+      m_pclErreur.Raz()
+      m_bufPersonnalisations=""
+      si m_sPersonnalisationChemin>"" alors
+      	si ffichierexiste(m_sPersonnalisationChemin) alors 
+      		m_bufPersonnalisations=fChargeBuffer(m_sPersonnalisationChemin);renvoyer vrai
+      	sinon 
+      		m_pclerreur.AjouteErreur(<§$0005§>)
+      	FIN
+      sinon
+      	m_pclErreur.AjouteErreur(<§$0006§>)
+      fin	
+      RENVOYER faux
+     type : 458752
+   -
+     name : PersonnalisationSauve
+     procedure_id : 1193809872451911215
+     type_code : 12
+     code : |1-
+      // Résumé : La procédure permet de sauvegarder les données de personnalisation dans un fichier ou une destination spécifiée.
+      //	La personnalisation (de l'application) peut venir, par exemple, de FAAExporteParamètre(gpclApp.p_sPersonnalisationChemin). Ce dernier peut être sauvé dans le groupware par COL_GPU.PersonnalisationÉcrit() et l'utilisateur peut alors retrouver ses personnalisations sur un autre poste.
+      // Syntaxe : [ <Résultat> = ] PersonnalisationSauve ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Renvoie Vrai si la sauvegarde des données de personnalisation s'est effectuée avec succès, Faux sinon.
+      // Exemple :
+      //	PersonnalisationSauve()
+      //
+      PROCEDURE PersonnalisationSauve() : booléen
+      m_pclErreur.Raz()
+      si m_sPersonnalisationChemin>"" alors
+      	SI fSauveBuffer(m_sPersonnalisationChemin,m_bufPersonnalisations) ALORS RENVOYER Vrai sinon m_pclErreur.AjouteErreurWx()
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0006§>)
+      FIN	
+      RENVOYER Faux
+     type : 458752
+   -
+     name : PersonnalisationSupprime
+     procedure_id : 1193810009890896199
+     type_code : 12
+     code : |1-
+      // Résumé : La procédure permet de supprimer le fichier de personnalisation, s'il existe.
+      // Syntaxe : [ <Résultat> = ] PersonnalisationSupprime ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : vrai si la suppression du fichier de personnalisation a réussi, faux sinon
+      // Exemple :
+      //	PersonnalisationSupprime()
+      //
+      PROCEDURE PersonnalisationSupprime() : booleen
+      si m_sPersonnalisationChemin>"" _Et_ ffichierexiste(m_sPersonnalisationChemin) alors renvoyer fSupprime(m_sPersonnalisationChemin)
+      renvoyer vrai
+     type : 458752
+  properties :
+   -
+     name : p_sConfiguration
+     identifier : 0x1b86a0990523693f
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie la configuration du projet (voir ProjetInfo(piConfiguration))
+         PROCEDURE PUBLIQUE p_sConfiguration() : chaine
+         renvoyer m_sConfiguration
+        type : 1966080
+     template_refs : []
+   -
+     name : p_eSuffixeIni
+     identifier : 0x1b86a0bf06a0fd82
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le suffixe d fichier INI. Le suffixe du fichier ini sera mis juste avant l'extension .ini du fichier INI pour distinguer un fichier INI par environnement d'exécution (ex : dev, test ou prod)
+         PROCEDURE PUBLIQUE p_eSuffixeIni() : EEnvironnement
+         renvoyer m_eSuffixeIni
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de définir le suffixe du fichier INI selon l'environnement
+         PROCEDURE PUBLIQUE p_eSuffixeIni(eEnvironnement est un EEnvironnement)
+         m_eSuffixeIni = eEnvironnement
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sNom
+     identifier : 0x1b86a18d06a11f83
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom de l'application. Peut-être utile dans la composition des boites de dialogue (ex : Info("L'application "+p_sNom+" s'est arrêtée de manière inattendue") )
+         PROCEDURE PUBLIQUE p_sNom() : chaine
+         renvoyer m_sNom
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de définir le nom de l'application.
+         PROCEDURE PUBLIQUE p_sNom(sNom est une chaine)
+         m_sNom=sNom
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sMotDePasseCryptage
+     identifier : 0x1b86a208078a01a7
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le mot de passe qui sera utilisé dans les méthodes Crypte et Décrypte de cette classe.
+         PROCEDURE PUBLIQUE p_sMotDePasseCryptage() : chaine
+         renvoyer m_sMotDePasseCryptage
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie le mot de passe qui sera utilisé dans les méthodes Crypte et Décrypte de cette classe.
+         PROCEDURE PUBLIQUE p_sMotDePasseCryptage(sMotDePasse)	//ne pas typer le mot de passe afin qu'il soit compatible avec le passage d'une chaîne indétectable
+         m_sMotDePasseCryptage = sMotDePasse
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sRépertoireDonnées
+     identifier : 0x1b86a239078bbe8f
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le répertoire de données de l'application (commun à tous les utilisateurs)
+         PROCEDURE PUBLIQUE p_sRépertoireDonnées() : chaine
+         renvoyer m_sRépertoireDonnées
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de définir le répertoire des données de l'application. Ce répertoire est crucial pour le stockage et l'accès aux données spécifiques à l'application. Accepte les chemins relatifs et absolus.
+         PROCEDURE PUBLIQUE p_sRépertoireDonnées(sRépertoire est une chaine)
+         m_sRépertoireDonnées = sRépertoire
+         SI m_sRépertoireDonnées~="" ALORS m_sRépertoireDonnées=m_sRepertoireSystème
+         
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+         	SI Gauche(m_sRépertoireDonnées,2)<>"\\" _ET_ m_sRépertoireDonnées[[2 À 3]]<>":\" ALORS 
+         		//c'est un chemin relatif Windows, on le transforme en chemin absolu
+         		SI m_sRépertoireDonnées[[1 À 2]]=".\" 	ALORS m_sRépertoireDonnées=Milieu(m_sRépertoireDonnées,3)
+         		SI m_sRépertoireDonnées[[1]]="\"		ALORS m_sRépertoireDonnées=Milieu(m_sRépertoireDonnées,2)
+         		m_sRépertoireDonnées					= ComplèteRep(m_sRepertoireSystème+["\"]+m_sRépertoireDonnées)
+         	FIN
+         	
+         <fin>
+         
+         
+         SI PAS fRépertoireExiste(m_sRépertoireDonnées) ALORS //celui-là on le crée d'office (assez rare qu'on a pas de données, ex : un fichier ini)
+         	si pas fRepCrée(m_sRépertoireDonnées) alors m_pclErreur.AjouteErreurWx();retour
+         FIN
+         cLog.p_sRépertoireDonnées	= m_sRépertoireDonnées
+         cTrace.p_sRépertoireDonnées	= m_sRépertoireDonnées
+         si m_pclTrace<>null alors m_pclTrace.Ajoute("Répertoire des données : "+m_sRépertoireDonnées)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sRépertoireTemporaire
+     identifier : 0x1b86a25d078c4bb1
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le répertoire temporaire de l'application.
+         PROCEDURE PUBLIQUE p_sRépertoireTemporaire() : chaine
+         renvoyer m_sRépertoireTemporaire
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de définir le répertoire temporaire de l'application. Le répertoire temporaire est utilisé pour stocker des fichiers temporaires pendant l'exécution de l'application. Accepte les chemins relatifs et absolus.
+         PROCEDURE PUBLIQUE p_sRépertoireTemporaire(sRépertoire est une chaine)
+         m_sRépertoireTemporaire=sRépertoire
+         SI m_sRépertoireTemporaire~="" ALORS m_sRépertoireTemporaire=fRépertoireTemp()
+         
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+         	SI Gauche(m_sRépertoireTemporaire,2)<>"\\" _ET_ m_sRépertoireTemporaire[[2 À 3]]<>":\" ALORS 
+         		//c'est un chemin relatif Windows, on le transforme en chemin absolu
+         		SI m_sRépertoireTemporaire[[1 À 2]]=".\" ALORS m_sRépertoireTemporaire=Milieu(m_sRépertoireTemporaire,3)
+         		m_sRépertoireTemporaire=ComplèteRep(fRépertoireTemp()+["\"]+m_sRépertoireTemporaire) 
+         	SINON 
+         		m_sRépertoireTemporaire=ComplèteRep(m_sRépertoireTemporaire)
+         	FIN
+         	
+         <fin>
+         
+         
+         //pas de création du répertoire ici pour éviter un répertoire vide inutile
+         SI m_pclTrace<>Null ALORS m_pclTrace.Ajoute("Répertoire temporaire : "+m_sRépertoireTemporaire)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sRépertoireCacheMémo
+     identifier : 0x1b86a278078db76e
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le répertoire cache des mémos
+         PROCEDURE PUBLIQUE p_sRépertoireCacheMémo() : chaine
+         renvoyer m_sRépertoireCacheMémo
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de définir le répertoire cache mémoire de l'application. Le répertoire cache mémoire est utilisé pour stocker des mémos pour accélérer les échanges avec la base de données. Accepte les chemins relatifs et absolus.
+         PROCEDURE PUBLIQUE p_sRépertoireCacheMémo(sRépertoire est une chaine)
+         m_sRépertoireCacheMémo = sRépertoire
+         SI m_sRépertoireCacheMémo~="" ALORS m_sRépertoireCacheMémo=fRépertoireTemp()
+         
+         
+         <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+         	SI Gauche(m_sRépertoireCacheMémo,2)<>"\\" _ET_ m_sRépertoireCacheMémo[[2 À 3]]<>":\" ALORS 
+         		//c'est un chemin relatif Windows, on le transforme en chemin absolu
+         		SI m_sRépertoireCacheMémo[[1 À 2]]=".\" ALORS m_sRépertoireCacheMémo=Milieu(m_sRépertoireCacheMémo,3)
+         		m_sRépertoireCacheMémo=ComplèteRep(fRépertoireTemp()+["\"]+m_sRépertoireCacheMémo) 
+         	SINON 
+         		m_sRépertoireCacheMémo=ComplèteRep(m_sRépertoireCacheMémo)
+         	FIN
+         	
+         <fin>
+         
+         
+         //pas de création du répertoire ici pour éviter un répertoire vide inutile
+         SI m_pclTrace<>Null ALORS m_pclTrace.Ajoute("Répertoire cache : "+m_sRépertoireCacheMémo)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sSupportTéléphone
+     identifier : 0x1b86b4110f267513
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Retourne le numéro de téléphone du support technique. Peut être ensuite utilisé dans les boites de dialogue ou la fenêtre "A Propos"
+         PROCEDURE PUBLIQUE p_sSupportTéléphone() : chaine
+         renvoyer m_sSupportTéléphone
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de définir le numéro de téléphone du support technique.
+         PROCEDURE PUBLIQUE p_sSupportTéléphone(sNuméroDeTéléphone est une chaine)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(sNuméroDeTéléphone)
+         m_sSupportTéléphone=sNuméroDeTéléphone
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sProcessus
+     identifier : 0x1b86c3851417d50e
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Retourne le numéro de processus de l'application en cours
+         PROCEDURE PUBLIQUE p_sProcessus() : chaine
+         renvoyer m_sProcessus
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sLogServeurCourriel
+     identifier : 0x1b86dd811b1a53e0
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Retourne le serveur de courriel utilisé pour envoyer un message lors d'un arrêt inattendu de l'application
+         PROCEDURE PUBLIQUE p_sLogServeurCourriel() : chaine
+         renvoyer m_pclLog.p_sServeurCourriel
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de définir le serveur de courriel pour l'envoi des logs
+         PROCEDURE PUBLIQUE p_sLogServeurCourriel(sServeurCourriel est une chaine)
+         m_pcllog.p_sServeurCourriel=sServeurCourriel
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sRépertoireSystème
+     identifier : 0x1b8ea5d80a87db15
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Retourne le répertoire système
+         PROCEDURE PUBLIQUE p_sRépertoireSystème() : chaine
+         renvoyer m_sRepertoireSystème
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sParamètreMotDePasseCryptage
+     identifier : 0x1b96c3dd36343e22
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Modifie le mot de passe de cryptage des paramètres
+         PROCEDURE PUBLIQUE p_sParamètreMotDePasseCryptage(sMotDePasse)	//ne pas typer le mot de passe afin qu'il soit compatible avec le passage d'une chaîne indétectable
+         m_pclParamètres.p_sMotDePasseCryptage=sMotDePasse
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sSupportCourriel
+     identifier : 0x1bbb97bd14ba0243
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Retourne l'adresse courriel du support technique. Peut être ensuite utilisé dans les boites de dialogue ou la fenêtre "A Propos"
+         PROCEDURE PUBLIQUE p_sSupportCourriel() : chaine
+         renvoyer m_sSupportCourriel
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de définir l'adresse courriel du support technique. Peut être ensuite utilisé dans les boites de dialogue ou la fenêtre "A Propos"
+         PROCEDURE PUBLIQUE p_sSupportCourriel(sAdresseCourriel est une chaine)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(sAdresseCourriel)
+         si EmailVérifieAdresse(sAdresseCourriel,emailValideSyntaxe)=emailadressevalide alors m_sSupportCourriel=sAdresseCourriel
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sPersonnalisationChemin
+     identifier : 0x1091435c00d734c5
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le chemin du fichier de données mémorisant les personnalisations de l'utilisateur en cours
+         PROCEDURE PUBLIQUE p_sPersonnalisationChemin()
+         SI m_sPersonnalisationChemin="" ALORS m_sPersonnalisationChemin=ComplèteRep(SysRep(srAppData)+[fSep()]+cApplication._Application.p_sNom)+"perso.dat"
+         SI PAS fRepCrée(fExtraitChemin(m_sPersonnalisationChemin,fDisque+fRépertoire)) ALORS m_sPersonnalisationChemin=""
+         RENVOYER m_sPersonnalisationChemin
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet de définir le chemin du fichier de données mémorisant les personnalisations de l'utilisateur en cours
+         PROCEDURE PUBLIQUE p_sPersonnalisationChemin(Valeur)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(Valeur)
+         SI Valeur="" ALORS m_sPersonnalisationChemin=ComplèteRep(SysRep(srAppData)+[fSep()]+cApplication._Application.p_sNom)+"perso.dat"
+         m_sPersonnalisationChemin=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sVersion
+     identifier : 0x10f6e9c60c0d56b2
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le numéro de version de l'application
+         PROCEDURE PUBLIQUE p_sVersion() : chaine
+         renvoyer m_sVersion
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sNomExe
+     identifier : 0x11f950bb16ed2b37
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le chemin de l'exécutable en cours
+         PROCEDURE PUBLIQUE p_sNomExe() : chaine
+         renvoyer m_sNomExe
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sAdresseIPLocale
+     identifier : 0x11f9b66b380262a3
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'adresse IP locale du poste sur lequel est exécuté l'application
+         PROCEDURE PUBLIQUE p_sAdresseIPLocale() : chaine
+         renvoyer m_sAdresseIP
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sNomMachine
+     identifier : 0x11f9b68a383fdcf1
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom de la machine
+         PROCEDURE PUBLIQUE p_sNomMachine() : chaine
+         renvoyer m_sNomMachine
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1aa964c100b7b9c1
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Répertoire temporaire : "
+      en-GB : "Temporary directory : "
+      fr-CA : "Répertoire temporaire : "
+      en-US : "Temporary directory : "
+     index : 0
+   -
+     text :
+      fr-FR : "Répertoire cache : "
+      en-GB : "Cache directory : "
+      fr-CA : "Répertoire cache : "
+      en-US : "Cache directory : "
+     index : 1
+   -
+     text :
+      fr-FR : Un paramètre est crypté mais aucune clé de cryptage n'est définie
+      en-GB : A parameter is encrypted but no encryption key is set
+      fr-CA : Un paramètre est crypté mais aucune clé de cryptage n'est définie
+      en-US : A parameter is encrypted but no encryption key is set
+     index : 2
+   -
+     text :
+      fr-FR : ============== L'application a démarré ==============
+      en-GB : ============== The application started ==============
+      fr-CA : ============== L'application a démarré ==============
+      en-US : ============== The application started ==============
+     index : 3
+   -
+     text :
+      fr-FR : Inconnu
+      en-GB : Unknown
+      fr-CA : Inconnu
+      en-US : Unknown
+     index : 4
+   -
+     text :
+      fr-FR : Le fichier des personnalisations n'existe pas
+      en-GB : The customizations file does not exist
+      fr-CA : Le fichier des personnalisations n'existe pas
+      en-US : The customizations file does not exist
+     index : 5
+   -
+     text :
+      fr-FR : Le fichier des personnalisations n'a pas été défini
+      en-GB : The customizations file has not been defined
+      fr-CA : Le fichier des personnalisations n'a pas été défini
+      en-US : The customizations file has not been defined
+     index : 6
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

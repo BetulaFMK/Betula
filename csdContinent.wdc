@@ -1,0 +1,162 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : csdContinent
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x12b6733d2ddfb988
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe crée tous les continents selon la configuration choisie.
+      //ref : https://fr.wikipedia.org/wiki/Continent
+      
+      EConfigurationContinent est une énumération
+      	Selon3
+      	Selon4
+      	Selon5AsieOcéanie
+      	Selon5Eurasie
+      	Selon5Amériques
+      	Selon6Amérique
+      	Selon6Eurasie
+      	Selon7
+      fin
+      csdContinent est une Classe
+      	hérite de cGénérique
+      public
+      	m_eConfiguration	est un EConfigurationContinent				//Type de configuration des continent choisie (voir énumération ci-dessus)
+      	m_tabContinent 		est un tableau de ceContinent dynamique		//Liste des continents selon la configuration choisie (pas global car on peut choisir le tri et la configuration)
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1348391845043943816
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe
+      // Syntaxe : Constructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1348391845044009352
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Liste
+     procedure_id : 1348391896583694577
+     type_code : 12
+     code : |1-
+      // Résumé : Génère une liste de continents en fonction de la configuration spécifiée (eConfiguration) et du tri des nations (nTriNation). 
+      // Syntaxe : [ <Résultat> = ] Liste (<eConfiguration> est csdContinent.EConfigurationContinent [, <nTriNation> est entier])
+      // Paramètres :
+      //	eConfiguration (csdContinent.EConfigurationContinent) : Définit différentes configurations possibles, telles que le découpage en trois, quatre, cinq, six ou sept continents selon certaines règles géographiques.
+      //	nTriNation (entier optionnel) : Paramètre permettant de définir le tri des continents en fonction de la nation, par défaut = Nation().
+      // Valeur de retour : booléen : Vrai si la génération de la liste des continents est réussie, Faux en cas d'échec.
+      // Exemple :
+      //
+      PROCEDURE Liste(eConfiguration	est un EConfigurationContinent,nTriNation est un entier = nation()) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(eConfiguration..nom,nTriNation)
+      si m_tabContinent..Occurrence=0 _ou_ eConfiguration<>m_eConfiguration alors
+      	pclContinent est un ceContinent dynamique
+      	
+      	pclContinent = allouer un ceContinent("Antarctique","Antarctica");TableauAjoute(m_tabContinent,pclContinent)
+      	
+      	si eConfiguration dans (selon3,selon4,Selon5AsieOcéanie,Selon5Eurasie,Selon6Amérique) alors
+      		pclContinent = allouer un ceContinent("Amérique","America");TableauAjoute(m_tabContinent,pclContinent)
+      	sinon
+      		pclContinent = allouer un ceContinent("Amérique du Nord","North America");TableauAjoute(m_tabContinent,pclContinent)
+      		pclContinent = allouer un ceContinent("Amérique du Sud","South America");TableauAjoute(m_tabContinent,pclContinent)
+      	FIN
+      	
+      	si eConfiguration=selon7 alors
+      		pclContinent = allouer un ceContinent("Asie","Asia");TableauAjoute(m_tabContinent,pclContinent)
+      	FIN
+      
+      	si eConfiguration dans (Selon5Eurasie,Selon6Eurasie) alors
+      		pclContinent = allouer un ceContinent("Eurasie","Eurasia");TableauAjoute(m_tabContinent,pclContinent)
+      	FIN
+      
+      	si eConfiguration dans (Selon5AsieOcéanie,Selon6Amérique,Selon7) alors
+      		pclContinent = allouer un ceContinent("Europe","Europa");TableauAjoute(m_tabContinent,pclContinent)
+      	FIN
+      
+      	si eConfiguration dans (selon4,Selon5Amériques) alors
+      		pclContinent = allouer un ceContinent("Afro-Eurasie","Afro-Eurasia");TableauAjoute(m_tabContinent,pclContinent)
+      	FIN
+      	
+      	si eConfiguration dans (Selon5AsieOcéanie) alors
+      		pclContinent = allouer un ceContinent("Asie et Océanie","Asia and Oceania");TableauAjoute(m_tabContinent,pclContinent)
+      	FIN
+      
+      	si eConfiguration dans (Selon3) alors
+      		pclContinent = allouer un ceContinent("Afro-Eurasie et Océanie","Afro-Eurasia and Oceania");TableauAjoute(m_tabContinent,pclContinent)
+      	FIN
+      
+      	si eConfiguration dans (Selon5AsieOcéanie,Selon5Eurasie,Selon6Amérique,Selon6Eurasie,selon7) alors
+      		pclContinent = allouer un ceContinent("Afrique","Africa");TableauAjoute(m_tabContinent,pclContinent)
+      	FIN
+      	
+      	si eConfiguration dans (Selon4,Selon5Amériques,Selon5Eurasie,Selon6Amérique,Selon6Eurasie,selon7) alors
+      		pclContinent = allouer un ceContinent("Océanie","Oceania");TableauAjoute(m_tabContinent,pclContinent)
+      	FIN
+      	
+      fin
+      
+      TableauTrie(m_tabContinent,ttmembre,"m_sNom"+(nTriNation DANS (nationFrançais,nationCanadienFrançais) ? "5" SINON "3"))
+      
+      renvoyer vrai
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 1348917909099163115
+     type_code : 12
+     code : |1-
+      // Résumé : Réinitialise la liste des continents.
+      // Syntaxe : Raz ()
+      // Paramètres :	Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Raz()
+      TableauSupprimeTout(m_tabContinent)
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x12b673382dd9a721
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,1215 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cSourceDeDonnées
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1aa9646c00ac6d47
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe contient principalement un tableau de cEnregistrement qui contient le résultat d'une recherche ou d'une requête. Elle ne peut être accédée directement, il est donc nécessaire d'en hériter dans une autre classe qui fera le lien avec la classe héritée de cEnregistrement de la table concernée.
+      //Cette classe contient un tableau "poubelle" dans lequel on peut transférer les objets du tableau principal. Ce n'est qu'au moment de l'appel de Ecrit() ou ÉcritTout() que l'enregistrement dans la poubelle sera physiquement supprimé de la BD.
+      
+      COStatutEnregistrement est une combinaison												//Pour filtrer le tableau d'enregistrement selon le statut.
+      	EstInchangé
+      	EstAjouté
+      	EstModifié
+      	EstSupprimé
+      fin
+      COTri est une combinaison 																//Utilisé dans la méthode Trie().
+      	Aucun						= 0	
+      	tccOrdreLexicographique		= wl.tccOrdreLexicographique
+      	tccRespecteNumérique		= WL.tccRespecteNumérique
+      	tccSansAccent				= WL.tccSansAccent
+      	tccSansCasse				= WL.tccSansCasse
+      	tccSansEspace				= WL.tccSansEspace
+      	tccSansEspaceIntérieur		= WL.tccSansEspaceIntérieur
+      	tccSansPonctuationNiEspace	= WL.tccSansPonctuationNiEspace
+      FIN
+      
+      cSourceDeDonnées est une Classe, abstraite
+      	hérite de csql
+      	m_bTraceAjout				est un booleen	<serialise = faux>						//Mettre à faux après l'instanciation si vous souhaitez éviter l'écriture de tous les enregistrements lus dans la trace (si celle-ci est active)
+      	m_bNePasLirePremierEnreg	est un booleen	<serialise = faux>						//Nécessaire pour la lecture de fichiers Excel ou CSV dans le cas où la première ligne est le titre des colonnes.
+      	m_bLectureAnnulée			est un booleen	<serialise = faux>						//Permet d'interrompre le parcours du résultat débuté par Liste().
+      public constant
+      	m_sTableNomUnique			est une chaine	<serialise = faux>						//Nom unique de la table à laquelle est reliée la colonne
+      	m_nIndiceParcours			est un entier 	<Sérialise = Faux>						//Indice de parcours dans le tableau d'enregistrement (utilisé par Premier, Suivant, Précédent et Dernier)
+      protégé
+      	m_clJauge					est un cjauge 	<Sérialise = Faux>						//Objet jauge qui peut être visualisée dans une fenêtre durant le parcours du résultat de Liste(). La valeur de la jauge change a chaque ajout d'un cEnregistrement dans le tableau.
+      	m_tabEnregistrement			est un tableau 	<Sérialise = Faux> d'objets dynamique	//Tableau de cEnregistrement contenant le résultat de Liste() ou ListeRequête()
+      privé
+      	m_tabSupprimé				est un tableau 	<Sérialise = Faux> d'objets dynamique	//Tableau des éléments supprimés (ils sont déplacés du tableau principal pour ne pas les voir lors du parcours de ce dernier)
+      	m_vIndice 					est un variant 	<Sérialise = Faux>						//Est une valeur pour la lecture d'un des éléments du tableau d'enregistrement, cela peut être un entier (pour chercher par ID automatique) ou un GUID (chaine unique présente dans chaque élément cEnregistrement)
+      	m_sEmplacementDesMémos		est une chaine 	<Sérialise = Faux>						//Emplacement des mémos (voir constructeur). Servira de référence à tous les cEnregistrements contenus dans le tableau.
+      	m_sLitAussiMemos			est une chaine 	<Sérialise = Faux>						//Indique qu'il faut également lire les mémos lors d'une lecture de l'enregistrement.
+      	m_vDernièreRequête			est un variant 	<Sérialise = Faux>						//Variant contenant tous les éléments passés en paramètre de Liste() ou ListeRafraichi() afin de pouvoir ré-exécuter Liste() sans devoir lui repasser tous les paramètres
+      	m_bLectureSeule				est un booleen 	<Sérialise = Faux>						//Indique que les enregistrements sont en lecture seule (soit imposé par la BD soit par le constructeur). Si mis à Vrai avant la récupération d'une Liste(), imposera ce statut à tous les éléments cEnregistrement contenu dans le tableau de résultats.
+      	m_bUneTable					est un booleen	<serialise = faux>						//Est à vrai si l'on exécute Liste(), à Vrai ou Faux si on exécute ListeRequête. A vrai, permet d'éviter de passer la source de données à la méthode AprèsLecture.
+      	m_sColonnesLues				est un chaine	<serialise = faux>						//Nom des colonnes effectivement lues lors d'une lecture d'un enregistrement.
+      	m_vNomObjetFiche			est un variant	<serialise = faux>						//Classe de type cEnregistrement qui a été associée à cette classe pour absorber le résultat de Liste() ou ListeRequête()
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921177131080838471
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise les propriétés nécessaires pour la gestion des données, telles que le tableau d'enregistrements, le nom de la table, l'indice de connexion, etc.
+      // Syntaxe : Constructeur (<sNomDeLaTable> est chaîne, <nIndiceDeConnexion> est entier [, <xNomObjetFiche> [, <bLectureSeule> est booléen [, <sLitAussiMemos> est chaîne [, <sEmplacementDesMémos> est chaîne]]]])
+      // Paramètres :
+      //	sNomDeLaTable (chaîne UNICODE) : Nom de la table à laquelle est reliée la source de données.
+      //	nIndiceDeConnexion (entier) : Indice de connexion à la base de données.
+      // 	xTableau : Tableau associé à la source de données (à déclarer dans la classe héritée, ex m_tabClients, en lecture seule. En effet, les méthodes sont disponibles pour en ajouter, modifier, supprimer et rechercher.
+      // 	bLectureSeule (booléen optionnel) : Indique si les enregistrements sont en lecture seule, Faux par défaut.
+      //	sLitAussiMemos (chaîne UNICODE optionnelle) : Indique s'il faut également lire les mémos lors de la lecture de l'enregistrement, par défaut aucun.
+      //	sEmplacementDesMémos (chaîne UNICODE optionnelle) : Emplacement des mémos utilisé comme référence pour tous les enregistrements contenus dans le tableau.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(sNomDeLaTable est une chaine,nIndiceDeConnexion est un entier,xTableau,bLectureSeule est un booléen = Faux,sLitAussiMemos est une chaine = "",sEmplacementDesMémos est une chaine = (nIndiceDeConnexion>0 _et_ nIndiceDeConnexion<=cBaseDeDonnées.mg_tabConnexion..occurrence ? cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexion].sEmplacementDesMémos sinon ""))	//,pclFiche est un objet dynamique)	//)
+      cSQL.Constructeur(nIndiceDeConnexion,sNomDeLaTable)	//cSQL ne sert à rien pour cBaseDeDonnéesExcel
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomDeLaTable,nIndiceDeConnexion,bLectureSeule,sLitAussiMemos,sEmplacementDesMémos)
+      SI p_sErreur="" ALORS								//sinon c'est qu'il y a eu un problème dans le constructeur de cSQL (ex : un indice de connexion à 0)
+      	m_tabEnregistrement 	<- xTableau				//le tableau, dans la déclaration de la classe héritée, doit exister. Cela permet de le typer et de faire les liaisons dans les tables, les zone répétées, les champs de saisie, les combos...
+      	m_sEmplacementDesMémos	= sEmplacementDesMémos
+      	m_sLitAussiMemos		= sLitAussiMemos
+      	m_pclBaseDeDonnées 		= allouer un cBaseDeDonnées(nIndiceDeConnexion)
+      	m_bLectureSeule			= bLectureSeule
+      	m_bTraceAjout			= Vrai
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=UniversalWindowsApp>
+      		detTab est une Définition = tableauinfo(xTableau,tiDéfinitionElément)
+      		m_vNomObjetFiche = detTab..Nom
+      	
+      <fin>
+      
+      
+      	m_sTableNomUnique = m_pclBaseDeDonnées.p_sNomUnique+cGénérique._Sep+Minuscule(sNomDeLaTable)
+      	SI cApplication.mg_taInfo[m_sTableNomUnique]=Null alors cApplication.mg_taInfo[m_sTableNomUnique] = allouer un ctable(nIndiceDeConnexion,sNomDeLaTable)
+      	
+      	SI cRéseau.Protocole(m_sEmplacementDesMémos)=cRéseau.EProtocoleRéseau.FTP ALORS 
+      		SI Droite(m_sEmplacementDesMémos,1)<>"/" ALORS m_sEmplacementDesMémos+="/"
+      	SINON
+      		m_sEmplacementDesMémos=ComplèteRep(m_sEmplacementDesMémos)
+      	FIN
+      fin
+      	
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1921177131080904007
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : Liste
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1923738421954721428
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère des enregistrements à partir de la source de données. Elle effectue une requête sur la base de données ou charge les données depuis un fichier Excel en fonction de la configuration de la source de données.
+      // Syntaxe : [ <Résultat> = ] Liste ( [<sNomColonnes> est chaîne [, <sFiltre> est chaîne [, <sOrdre> est chaîne [, <nLimiteMax> est entier [, <bLectureSeule> est booléen [, <sJaugeOuCallBack> est chaîne [, <duRafraichiJauge> est durée [, <sChampLibelléJauge> est chaîne [, <sContenuLibelléJauge> est chaîne]]]]]]]]])
+      // Paramètres :
+      // 	sNomColonnes (chaîne UNICODE optionnelle) : La liste des colonnes à récupérer, par défaut : toutes les colonnes.
+      //	sFiltre (chaîne UNICODE optionnelle) :  La condition de filtre à appliquer lors de la requête au format SQL sans le WHERE (ex : "Client.Adresse IS NULL").
+      //	sOrdre (chaîne UNICODE optionnelle) : L'ordre de tri des résultats au format SQL sans le ORDER BY (ex : "Client.Code ASC")
+      // 	nLimiteMax (entier optionnel) : Limite le nombre maximum d'enregistrements à récupérer, par défaut : récupère tous les enregistrements (quand ce paramètre est à 0).
+      // 	bLectureSeule (booléen optionnel) : Indique si les enregistrements récupérés doivent être en lecture seule.
+      //	sJaugeOuCallBack (chaîne UNICODE optionnelle) : Le nom de la jauge ou de la méthode de rappel pour indiquer la progression.
+      // 	duRafraichiJauge (durée optionnelle) : La fréquence de rafraîchissement de la jauge, par défaut toutes les 100ms (10x par seconde).
+      //	sChampLibelléJauge (chaîne UNICODE optionnelle) : Le champ "libellé" de la jauge à mettre à jour.
+      //	sContenuLibelléJauge (chaîne UNICODE optionnelle) : Le contenu du champ libellé associé à la jauge à mettre à jour (voir cJauge pour le détail des balises reconnues).
+      // Valeur de retour : booléen : Indique si l'opération s'est déroulée avec succès.
+      // Exemple :
+      //
+      PROCEDURE Liste(sNomColonnes est une chaîne = "*",sFiltre est une chaîne = "",sOrdre est une chaîne = "",nLimiteMax est un entier = 0,LOCAL bLectureSeule est un booléen = Faux,LOCAL sJaugeOuCallBack est une chaîne = "",LOCAL duRafraichiJauge est une Durée = 100ms,LOCAL sChampLibelléJauge est une chaîne="",LOCAL sContenuLibelléJauge est une chaîne="") : booléen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomColonnes,sFiltre,sOrdre,nLimiteMax,sJaugeOuCallBack)
+      m_pclErreur.Raz()
+      m_vDernièreRequête.Colonnes=sNomColonnes;m_vDernièreRequête.Filtre=sFiltre;m_vDernièreRequête.Ordre=sOrdre;m_vDernièreRequête.LimiteMax=nLimiteMax;m_vDernièreRequête.LectureSeule=bLectureSeule
+      m_vDernièreRequête.JaugeOuCallBack=sJaugeOuCallBack;m_vDernièreRequête.RafraichiJauge=duRafraichiJauge;m_vDernièreRequête.LibelléJauge=sChampLibelléJauge;m_vDernièreRequête.TextePersoLibelléJauge=sContenuLibelléJauge
+      
+      RAZ()
+      m_sColonnesLues = ""
+      
+      sPréLimite,sPostLimite	sont des chaines
+      
+      si m_nIndiceDeConnexion = 0 alors m_pclErreur.AjouteErreur(<§$0010§>)
+      si sNomColonnes~="" 		alors m_pclErreur.AjouteErreur(<§$0002§>)
+      si nLimiteMax<0 			alors m_pclErreur.AjouteErreur(<§$0003§>)
+      
+      SI m_pclErreur.p_sErreur="" ALORS
+      	SI PAS bLectureSeule _ET_ PAS sNomColonnes DANS ("","*") ALORS	//s'assurer que les colonnes de la clé primaire sont bien là
+      		POUR TOUTE CHAÎNE sColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire separee par ","
+      			SI Position(sNomColonnes,sColonne,0,SansCasse+MotComplet)<1 ALORS sNomColonnes+=[","]+sColonne
+      		FIN
+      	FIN
+      	selon cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider
+      		cas cBaseDeDonnéesExcel.hAccèsNatifExcel	//pas d'appel à ListeRequête car il n'y a pas de requête possible ici
+      			si pas sFiltre~="" alors m_pclErreur.AjouteAvertissement(<§$000d§>)
+      			sColonne,sValeur,sLettre sont des chaines
+      			m_bUneTable		= Vrai
+      			pclEnreg 		est un cEnregistrement dynamique
+      			cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.p_sFeuilleEnCours=cApplication.mg_taInfo[m_sTableNomUnique].m_sNomOriginal
+      			nMaxLigne 		est un entier = cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.m_tabFeuille[cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.p_nFeuilleEnCours].nNbLignes
+      			nLigne			est un entier
+      			SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(nMaxLigne+" résultat"+(nMaxLigne<2 ? "" SINON "s"))
+      			SI sJaugeOuCallBack>"" _ET_ nMaxLigne>0 ALORS m_clJauge.Démarre(sJaugeOuCallBack,nMaxLigne,&nLigne,duRafraichiJauge,sChampLibelléJauge,sContenuLibelléJauge)
+      			si pas hexecuterequetesql(m_sd,hRequêteDéfaut,"SELECT * FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sPremierAlias) alors m_pclErreur.AjouteErreurHF();renvoyer faux
+      			pour nLigne = 1+m_bNePasLirePremierEnreg _a_ nMaxLigne
+      				pclEnreg <- nouveau(bLectureSeule)
+      				pour nColonne = 1 _a_ cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.m_tabFeuille[cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.p_nFeuilleEnCours].nNbColonnes
+      					sColonne=cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.m_tabFeuille[cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.p_nFeuilleEnCours].tabColonnes[nColonne].sNom
+      					SI sNomColonnes~="*" _OU_ Position(sNomColonnes,sColonne,0,MotComplet+SansCasse)>0 alors
+      						sLettre	= cFichierExcel.numColonneVersLettre(nColonne,cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.m_eFormat)
+      						sValeur	= cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].clFichier.CelluleValeur(sLettre+nLigne)
+      						{"m_sd."+sLettre,indVariable}=sValeur
+      					fin
+      				FIN
+      				pclEnreg.SourceVersObjet(m_sd,faux)
+      				SI Ajoute(pclEnreg,cEnregistrement.EstInchangé)=0 ALORS
+      					SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      					RENVOYER Faux
+      				FIN
+      			FIN
+      			si sOrdre>"" alors tableautrie(m_tabEnregistrement,ttMembre,sOrdre)
+      			SI sJaugeOuCallBack>"" _ET_ nMaxLigne>0 ALORS m_clJauge.Arrête()
+      			renvoyer vrai
+      		autres cas
+      			sFiltre=SansEspace(sFiltre);sOrdre=SansEspace(sOrdre)
+      			SI Gauche(sFiltre,6)~= "WHERE "	 	ALORS sFiltre	= Milieu(sFiltre,7)
+      			SI Gauche(sOrdre,9)	~= "ORDER BY " 	ALORS sOrdre	= Milieu(sOrdre,10)
+      			
+      			SI nLimiteMax>0 ALORS (sPréLimite,sPostLimite)=SQLLimiteRêqueteA(nLimiteMax,(sFiltre>""))
+      			SI sFiltre>"" 	ALORS sFiltre	= "WHERE "+sFiltre
+      			SI sOrdre>"" 	ALORS sOrdre	= "ORDER BY "+sOrdre
+      			
+      			renvoyer ListeRequête("SELECT "+sPréLimite+[" "]+cApplication.mg_taInfo[m_sTableNomUnique].SQLColonnes(sNomColonnes,m_sLitAussiMemos)+" FROM "+cApplication.mg_taInfo[m_sTableNomUnique].m_sPremierAlias+[" "]+sFiltre+[" "]+sPostLimite+[" "]+sOrdre,bLectureSeule,sJaugeOuCallBack,duRafraichiJauge,sChampLibelléJauge,sContenuLibelléJauge)
+      	fin
+      FIN
+      RENVOYER Faux
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER faux
+     type : 458752
+   -
+     name : Premier
+     procedure_id : 1923780117517948222
+     type_code : 12
+     code : |1-
+      // Résumé : Positionne le curseur de parcours sur le premier enregistrement du tableau d'enregistrements et renvoie l'objet cEnregistrement correspondant.
+      // Syntaxe : [ <Résultat> = ] Premier ()
+      // Paramètres : Aucun
+      // Valeur de retour : Type indéterminé : Objet cEnregistrement correspondant au premier enregistrement.
+      // Exemple :
+      //
+      PROCEDURE Premier()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      si m_tabEnregistrement..occurrence=0 alors renvoyer null sinon m_nIndiceParcours=1;renvoyer m_tabEnregistrement[m_nIndiceParcours]
+     type : 458752
+   -
+     name : Dernier
+     procedure_id : 1924098640848128052
+     type_code : 12
+     code : |1-
+      // Résumé : Positionne le curseur de parcours sur le dernier enregistrement du tableau d'enregistrements et renvoie l'objet cEnregistrement correspondant.
+      // Syntaxe : [ <Résultat> = ] Dernier ()
+      // Paramètres : Aucun
+      // Valeur de retour : Type indéterminé : Objet cEnregistrement correspondant au dernier enregistrement.
+      // Exemple :
+      //
+      PROCEDURE Dernier()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      SI m_tabEnregistrement..Occurrence=0 ALORS RENVOYER null sinon m_nIndiceParcours=m_tabEnregistrement..Occurrence;renvoyer m_tabEnregistrement[m_nIndiceParcours]
+     type : 458752
+   -
+     name : Trie
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1924102214261029054
+     type_code : 12
+     code : |1-
+      // Résumé : Trie le tableau d'enregistrements selon la valeur d'un membre spécifié. Différentes options de tri, telles que l'ordre lexicographique, le respect des valeurs numériques, l'absence d'accent, etc., peuvent être spécifiées.
+      // Syntaxe : Trie (<sNomMembre> est chaîne [, <COOption> est cSourceDeDonnées.COTri])
+      // Paramètres :
+      //	sNomMembre (chaîne UNICODE) : Le nom du membre selon lequel effectuer le tri.
+      //	COOption (cSourceDeDonnées.COTri optionnel) : Options de tri spécifiées sous forme de combinaison de valeurs prédéfinies, par défaut : aucun tri.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Trie(sNomMembre est une chaine,COOption est une COTri = COTri.Aucun)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sNomMembre,COOption)
+      m_pclErreur.raz()
+      
+      nOption est un entier
+      si COOption[COTri.tccOrdreLexicographique] 		alors nOption+=COTri.tccOrdreLexicographique
+      si COOption[COTri.tccRespecteNumérique] 		alors nOption+=COTri.tccRespecteNumérique
+      si COOption[COTri.tccSansAccent] 				alors nOption+=COTri.tccSansAccent
+      si COOption[COTri.tccSansCasse] 				alors nOption+=COTri.tccSansCasse
+      si COOption[COTri.tccSansEspace] 				alors nOption+=COTri.tccSansEspace
+      si COOption[COTri.tccSansEspaceIntérieur] 		alors nOption+=COTri.tccSansEspaceIntérieur
+      si COOption[COTri.tccSansPonctuationNiEspace] 	alors nOption+=COTri.tccSansPonctuationNiEspace
+      tableautrie(m_tabEnregistrement,ttMembre+nOption,sNomMembre)
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 458752
+   -
+     name : ÉcritTout
+     procedure_id : 1924105547155706115
+     type_code : 12
+     code : |1-
+      // Résumé : Effectue l'écriture en base de données de tous les enregistrements contenus dans le tableau d'enregistrements associé à la source de données. Cette méthode traite les enregistrements à supprimer en premier, puis écrit les enregistrements actuels. 
+      // Syntaxe : [ <Résultat> = ] ÉcritTout ( [<bForceID> est booléen [, <bContinueQuandErreur> est booléen]])
+      // Paramètres :
+      //	bForceID (booléen optionnel) : Force, lors de l'écriture, l'utilisation de la clé unique telle qu'elle est affectée dans chaque cEnregistrement. Par défaut : Faux.
+      //	bContinueQuandErreur (booléen optionnel) : Indique s'il faut continuer l'opération d'écriture même en cas d'erreur. Par défaut : Faux.
+      // Valeur de retour : booléen : Indique si l'opération d'écriture a été réussie (Vrai) ou non (Faux).
+      // Exemple :
+      //
+      PROCEDURE ÉcritTout(bForceID est un booleen = faux,bContinueQuandErreur est un booléen = Faux) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bContinueQuandErreur)
+      m_pclErreur.Raz()
+      
+      SI m_nIndiceDeConnexion = 0 ALORS m_pclErreur.AjouteErreur(<§$0010§>);renvoyer faux
+      SI m_bLectureSeule 			ALORS m_pclErreur.AjouteErreur(<§$000f§>);renvoyer faux
+      
+      //A FAIRE : Transaction ?
+      //d'abord supprimer car les enregistrements de m_tabEnregistrement pourrait les récréer
+      POUR TOUT pclObjet de m_tabSupprimé
+      	SI PAS pclObjet.Supprime() ALORS 
+      		m_pclErreur.AjouteErreur(pclObjet.p_sErreur)
+      		SI PAS bContinueQuandErreur ALORS RENVOYER Faux
+      	FIN
+      FIN
+      
+      POUR TOUT pclObjet DE m_tabEnregistrement
+      	SI PAS pclObjet.Ecrit(bForceID) ALORS 
+      		m_pclErreur.AjouteErreur(pclObjet.p_sErreur)
+      		SI PAS bContinueQuandErreur ALORS RENVOYER Faux 
+      	FIN
+      FIN
+      
+      TableauSupprimetout(m_tabSupprimé)	
+      renvoyer vrai
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 1931162831300130620
+     type_code : 12
+     code : |1-
+      // Résumé : Réinitialise l'état interne de la source de données en supprimant tous les enregistrements du tableau d'enregistrements actuel et du tableau des enregistrements supprimés. De plus, l'indice de parcours est réinitialisé à zéro.
+      // Syntaxe : Raz ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Raz()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      tableauSupprimeTout(m_tabEnregistrement)
+      TableauSupprimeTout(m_tabSupprimé)
+      m_nIndiceParcours=0
+     type : 458752
+   -
+     name : OccurrenceSelonStatut
+     procedure_id : 1961216152446791479
+     type_code : 12
+     code : |1-
+      // Résumé : Compte le nombre d'enregistrements dans la source de données en fonction des différents statuts spécifiés. Les statuts pris en compte sont ceux définis dans la combinaison COStatutEnregistrement.
+      // Syntaxe : [ <Résultat> = ] OccurrenceSelonStatut ( [<coStatutEnregistrement> est cSourceDeDonnées.COStatutEnregistrement])
+      // Paramètres : 
+      //	coStatutEnregistrement (cSourceDeDonnées.COStatutEnregistrement) : Combinaison des types à compter 
+      // Valeur de retour : entier : Nombre d'enregistrements correspondant aux statuts spécifiés.
+      // Exemple :
+      //
+      PROCEDURE OccurrenceSelonStatut(coLeStatutEnregistrement est un COStatutEnregistrement = coStatutEnregistrement.EstAjouté + coStatutEnregistrement.EstInchangé + coStatutEnregistrement.EstModifié) : entier
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      si coLeStatutEnregistrement = coStatutEnregistrement.EstAjouté + coStatutEnregistrement.EstInchangé + coStatutEnregistrement.EstModifié + coStatutEnregistrement.EstSupprimé alors renvoyer m_tabEnregistrement.Occurrence() + m_tabSupprimé.Occurrence()
+      si coLeStatutEnregistrement = coStatutEnregistrement.EstAjouté + coStatutEnregistrement.EstInchangé + coStatutEnregistrement.EstModifié alors renvoyer m_tabEnregistrement.Occurrence()
+      nTot est un entier 
+      si coLeStatutEnregistrement[coStatutEnregistrement.EstSupprimé] alors nTot += m_tabSupprimé..Occurrence  
+      
+      pour tout pclObjet de m_tabEnregistrement
+      	SELON pclObjet.p_eStatutEnregistrement
+      		CAS cEnregistrement.EstAjouté 		: si coLeStatutEnregistrement[coStatutEnregistrement.EstAjouté] 	alors nTot++
+      		CAS cEnregistrement.EstModifié 		: si coLeStatutEnregistrement[coStatutEnregistrement.EstModifié] 	alors nTot++
+      		CAS cEnregistrement.EstInchangé 	: si coLeStatutEnregistrement[coStatutEnregistrement.EstInchangé] 	alors nTot++
+      	FIN
+      FIN
+      renvoyer nTot
+     type : 458752
+   -
+     name : Nouveau
+     procedure_id : 1961744811496382772
+     type_code : 12
+     code : |1-
+      // Résumé : Crée un objet cEnregistrement dynamique qui va permettre, dans les méthodes Liste(), de remplir cet objet avec les valeurs reçues et l'ajouter au tableau de résultats.
+      // Syntaxe : [ <Résultat> = ] Nouveau (<bLectureSeule> est booléen)
+      // Paramètres :
+      // 	bLectureSeule (booléen) : Indique si le nouvel enregistrement doit être en mode lecture seule. Paramètre obligatoire car les méthodes Liste() l'appellent ainsi.
+      // Valeur de retour : objet dynamique : Objet cEnregistrement dynamique qui sera ajouté au tableau des résultats
+      // Exemple :
+      //
+      PROCEDURE virtuelle Nouveau(bLectureSeule est un booleen)	//faire un héritage dans le cas où cette astuce ne fonctionne pas ou si l'on veut ajuster la création d'un nouvel enregistrement
+      pclEnreg est un cEnregistrement dynamique
+      quand exception dans	//ex : trop de paramètres envoyés à la classe telle que décrite dans le projet
+      	SI m_vNomObjetFiche<>Null ALORS
+      		SI m_sLitAussiMemos>"" _ET_ cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémobinaire>"" ALORS
+      			pclEnreg = allouer un m_vNomObjetFiche (m_nIndiceDeConnexion,objet,bLectureSeule,m_sColonnesLues,m_sLitAussiMemos,m_sEmplacementDesMémos)
+      		sinon si m_sColonnesLues DANS ("","*",m_sToutesLesColonnes) ALORS
+      			pclEnreg = allouer un m_vNomObjetFiche (m_nIndiceDeConnexion,objet,bLectureSeule)
+      		sinon sI m_sColonnesLues>"" alors
+      			pclEnreg = allouer un m_vNomObjetFiche (m_nIndiceDeConnexion,objet,bLectureSeule,m_sColonnesLues)
+      		FIN
+      	FIN
+      faire
+      	m_pclErreur.AjouteException()
+      fin
+      RENVOYER pclEnreg
+     type : 458752
+   -
+     name : Modifie
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1969776928376498977
+     type_code : 12
+     code : |1-
+      // Résumé : Remplace un enregistrement existant dans la source de données par un nouvel enregistrement fourni en paramètre. Elle prend en compte l'indice de l'enregistrement à modifier.
+      // Syntaxe : [ <Résultat> = ] Modifie (<xIndice>, <pclObjet> est cEnregistrement dynamique)
+      // Paramètres :
+      // 	xIndice : Indice de l'enregistrement à modifier. Il peut s'agir soit d'un entier représentant l'indice de l'enregistrement, soit d'une chaîne permettant d'identifier l'enregistrement selon son GUID.
+      //	pclObjet (cEnregistrement dynamique) : Nouvel enregistrement de type cEnregistrement qui remplacera l'enregistrement existant.
+      // Valeur de retour : booléen : Renvoie un booléen indiquant si l'opération de modification a été effectuée avec succès. Elle renvoie Vrai en cas de succès, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE Modifie(xIndice, pclObjet est un cEnregistrement dynamique) : booleen	//ne pas typer¸xIndice
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(xIndice,pclObjet)
+      m_pclErreur.Raz()
+      
+      nIndice est un entier
+      SI TypeVar(xIndice)=wlChaîne ALORS
+      	nIndice=Recherche(xIndice)
+      	SI nIndice<1 ALORS m_pclErreur.AjouteErreur(<§$0008§>);renvoyer faux
+      SINON
+      	nIndice=xIndice
+      fin
+      si 0<nIndice<=m_tabEnregistrement..occurrence alors
+      	m_tabEnregistrement[nIndice] 	 <- pclObjet
+      	renvoyer vrai
+      sinon
+      	m_pclErreur.AjouteErreur(<§$0007§>+m_tabEnregistrement..Occurrence)
+      FIN
+      renvoyer faux	
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : Lit
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1969781824639308489
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère un objet du tableau des résultats en fonction de l'indice fourni en paramètre. Elle prend en compte deux types d'indices : les indices numériques et les clés uniques (représentées par des chaînes, par exemple, des GUID).
+      // Syntaxe : [ <Résultat> = ] Lit (<xIndice>)
+      // Paramètres :
+      // 	xIndice : Indice de l'objet à récupérer. Il peut s'agir soit d'un entier représentant l'ID Unique de l'enregistrement, soit d'une chaîne GUID.
+      // Valeur de retour : Type indéterminé : Objet correspondant à l'indice fourni. Si l'indice n'est pas trouvée, elle renvoie Null et ajoute une erreur à la liste d'erreurs.
+      // Exemple :
+      //
+      PROCEDURE Lit(xIndice)	//ne pas typer¸xIndice
+      nIndice est un entier
+      SI TypeVar(xIndice)=wlChaîne ALORS			//un GUID
+      	nIndice=recherche(xIndice)
+      	si nIndice>0 alors
+      		renvoyer m_tabEnregistrement[nIndice]
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0008§>)
+      	FIN
+      SINON SI TypeVar(xIndice) DANS (wlEntier,wlEntier_1,wlEntier_4,wlEntier_8,wlEntierSansSigne_1,wlEntierSansSigne_2,wlEntierSansSigne_4,wlEntierSansSigne_8) ALORS	//un indice numérique
+      	SI 0<xIndice<=m_tabEnregistrement..Occurrence ALORS
+      		RENVOYER m_tabEnregistrement[xIndice]
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0007§>+m_tabEnregistrement..Occurrence);renvoyer null
+      	FIN
+      FIN
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER null
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER null
+     type : 458752
+   -
+     name : MetDansPoubelle
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1969782683632836423
+     type_code : 12
+     code : |1-
+      // Résumé : Déplace un enregistrement vers la poubelle (tableau des éléments supprimés). Elle prend en compte deux types d'indices : les ID numériques et les GUID.
+      // Syntaxe : [ <Résultat> = ] MetDansPoubelle (<xIndice>)
+      // Paramètres :
+      // 	xIndice : Indice de l'objet à chercher. Il peut s'agir soit d'un entier représentant l'ID Unique de l'enregistrement, soit d'une chaîne GUID.
+      // Valeur de retour : booléen : Renvoie Vrai si l'opération a été effectuée avec succès et Faux en cas d'échec.
+      // Exemple :
+      //
+      PROCEDURE MetDansPoubelle(xIndice) : booleen	//ne pas typer¸xIndice
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(xIndice)
+      m_pclErreur.Raz()
+      
+      nIndice est un entier
+      SI TypeVar(xIndice)=wlChaîne ALORS			//un GUID
+      	nIndice=Recherche(xIndice)
+      	SI nIndice>0 ALORS
+      		si m_tabEnregistrement[nIndice].p_eStatutEnregistrement<>cEnregistrement.EstAjouté alors tableauajoute(m_tabSupprimé,m_tabEnregistrement[nIndice])
+      		tableausupprime(m_tabEnregistrement,nIndice)
+      		RENVOYER Vrai
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0008§>)
+      	FIN
+      SINON SI TypeVar(xIndice) DANS (wlEntier,wlEntier_1,wlEntier_4,wlEntier_8,wlEntierSansSigne_1,wlEntierSansSigne_2,wlEntierSansSigne_4,wlEntierSansSigne_8) ALORS	//un indice numérique
+      	SI 0<xIndice<=m_tabEnregistrement..Occurrence ALORS
+      		SI m_tabEnregistrement[xIndice].p_eStatutEnregistrement<>cEnregistrement.EstAjouté ALORS TableauAjoute(m_tabSupprimé,m_tabEnregistrement[xIndice])
+      		TableauSupprime(m_tabEnregistrement,xIndice)
+      		RENVOYER Vrai
+      	SINON
+      		m_pclErreur.AjouteErreur(<§$0007§>+m_tabEnregistrement..Occurrence)	
+      	FIN
+      fin
+      renvoyer faux
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Faux
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Faux
+     type : 458752
+   -
+     name : MetToutDansPoubelle
+     procedure_id : 1969783791736295123
+     type_code : 12
+     code : |1-
+      // Résumé : Déplacer les enregistrements actuels vers la poubelle (tableau des éléments supprimés). Les enregistrements ajoutés sont ceux pour lesquels Ajoute() a été appelé. Il ne sont donc normalement dans l'application et pas encore dans la BD (ils n'ont pas encore d'ID unique). Le paramètre bMêmeCeuxAjoutés à Vrai permet de les prendre tous.
+      // Syntaxe : [ <Résultat> = ] MetToutDansPoubelle ( [<bMêmeCeuxAjoutés> est booléen])
+      // Paramètres :
+      // 	bMêmeCeuxAjoutés (booléen optionnel) : Va également mettre les enregistrements ajoutés dans la poubelle si à Vrai. Par défaut : Faux.
+      // Valeur de retour : booléen : Renvoie toujours Vrai
+      // Exemple :
+      //
+      PROCEDURE MetToutDansPoubelle(bMêmeCeuxAjoutés est un booléen = faux) : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      POUR TOUT pclObjet de m_tabEnregistrement
+      	SI bMêmeCeuxAjoutés _ou_ pclObjet.p_eStatutEnregistrement<>cEnregistrement.EstAjouté ALORS tableauajoute(m_tabSupprimé,pclObjet)
+      FIN
+      TableauSupprimeTout(m_tabEnregistrement)
+      renvoyer vrai
+     type : 458752
+   -
+     name : Suivant
+     procedure_id : 1969785814668262676
+     type_code : 12
+     code : |1-
+      // Résumé : Passe à l'objet suivant dans le tableau d'enregistrement résultant d'une opération de Liste.
+      // Syntaxe : [ <Résultat> = ] Suivant ()
+      // Paramètres : Aucun
+      // Valeur de retour :
+      // 	Type indéterminé : Renvoie l'objet suivant dans le tableau. Si aucun enregistrement n'est disponible ou que le dernier enregistrement est déjà atteint, elle renvoie Null.
+      // Exemple :
+      //
+      PROCEDURE Suivant()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      SI m_tabEnregistrement..Occurrence>0 _Et_ m_nIndiceParcours<m_tabEnregistrement..Occurrence ALORS 
+      	m_nIndiceParcours++;RENVOYER m_tabEnregistrement[m_nIndiceParcours]
+      SINON
+      	RENVOYER Null
+      FIN
+     type : 458752
+   -
+     name : Précédent
+     procedure_id : 1969785849028074770
+     type_code : 12
+     code : |1-
+      // Résumé : Passe à l'objet précédent dans le tableau d'enregistrement résultant d'une opération de Liste.
+      // Syntaxe : [ <Résultat> = ] Précédent ()
+      // Paramètres : Aucun
+      // Valeur de retour :
+      // 	Type indéterminé : Renvoie l'objet précédent dans le tableau. Si aucun enregistrement n'est disponible ou que le premier enregistrement est déjà atteint, elle renvoie Null.
+      // Exemple :
+      //
+      PROCEDURE Précédent()
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      si m_tabEnregistrement..Occurrence>0 _Et_ m_nIndiceParcours>1 ALORS 
+      	m_nIndiceParcours--;RENVOYER m_tabEnregistrement[m_nIndiceParcours]
+      sinon
+      	RENVOYER Null
+      fIN
+     type : 458752
+   -
+     name : Recherche
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1976405986734748708
+     type_code : 12
+     code : |1-
+      // Résumé : Retrouve l'indice, dans le tableau de résultats, de l'objet avec son GUID.
+      // Syntaxe : [ <Résultat> = ] Recherche (<sGUID> est chaîne)
+      // Paramètres :
+      //	sGUID (chaîne UNICODE) : La chaîne représentant le GUID de l'enregistrement à rechercher.
+      // Valeur de retour : entier : Indice de l'enregistrement correspondant au GUID spécifié. Si l'enregistrement n'est pas trouvé, elle renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE Recherche(sGUID est une chaine) : entier
+      //termes non documentés WD23 : ObjetAssocié
+      SI m_tabEnregistrement..Occurrence=0 ALORS RENVOYER 0 sINON RENVOYER RechercheParMembre("m_sGUIDEnregistrement",sGUID)
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : RechercheParMembre
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1976406064044244214
+     type_code : 12
+     code : |1-
+      // Résumé : Effectue une recherche linéaire dans le tableau d'enregistrements pour trouver un enregistrement qui correspond aux valeurs spécifiées pour les membres donnés.
+      // Syntaxe : [ <Résultat> = ] RechercheParMembre (<sMembres> est chaîne, <xValMembre1> [, <xValMembre2> [, <xValMembre3> [, <xValMembre4> [, <xValMembre5>]]]])
+      // Paramètres :
+      //	sMembres (chaîne UNICODE) : Noms des membres (colonnes) à rechercher, séparés par des virgules ou points-virgules.
+      // 	xValMembre1 : Valeur à rechercher pour le premier membre spécifié
+      // 	xValMembre2 (valeur optionnelle) : Valeur à rechercher pour le second membre spécifié
+      // 	xValMembre3 (valeur optionnelle) : Valeur à rechercher pour le troisième membre spécifié
+      // 	xValMembre4 (valeur optionnelle) : Valeur à rechercher pour le quatrième membre spécifié
+      // 	xValMembre5 (valeur optionnelle) : Valeur à rechercher pour le cinquième membre spécifié
+      // Valeur de retour : entier : Indice du premier enregistrement trouvé qui correspond aux valeurs spécifiées pour les membres donnés. Si aucun enregistrement n'est trouvé, elle renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE RechercheParMembre(LOCAL sMembres est une chaîne,xValMembre1<utile>,xValMembre2<utile>=null,xValMembre3<utile>=null,xValMembre4<utile>=Null,xValMembre5<utile>=null) : entier
+      SI m_tabEnregistrement..Occurrence=0 _ou_ sMembres="" ALORS RENVOYER 0
+      SI Position(sMembres,";")<1 _ET_ Position(sMembres,",")>0 ALORS sMembres=Remplace(sMembres,",",";")	//documentation pas claires, il semblerait que les 2 seraient acceptés mais en pratique seul le ; l'est
+      nMax est un entier = ChaîneOccurrence(sMembres,";")+1
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	RENVOYER TableauCherche(m_tabEnregistrement,tcLinéaire,sMembres,MesParamètres[2 a nMax+1])		
+      	
+      <sinon si CibleExécution=Java ou CibleExécution=Android>
+      	renvoyer RechercheParRéférence()
+      	
+      <fin>
+      
+      
+      	procédure interne RechercheParRéférence
+      	nOK est un entier
+      	POUR n=1 _a_ m_tabEnregistrement..occurrence
+      		nOK=0
+      		POUR TOUTE CHAÎNE sMembre,nPos,nIndice de sMembres separéé par ";"
+      			nOK+=({"m_tabEnregistrement["+n+"]."+sMembre,indVariable}={"xValMembre"+nIndice,indVariable})
+      		FIN
+      		SI nOK=nMax ALORS RENVOYER n
+      	FIN
+      	renvoyer 0
+      	FIN
+      	
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : Ajoute
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1923768297753335741
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute un nouvel enregistrement au tableau d'enregistrements de la source de données. Utilisé dans Liste(), ListeRequête et les envois dans la poubelle.
+      // Syntaxe : [ <Résultat> = ] Ajoute (<pclEnregistrement> est objet dynamique [, <eStatutEnregistrement> est cEnregistrement.EEnregistrementStatut])
+      // Paramètres :
+      //	pclEnregistrement (objet dynamique) : Objet à ajouter dans le tableau.
+      //	eStatutEnregistrement (cEnregistrement.EEnregistrementStatut) : Statut initial de l'enregistrement ajouté. Par défaut, il est défini à cSourceDeDonnées.EstAjouté.
+      // Valeur de retour : entier : Indice de l'enregistrement ajouté dans le tableau. Si une erreur survient pendant l'ajout, elle renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE Ajoute(pclEnregistrement est un objet dynamique,eStatutEnregistrement est un cEnregistrement.EenregistrementStatut = cEnregistrement.EstAjouté) : entier
+      SI m_bTraceAjout _et_ cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(pclEnregistrement..classe,eStatutEnregistrement..nom)
+      m_pclErreur.RAZ()
+      
+      SI pclEnregistrement=Null ALORS
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      SINON SI m_sTableNomUnique = "" ALORS
+      	m_pclErreur.AjouteErreur(<§$000c§>)
+      SINON
+      	//si la clé primaire est composée, elle est calculée ici pour les accès SQL (pour les accès natif, la bonne valeur se trouve déjà dans la clé composée)
+      	//si la clé primaire est automatique, elle reste à 0 ... car le pclEnregistrement n'a pas encore été écrit dans sa table
+      	SI pas m_bLectureSeule _et_ cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès=cBaseDeDonnées.RequêteSQL _ET_ Position(cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire,",")>0 ALORS
+      		sValeurs est une chaine
+      		MémoireVersFichier(pclEnregistrement,m_sd)
+      		POUR TOUTE CHAÎNE sColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire SEPAREE PAR ","
+      			sValeurs+=[cGénérique._Sep]+{"m_sd."+sColonne,indVariable}
+      		FIN
+      		{"m_sd."+cApplication.mg_taInfo[m_sTableNomUnique].p_sCléPrimaire,indVariable}=sValeurs
+      		FichierVersMémoire(pclEnregistrement,m_sd)
+      	fin
+      	
+      	si eStatutEnregistrement<>cEnregistrement.PasDeChangement alors pclEnregistrement.m_eStatutEnregistrement = eStatutEnregistrement
+      	pclEnregistrement.m_bPointeur = faux
+      	n est un entier = TableauAjoute(m_tabEnregistrement,pclEnregistrement)
+      	si ErreurDétectée alors m_pclErreur.AjouteErreurWx() sinon renvoyer n
+      FIN
+      renvoyer 0
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : ListeRequête
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2011675575320478035
+     type_code : 12
+     code : |1-
+      // Résumé : Méthode principale de la classe, elle charge les données résultant d'une requête SQL dans le tableau d'enregistrements de la source de données. Vérifie au passe que la requête est sur une table ou plusieurs (ex avec de JOIN).
+      // Syntaxe : [ <Résultat> = ] ListeRequête (<sRequête> est chaîne [, <bLectureSeule> est booléen [, <sJaugeOuCallBack> est chaîne [, <duRafraichiJauge> est durée [, <sChampLibelléJauge> est chaîne [, <sContenuLibelléJauge> est chaîne]]]]])
+      // Paramètres :
+      //	sRequête (chaîne UNICODE) : La requête SQL à exécuter pour récupérer les données.
+      // 	bLectureSeule (booléen optionnel) : Indique si les enregistrements récupérés doivent être en lecture seule.
+      //	sJaugeOuCallBack (chaîne UNICODE optionnelle) : Le nom de la jauge ou de la méthode de rappel pour indiquer la progression.
+      // 	duRafraichiJauge (durée optionnelle) : La fréquence de rafraîchissement de la jauge, par défaut toutes les 100ms (10x par seconde).
+      //	sChampLibelléJauge (chaîne UNICODE optionnelle) : Le champ "libellé" de la jauge à mettre à jour.
+      //	sContenuLibelléJauge (chaîne UNICODE optionnelle) : Le contenu du champ libellé associé à la jauge à mettre à jour (voir cJauge pour le détail des balises reconnues).
+      // Valeur de retour : booléen : Renvoie Vrai si le chargement des données est effectué avec succès, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE ListeRequête(LOCAL sRequête est une chaine,local bLectureSeule est un booleen = m_bLectureSeule,sJaugeOuCallBack est une chaine = "",duRafraichiJauge est une durée = 100ms,sChampLibelléJauge est une chaine = "",sContenuLibelléJauge est une chaine = "") : booleen
+      bDepuisListe		est un booleen = contient(dbgInfo(dbgPile,dbgTraitementAppelant),"cSourceDeDonnées.Liste")
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sRequête,sJaugeOuCallBack,duRafraichiJauge,sChampLibelléJauge,sContenuLibelléJauge,bDepuisListe)
+      m_pclErreur.Raz()
+      
+      SI m_nIndiceDeConnexion = 0 ALORS m_pclErreur.AjouteErreur(<§$0010§>);renvoyer faux
+      si cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].cnxDonnées..Provider=cBaseDeDonnéesExcel.hAccèsNatifExcel alors m_pclErreur.ajouteerreur(<§$000e§>);renvoyer Faux
+      
+      m_vDernièreRequête.Requête=sRequête;m_vDernièreRequête.LectureSeule=bLectureSeule;m_vDernièreRequête.JaugeOuCallBack=sJaugeOuCallBack;m_vDernièreRequête.RafraichiJauge=duRafraichiJauge;m_vDernièreRequête.LibelléJauge=sChampLibelléJauge;m_vDernièreRequête.TextePersoLibelléJauge=sContenuLibelléJauge
+      
+      Raz()
+      m_sColonnesLues		= ""
+      m_bUneTable			= pas Multitable()
+      m_bLectureSeule		= bLectureSeule
+      m_bLectureAnnulée	= Faux
+      
+      nEnreg,nMaxEnreg 	sont des entiers
+      pclEnreg 			est un objet dynamique
+      bCalculeCléPrimaire	est un booleen = (pas bLectureSeule _ou_ (m_sLitAussiMemos>"" _ET_ cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémoBinaire>""))
+      
+      SI Requête(sRequête) ALORS 
+      	si pas cApplication.mg_taInfo[m_sTableNomUnique]..existe alors Colonnes(vrai)
+      	m_tabColonnes					= cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes
+      	m_sToutesLesColonnes 			= cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnes
+      	m_sToutesLesColonnesMémoBinaire = cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémoBinaire
+      	m_sToutesLesColonnesMémoTexte 	= cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesMémoTexte
+      	m_sToutesLesColonnesNonMémo		= cApplication.mg_taInfo[m_sTableNomUnique].p_sToutesLesColonnesNonMémo
+      	
+      	SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès<>cBaseDeDonnées.ODBC ALORS
+      		m_sColonnesLues					= Remplace(Minuscule(HListeRubrique(m_sd)),RC,",")
+      		nMaxEnreg 						= HNbEnr(m_sd)
+      		si nMaxEnreg>0 alors
+      			SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(nMaxEnreg+" résultat"+(nMaxEnreg<2 ? "" SINON "s"))
+      			SI sJaugeOuCallBack>"" _ET_ nMaxEnreg>0 alors m_clJauge.Démarre(sJaugeOuCallBack,nMaxEnreg,&nEnreg,duRafraichiJauge,sChampLibelléJauge,sContenuLibelléJauge)
+      			POUR TOUT m_sd
+      				si m_bLectureAnnulée alors 
+      					SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      					m_pclErreur.AjouteAvertissement(<§$000a§>);renvoyer faux
+      				FIN
+      				
+      				nEnreg++
+      				
+      				pclEnreg <- Nouveau(bLectureSeule)	
+      				si pclEnreg..classe="cEnregistrement" alors m_pclErreur.Ajouteerreurwx();renvoyer faux sinon pclEnreg.m_sColonnesLues=m_sColonnesLues
+      
+      				SI PAS pclEnreg.SourceVersObjet(m_sd,bCalculeCléPrimaire,m_bUneTable) ALORS 
+      					bLectureSeule=vrai
+      				sinon si bCalculeCléPrimaire _Et_ pclEnreg.p_sAvertissement>"" alors 	//pas réussi a calculer la clé primaire (les colonnes nécessaires ne sont pas là par exemple), pas besoin de tenter le coup pour les autre enregistrements
+      					bCalculeCléPrimaire=faux
+      				FIN
+      				pclEnreg.m_sTableReliée = (m_sTableNomUnique>"" ? extraitchaine(m_sTableNomUnique,3,cGénérique._Sep) sinon "")
+      				SI Ajoute(pclEnreg,cEnregistrement.EstInchangé)=0 ALORS
+      					SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      					RENVOYER Faux
+      				FIN
+      			FIN
+      		fin
+      	SINON
+      		nMaxEnreg 						= SQLNbLig()
+      		m_sColonnesLues					= remplace(Minuscule(SQLColonne()),rc,",")
+      
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(nMaxEnreg+" résultat"+(nMaxEnreg<2 ? "" SINON "s"))
+      		si nMaxEnreg>0 alors
+      			SI sJaugeOuCallBack>"" ALORS m_clJauge.Démarre(sJaugeOuCallBack,nMaxEnreg,&nEnreg,duRafraichiJauge,sChampLibelléJauge,sContenuLibelléJauge)
+      			nIndice 	est un entier
+      			TANTQUE SQLAvance() = 0	// Il y a encore une ligne à lire
+      				SI m_bLectureAnnulée ALORS 
+      					SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      					m_pclErreur.AjouteAvertissement(<§$000a§>);renvoyer faux
+      				FIN
+      				nEnreg++
+      				pclEnreg <- nouveau(bLectureSeule)
+      				SI pclEnreg..Classe="cEnregistrement" ALORS m_pclErreur.AjouteErreurWx();RENVOYER Faux SINON pclEnreg.m_sColonnesLues=m_sColonnesLues
+      			
+      				si m_sTableNomUnique>"" alors
+      					pclEnreg.m_sTableReliée = ExtraitChaîne(m_sTableNomUnique,3,cGénérique._Sep)
+      					POUR TOUTE CHAÎNE sColonne,nPos,nOccurrence DE m_sColonnesLues SEPAREE PAR RC
+      						nIndice=tableaucherche(cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes,tcLinéaire,"m_sNom",sColonne)
+      						si nIndice>0 alors
+      							SELON cApplication.mg_taInfo[m_sTableNomUnique].p_tabColonnes[nIndice].m_nTypeWD
+      								CAS hRubMémoBinaire,hRubMémoBinaire4	: {"m_sd."+sColonne,indVariable} = SQLLitMemo(nOccurrence)	
+      								CAS hRubMémoTexte 						: {"m_sd."+sColonne,indVariable} = SQLLitMémoTexte(nOccurrence)	
+      								AUTRE CAS								: {"m_sd."+sColonne,indVariable} = SQLLitCol(nOccurrence)
+      							FIN
+      						fin
+      					FIN
+      				fin
+      				SI PAS pclEnreg.SourceVersObjet(m_sd,bCalculeCléPrimaire,m_bUneTable) ALORS 
+      					bLectureSeule=Vrai
+      				SINON SI bCalculeCléPrimaire _ET_ pclEnreg.p_sAvertissement>"" ALORS 	//pas réussi a calculer la clé primaire (les colonnes nécessaires ne sont pas là par exemple), pas besoin de tenter le coup pour les autre enregistrements
+      					bCalculeCléPrimaire=Faux
+      				FIN
+      				SI Ajoute(pclEnreg,cEnregistrement.EstInchangé)=0 alors
+      					si sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      					RENVOYER Faux
+      				FIN
+      			FIN
+      		fin
+      	fin
+      	SI sJaugeOuCallBack>"" _ET_ nMaxEnreg>0 ALORS m_clJauge.Arrête()
+      SINON
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(p_sErreur);renvoyer faux
+      FIN
+      RENVOYER vrai
+      
+      	PROCÉDURE INTERNE Multitable() : booléen
+      	//détecter si le résultat contient des colonnes de plusieurs tables pour envoyer le sdSource dans le AprèsLecture
+      	sTable	est une chaine
+      	sReq	est une chaine	= minuscule(remplace(sRequête,[RC,tab]," "))
+      	TANTQUE Position(sReq,"  ") sReq=Remplace(sReq,"  "," ")
+      	sReq=ExtraitChaîne(sReq,1,[" where "," order"," group "])	//juste la première partie car il peut y avoir d'autres select dans le where
+      	sColonnesLues est une chaine = ExtraitChaîne(Milieu(sReq,8),1," from ")
+      	sReq=ExtraitChaîne(sReq,2," from ")
+      	nPos 	est un entier = position(sReq,["join","left","right","full","self","inner"],0,MotComplet)
+      	sTables est une chaine = Remplace(sansespace(nPos<1 ? sReq sinon gauche(sReq,nPos-1)),",",TAB)
+      	m_sTableNomUnique=m_pclBaseDeDonnées.p_sNomUnique+cGénérique._Sep+extraitchaine(sTables,1)	//si une table principale, on peut l'associer comme table de ref ici, les autres tables étant dans les JOIN
+      	sjoin 	est une chaine = (nPos<1 ? "" sinon milieu(sReq,nPos))
+      	SI sjoin<>"" ALORS
+      		bDétecté 		est un booleen
+      		sMotPrécédent 	est une chaine
+      		POUR TOUTE CHAÎNE sMot de sjoin separee par " "
+      			SI sMot="join" ALORS
+      				bDétecté=Vrai
+      			SINON SI sMot="on" ALORS
+      				sTables+=[TAB]+sTable;bDétecté=Faux;sTable=""
+      			SINON SI bDétecté ALORS 
+      				sTable+=[" "]+sMot
+      			FIN
+      			sMotPrécédent=sMot
+      		FIN
+      	FIN
+      	SI PAS Contient(sTables,TAB) 	ALORS renvoyer faux
+      	SI sColonnesLues="*" 			ALORS renvoyer vrai
+      	
+      	sTableNomUnique,sTableUnique sont des chaines
+      	bMultiTable est un booleen
+      	POUR TOUTE CHAÎNE sTable,nPos,nIndice DE sTables
+      		sTableNomUnique=cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+ExtraitChaîne(sTable,1," ")	//ExtraitChaîne(sTable,1," ") est le nom de la table
+      		SI cApplication.mg_taInfo[sTableNomUnique]=Null ALORS cApplication.mg_taInfo[sTableNomUnique] = allouer un cTable(m_nIndiceDeConnexion,ExtraitChaîne(sTable,1," "))	//pour récupérer le nom des colonnes
+      		sTable=ExtraitChaîne(sTable,1," ",DepuisFin)	//est le nom de l'alias, si pas d'alias, le nom de la table
+      		POUR TOUTE CHAÎNE sColonne de sColonnesLues separee par ","
+      			SI Position(sColonne,".")>0 ALORS	//la colonne est préfixée du nom de la table/l'alias, c'est facile alors
+      				SI ExtraitChaîne(sColonne,1,".")~=sTable ALORS
+      					SI sTableUnique="" ALORS 
+      						sTableUnique=sTable
+      					SINON SI sTableUnique<>sTable ALORS
+      						bMultiTable=vrai
+      					FIN
+      				FIN
+      			SINON	
+      				//la colonne n'a pas été préfixé du nom de la table, on doit chercher si la colonne est l'ID unique d'une autre table (car si l'ID unique n'est pas transmis, pas besoin de sdSource pour alimenter un autre objet)
+      			FIN
+      		FIN
+      	FIN
+      	SI bMultiTable _ou_ (sTableUnique>"" _ET_ sTableUnique<>ExtraitChaîne(sTables,1)) ALORS renvoyer vrai
+      	
+      	POUR TOUTE CHAÎNE sColonne de sColonnesLues separee par ","
+      		POUR TOUTE CHAÎNE sTable DE sTables
+      			sTableNomUnique=cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+ExtraitChaîne(sTable,1," ")
+      			SI Position(sColonne,".")<1 _ET_ (ExtraitChaîne(scolonne,1," ")="*" _OU_ Position(cApplication.mg_taInfo[sTableNomUnique].p_sToutesLesColonnes,ExtraitChaîne(scolonne,1," "),0,MotComplet+SansCasse)>0) ALORS
+      				SI sTableUnique="" ALORS 
+      					sTableUnique=sTable
+      				SINON SI sTableUnique<>sTable ALORS
+      					renvoyer vrai
+      				FIN
+      			FIN
+      		FIN	
+      	FIN
+      	RENVOYER Faux
+      	FIN
+      
+      CAS ERREUR:
+      SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      m_pclErreur.AjouteErreurWx();RENVOYER faux
+      CAS EXCEPTION:
+      SI sJaugeOuCallBack>"" ALORS m_clJauge.Arrête()
+      m_pclErreur.AjouteException();RENVOYER faux
+     type : 458752
+   -
+     name : LitDansPoubelle
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2051720331535365334
+     type_code : 12
+     code : |1-
+      // Résumé : Récupère un enregistrement mis à la poubelle à partir de son indice ou de sa clé primaire (GUID).
+      // Syntaxe : [ <Résultat> = ] LitDansPoubelle (<xIndice>)
+      // Paramètres :
+      //	xIndice : ID automatique ou GUID de l'enregistrement à récupérer.
+      // Valeur de retour : Type indéterminé : Objet supprimé correspondant à l'indice ou à la clé primaire spécifiée. Si l'enregistrement n'est pas trouvé, elle renvoie Null.
+      // Exemple :
+      //
+      PROCEDURE LitDansPoubelle(xIndice)	//ne pas typer xIndice
+      nIndice est un entier
+      SI TypeVar(xIndice)=wlChaîne ALORS
+      	SI m_tabSupprimé..Occurrence<=0 ALORS RENVOYER 0 
+      	nIndice=TableauCherche(m_tabSupprimé,tcLinéaire,"m_sGUIDEnregistrement",xIndice)
+      	SI nIndice>0 ALORS RENVOYER m_tabSupprimé[nIndice] SINON m_pclErreur.AjouteErreur(<§$0008§>)
+      SINON SI TypeVar(xIndice) DANS (wlEntier,wlEntier_1,wlEntier_4,wlEntier_8,wlEntierSansSigne_1,wlEntierSansSigne_2,wlEntierSansSigne_4,wlEntierSansSigne_8) ALORS	//un indice numérique
+      	SI 0<xIndice<=m_tabSupprimé..Occurrence ALORS RENVOYER m_tabSupprimé[xIndice] SINON	m_pclErreur.AjouteErreur(<§$0007§>+m_tabSupprimé..Occurrence)
+      FIN
+      renvoyer null
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER Null
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER Null
+     type : 458752
+   -
+     name : ListeRafraichi
+     procedure_id : 2098588602303900851
+     type_code : 12
+     code : |1-
+      // Résumé : Rafraîchi la liste des enregistrements en ré-exécutant la dernière requête effectuée. Tous les paramètres de la dernières requête avaient été conservés dans m_vDernièreRequête.
+      // Syntaxe : [ <Résultat> = ] ListeRafraichi ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Vrai si le rafraîchissement de la liste est effectué avec succès, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE ListeRafraichi() : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      si m_vDernièreRequête<>null alors
+      	bLectureSeule			est un booleen 	= m_vDernièreRequête.LectureSeule
+      	sJaugeOuCallBack		est une chaine 	= m_vDernièreRequête.JaugeOuCallBack
+      	duRafraichiJauge 		est une durée 	= m_vDernièreRequête.RafraichiJauge
+      	sLibelléJauge 			est une chaine 	= m_vDernièreRequête.LibelléJauge
+      	sTextePersoLibelléJauge est une chaine 	= m_vDernièreRequête.TextePersoLibelléJauge
+      	si m_vDernièreRequête.Colonnes>"" alors
+      		sColonnes 			est une chaine 	= m_vDernièreRequête.Colonnes
+      		sFiltre 			est une chaine 	= m_vDernièreRequête.Filtre
+      		sOrdre 				est une chaine 	= m_vDernièreRequête.Ordre
+      		nLimiteMax			est un entier	= m_vDernièreRequête.LimiteMax
+      		renvoyer liste(sColonnes,sFiltre,sOrdre,nLimiteMax,bLectureSeule,sJaugeOuCallBack,duRafraichiJauge,sLibelléJauge,sTextePersoLibelléJauge)
+      	sinon
+      		sRequête			est une chaine	= m_vDernièreRequête.Requête
+      		renvoyer listerequete(sRequête,bLectureSeule,sJaugeOuCallBack,duRafraichiJauge,sLibelléJauge,sTextePersoLibelléJauge)
+      	FIN
+      sinon
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      renvoyer faux
+     type : 458752
+   -
+     name : Insère
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 2200261194550385339
+     type_code : 12
+     code : |1-
+      // Résumé : Insère un objet à un indice spécifié dans la liste des enregistrements.
+      // Syntaxe : [ <Résultat> = ] Insère (<nIndice> est entier, <pclEnregistrement> est objet dynamique [, <eStatutEnregistrement> est cEnregistrement.EEnregistrementStatut])
+      // Paramètres :
+      //	nIndice (entier) : Indice auquel l'objet sera inséré dans la liste.
+      //	pclEnregistrement (objet dynamique) : Objet à insérer dans le tableau.
+      //	eStatutEnregistrement (cEnregistrement.EEnregistrementStatut) : Statut initial de l'enregistrement inséré. Par défaut, il est défini à cSourceDeDonnées.EstAjouté.
+      // Valeur de retour : entier : Indice de l'enregistrement inséré dans le tableau. Si une erreur survient pendant l'ajout, elle renvoie 0.
+      // Exemple :
+      //
+      PROCEDURE Insère(nIndice est un entier,pclEnregistrement est un objet dynamique,eStatutEnregistrement est un cEnregistrement.EenregistrementStatut = cEnregistrement.EstAjouté) : entier
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(pclEnregistrement,eStatutEnregistrement)
+      m_pclErreur.Raz()
+      
+      SI pclEnregistrement=Null ALORS
+      	m_pclErreur.AjouteErreur(<§$0000§>)
+      SINON
+      	//si la clé primaire est composée, elle est calculée ici pour les accès SQL (pour les accès natif, la bonne valeur se trouve déjà dans la clé composée)
+      	//si la clé primaire est automatique, elle reste à 0 ... car le pclEnregistrement n'a pas encore été écrit dans sa table
+      	SI cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].eAccès=cBaseDeDonnées.RequêteSQL _ET_ Position(cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire,",")>0 ALORS
+      		sValeurs est une chaine
+      		MémoireVersFichier(pclEnregistrement,m_sd)
+      		POUR TOUTE CHAÎNE sColonne de cApplication.mg_taInfo[m_sTableNomUnique].p_sColonnesCléPrimaire SEPAREE PAR ","
+      			sValeurs+=[cGénérique._Sep]+{"m_sd."+sColonne,indVariable}
+      		FIN
+      		{"m_sd."+cApplication.mg_taInfo[m_sTableNomUnique].p_sCléPrimaire,indVariable}=sValeurs
+      		FichierVersMémoire(pclEnregistrement,m_sd)
+      	FIN
+      	
+      	pclEnregistrement.m_eStatutEnregistrement	= eStatutEnregistrement
+      	pclEnregistrement.m_bPointeur				= Faux
+      	TableauInsère(m_tabEnregistrement,nIndice,pclEnregistrement)
+      	SI ErreurDétectée ALORS m_pclErreur.AjouteErreurwx() SINON RENVOYER nIndice
+      FIN
+      RENVOYER 0
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx();RENVOYER 0
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException();RENVOYER 0
+     type : 458752
+   -
+     name : Occurrence
+     procedure_id : 1385663859795828138
+     type_code : 12
+     code : |1-
+      // Résumé : Récupérer le nombre d'occurrences dans le tableau d'enregistrement
+      // Syntaxe : [ <Résultat> = ] Occurrence ()
+      // Paramètres : Aucun
+      // Valeur de retour : entier : Nombre d'occurrences dans le tableau d'enregistrements.
+      // Exemple :
+      //
+      PROCÉDURE Occurrence() : entier
+      renvoyer m_tabEnregistrement.Occurrence()
+     type : 458752
+  properties :
+   -
+     name : p_RelitEnregistrement
+     identifier : 0x1b8fef1e0756164b
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Relit l'enregistrement en cours.
+         PROCEDURE PUBLIQUE p_RelitEnregistrement()
+         renvoyer Lit(m_vIndice)
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie un nouvel identifiant (ID automatique ou GUID) et relit l'enregistrement correspondant s'il existe.
+         PROCEDURE PUBLIQUE p_RelitEnregistrement(Valeur)
+         m_vIndice = Valeur
+         Lit(m_vIndice)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sJSON
+     identifier : 0x1c0fe0e20318b3ad
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le tableau d'enregistrement au format JSON.
+         PROCEDURE PUBLIQUE p_sJSON()
+         bufRéponse est un buffer
+         Sérialise(m_tabEnregistrement,bufRéponse,psdJSON)
+         RENVOYER UTF8VersUnicode(bufRéponse)
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie un buffer en JSON pour l'affecter à l'objet en cours.
+         PROCEDURE PUBLIQUE p_sJSON(bufJSON est un buffer)
+         deSérialise(m_tabEnregistrement,bufJSON,psdJSON)
+        type : 2031616
+     template_refs : []
+   -
+     name : p_bLectureSeule
+     identifier : 0x11fbc77a43e7061d
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur de lecture seule.
+         PROCEDURE PUBLIQUE p_bLectureSeule() : booléen
+         RENVOYER m_bLectureSeule
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Modifie l'indicateur de lecture seule et l'impose à tous les enregistrements du tableau de résultats
+         PROCEDURE PUBLIQUE p_bLectureSeule(Valeur)
+         SI Valeur _ET_ PAS m_bLectureSeule ALORS
+         	POUR TOUT pclEnregistrement de m_tabEnregistrement
+         		pclEnregistrement.p_bLectureSeule=Valeur
+         	FIN
+         FIN
+         m_bLectureSeule=Valeur
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1aa9645d00a93170
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : L'objet ajouté est vide
+      en-GB : Added object is empty
+      fr-CA : L'objet ajouté est vide
+      en-US : Added object is empty
+     index : 0
+   -
+     text :
+      fr-FR : L'enregistrement n'existait plus
+      en-GB : The record no longer existed
+      fr-CA : L'enregistrement n'existait plus
+      en-US : The record no longer existed
+     index : 1
+   -
+     text :
+      fr-FR : Aucun champ demandé
+      en-GB : No fields requested
+      fr-CA : Aucun champ demandé
+      en-US : No fields requested
+     index : 2
+   -
+     text :
+      fr-FR : La limite doit être à 0 (tous) ou supérieure à 0
+      en-GB : The limit must be 0 (all) or greater than 0
+      fr-CA : La limite doit être à 0 (tous) ou supérieure à 0
+      en-US : The limit must be 0 (all) or greater than 0
+     index : 3
+   -
+     text :
+      fr-FR : Aucune clé primaire (%1)
+      en-GB : No primary key (%1)
+      fr-CA : Aucune clé primaire (%1)
+      en-US : No primary key (%1)
+     index : 4
+   -
+     text :
+      fr-FR : <vide>
+      en-GB : <empty>
+      fr-CA : <vide>
+      en-US : <empty>
+     index : 5
+   -
+     text :
+      fr-FR : L'enregistrement n'a pas pu être supprimé
+      en-GB : The record could not be deleted
+      fr-CA : L'enregistrement n'a pas pu être supprimé
+      en-US : The record could not be deleted
+     index : 6
+   -
+     text :
+      fr-FR : "L'indice n'est pas dans les limites : 1 à "
+      en-GB : "The index is not within the limits: 1 to "
+      fr-CA : "L'indice n'est pas dans les limites : 1 à "
+      en-US : "The index is not within the limits: 1 to "
+     index : 7
+   -
+     text :
+      fr-FR : L'enregistrement n'a pas été trouvé
+      en-GB : The record was not found
+      fr-CA : L'enregistrement n'a pas été trouvé
+      en-US : The record was not found
+     index : 8
+   -
+     text :
+      fr-FR : Aucune liste n'a été appelée avant
+      en-GB : No list was called up before
+      fr-CA : Aucune liste n'a été appelée avant
+      en-US : No list was called up before
+     index : 9
+   -
+     text :
+      fr-FR : Parcours des données annulé
+      en-GB : Data browsing canceled
+      fr-CA : Parcours des données annulé
+      en-US : Data browsing canceled
+     index : 10
+   -
+     text :
+      fr-FR : Aucune connexion à la base de données
+      en-GB : No database connection
+      fr-CA : Aucune connexion à la base de données
+      en-US : No database connection
+     index : 11
+   -
+     text :
+      fr-FR : La table n'a pas été correctement initialisée
+      en-GB : The table was not properly initialized
+      fr-CA : La table n'a pas été correctement initialisée
+      en-US : The table was not properly initialized
+     index : 12
+   -
+     text :
+      fr-FR : Le filtre n'est pas pris en compte car le fichier Excel est toujours chargé au complet
+      en-GB : The filter is not taken into account because the Excel file is always loaded in full
+      fr-CA : Le filtre n'est pas pris en compte car le fichier Excel est toujours chargé au complet
+      en-US : The filter is not taken into account because the Excel file is always loaded in full
+     index : 13
+   -
+     text :
+      fr-FR : Pas de requête possible sur un fichier Excel
+      en-GB : No query possible on an Excel file
+      fr-CA : Pas de requête possible sur un fichier Excel
+      en-US : No query possible on an Excel file
+     index : 14
+   -
+     text :
+      fr-FR : La source de données est en lecture seule
+      en-GB : The data source is read-only
+      fr-CA : La source de données est en lecture seule
+      en-US : The data source is read-only
+     index : 15
+   -
+     text :
+      fr-FR : Aucune connexion aux données
+      en-GB : No data connection
+      fr-CA : Aucune connexion aux données
+      en-US : No data connection
+     index : 16
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,378 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cHTTPAPI
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x15a4162d13731c31
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe générique s'occupe des authentifications et de l'appel API via HTTP
+      
+      EAPITypeAuthentification est une énumération							//Différents types d'authentification pris en charge par la classe
+      	Aucune
+      	APIKey
+      	APIBearerToken
+      	BasicAuth
+      	AWSSignatureV4
+      fin
+      cHTTPAPI est une Classe, abstraite
+      	hérite de chttp
+      	m_stRequêteHTTPAPI	est une cHTTP.STHTTPRequête	<serialise = faux>	//Contenu de la requête
+      public constant
+      	m_stReponseHTTPAPI	est une cHTTP.STHTTPRéponse	<serialise = faux>	//Réponse de la requête
+      PROTÉGÉ
+      	m_sURLdeBase		est une chaine				<serialise = faux>	//URL de base, utile pour la classe qui va hériter de cAPI. Permet ensuite de n'utiliser que la dernière partie de l'URL pour son appel 
+      privé                                       			
+      	m_sUtilisateur		est une chaine				<serialise = faux>	//Utilisateur nécessaire pour l'authentification
+      	m_sMotDePasse		est une chaine				<serialise = faux>	//Mot de passe nécessaire pour l'authentification
+      	                                        			
+      	m_sXAmzDate			est une chaine				<serialise = faux>	//membre spécial pour l'authentification AWS
+      	m_sAWSSignedHeaders	est une chaine				<serialise = faux>	//membre spécial pour l'authentification AWS
+      	m_sAWSService		est une chaine ansi			<serialise = faux>	//membre spécial pour l'authentification AWS
+      	m_sAWSRégion		est une chaine ansi			<serialise = faux>	//membre spécial pour l'authentification AWS
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1559395753832881233
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe cAPI.
+      // Syntaxe : Constructeur (<sURLdeBase> est chaîne)
+      // Paramètres :
+      //	sURLdeBase (chaîne UNICODE) : L'URL de base pour les requêtes API.
+      // Valeur de retour : Aucune
+      //
+      PROCEDURE Constructeur(sURLdeBase est une chaine)
+      m_sURLdeBase = sURLdeBase
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1559395753832946769
+     type_code : 28
+     code : |1-
+      // Résumé : Libère les ressources associées à l'instance de la classe.
+      // Syntaxe : Destructeur ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : RestExecute
+     procedure_id : 1559395753833012305
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute une requête REST vers les services API.
+      // Syntaxe : [ <Résultat> = ] RestExecute (<eAuthentification> est cHTTPAPI.EAPITypeAuthentification [, <sUtilisateurOuClé> est chaîne [, <sMotDePasseOuSecret> est chaîne [, <bOption> est booléen [, <sNomEntêteSpécifique> est chaîne [, <sValeurSpécifique> est chaîne]]]]])
+      // Paramètres :
+      //	eAuthentification (cHTTPAPI.EAPITypeAuthentification) : Type d'authentification à utiliser.
+      //	sUtilisateurOuClé (chaîne UNICODE optionnelle) : Identifiant, clé publique, ou token nécessaire pour l'authentification, vide par défaut.
+      //	sMotDePasseOuSecret (chaîne UNICODE optionnelle) : Mot de passe ou clé secret utilisé pour l'authentification, vide par défaut.
+      //	bOption (booléen optionnel) : Option supplémentaire pour la requête, par défaut=faux. Pour aucune authentification, si vrai, exécute un HTTPRequête, si faux, exécute un RESTEnvoie
+      //	sNomEntêteSpécifique (chaîne UNICODE  optionnelle) : Nom spécifique pour un entête d'authentification de requête, vide par défaut.
+      // 	sValeurSpécifique (chaîne UNICODE  optionnelle) : Valeur à utiliser pour, par exemple, influencer le résultat en mode test, vide par défaut.
+      // Valeur de retour : booléen : Vrai si la requête a bien été exécutée, Faux sinon.
+      // Exemple :
+      //	m_restRequête.URL = "http://api.masociete.com/mafonction?param=3"
+      //	RestExécute(EAPITypeAuthentification.Aucune,"moi")
+      //
+      PROCEDURE protégé RestExecute(eAuthentification est un EAPITypeAuthentification,sUtilisateurOuClé est une chaine="",sMotDePasseOuSecret = "",bOption est un booleen=faux,sNomEntêteSpécifique est une chaine = "",sValeurSpécifique = "") : booleen	//ne pas typer le mot de passe afin qu'il soit compatible avec le passage d'une chaîne indétectable
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(eAuthentification..Nom,bOption,sNomEntêteSpécifique,sValeurSpécifique)	//pas d'utilisateur ou de mot de passe ici pour des raisons de sécurité
+      m_pclErreur.Raz()
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	sNom est une chaine
+      	VariableRAZ(m_stReponseHTTPAPI)
+      	SELON eAuthentification
+      		CAS Aucune
+      			m_stRequêteHTTPAPI.bUtiliserHTTPRequête				= bOption
+      			m_stReponseHTTPAPI 									= Requête(m_stRequêteHTTPAPI)
+      		CAS APIKey
+      			sNom = (sNomEntêteSpécifique="" ? "apikey" SINON sNomEntêteSpécifique)
+      			m_stRequêteHTTPAPI.taEntête[sNom]					= sUtilisateurOuClé
+      			m_stReponseHTTPAPI 									= Requête(m_stRequêteHTTPAPI)
+      		CAS APIBearerToken
+      			//à développer
+      			m_stReponseHTTPAPI 									= Requête(m_stRequêteHTTPAPI)
+      		CAS BasicAuth
+      			sNom = (sNomEntêteSpécifique="" ? "Authorization" SINON sNomEntêteSpécifique)
+      			sID 	est une chaine ansi 						= UnicodeVersAnsi(sUtilisateurOuClé)
+      			sMDP 	est une chaine ansi 						= UnicodeVersAnsi(sMotDePasseOuSecret)
+      			sIDMDP 	est une chaine ansi 						= sID+":"+sMDP
+      			sAuth	est une chaine ansi 						= Remplace(Crypte(sIDMDP, "", compresseAucun, encodeBASE64), RC, "")
+      			m_stRequêteHTTPAPI.taEntête[sNom]					= "Basic " + sAuth
+      			
+      			m_stReponseHTTPAPI = Requête(m_stRequêteHTTPAPI)
+      		CAS AWSSignatureV4
+      			sNom = (sNomEntêteSpécifique="" ? "Authorization" SINON sNomEntêteSpécifique)
+      			m_sXAmzDate 										= (sValeurSpécifique>"" ? DateHeureVersISO8601(gauche(sValeurSpécifique,8),milieu(sValeurSpécifique,9),Faux) sinon DateHeureVersISO8601())
+      			m_stRequêteHTTPAPI.taEntête["Host"]					= URLExtraitChemin(m_stRequêteHTTPAPI.sURL, urlDomaine)
+      			m_stRequêteHTTPAPI.taEntête["X-Amz-Content-Sha256"]	= (bOption ? AWSHashedPayload() SINON "UNSIGNED-PAYLOAD")
+      			m_stRequêteHTTPAPI.taEntête["X-Amz-Date"]			= m_sXAmzDate
+      			m_stRequêteHTTPAPI.taEntête[sNom]					= ", Signature=" + AWSSignature(sMotDePasseOuSecret)	//permet de remplir m_sSignedHeaders
+      			m_stRequêteHTTPAPI.taEntête[sNom]					= "AWS4-HMAC-SHA256 Credential=" + sUtilisateurOuClé + "/" + m_sXAmzDate[[ À 8 ]] + "/" + m_sAWSRégion + "/" ...
+      														  		  + m_sAWSService + "/aws4_request, SignedHeaders=" + m_sAWSSignedHeaders + m_stRequêteHTTPAPI.taEntête[sNom]
+      			m_stReponseHTTPAPI = Requête(m_stRequêteHTTPAPI)
+      	FIN
+      	
+      	
+      	SI ErreurDétectée ALORS
+      		m_pclErreur.AjouteErreurWx()
+      	SINON SI (eAuthentification=Aucune _ET_ bOption) _OU_ pas m_stReponseHTTPAPI.bErreur ALORS
+      		RENVOYER Vrai
+      	SINON
+      		m_pclErreur.AjouteErreur(m_stReponseHTTPAPI.nCodeEtat + " : " + m_stReponseHTTPAPI.sDescriptionCodeEtat)
+      	FIN
+      	
+      <fin>
+      
+      
+      renvoyer faux
+     type : 458752
+   -
+     name : AWSCanonicalUriEncoded
+     procedure_id : 1559395753833077841
+     type_code : 12
+     code : |1-
+      // Résumé : Partie du traitement de l'authentification AWS. Est utilisé par RestExecute
+      PROCEDURE privé AWSCanonicalUriEncoded(local sURL est une chaine) : chaine
+      sRaw	est une chaîne ansi	= URLExtraitChemin(sURL, urlCheminRessource + urlNomRessource + urlExtensionRessource)
+      sURL						= URLEncode(sRaw, encodeURLParamètre)
+      // A compléter si d'autres caractères spéciaux à rétablir sont manquants suite à encode avec encodeURLParamètre
+      sURL=Remplace(sURL,"%2F","/")
+      sURL=Remplace(sURL,"%2E",".")
+      sURL=Remplace(sURL,"%2D","-")
+      RENVOYER sURL
+     type : 458752
+   -
+     name : AWSHashedPayload
+     procedure_id : 1559395753833143377
+     type_code : 12
+     code : |1-
+      // Résumé : Partie du traitement de l'authentification AWS. Est utilisé par RestExecute
+      PROCEDURE privé AWSHashedPayload(sPayload est une chaîne ansi = "") : chaîne ansi
+      bufHash est un buffer = HashChaîne(HA_SHA_256, sPayload)
+      sRes est une chaine ansi = WL.BufferVersHexa(bufHash, WL.SansRegroupement)
+      RENVOYER Minuscule(sRes)
+     type : 458752
+   -
+     name : AWSSignature
+     procedure_id : 1559395753833208913
+     type_code : 12
+     code : |1-
+      // Résumé : Algorithme de construction de l'authentification AWS. Est utilisé par RestExecute
+      //Exemple de chaine canonique fournie dans la spec AMAZON https://docs.aws.amazon.com/fr_fr/general/latest/gr/sigv4-create-string-to-sign.html
+      PROCEDURE privé AWSSignature(sAccessSecret est une chaine) : chaine 
+      sSignature est une chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	sEndOfLine				est une chaîne = Caract(10)
+      	bUnsignedPayload		est un booléen 
+      	taHeader 				est un tableau associatif de chaînes ansi
+      	sPayload,sStringToSign,sCanonicalRequest 							sont des chaines ansi
+      	sCanonicalRequestHashed,sVerbe										sont des chaines
+      	bufDateKey,bufDateRegionKey,bufDateRegionServiceKey,bufSigningKey 	sont des buffers
+      	m_sAWSSignedHeaders		= ""
+      	
+      	sVerbe = m_stRequêteHTTPAPI.eMéthode..Valeur
+      	
+      	// ETAPE 1 - Canonical Request
+      	// HTTPMethod
+      	sCanonicalRequest			= Majuscule(sVerbe) + sEndOfLine
+      	
+      	// CanonicalUri
+      	sCanonicalRequest 			+= ["/"] + AWSCanonicalUriEncoded(m_stRequêteHTTPAPI.sURL) + sEndOfLine
+      	
+      	// CanonicalQueryString
+      	sCanonicalRequest 			+= URLExtraitChemin(m_stRequêteHTTPAPI.sURL, urlRequête) + sEndOfLine
+      	
+      	// CanonicalHeaders et SignedHeaders
+      	//traitement des entêtes car doivent être dans l'ordre alpha et sans espace
+      	POUR TOUT sValeur, sCle de m_stRequêteHTTPAPI.taEntête
+      		taHeader[Minuscule(sCle)] = SansEspace(sValeur, sscExtérieur)
+      	FIN
+      	taHeader.Trie(ttCroissant + ttClé)
+      	
+      	POUR TOUT sValeur, sCle de taHeader	
+      		sCanonicalRequest += sCle + ":" + sValeur + sEndOfLine
+      		m_sAWSSignedHeaders+= [";"] + Minuscule(sCle)
+      		SI sValeur = "UNSIGNED-PAYLOAD" ALORS bUnsignedPayload = Vrai
+      	FIN
+      	sCanonicalRequest 			+= sEndOfLine + m_sAWSSignedHeaders + sEndOfLine
+      	
+      	// HashedPayload
+      	sPayload					= m_stRequêteHTTPAPI.sContenu
+      	sCanonicalRequest 			+= (bUnsignedPayload ? "UNSIGNED-PAYLOAD" SINON AWSHashedPayload(sPayload))
+      	
+      	// CanonicalRequest Hashed result
+      	sCanonicalRequestHashed		= AWSHashedPayload(sCanonicalRequest)
+      	
+      	//ETAPE 2 - String to sign
+      	sStringToSign				= "AWS4-HMAC-SHA256" + sEndOfLine + m_sXAmzDate + sEndOfLine + m_sXAmzDate[[ À 8 ]] + "/" + m_sAWSRégion + "/" + m_sAWSService + "/aws4_request" + sEndOfLine + sCanonicalRequestHashed
+      	
+      	//ETAPE 3 - Signing Key
+      	sClé est une chaine ansi  	= "AWS4" + sAccessSecret
+      	bufDateKey					= HashChaîne(HA_HMAC_SHA_256,UnicodeVersAnsi(m_sXAmzDate[[ À 8 ]]),sClé)
+      	bufDateRegionKey			= HashChaîne(HA_HMAC_SHA_256,m_sAWSRégion, bufDateKey)
+      	bufDateRegionServiceKey		= HashChaîne(HA_HMAC_SHA_256,m_sAWSService, bufDateRegionKey)
+      	bufSigningKey				= HashChaîne(HA_HMAC_SHA_256,UnicodeVersAnsi("aws4_request"), bufDateRegionServiceKey)
+      	
+      	//ETAPE 4 - Signature
+      	bufSignature est un buffer 	= HashChaîne(HA_HMAC_SHA_256, sStringToSign, bufSigningKey)
+      	sSignature					= Minuscule(WL.BufferVersHexa(bufSignature, WL.SansRegroupement))
+      	
+      <fin>
+      
+      
+      RENVOYER sSignature
+     type : 458752
+   -
+     name : RéponseJSONANSIVersVariant
+     procedure_id : 1559395753833274449
+     type_code : 12
+     code : |1-
+      // Résumé : Convertit la réponse JSON ANSI en variant.
+      // Syntaxe : [ <Résultat> = ] RéponseJSONANSIVersVariant ()
+      // Paramètres :	Aucun
+      // Valeur de retour : Un variant représentant la chaîne ANSI ou NULL si la chaîne est vide
+      // Exemple :
+      //
+      PROCEDURE RéponseJSONANSIVersVariant() // : variant //non autorisé en WD23 
+      si RéponseBufferVersChaineANSI()="" alors renvoyer null
+      renvoyer wl.JSONVersVariant(Remplace(RéponseBufferVersChaineANSI(),Caract(10),""))
+     type : 458752
+   -
+     name : RéponseBufferVersChaineANSI
+     procedure_id : 1559395753833339985
+     type_code : 12
+     code : |1+
+      // Résumé : Convertit la réponse du buffer en chaîne ANSI.
+      // Syntaxe : [ <Résultat> = ] RéponseBufferVersChaineANSI ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne ANSI : Chaîne ANSI contenant la réponse du buffer.
+      // Exemple :
+      //
+      PROCEDURE RéponseBufferVersChaineANSI() : chaine ansi
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	RENVOYER UTF8VersAnsi(m_stReponseHTTPAPI.bufContenu)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : RéponseBufferVersChaineUnicode
+     procedure_id : 1559395753833405521
+     type_code : 12
+     code : |1+
+      // Résumé : Convertit la réponse du buffer en chaîne UNICODE.
+      // Syntaxe : [ <Résultat> = ] RéponseBufferVersChaineUnicode ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Chaîne UNICODE contenant la réponse du buffer.
+      // Exemple :
+      //
+      PROCEDURE RéponseBufferVersChaineUnicode() : chaine
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS>
+      	
+      	RENVOYER UTF8VersChaîne(m_stReponseHTTPAPI.bufContenu)
+      	
+      <fin>
+      
+     type : 458752
+   -
+     name : RéponseJSONUnicodeVersVariant
+     procedure_id : 1559395753833471057
+     type_code : 12
+     code : |1-
+      // Résumé : Convertit la réponse JSON Unicode en variant.
+      // Syntaxe : [ <Résultat> = ] RéponseJSONUnicodeVersVariant ()
+      // Paramètres : Aucun
+      // Valeur de retour : variant : contenant la réponse JSON.
+      // Exemple :
+      //
+      PROCEDURE RéponseJSONUnicodeVersVariant()
+      RENVOYER JSONVersVariant(RéponseBufferVersChaineUnicode())
+     type : 458752
+   -
+     name : Raz
+     procedure_id : 1592853816916044202
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de réinitialiser tous les attributs de l'objet cFichier à leurs valeurs par défaut. 
+      // Syntaxe : Raz ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Raz()
+      variableraz(m_stRequêteHTTPAPI)
+      VariableRAZ(m_stReponseHTTPAPI)
+     type : 458752
+  properties :
+   -
+     name : p_sAWSRégion
+     identifier : 0x15a4162d13741c51
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Permet de définir la région AWS configuré dans l'objet.
+         PROCEDURE PUBLIQUE p_sAWSRégion(Valeur)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(Valeur)
+         m_sAWSRégion = Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_sAWSService
+     identifier : 0x15a4162d13751c51
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         //Permet de définir le service AWS configuré dans l'objet.
+         PROCEDURE PUBLIQUE p_sAWSService(Valeur)
+         SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjoutePropriété(Valeur)
+         m_sAWSService = Valeur
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x157784212315c403
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,508 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_GPU
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x10ed96415770d066
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette collection sert à piloter les données du groupware utilisateur (GPU) sans avoir besoin de l'analyse du groupware ni du composant interne.
+      //Elle doit être utilisée dans le contexte d'une connexion à un serveur AD qui vérifier l'existence de l'utilisateur et le mot de passe (voir cUtilisateur.Lit). Ainsi, le mot de passe du groupware utilisateur devient obsolète (la valeur "123" sera utilisée)
+      //Pour bénéficier de toutes les fonctionnalités, il est nécessaire d'ajouter quelques rubriques. Le groupware standard continue à fonctionner correctement dans ce cas (tant qu'il n'y a pas de rubrique standard qui est renommée, supprimée ou dont le type est modifié)
+      //Table GPU_Configuration : ajouter 
+      // [PeutUtiliser] BIT DEFAULT 0,
+      // [Administrateur] BIT DEFAULT 0,
+      // [Personnalisation] TEXT DEFAULT NULL,		//permet de sauvegarder des informations qui ont été programmées dans l'application
+      // [PersonnalisationPCS] TEXT DEFAULT NULL,		//permet de sauvegarder des informations spécifiques à WinDev
+      // [Langue] INTEGER DEFAULT 5);					//NationXXX
+      gnIndiceConnexionGPU est un entier
+      PRIVÉ
+      CONSTANTE
+      	ErreurDeGPU	= 230
+      FIN
+     type : 720896
+  procedures :
+   -
+     name : GPU_UtilisateurAjoute
+     procedure_id : 1219796294356294983
+     type_code : 15
+     code : |1-
+      // Résumé : Ajoute un nouvel utilisateur dans le contexte du groupware utilisateur (GPU). Le mot de passe est "123" (voir remarque au début de la collection de procédure).
+      // Syntaxe : [ <Résultat> = ] GPU_UtilisateurAjoute (<sLogin> est chaîne, <sNom> est chaîne, <sPrenom> est chaîne)
+      // Paramètres :
+      //	sLogin (chaîne UNICODE) : Le login de l'utilisateur à ajouter.
+      //	sNom (chaîne UNICODE) : Le nom de famille de l'utilisateur.
+      //	sPrenom (chaîne UNICODE) : Le prénom de l'utilisateur.
+      // Valeur de retour : booléen : Vrai, si l'ajout de l'utilisateur est effectué avec succès, faux dans les cas contraires..
+      // Exemple :
+      //	SI GPU_UtilisateurAjoute("nouveau_utilisateur", "Doe", "John") ALORS
+      //		Info("L'utilisateur a été ajouté avec succès.")
+      //	SINON
+      //		Info(ErreurInfo())
+      //	FIN
+      //
+      PROCEDURE GPU_UtilisateurAjoute(sLogin est une chaîne UNICODE, sNom est une chaîne UNICODE, sPrenom est une chaîne UNICODE) : booléen
+      si sLogin~="" alors renvoyer faux
+      si gnIndiceConnexionGPU>0 alors
+      	clGPU est un cSQL(gnIndiceConnexionGPU)
+      	SI GPU_IDSelonLogin(sLogin)>0 alors
+      		si clGPU.Requête("INSERT INTO GPU_Utilisateur (Login,Nom,Prenom,MotPasseASaisir,Superviseur,MotPasse) VALUES ('"+sLogin+"','"+Remplace(sNom,"'","''")+"','"+Remplace(sPrenom,"'","''")+"',0,0,'123')") ALORS 
+      			RENVOYER Vrai
+      		sinon
+      			ErreurDéclenche(ErreurDeGPU,<§@10ed963c576ebe550000§>+sLogin)
+      		FIN
+      	FIN
+      fin
+      RENVOYER Faux
+     type : 458752
+   -
+     name : GPU_ADroitÉcriture
+     procedure_id : 1219796384550629184
+     type_code : 15
+     code : |1-
+      // Résumé : Vérifier les droits d'écriture d'un employé dans un ou plusieurs groupes spécifiques dans le contexte du groupware utilisateur (GPU)
+      // Syntaxe : [ <Résultat> = ] GPU_ADroitÉcriture (<nIDEmployé> est entier, <sGroupes> est chaîne)
+      // Paramètres :
+      //	nIDEmployé (entier) : L'identifiant de l'employé pour lequel les droits d'écriture doivent être vérifiés.
+      //	sGroupes (chaîne UNICODE) : La liste des groupes (séparés par des TAB) dans lesquels on souhaite vérifier les droits d'écriture pour l'employé.
+      // Valeur de retour : booléen : Vrai si l'utilisateur a le droit d'écriture dans tous les groupes spécifiés, faux dans les cas contraires.
+      // Exemple :
+      //	SI GPU_DroitÉcriture(123, "Groupe1"+TAB+"Groupe2") ALORS
+      //		Info("L'utilisateur a le droit d'écriture dans les groupes spécifiés.")
+      //	SINON
+      //		Info("L'utilisateur n'a pas le droit d'écriture dans au moins un des groupes spécifiés.")
+      //	FIN
+      //
+      PROCEDURE GPU_ADroitÉcriture(nIDEmployé est un entier,local sGroupes est une chaîne) : booléen
+      SI nIDEmployé=0 _OU_ sGroupes~="" ALORS RENVOYER Faux
+      SI gnIndiceConnexionGPU>0 ALORS
+      	clGPU est un cSQL(gnIndiceConnexionGPU)
+      	sGroupes = remplace(sGroupes,tab,"','")
+      	sReq est une chaîne = [
+      	SELECT <§cs:6§>
+      		GPU_Utilisateur_Groupe.EnÉcriture <§cs:6§>
+      	FROM <§cs:6§>
+      		GPU_Groupe <§cs:6§>
+      	INNER JOIN GPU_Utilisateur_Groupe ON<§cs:6§>
+      		GPU_Utilisateur_Groupe.IDGroupe = GPU_Groupe.IDGroupe<§cs:6§>
+      	WHERE <§cs:6§>
+      		GPU_Groupe.Nom IN ('%1') AND GPU_Utilisateur_Groupe.IDUtilisateur=%2<§cs:6§>
+      	]
+      	SI clGPU.Requête(ChaîneConstruit(sReq,sGroupes,nIDEmployé)) ALORS
+      		SI HLitPremier(clGPU.m_sd) ALORS RENVOYER clGPU.m_sd.EnÉcriture
+      	SINON
+      		ErreurDéclenche(ErreurDeGPU,<§@10ed963c576ebe550001§>+nIDEmployé)
+      	FIN
+      fin
+      RENVOYER Faux
+     type : 458752
+   -
+     name : GPU_ADroitSubordonné
+     procedure_id : 1219796990141093743
+     type_code : 15
+     code : |1-
+      // Résumé : Vérifie si un employé possède le droit subordonné dans un ou plusieurs groupes spécifiques du groupware utilisateur (GPU)
+      // Syntaxe : [ <Résultat> = ] GPU_ADroitSubordonné (<nIDEmployé> est entier, <sGroupes> est chaîne)
+      // Paramètres :
+      //	nIDEmployé (entier) : L'identifiant de l'employé pour lequel les droits subordonnés doivent être vérifiés.
+      //	sGroupes (chaîne UNICODE) : La liste des groupes (séparés par des TAB) dans lesquels on souhaite vérifier les droits.
+      // Valeur de retour : booléen : Vrai si l'utilisateur a le droit subordonné dans tous les groupes spécifiés, faux dans les cas contraires.
+      // Exemple :
+      //	SI GPU_ADroitSubordonné(123, "Groupe1"+TAB+"Groupe2") ALORS
+      //		Info("L'utilisateur a le droit subordonné dans les groupes spécifiés.")
+      //	SINON
+      //		Info("L'utilisateur n'a pas le droit subordonné dans au moins un des groupes spécifiés.")
+      //	FIN
+      //
+      PROCEDURE GPU_ADroitSubordonné(nIDEmployé est un entier,local sGroupes est une chaîne) : booléen
+      SI nIDEmployé=0 _OU_ sGroupes~="" ALORS RENVOYER Faux
+      SI gnIndiceConnexionGPU>0 ALORS
+      	clGPU est un cSQL(gnIndiceConnexionGPU)
+      	sGroupes = Remplace(sGroupes,TAB,"','")
+      	sReq est une chaîne = [
+      	SELECT <§cs:6§>
+      		GPU_Utilisateur_Groupe.DroitSubordonné <§cs:6§>
+      	FROM <§cs:6§>
+      		GPU_Groupe <§cs:6§>
+      	INNER JOIN GPU_Utilisateur_Groupe ON<§cs:6§>
+      		GPU_Utilisateur_Groupe.IDGroupe = GPU_Groupe.IDGroupe<§cs:6§>
+      	WHERE <§cs:6§>
+      		GPU_Groupe.Nom IN ('%1') AND GPU_Utilisateur_Groupe.IDUtilisateur=%2<§cs:6§>
+      	]
+      	SI clGPU.Requête(ChaîneConstruit(sReq,sGroupes,nIDEmployé)) ALORS
+      		SI HLitPremier(clGPU.m_sd) ALORS RENVOYER clGPU.m_sd.DroitSubordonné
+      	SINON
+      		ErreurDéclenche(ErreurDeGPU,<§@10ed963c576ebe550002§>+nIDEmployé)
+      	FIN
+      fin
+      RENVOYER Faux
+     type : 458752
+   -
+     name : GPU_ADroitSuppression
+     procedure_id : 1219797170529827711
+     type_code : 15
+     code : |1-
+      // Résumé : Vérifie si un utilisateur a le droit de suppression dans un ou plusieurs groupes spécifiques du groupware utilisateur (GPU
+      // Syntaxe : [ <Résultat> = ] GPU_ADroitSuppression (<nIDEmployé> est entier, <sGroupes> est chaîne)
+      // Paramètres :
+      //	nIDEmployé (entier) : L'identifiant de l'employé pour lequel les droits de suppression doivent être vérifiés.
+      //	sGroupes (chaîne UNICODE) :  La liste des groupes (séparés par des TAB) dans lesquels on souhaite vérifier les droits de suppression pour l'employé.
+      // Valeur de retour : booléen : Vrai si l'utilisateur a le droit de suppression dans tous les groupes spécifiés, faux dans les cas contraires.
+      // Exemple :
+      //	SI GPU_ADroitSuppression(123, "Groupe1"+TAB+"Groupe2") ALORS
+      //		Info("L'utilisateur a le droit en suppression dans les groupes spécifiés.")
+      //	SINON
+      //		Info("L'utilisateur n'a pas le droit en suppression dans au moins un des groupes spécifiés.")
+      //	FIN
+      //
+      PROCEDURE GPU_ADroitSuppression(nIDEmployé est un entier,local sGroupes est une chaîne) : booléen
+      si nIDEmployé=0 _ou_ sGroupes~="" alors renvoyer faux
+      SI gnIndiceConnexionGPU>0 ALORS
+      	clGPU est un cSQL(gnIndiceConnexionGPU)
+      	sGroupes = Remplace(sGroupes,TAB,"','")
+      	sReq est une chaîne = [
+      	SELECT <§cs:6§>
+      		GPU_Utilisateur_Groupe.DroitSuppression <§cs:6§>
+      	FROM <§cs:6§>
+      		GPU_Groupe <§cs:6§>
+      	INNER JOIN GPU_Utilisateur_Groupe ON<§cs:6§>
+      		GPU_Utilisateur_Groupe.IDGroupe = GPU_Groupe.IDGroupe<§cs:6§>
+      	WHERE <§cs:6§>
+      		GPU_Groupe.Nom IN ('%1') AND GPU_Utilisateur_Groupe.IDUtilisateur=%2<§cs:6§>
+      	]
+      	SI clGPU.Requête(ChaîneConstruit(sReq,sGroupes,nIDEmployé)) ALORS
+      		SI HLitPremier(clGPU.m_sd) ALORS RENVOYER clGPU.m_sd.DroitSuppression
+      	SINON
+      		ErreurDéclenche(ErreurDeGPU,<§@10ed963c576ebe550002§>+nIDEmployé)
+      	FIN
+      fin
+      RENVOYER Faux
+     type : 458752
+   -
+     name : GPU_LangueÉcrit
+     procedure_id : 1219797423932956487
+     type_code : 15
+     code : |1-
+      // Résumé : Met à jour la langue d'un utilisateur ou d'un groupe dans le contexte du groupware utilisateur (GPU)
+      // Syntaxe : [ <Résultat> = ] GPU_LangueÉcrit (<nIdUtilisateurOuGroupe> est entier, <nNouvelleLangue> est entier)
+      // Paramètres :
+      //	nIdUtilisateurOuGroupe (entier) : L'identifiant de l'utilisateur ou du groupe pour lequel la langue doit être mise à jour.
+      //	nNouvelleLangue (entier) : Le code de la nouvelle langue à assigner à l'utilisateur ou au groupe (utiliser les constantes NationXXX()).
+      // Valeur de retour : booléen : Vrai si la mise à jour de la langue est effectuée avec succès, faux dans les cas contraires.
+      // Exemple :
+      //	SI GPU_LangueEcrit(123,NationFrançais()) ALORS
+      //		Info("La langue de l'utilisateur a été mise à jour avec succès.")
+      //	SINON
+      //		Erreur(ErreurInfo())
+      //	FIN
+      //
+      PROCEDURE GPU_LangueÉcrit(nIdUtilisateurOuGroupe est un entier,nNouvelleLangue est un entier) : booléen
+      si nIdUtilisateurOuGroupe=0 _ou_ nNouvelleLangue=0 alors renvoyer faux
+      SI gnIndiceConnexionGPU>0 ALORS
+      	clGPU est un cSQL(gnIndiceConnexionGPU)
+      	SI clGPU.Requête("UPDATE GPU_Utilisateur SET Langue="+nNouvelleLangue+" WHERE IDUtilisateur="+nIdUtilisateurOuGroupe) ALORS RENVOYER Vrai
+      	ErreurDéclenche(ErreurDeGPU,<§@10ed963c576ebe550003§>)
+      fin
+      RENVOYER Faux
+     type : 458752
+   -
+     name : GPU_PersonnalisationEcrit
+     procedure_id : 1219797535602132105
+     type_code : 15
+     code : |1-
+      // Résumé : Écrit les personnalisations associées à un utilisateur ou à un groupe dans le contexte du groupware utilisateur (GPU).
+      // Syntaxe : [ <Résultat> = ] GPU_PersonnalisationEcrit (<nIdUtilisateurOuGroupe> est entier, <bufNouvellePersonnalisation> est buffer [, <sNomAppli> est chaîne])
+      // Paramètres :
+      //	nIdUtilisateurOuGroupe (entier) : L'identifiant de l'utilisateur ou du groupe pour lequel les personnalisations doivent être écrites.
+      //	bufNouvellePersonnalisation (buffer) : Le buffer contenant les nouvelles informations de personnalisation à enregistrer (FAAExporteParamètre en WD24+).
+      //	sNomAppli (chaîne UNICODE) : Le nom de l'application (par défaut, le résultat de la fonction ProjetInfo()) pour laquelle les personnalisations sont enregistrées.
+      // Valeur de retour : booléen : Vrai, Si l'enregistrement des personnalisations est effectué avec succès.
+      // Exemple :
+      //
+      PROCEDURE GPU_PersonnalisationEcrit(nIdUtilisateurOuGroupe est un entier, bufNouvellePersonnalisation est un Buffer, sNomAppli est une chaîne = ProjetInfo()) : booléen
+      si nIdUtilisateurOuGroupe=0 _ou_ sNomAppli~="" alors renvoyer faux
+      SI gnIndiceConnexionGPU>0 ALORS
+      	clGPU est un cSQL(gnIndiceConnexionGPU)
+      	sReq est une chaîne = [
+      	UPDATE<§cs:6§>
+      		GPU_Configuration <§cs:6§>
+      	SET <§cs:6§>
+      		Personnalisations = CONVERT(VARBINARY(MAX),'%2')<§cs:6§>
+      	WHERE <§cs:6§>
+      		GPU_Configuration.IDCible IN (SELECT IDCible FROM GPU_Cible WHERE Nom='%3') AND IDUtilisateurOuGroupe=%1<§cs:6§>
+      	]
+      	SI clGPU.Requête(ChaîneConstruit(sReq,nIdUtilisateurOuGroupe,bufNouvellePersonnalisation,sNomAppli)) ALORS
+      		RENVOYER Vrai
+      	SINON
+      		ErreurDéclenche(ErreurDeGPU,<§@10ed963c576ebe550004§>)
+      	FIN
+      fin
+      renvoyer faux
+     type : 458752
+   -
+     name : GPU_PersonnalisationLit
+     procedure_id : 1219797737465708147
+     type_code : 15
+     code : |1-
+      // Résumé : Lit les informations de personnalisation associées à un utilisateur ou à un groupe dans le contexte du groupware utilisateur (GPU)
+      // Syntaxe : [ <Résultat> = ] GPU_PersonnalisationLit (<nIdUtilisateurOuGroupe> est entier [, <sNomAppli> est chaîne])
+      // Paramètres :
+      //	nIdUtilisateurOuGroupe (entier) : L'identifiant de l'utilisateur ou du groupe pour lequel les personnalisations doivent être lues.
+      //	sNomAppli (chaîne UNICODE) : Le nom de l'application (par défaut, le résultat de la fonction ProjetInfo()) pour laquelle les personnalisations doivent être récupérées.
+      // Valeur de retour : chaîne UNICODE : La chaîne contenant les informations de personnalisation de l'utilisateur ou du groupe si elles sont trouvées dans la base de données.
+      // Exemple :
+      //
+      PROCEDURE GPU_PersonnalisationLit(nIdUtilisateurOuGroupe est un entier, sNomAppli est une chaîne = ProjetInfo()) : chaîne
+      si nIdUtilisateurOuGroupe=0 _ou_ sNomAppli~="" alors renvoyer ""
+      SI gnIndiceConnexionGPU>0 ALORS
+      	clGPU est un cSQL(gnIndiceConnexionGPU)
+      	sReq est une chaîne = [
+      	SELECT<§cs:6§>
+      		CONVERT(VARCHAR(MAX),Personnalisations,0) AS Personnalisations<§cs:6§>
+      	FROM<§cs:6§>
+      		GPU_Configuration<§cs:6§>
+      	WHERE<§cs:6§>
+      		GPU_Configuration.IDCible IN (SELECT IDCible FROM GPU_Cible WHERE Nom='%2') AND IDUtilisateurOuGroupe=%1<§cs:6§>
+      	]
+      	SI clGPU.Requête(ChaîneConstruit(sReq,nIdUtilisateurOuGroupe,sNomAppli)) ALORS
+      		SI HLitPremier(clGPU.m_sd) ALORS RENVOYER clGPU.m_sd.Personnalisations
+      	SINON
+      		ErreurDéclenche(ErreurDeGPU,<§@10ed963c576ebe550005§>+nIdUtilisateurOuGroupe)
+      	FIN
+      fin
+      RENVOYER ""
+     type : 458752
+   -
+     name : GPU_LangueLit
+     procedure_id : 1219797913559408299
+     type_code : 15
+     code : |1-
+      // Résumé : Lit la langue associée à un utilisateur ou à un groupe dans le contexte du groupware utilisateur (GPU). Permet de changer la langue de l'application avec Nation().
+      // Syntaxe : [ <Résultat> = ] GPU_LangueLit (<nIdUtilisateurOuGroupe> est entier)
+      // Paramètres :
+      //	nIdUtilisateurOuGroupe (entier) : L'identifiant de l'utilisateur ou du groupe pour lequel la langue doit être lue.
+      // Valeur de retour : entier : La valeur du code de langue associé à l'utilisateur ou un groupe s'il est trouvé dans la base de données, nationAnglais dans les cas contraires.
+      // Exemple :
+      //	nLangueUtilisateur est un entier = GPU_LangueLit(456)
+      //
+      PROCEDURE GPU_LangueLit(nIdUtilisateurOuGroupe est un entier) : entier
+      si nIdUtilisateurOuGroupe=0 alors renvoyer nationAnglais
+      SI gnIndiceConnexionGPU>0 ALORS
+      	clGPU est un cSQL(gnIndiceConnexionGPU)
+      	SI clGPU.Requête("SELECT Langue FROM GPU_Utilisateur WHERE IDUtilisateur="+nIdUtilisateurOuGroupe) ALORS
+      		SI HLitPremier(clGPU.m_sd) ALORS RENVOYER clGPU.m_sd.Langue
+      	SINON
+      		ErreurDéclenche(ErreurDeGPU,<§@10ed963c576ebe550006§>+nIdUtilisateurOuGroupe)
+      	FIN
+      fin
+      RENVOYER nationAnglais	//anglais par défaut
+     type : 458752
+   -
+     name : GPU_IDSelonLogin
+     procedure_id : 1219798029523552072
+     type_code : 15
+     code : |1-
+      // Résumé : Utilisée pour obtenir l'identifiant d'un utilisateur en fonction de son login dans le contexte du groupware utilisateur (GPU)
+      // Syntaxe : [ <Résultat> = ] GPU_IDSelonLogin (<sLogin> est chaîne)
+      // Paramètres :
+      //	sLogin (chaîne UNICODE) : Le login de l'utilisateur pour lequel on souhaite obtenir l'identifiant.
+      // Valeur de retour : entier : L'identifiant de l'utilisateur correspondant au login spécifié. Sinon 0 si le login spécifié est vide (""), si la connexion au GPU n'est pas établie (gnIndiceConnexionGPU non supérieur à 0), si aucune correspondance n'est trouvée dans la base de données pour le login donné, ou si une erreur survient lors de l'exécution de la requête SQL.
+      // Exemple :
+      //	nIDUtilisateur est un entier = GPU_IDSelonLogin("utilisateur123")
+      //	SI nIDUtilisateur > 0 ALORS
+      //		Info("L'ID de l'utilisateur est : " + nIDUtilisateur)
+      //	SINON
+      //		Erreur(ErreurInfo())
+      //	FIN
+      //
+      PROCEDURE GPU_IDSelonLogin(sLogin est une chaîne UNICODE) : entier
+      si sLogin~="" alors renvoyer 0
+      si gnIndiceConnexionGPU>0 alors
+      	clGPU est un cSQL(gnIndiceConnexionGPU)
+      	SI clGPU.Requête("SELECT IDUtilisateur FROM GPU_Utilisateur WHERE Login='"+sLogin+"'") ALORS
+      		SI HLitPremier(clGPU.m_sd) ALORS RENVOYER clGPU.m_sd.IDUtilisateur
+      	SINON
+      		ErreurDéclenche(ErreurDeGPU,<§@10ed963c576ebe550007§>+sLogin)
+      	FIN
+      fin
+      RENVOYER 0
+     type : 458752
+   -
+     name : GPU_GroupesSelonUtilisateur
+     procedure_id : 1219798128307888994
+     type_code : 15
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      //[ <Résultat> = ] GPU_GroupesSelonUtilisateur (<nIdUtilisateur> est entier)
+      //
+      // Paramètres :
+      //	nIdUtilisateur (entier) : <indiquez ici le rôle de nIdUtilisateur>
+      // Valeur de retour :
+      // 	chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      PROCEDURE GPU_GroupesSelonUtilisateur(nIdUtilisateur est un entier) : chaine
+      si nIdUtilisateur=0 alors renvoyer ""
+      sRésultat 	est une chaîne
+      SI gnIndiceConnexionGPU>0 ALORS
+      	clGPU est un cSQL(gnIndiceConnexionGPU)
+      	sReq 		est une chaîne = [
+      	SELECT <§cs:6§>
+      		GPU_Groupe.Nom AS Nom<§cs:6§>
+      	FROM <§cs:6§>
+      		GPU_Groupe,GPU_Utilisateur_Groupe<§cs:6§>
+      	WHERE  <§cs:6§>
+      		GPU_Groupe.IDGroupe = GPU_Utilisateur_Groupe.IDGroupe AND GPU_Utilisateur_Groupe.IDUtilisateur = %1<§cs:6§>
+      	]
+      	SI clGPU.Requête(ChaîneConstruit(sReq,nIdUtilisateur)) ALORS
+      		POUR TOUT clGPU.m_sd
+      			sRésultat+=[TAB]+clGPU.m_sd.Nom
+      		FIN
+      	sinon
+      		ErreurDéclenche(ErreurDeGPU,"Impossible de récupérer les droits de l'utilisateur "+nIdUtilisateur)
+      	FIN
+      fin
+      RENVOYER sRésultat
+     type : 458752
+   -
+     name : GPU_UtilisateursSelonGroupe
+     procedure_id : 1219798287221780841
+     type_code : 15
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      //[ <Résultat> = ] GPU_UtilisateursSelonGroupe (<sCodeGroupe> est chaîne)
+      //
+      // Paramètres :
+      //	sCodeGroupe (chaîne UNICODE) : <indiquez ici le rôle de sCodeGroupe>
+      // Valeur de retour :
+      // 	chaîne UNICODE : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      PROCEDURE GPU_UtilisateursSelonGroupe(sCodeGroupe est une chaîne) : chaîne
+      si sCodeGroupe~="" alors renvoyer ""
+      sRésultat	est une chaîne
+      SI gnIndiceConnexionGPU>0 ALORS
+      	clGPU est un cSQL(gnIndiceConnexionGPU)
+      	sReq 		est une chaîne = [
+      	SELECT <§cs:6§>
+      		Prenom,Nom <§cs:6§>
+      	FROM <§cs:6§>
+      		GPU_Utilisteur <§cs:6§>
+      	INNER JOIN <§cs:6§>
+      		GPU_Utilisateur_Groupe ON GPU_Utilisteur.IDUtilisateur = GPU_Utilisateur_Groupe.IDUtilisateur<§cs:6§>
+      	INNER JOIN <§cs:6§>
+      		GPU_Groupe ON GPU_Utilisateur_Groupe.IDGroupe = GPU_Groupe.IDGroupe<§cs:6§>
+      	WHERE<§cs:6§>
+      		GPU_Groupe.Nom='%1'<§cs:6§>
+      	]
+      	SI clGPU.Requête(ChaîneConstruit(sReq,sCodeGroupe)) ALORS
+      		POUR TOUT clGPU.m_sd
+      			sRésultat+=[", "]+clGPU.m_sd.Nom+[" "]+clGPU.m_sd.Prenom
+      		FIN
+      	SINON
+      		ErreurDéclenche(ErreurDeGPU,<§@10ed963c576ebe550008§>+sCodeGroupe)
+      	FIN
+      fin
+      RENVOYER sRésultat
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x10ed963c576ebe55
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : "Impossible d'ajouter l'utilisateur "
+      en-GB : "Unable to add the user "
+      fr-CA : "Impossible d'ajouter l'utilisateur "
+      en-US : "Unable to add the user "
+     index : 0
+   -
+     text :
+      fr-FR : "Impossible de lire le droits pour "
+      en-GB : "Unable to read the rights for "
+      fr-CA : "Impossible de lire le droits pour "
+      en-US : "Unable to read the rights for "
+     index : 1
+   -
+     text :
+      fr-FR : "Impossible de lire le droits pour "
+      en-GB : "Unable to read the rights for "
+      fr-CA : "Impossible de lire le droits pour "
+      en-US : "Unable to read the rights for "
+     index : 2
+   -
+     text :
+      fr-FR : Impossible de sauver la langue de l'utilisateur
+      en-GB : Impossible to save the user's language
+      fr-CA : Impossible de sauver la langue de l'utilisateur
+      en-US : Impossible to save the user's language
+     index : 3
+   -
+     text :
+      fr-FR : Impossible de sauver les personnalisations
+      en-GB : Impossible to save the customizations
+      fr-CA : Impossible de sauver les personnalisations
+      en-US : Impossible to save the customizations
+     index : 4
+   -
+     text :
+      fr-FR : "Impossible de lire les personnalisations de "
+      en-GB : "Unable to read customizations from "
+     index : 5
+   -
+     text :
+      fr-FR : "Impossible de lire la langue de l'utilisateur "
+      en-GB : "Unable to read language of the user "
+     index : 6
+   -
+     text :
+      fr-FR : "Impossible d'ajouter l'utilisateur "
+      en-GB : "Unable to add the user "
+     index : 7
+   -
+     text :
+      fr-FR : "Impossible de lire les utilisateur du groupe "
+      en-GB : "Unable to read users in group "
+     index : 8
+   -
+     text :
+      fr-FR : "\r\n\tSELECT\r\n\t\tCONVERT(VARCHAR(MAX),Personnalisations,0) AS Personnalisations\r\n\tFROM\r\n\t\tGPU_Configuration\r\n\tWHERE\r\n\t\tGPU_Configuration.IDCible IN (SELECT IDCible FROM GPU_Cible WHERE Nom='%2') AND EstUnGroupe=0 AND IDUtilisateurOuGroupe=%1\r\n\t"
+      en-GB : "\r\n\tSELECT\r\n\t\tCONVERT(VARCHAR(MAX),Personnalisations,0) AS Personnalisations\r\n\tFROM\r\n\t\tGPU_Configuration\r\n\tWHERE\r\n\t\tGPU_Configuration.IDCible IN (SELECT IDCible FROM GPU_Cible WHERE Nom='%2') AND EstUnGroupe=0 AND IDUtilisateurOuGroupe=%1\r\n\t"
+      fr-CA : "\r\n\tSELECT\r\n\t\tCONVERT(VARCHAR(MAX),Personnalisations,0) AS Personnalisations\r\n\tFROM\r\n\t\tGPU_Configuration\r\n\tWHERE\r\n\t\tGPU_Configuration.IDCible IN (SELECT IDCible FROM GPU_Cible WHERE Nom='%2') AND EstUnGroupe=0 AND IDUtilisateurOuGroupe=%1\r\n\t"
+      en-US : "\r\n\tSELECT\r\n\t\tCONVERT(VARCHAR(MAX),Personnalisations,0) AS Personnalisations\r\n\tFROM\r\n\t\tGPU_Configuration\r\n\tWHERE\r\n\t\tGPU_Configuration.IDCible IN (SELECT IDCible FROM GPU_Cible WHERE Nom='%2') AND EstUnGroupe=0 AND IDUtilisateurOuGroupe=%1\r\n\t"
+     index : 9
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

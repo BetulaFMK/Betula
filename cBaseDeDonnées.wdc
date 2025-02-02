@@ -1,0 +1,2093 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : cBaseDeDonnées
+ major_version : 29
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1aaa8a720589f36e
+ internal_properties : CQAAAAkAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      //Cette classe est générique pour les accès au données. Attention, les autres classes cBaseDeDonnées n'en hérite pas mais utilisent certaines de ses fonctionnalités. Gère aussi l'environnement selon l'emplacement des serveurs/fichiers.
+      //Elle est surtout utilisée pour récupérer toutes les informations de connexion juste en passant l'ID de connexion. Toutes les méthodes vont alors exécuter les méthodes du même nom dans la classe associée à la connexion.
+      //Si la méthode n'existe pas dans la classe associée, une exception est déclenchée (et traitée) et le code continue. Il n'est pas obligatoire de mettre toutes les méthodes dans les classes associés, notamment si elle renvoie toujours la valeur par défaut.
+      
+      EVersionServeur est une énumération
+      	Inconnu						= ""
+      	WindowsServer2012			= "W2012"
+      	WindowsServer2008R2			= "W2008R2"
+      	WindowsServer2008			= "W2008"
+      	WindowsServer2003R2			= "W2003R2"
+      	WindowsServer2003			= "W2003"
+      	WindowsServer2000			= "W2000"
+      FIN
+      ETypeAccès est une énumération								//3 méthodes pour accéder aux données : FonctionH et RequêteSQL utilisent l'accès natif
+      	FonctionsH
+      	RequêteSQL
+      	ODBC
+      FIN
+      ESauvegardeSuffixe est un enumération						//Suffixe des sauvegardes d'une table (la table sera sauvegardé dans le même emplacement avec un suffixe _backup_xxxx avec xxxx une des méthode)
+      	SuffixeAucun
+      	SuffixeDate
+      	SuffixeHeure
+      	SuffixeDateHeure
+      	//a faire : SuffixeIndice								//numérique incrémental
+      fin
+      STConnexion est une structure
+      	sNomUnique						est une chaine			//Nom unique de la connexion
+      	cnxDonnées						est une connexion		//HyperFile et accès natifs
+      	sMotDePasse						est une chaine 			//Mémorisé ici car dès qu'elle est utilisée dans hOuvreConnexion on n'y a plus accès (sera utile pour une connexion groupware)
+      	bConnecté						est un booleen			//Pour savoir si l'on est connecté à la base de données
+      	sClé							est une chaine			//Concaténation de emplacement+base+user+type d'accès, permet d'éviter d'ouvrir plusieurs connexions en parallèle sur les mêmes données
+      	eAccès							est un ETypeAccès		//Voir énumération ci-dessus
+      	sMotDePasseFichier				est une chaine 			//Pour les fichiers Hyperfile (hPasse), peut-être aussi pour d'autre si le cryptage est fait dans l'objet avant écriture et après lecture
+      	sAnalyse						est une chaine			//Chemin de l'analyse de données pour les fichiers HF5
+      	sMotDePasseAnalyse				est une chaine      	//Mot de passe pour ouvrir l'analyse de données Wx
+      	sRépertoireCache				est une chaine			//Répertoire cache des mémos
+      	sEmplacementDesMémos			est une chaine			//Soit vide (dans la DB), soit C:\... ou \\DisqueRéseau\..., soit ftp:// ou ftps://... (soit ggl:// soit google://, ... etc à développer)
+      	sGroupeOuTypeOuNomDeFichiers	est une chaine			//Table qui seront ouvertes pour la connexion
+      	bTransactionEnCours				est un booleen			//Une transaction est-elle en cours sur cette bd
+      	bResterConnecté					est un booleen			//Permet de dire, lors de la première connexion, si le programme doit rester connecter à la BD tout le temps
+      	sSchémaOuDC						est une chaine ansi		//Certaines BD nécessites un Schéma (Oracle, PostgreSQL, ...) ou Domaine Component (DC) du LDAP
+      	sToutesLesTables				est une chaine			//Alimenté depuis la méthode Tables (sans paramètres) une fois pour toute
+      	eVersionDuServeur	 			est un EVersionServeur	//Version du serveur sur lequel roule la BD
+      	bGèreUTF8						est un booleen			//Gère l'UTF8, peux impliquer certaines conversions au moment de la lecture ou l'écriture
+      	sAutresParamètres				est une chaine			//Pour stocker des données liées à la connexion mais qui ne sont pas communes aux autres bases de données
+      	clFichier						est un objet dynamique	//Objet "fichier" relié à la connexion, exemple : fichier Excel
+      fin	
+      
+      cBaseDeDonnées est une Classe
+      	hérite de cGénérique	
+      public constant
+      	m_nIndiceDeConnexion			est un entier				<sérialise = faux>
+      	m_stConnexion					est un STConnexion			<sérialise = faux>									//Structure contenant toutes les informations de connexion
+      privé
+      	m_pclBaseDeDonnées 				est un objet dynamique 		<sérialise = faux>									//Objet cBaseDeDonnéesxxx selon le type de connexion
+      global public constant
+      	mg_tabConnexion 				est un tableau 				<sérialise = faux> de STConnexion					//Liste de toutes les connexions aux données
+      	mg_taUtilisationServeur			est un tableau associatif 	<sérialise = faux> d'entiers						//Nombre de connexions faites sur une base de données (voir membre sClé ci-dessus)
+      global privé
+      	mg_bConnexionODBC				est un booleen 				<serialise = faux>									//Identifie qu'une connexion est de type ODBC
+      	mg_taEnvironnement				est un tableau associatif 	<sérialise = faux> de capplication.eenvironnement	//Mémorise tous les environnements de base de données dans l'entreprise et permet d'afficher l'environnement utilisé lors de l'exécution
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     internal_properties : CQAAAAkAAADOHQnw/DDAwA2Sgstp0iHSSBV/Y0v9kC8OE8I6vhlqV+I4sjPf5ROobTvWBZvyPjvs1ze4RSeiCjX3eWHFbMbJbWKSueDL/7/Rt/ulD6FEW2dTWCwlpbgr6dR0FrS0NEw1OS5fHCqXWT7naioXT1ABvCbnfdYcDJRoA+CUWtTiBI4wz6g=
+     procedure_id : 1921500413350835054
+     type_code : 27
+     code : |1-
+      // Résumé : Initialise une instance de la classe en prenant en compte un indice de connexion existant, le cas échéant. Il alloue également un objet cErreur pour la gestion des erreurs au sein de l'instance.
+      // Syntaxe : Constructeur ( [<nIndiceDeConnexionExistant> est entier])
+      // Paramètres :
+      // 	nIndiceDeConnexionExistant (entier optionnel) : Si spécifié, vérifie si une connexion active existe déjà avec cet indice. Si oui, il initialise l'instance avec cette connexion existante.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE Constructeur(nIndiceDeConnexionExistant est un entier = 0)
+      m_pclErreur	= allouer un cErreur
+      si nIndiceDeConnexionExistant>0 _Et_ ConnexionActive(nIndiceDeConnexionExistant) alors 
+      	m_nIndiceDeConnexion	= nIndiceDeConnexionExistant
+      	m_pclBaseDeDonnées		= ObjetBaseDeDonnées(nIndiceDeConnexionExistant)
+      	m_stConnexion 			= cBaseDeDonnées.mg_tabConnexion[nIndiceDeConnexionExistant]	//pour simplifier la programmation qui suit
+      FIN
+      
+      CAS ERREUR:
+      m_pclErreur.AjouteErreurWx()
+      CAS EXCEPTION:
+      m_pclErreur.AjouteException()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1921500413350900590
+     type_code : 28
+     code : |1-
+      // Résumé : La méthode effectue les opérations de nettoyage nécessaires lors de la destruction de l'instance de la classe.
+      // Syntaxe : Destructeur()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucune
+      // Exemple :
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : ConnecteTout
+     procedure_id : 1954205313637859526
+     type_code : 12
+     code : |1-
+      // Résumé : Connecter l'application à toutes les bases de données définies dans les paramètres de l'application. Voir méthode DéconnecteTout().
+      // Syntaxe : [ <Résultat> = ] ConnecteTout ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Retourne Vrai si la connexion à toutes les bases de données s'effectue avec succès, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE ConnecteTout() : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      m_pclErreur.Raz()
+      
+      pclBaseDeDonnées est un objet dynamique
+      
+      pour tout sSectionParamètres de cApplication._Application.m_pclParamètres.p_tabSection
+      	pclBaseDeDonnées=ObjetBaseDeDonnées(cApplication._Application.m_pclParamètres.Lit(sSectionParamètres,"Provider"))
+      	SI pclBaseDeDonnées<>Null _et_ pas pclBaseDeDonnées.Connecte_(sSectionParamètres) alors renvoyer faux
+      FIN
+      renvoyer vrai
+     type : 458752
+   -
+     name : DéconnecteTout
+     procedure_id : 1976436992158195593
+     type_code : 12
+     code : |1-
+      // Résumé : Déconnecte toutes les connexions aux bases de données actives. Voir aussi méthode ConnecteTout().
+      // Syntaxe : [ <Résultat> = ] DéconnecteTout ()
+      // Paramètres : Aucun
+      // Valeur de retour :
+      // 	booléen : Retourne Vrai si toutes les déconnexions s'effectuent avec succès, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE globale DéconnecteTout() : booleen
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode()
+      
+      pclBaseDeDonnées est un objet dynamique
+      pour tout stUneConnexion,nIndice de mg_tabConnexion
+      	si nIndice>0 alors
+      		pclBaseDeDonnées=ObjetBaseDeDonnées(nIndice)
+      		si pclBaseDeDonnées<>null alors 
+      			mg_taUtilisationServeur[stUneConnexion.sClé]=1	//pour forcer la déconnexion réelle aux données par Déconnecte
+      			pclBaseDeDonnées.Déconnecte()
+      		fin
+      	FIN
+      FIN
+      renvoyer vrai
+     type : 458752
+   -
+     name : Sauvegarde
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1976472133583811734
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de classe de la BD dont l'indice est passé au constructeur, qui sauvegarde en local la BD ou certaines tables.
+      // Syntaxe : [ <Résultat> = ] Sauvegarde ( [<bÉcraseSiExistant> est booléen [, <sNomTables> est chaîne [, <sRépertoireLocal> est chaîne [, <eSuffixe> est cBaseDeDonnées.ESauvegardeSuffixe]]]])
+      // Paramètres :
+      // 	bÉcraseSiExistant (booléen optionnel): Indique s'il faut écraser les fichiers de sauvegarde existants. Par défaut, cette option est activée (Vrai).
+      //	sNomTables (chaîne UNICODE optionnelle) : Contient les noms des tables à sauvegarder, séparés par des virgules ou des retours chariots. Par défaut, toutes les tables sont sauvegardées.
+      //	sRépertoireLocal (chaîne UNICODE optionnelle): Le répertoire local où les fichiers de sauvegarde seront stockés. Si non spécifié, le répertoire par défaut sera utilisé.
+      //	eSuffixe (cBaseDeDonnées.ESauvegardeSuffixe optionnel): Le suffixe à appliquer aux fichiers de sauvegarde. Par défaut, aucun suffixe n'est ajouté (ESauvegardeSuffixe.SuffixeAucun).
+      // Valeur de retour : booléen : Retourne Vrai si la sauvegarde s'effectue avec succès, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE virtuelle Sauvegarde(bÉcraseSiExistant est un booleen = vrai, local sNomTables est une chaine = "", sRépertoireLocal est une chaine = "",eSuffixe est un ESauvegardeSuffixe = ESauvegardeSuffixe.SuffixeAucun) : booleen	//les tables peuvent être séparées par des , ou RC
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(bÉcraseSiExistant,sNomTables,sRépertoireLocal,eSuffixe)
+      m_pclErreur.Raz()
+      
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booleen = m_pclBaseDeDonnées.Sauvegarde(bÉcraseSiExistant,sNomTables,sRépertoireLocal,eSuffixe)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON 
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER Faux	
+     type : 458752
+   -
+     name : EnvironnementAjoute
+     procedure_id : 1999121003970418126
+     type_code : 12
+     code : |1-
+      // Résumé : Ajoute une entrée à la table associative mg_taEnvironnement. Cette table mémorise les environnements de base de données dans l'entreprise et permet d'associer un environnement à une combinaison de serveur, port et base de données.
+      // Syntaxe : EnvironnementAjoute (<sServeurEtPort> est chaîne, <sBaseDeDonnées> est chaîne, <eEnvironnement> est cApplication.EEnvironnement)
+      // Paramètres :
+      //	sServeurEtPort (chaîne UNICODE) : Représente le serveur et le port de la base de données.
+      //	sBaseDeDonnées (chaîne UNICODE) : Représentant le nom de la base de données.
+      //	eEnvironnement (cApplication.EEnvironnement) : L'environnement associé à la combinaison serveur, port et base de données.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //	cBaseDeDonnées.EnvironnementAjoute("Serveur1:1433", "MaBaseDeDonnées", cApplication.EEnvironnement.Production)
+      //
+      PROCEDURE global EnvironnementAjoute(sServeurEtPort est une chaine,sBaseDeDonnées est une chaine,eEnvironnement est un capplication.eenvironnement)
+      mg_taEnvironnement[minuscule(sServeurEtPort+["."]+sBaseDeDonnées)]=eEnvironnement
+     type : 458752
+   -
+     name : Environnement
+     procedure_id : 1999123112866764667
+     type_code : 12
+     code : |1-
+      // Résumé : Détermine l'environnement "le plus sensible" de l'application en analysant les connexions actives aux bases de données (ex : si une connexion sur un BD de dev et une autre sur une BD de prod > renverra "prod"). Elle utilise les informations stockées dans la table associative mg_taEnvironnement pour associer un environnement à chaque combinaison de serveur, port et base de données.
+      // Syntaxe : [ <Résultat> = ] Environnement ()
+      // Paramètres : Aucun
+      // Valeur de retour : cApplication.EEnvironnement : L'environnement actuel. Si aucune information n'est disponible, elle renvoie cApplication.EEnvironnement.Inconnu.
+      // Exemple :
+      //
+      PROCEDURE global Environnement() : cApplication.EEnvironnement
+      nTest,nDev sont des entier
+      si mg_taEnvironnement..occurrence>0 alors
+      	POUR TOUT stUneConnexion de mg_tabConnexion
+      		SI stUneConnexion.bConnecté ALORS
+      			SI stUneConnexion.cnxDonnées..BaseDeDonnées>"" ALORS
+      				si pas mg_taEnvironnement[Minuscule(stUneConnexion.cnxDonnées..Serveur+["."]+stUneConnexion.cnxDonnées..BaseDeDonnées)]..vide alors
+      					QUAND EXCEPTION DANS
+      						si mg_taEnvironnement[Minuscule(stUneConnexion.cnxDonnées..Serveur+["."]+stUneConnexion.cnxDonnées..BaseDeDonnées)]=cApplication.EEnvironnement.Production alors
+      							RENVOYER cApplication.EEnvironnement.Production	//dès qu'une BD est prod, tout est en prod
+      						sinon si mg_taEnvironnement[Minuscule(stUneConnexion.cnxDonnées..Serveur+["."]+stUneConnexion.cnxDonnées..BaseDeDonnées)]=cApplication.EEnvironnement.Test alors
+      							nTest++ 
+      						sinon si mg_taEnvironnement[Minuscule(stUneConnexion.cnxDonnées..Serveur+["."]+stUneConnexion.cnxDonnées..BaseDeDonnées)]=cApplication.EEnvironnement.Développement alors
+      							nDev++ 
+      						FIN
+      					FAIRE
+      						SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(mg_taEnvironnement[Minuscule(stUneConnexion.cnxDonnées..Serveur+["."]+stUneConnexion.cnxDonnées..BaseDeDonnées)])
+      						//cas ou stUneConnexion.cnxDonnées..Serveur+"."+stUneConnexion.cnxDonnées..BaseDeDonnées n'est pas dans le tableau (le ..existe ne fonctionne pas en Android et le comparer à null ne fonctionne pas du tout sur une énumération > on intercepte une exception)
+      					FIN
+      				FIN
+      			FIN
+      			si nTest+nDev=0 alors
+      				QUAND EXCEPTION DANS
+      					SI pas mg_taEnvironnement[Minuscule(stUneConnexion.cnxDonnées..Serveur)]..vide ALORS
+      						si mg_taEnvironnement[Minuscule(stUneConnexion.cnxDonnées..Serveur)]=cApplication.EEnvironnement.Production alors
+      							RENVOYER cApplication.EEnvironnement.Production	//dès qu'une BD est prod, tout est en prod
+      						sinon si mg_taEnvironnement[Minuscule(stUneConnexion.cnxDonnées..Serveur)]=cApplication.EEnvironnement.Test alors 
+      							nTest++ 
+      						sinon si mg_taEnvironnement[Minuscule(stUneConnexion.cnxDonnées..Serveur)]=cApplication.EEnvironnement.Développement alors
+      							nDev++ 
+      						sinon
+      							RENVOYER cApplication.EEnvironnement.Inconnu						
+      						FIN
+      					fin
+      				FAIRE
+      //					RENVOYER cApplication.EEnvironnement.Inconnu
+      					SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.Ajoute(mg_taEnvironnement[Minuscule(stUneConnexion.cnxDonnées..Serveur)])
+      				FIN
+      			fin
+      		FIN
+      	FIN
+      	si nTest>0 alors
+      		renvoyer cApplication.EEnvironnement.Test 
+      	SINON si nDev>0 alors
+      		renvoyer cApplication.EEnvironnement.Développement	//le renvoie de l'environnement de production est fait ci-dessus
+      	sinon si nTest+nDev=0 alors
+      		renvoyer cApplication.EEnvironnement.Inconnu	//car l'environnement prod est tout de suite renvoyé ci-dessus, ne reste que le test ou le dev, et si pas de connexion ... bha on ne sais pas
+      	sinon
+      		RENVOYER cApplication.EEnvironnement.Production
+      	FIN
+      sinon
+      	SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteTexte(<§$002a§>)
+      	renvoyer cApplication.EEnvironnement.Inconnu
+      fin
+     type : 458752
+   -
+     name : TransactionAnnule
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1968673671208934833
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui annule la transaction débutée par TransactionDébut.
+      // Syntaxe : [ <Résultat> = ] TransactionAnnule ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Retourne Vrai si la transaction a bien été annulée, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE virtuelle TransactionAnnule() : booleen
+      m_pclErreur.RAZ()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booleen = m_pclBaseDeDonnées.TransactionAnnule()
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON 
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER Faux
+     type : 458752
+   -
+     name : TransactionDébut
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1968673778583142708
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui débute une transaction sur toutes les tables ou certaines.
+      // Syntaxe : [ <Résultat> = ] TransactionDébut ( [<sNomTables> est chaîne])
+      // Paramètres :
+      //	sNomTables (chaîne UNICODE optionnel): Une chaîne contenant les noms des tables sur lesquelles appliquer la transaction, séparés par des virgules. Pour exclure des tables de la transaction, préfixer leur nom d'un tiret -. 
+      // Valeur de retour : booléen : Retourne Vrai si la transaction est débutée avec succès, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE virtuelle TransactionDébut(sNomTables est une chaîne = "") : booleen	//tables séparées par des , (pour enlever des tables, mettre - devant)
+      m_pclErreur.RAZ()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booleen = m_pclBaseDeDonnées.TransactionDébut(sNomTables)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON 
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      renvoyer faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER Faux	
+     type : 458752
+   -
+     name : TransactionFin
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1968673851597668921
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui termine une transaction débutée par TransactionDébut.
+      // Syntaxe : [ <Résultat> = ] TransactionFin ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Retourne Vrai si la transaction a bien été annulée, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE virtuelle TransactionFin() : booleen
+      m_pclErreur.RAZ()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booleen = m_pclBaseDeDonnées.TransactionFin()
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON 
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER Faux	
+     type : 458752
+   -
+     name : DateHeureUTC
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2027982952172044354
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui renvoie la date et l'heure actuelles en temps universel coordonné (UTC) sur le serveur de BD. 
+      // Syntaxe : [ <Résultat> = ] DateHeureUTC ()
+      // Paramètres : Aucun
+      // Valeur de retour : dateheure : Renvoie une chaîne représentant la date et l'heure au format de la base de données. En cas d'erreur, elle renvoie une chaîne vide.
+      // Exemple :
+      //
+      PROCEDURE virtuelle DateHeureUTC() : DateHeure
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sRes est une chaîne = m_pclBaseDeDonnées.DateHeureUTC()
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""	
+     type : 458752
+   -
+     name : TableExiste
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2032499135946750927
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui vérifie l'existence d'une table dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableExiste (<sNomTable> est chaîne)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Nom de la table dont on souhaite vérifier l'existence.
+      // Valeur de retour : booléen : Retourne Vrai si la table existe dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE VIRTUELLE TableExiste(sNomTable est une chaine) : booleen
+      m_pclErreur.Raz()
+      SI cApplication.mg_taInfo[cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sNomTable)]<>Null ALORS RENVOYER Vrai
+      
+      si m_pclBaseDeDonnées<>null alors 
+      	bRes est un booleen = m_pclBaseDeDonnées.TableExiste(sNomTable)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      sinon
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER Faux
+     type : 458752
+   -
+     name : ColonneExiste
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2032524381764626766
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui vérifie l'existence d'une colonne dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] ColonneExiste (<sNomTableEtColonne> est chaîne)
+      // Paramètres :
+      //	sNomTableEtColonne (chaîne UNICODE) : Nom de la table + "." + nom de la colonne dont on souhaite vérifier l'existence.
+      // Valeur de retour : booléen : Retourne Vrai si la colonne existe dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE ColonneExiste(sNomTableEtColonne est une chaine) : booleen
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booleen = m_pclBaseDeDonnées.ColonneExiste(sNomTableEtColonne)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER faux
+     type : 458752
+   -
+     name : Tables
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2035451733341765875
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui renvoie l'ensemble des noms de table.
+      // Syntaxe : [ <Résultat> = ] Tables ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Retourne la liste des tables sous forme de chaine séparée par des RC.
+      // Exemple :
+      //
+      PROCEDURE Tables() : chaine
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sRes est une chaine = m_pclBaseDeDonnées.Tables() 
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""	
+     type : 458752
+   -
+     name : Déconnecte
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2035476643913892233
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui déconnecte la base de données. 
+      // Syntaxe : [ <Résultat> = ] Déconnecte ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Renvoie vrai si la déconnexion s'est correctement déroulée, faux sinon
+      // Exemple :
+      //
+      PROCEDURE Déconnecte() : booleen
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booleen = m_pclBaseDeDonnées.Déconnecte()
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes	
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.Ajouteerreur(<§$0026§>);RENVOYER Faux
+     type : 458752
+   -
+     name : ConnexionActive
+     procedure_id : 2035514972147592680
+     type_code : 12
+     code : |1-
+      // Résumé : Permet de vérifier si une connexion spécifiée par son indice est active. Elle utilise le tableau mg_tabConnexion pour déterminer si l'indice de connexion est valide et s'il correspond à une connexion active.
+      // Syntaxe : [ <Résultat> = ] ConnexionActive (<nIndiceDeConnexion> est entier)
+      // Paramètres :
+      //	nIndiceDeConnexion (entier) : <indiquez ici le rôle de nIndiceDeConnexion>
+      // Valeur de retour : booléen : Retourne Vrai si la connexion est active, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE globale ConnexionActive(nIndiceDeConnexion est un entier) : booleen
+      SI mg_tabConnexion..Occurrence=0 _ou_ pas 0<nIndiceDeConnexion<=cBaseDeDonnées.mg_tabConnexion..Occurrence ALORS renvoyer faux
+      renvoyer vrai
+     type : 458752
+   -
+     name : ObjetBaseDeDonnées
+     procedure_id : 2035778683287998745
+     type_code : 12
+     code : |1-
+      // Résumé : Crée une instance de la classe appropriée de cBaseDeDonnéesXXX en fonction du type de connexion spécifié. Elle utilise l'identifiant ou le fournisseur de connexion (ex : hAccèsHF7) fourni en paramètre pour déterminer le type de connexion et instancier la classe correspondante.
+      // Syntaxe : [ <Résultat> = ] ObjetBaseDeDonnées (<sIDouProvider>)
+      // Paramètres :
+      // 	sIDouProvider : L'identifiant ou le fournisseur de connexion. Peut être une chaîne ou un entier.
+      // Valeur de retour : objet dynamique : Instance d'une classe héritée de cBaseDeDonnéesXXX en fonction du type de connexion spécifié. Si le type de connexion n'est pas reconnu, elle renvoie Null.
+      // Exemple :
+      //
+      PROCEDURE globale ObjetBaseDeDonnées(sIDouProvider)
+      pclBaseDeDonnées est un objet dynamique = null
+      
+      si EstNumérique(sIDouProvider) alors
+      	si sIDouProvider>0 _et_ mg_tabConnexion[Val(sIDouProvider)]<>null alors
+      		SELON mg_tabConnexion[val(sIDouProvider)].cnxDonnées..provider
+      			CAS hAccèsHF7,hAccèsHFClientServeur,cBaseDeDonnéesHyperFile.hAccèsHF5 	: pclBaseDeDonnées = allouer un cBaseDeDonnéesHyperFile(Val(sIDouProvider))
+      			CAS hAccèsNatifSQLServer,hOledbSQLServer								: pclBaseDeDonnées = allouer un cBaseDeDonnéesSQLServer(Val(sIDouProvider))
+      			CAS hAccèsNatifOracle,hOledbOracle										: pclBaseDeDonnées = allouer un cBaseDeDonnéesOracle(Val(sIDouProvider))
+      			CAS hAccèsNatifAS400													: pclBaseDeDonnées = allouer un cBaseDeDonnéesAS400(Val(sIDouProvider))
+      			CAS cBaseDeDonnéesMySQL.hAccèsNatifMySQL								: pclBaseDeDonnées = allouer un cBaseDeDonnéesMySQL(Val(sIDouProvider))
+      			CAS cBaseDeDonnéesMariaDB.hAccèsNatifMariaDB							: pclBaseDeDonnées = allouer un cBaseDeDonnéesMariaDB(Val(sIDouProvider))
+      			CAS cBaseDeDonnéesSQLite.hAccèsNatifSQLite								: pclBaseDeDonnées = allouer un cBaseDeDonnéesSQLite(Val(sIDouProvider))
+      			CAS cBaseDeDonnéesPostgreSQL.hAccèsnatifpostgresql						: pclBaseDeDonnées = allouer un cBaseDeDonnéesPostgreSQL(Val(sIDouProvider))
+      			CAS cBaseDeDonnéesExcel.hAccèsNatifExcel								: pclBaseDeDonnées = allouer un cBaseDeDonnéesExcel(Val(sIDouProvider))
+      		FIN
+      	sinon
+      		SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclTrace.m_pclErreur(chaineconstruit(<§$0028§>,sIDouProvider))
+      	fin
+      sinon
+      	SELON sIDouProvider
+      		CAS hAccèsHF7,hAccèsHFClientServeur,cBaseDeDonnéesHyperFile.hAccèsHF5 	: pclBaseDeDonnées = allouer un cBaseDeDonnéesHyperFile()
+      		CAS hAccèsNatifSQLServer,hOledbSQLServer								: pclBaseDeDonnées = allouer un cBaseDeDonnéesSQLServer()
+      		CAS hAccèsNatifOracle,hOledbOracle										: pclBaseDeDonnées = allouer un cBaseDeDonnéesOracle()
+      		CAS hAccèsNatifAS400													: pclBaseDeDonnées = allouer un cBaseDeDonnéesAS400()
+      		CAS cBaseDeDonnéesMySQL.hAccèsNatifMySQL								: pclBaseDeDonnées = allouer un cBaseDeDonnéesMySQL()
+      		CAS cBaseDeDonnéesMariaDB.hAccèsNatifMariaDB							: pclBaseDeDonnées = allouer un cBaseDeDonnéesMariaDB()
+      		CAS cBaseDeDonnéesSQLite.hAccèsNatifSQLite								: pclBaseDeDonnées = allouer un cBaseDeDonnéesSQLite()
+      		CAS cBaseDeDonnéesPostgreSQL.hAccèsNatifPostGreSQL						: pclBaseDeDonnées = allouer un cBaseDeDonnéesPostgreSQL()
+      		CAS cBaseDeDonnéesExcel.hAccèsNatifExcel								: pclBaseDeDonnées = allouer un cBaseDeDonnéesExcel()
+      		autres cas : SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclErreur<>Null ALORS cApplication._Application.m_pclErreur.AjouteErreur(ChaîneConstruit(<§$0029§>,sIDouProvider))
+      	FIN
+      FIN
+      renvoyer pclBaseDeDonnées
+     type : 458752
+   -
+     name : ConnexionAjoute
+     procedure_id : 2035811836148472699
+     type_code : 12
+     code : |1-
+      // Résumé : Incrémenter le compteur d'utilisation associé à une clé de connexion. Cette procédure est utilisée pour suivre le nombre de connexions établies pour une base de données spécifique. Utilisé exclusivement par les méthodes de Connecte des classe cBaseDeDonnéesXXX
+      // Syntaxe : ConnexionAjoute (<sClé> est chaîne)
+      // Paramètres :
+      //	sClé (chaîne UNICODE) : Clé de la connexion, généralement générée en fonction de l'emplacement, du nom de la base de données, de l'utilisateur, etc.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE ConnexionAjoute(sClé est une chaine)
+      mg_taUtilisationServeur[sClé]++
+     type : 458752
+   -
+     name : ConnexionSupprime
+     procedure_id : 2035812342955518136
+     type_code : 12
+     code : |1-
+      // Résumé : Décrémenter le compteur d'utilisation associé à une clé de connexion. Cette procédure est utilisée pour suivre le nombre de connexions établies pour une base de données spécifique. Utilisé exclusivement par les méthodes de Connecte des classe cBaseDeDonnéesXXX
+      // Syntaxe : ConnexionSupprime (<sClé> est chaîne)
+      // Paramètres :
+      //	sClé (chaîne UNICODE) : Clé de la connexion, généralement générée en fonction de l'emplacement, du nom de la base de données, de l'utilisateur, etc.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE ConnexionSupprime(sClé est une chaine)
+      mg_taUtilisationServeur[sClé]--
+     type : 458752
+   -
+     name : TableBloque
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2035869912619724804
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la class de la BD dont l'indice est passé au constructeur, qui bloque une table dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableBloque (<sNomTable> est chaîne)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Nom de la table que l'on souhaite bloquer.
+      //	sCléPrimaire (chaîne UNICODE) : Clé primaire à bloquer (utile uniquement pour SQLServer)
+      // Valeur de retour : booléen : Retourne Vrai si la table est bloquée dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE TableBloque(sNomTable est une chaine,sCléPrimaire est une chaine) : booleen
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booleen = m_pclBaseDeDonnées.TableBloque(sNomTable,sCléPrimaire)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      cAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER Faux
+     type : 458752
+   -
+     name : TableDébloque
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2035869942684568276
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la class de la BD dont l'indice est passé au constructeur, qui débloque une table dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableDébloque (<sNomTable> est chaîne)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Nom de la table que l'on souhaite débloquer.
+      // Valeur de retour : booléen : Retourne Vrai si la table est débloquée dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE TableDébloque(sNomTable est une chaine) : booleen
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booleen = m_pclBaseDeDonnées.TableDébloque(sNomTable)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);renvoyer faux
+     type : 458752
+   -
+     name : SQLUnicodePréfixe
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2107399951315872956
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui récupère le préfixe d'une chaine Unicode à utiliser dans une requête SQL.
+      // Syntaxe : [ <Résultat> = ] SQLUnicodePréfixe ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Préfixe à ajouter à une chaine Unicode pour exécuter une requête dans la BD.
+      // Exemple :
+      //
+      PROCEDURE SQLUnicodePréfixe() : chaine
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sRes est une chaine = m_pclBaseDeDonnées.SQLUnicodePréfixe()
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : SQLUnicodeSuffixe
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2107400629920732229
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui récupère le suffixe d'une chaine Unicode à utiliser dans une requête SQL.
+      // Syntaxe : [ <Résultat> = ] SQLUnicodeSuffixe ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Suffixe à ajouter à une chaine Unicode pour exécuter une requête dans la BD.
+      // Exemple :
+      //
+      PROCEDURE SQLUnicodeSuffixe() : chaîne
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sRes est une chaine =  m_pclBaseDeDonnées.SQLUnicodeSuffixe()
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.Ajouteerreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : DateHeureVersSQL
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2107402459576899323
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui transforme une dateheure dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] DateHeureVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	xDateHeure : La date et l'heure à convertir. Le type de cette valeur peut être dateheure ou une chaine équivalente
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne représentant la date et l'heure converties au format SQL. En cas d'erreur, elle renvoie une chaîne vide.
+      // Exemple :
+      //
+      PROCEDURE DateHeureVersSQL(xDateHeure) : chaine
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sRes est une chaine = m_pclBaseDeDonnées.DateHeureVersSQL(xDateHeure)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.Ajouteerreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : DateVersSQL
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2107402936318314123
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui transforme une date dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] DateVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	xDate : La date à convertir. Le type de cette valeur peut être date ou une chaine équivalente
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne représentant la date converties au format SQL. En cas d'erreur, elle renvoie une chaîne vide.
+      // Exemple :
+      //
+      PROCEDURE DateVersSQL(xDate) : chaine
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sRes est une chaine = m_pclBaseDeDonnées.DateVersSQL(xDate)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.Ajouteerreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : HeureVersSQL
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2107404478215340795
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur,  qui transforme une heure dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] DateHeureVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	xHeure : L'heure à convertir. Le type de cette valeur peut être heure ou une chaine équivalente
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne représentant l'heure converties au format SQL. En cas d'erreur, elle renvoie une chaîne vide.
+      // Exemple :
+      //
+      PROCEDURE HeureVersSQL(xHeure) : chaine
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sRes est une chaine = m_pclBaseDeDonnées.HeureVersSQL(xHeure)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : ExécuteProcédure
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2162325577919075670
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur,  qui exécute une procédure stockée sur la base de données prise en charge par le passage de l'indice de connexion dans le constructeur.
+      // Syntaxe : [ <Résultat> = ] ExécuteProcédure (<sNomDeProcédure> est chaîne [, <xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5> [, <xParam6> [, <xParam7> [, <xParam8> [, <xParam9> [, <xParam10> [, <xParam11> [, <xParam12> [, <xParam13> [, <xParam14> [, <xParam15> [, <xParam16> [, <xParam17> [, <xParam18> [, <xParam19> [, <xParam20>]]]]]]]]]]]]]]]]]]]])
+      // Paramètres :
+      //	sNomDeProcédure (chaîne UNICODE) : Le nom de la procédure stockée à exécuter.
+      // 	xParam1 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam2 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam3 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam4 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam5 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam6 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam7 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam8 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam9 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam10 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam11 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam12 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam13 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam14 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam15 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam16 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam17 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam18 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam19 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // 	xParam20 (valeur optionnelle) : Les paramètres de la procédure stockée. 
+      // Valeur de retour : booléen : Indique si l'exécution de la procédure stockée a réussi. En cas d'erreur, elle renvoie Faux et enregistre les détails de l'erreur dans l'objet m_pclErreur.
+      // Exemple :
+      //
+      PROCEDURE ExécuteProcédure(sNomDeProcédure est une chaine,xParam1 <utile> = Null,xParam2 <utile> = Null,xParam3 <utile> = Null,xParam4 <utile> = Null,xParam5 <utile> = Null,xParam6 <utile> = Null,xParam7 <utile> = Null,xParam8 <utile> = Null,xParam9 <utile> = Null,xParam10 <utile> = Null,xParam11 <utile> = Null,xParam12 <utile> = Null,xParam13 <utile> = Null,xParam14 <utile> = Null,xParam15 <utile> = Null,xParam16 <utile> = Null,xParam17 <utile> = Null,xParam18 <utile> = Null,xParam19 <utile> = Null,xParam20 <utile> = Null) : booleen	//on ne peut pas faire * car pas compatible avec Java 
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS
+      	bRes est un booleen = m_pclBaseDeDonnées.ExécuteProcédure(sNomDeProcédure,xParam1,xParam2,xParam3,xParam4,xParam5,xParam6,xParam7,xParam8,xParam9,xParam10,xParam11,xParam12,xParam13,xParam14,xParam15,xParam16,xParam17,xParam18,xParam19,xParam20)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER faux
+     type : 458752
+   -
+     name : ExécuteFonctionVersJSON
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2162326089058510115
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui exécute une fonction stockée avec ses paramètres le cas échéant.
+      // Syntaxe : [ <Résultat> = ] ExécuteFonctionVersJSON (<sNomDeFonction> est chaîne [, <xParam1> [, <xParam2> [, <xParam3> [, <xParam4> [, <xParam5> [, <xParam6> [, <xParam7> [, <xParam8> [, <xParam9> [, <xParam10> [, <xParam11> [, <xParam12> [, <xParam13> [, <xParam14> [, <xParam15> [, <xParam16> [, <xParam17> [, <xParam18> [, <xParam19> [, <xParam20>]]]]]]]]]]]]]]]]]]]])
+      // Paramètres :
+      //	sNomDeFonction (chaîne UNICODE) : Le nom de la fonction stockée à exécuter.
+      // 	xParam1 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam2 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam3 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam4 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam5 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam6 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam7 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam8 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam9 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam10 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam11 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam12 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam13 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam14 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam15 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam16 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam17 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam18 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam19 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // 	xParam20 (valeur optionnelle) : Les paramètres de la fonction stockée. 
+      // Valeur de retour : chaîne Unicode : Valeur de retour de la fonction au format JSON. En cas d'erreur, elle renvoie Faux et enregistre les détails de l'erreur dans l'objet m_pclErreur.
+      // Exemple :
+      //
+      PROCEDURE ExécuteFonctionVersJSON(sNomDeFonction est une chaine,xParam1 <utile> = Null,xParam2 <utile> = Null,xParam3 <utile> = Null,xParam4 <utile> = Null,xParam5 <utile> = Null,xParam6 <utile> = Null,xParam7 <utile> = Null,xParam8 <utile> = Null,xParam9 <utile> = Null,xParam10 <utile> = Null,xParam11 <utile> = Null,xParam12 <utile> = Null,xParam13 <utile> = Null,xParam14 <utile> = Null,xParam15 <utile> = Null,xParam16 <utile> = Null,xParam17 <utile> = Null,xParam18 <utile> = Null,xParam19 <utile> = Null,xParam20 <utile> = Null) : chaine	//on ne peut pas faire * car pas compatible avec Java 
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS
+      	sRes est une chaine = m_pclBaseDeDonnées.ExécuteFonctionVersJSON(sNomDeFonction,xParam1,xParam2,xParam3,xParam4,xParam5,xParam6,xParam7,xParam8,xParam9,xParam10,xParam11,xParam12,xParam13,xParam14,xParam15,xParam16,xParam17,xParam18,xParam19,xParam20)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : HashDansBinaire
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2189523661093876203
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui exécute une fonction pour transférer le hash contenu dans une colonne dans le binaire.
+      // Syntaxe : [ <Résultat> = ] HashDansBinaire (<sNomTable> est chaîne, <sColonneBinaire> est chaîne [, <sColonneHash> est chaîne [, <sCondition> est chaîne]])
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Le nom de la table dans lequel se trouve la colonne binaire.
+      //	sColonneBinaire (chaîne UNICODE) : Le nom de la colonne binaire dans laquelle le hash sera ajouté.
+      //	sColonneHash (chaîne UNICODE optionnelle) : Le nom de la colonne dans laquelle se trouve déjà le hash du binaire, par défaut le nom de la colonne binaire suffixé de "Hash".
+      //	sCondition (chaîne UNICODE optionnelle) : Une condition optionnelle pour filtrer les lignes de la table qui vont voir appliquer ce traitement.
+      // Valeur de retour : booléen : Indique si le transfert du hash a été effectué avec succès. En cas d'erreur, elle renvoie Faux et enregistre les détails de l'erreur dans l'objet m_pclErreur.
+      // Exemple :
+      //
+      PROCEDURE HashDansBinaire(sNomTable est une chaîne,sColonneBinaire est une chaîne,sColonneHash est une chaine = sColonneBinaire+"Hash",sCondition est une chaine = "") : booleen
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS
+      	bRes est un booléen = m_pclBaseDeDonnées.HashDansBinaire(sNomTable,sColonneBinaire,sColonneHash,sCondition)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER faux
+     type : 458752
+   -
+     name : HashHorsBinaire
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2189523845777578212
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui exécute une fonction pour transférer le hash contenu dans une colonne binaire vers une autre colonne.
+      // Syntaxe : [ <Résultat> = ] HashHorsBinaire (<sNomTable> est chaîne, <sColonneBinaire> est chaîne [, <sColonneHash> est chaîne [, <sCondition> est chaîne]])
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Le nom de la table dans lequel se trouve la colonne binaire
+      //	sColonneBinaire (chaîne UNICODE) : Le nom de la colonne binaire dans laquelle le hash se trouve ajouté à la donnée binaire.
+      //	sColonneHash (chaîne UNICODE optionnelle) : Le nom de la colonne dans laquelle se transféré le hash du binaire, par défaut le nom de la colonne binaire suffixé de "Hash"
+      //	sCondition (chaîne UNICODE optionnelle) : Une condition optionnelle pour filtrer les lignes de la table qui vont voir appliquer ce traitement.
+      // Valeur de retour : booléen : Indique si le transfert du hash a été effectué avec succès. En cas d'erreur, elle renvoie Faux et enregistre les détails de l'erreur dans l'objet m_pclErreur.
+      // Exemple :
+      //
+      PROCEDURE HashHorsBinaire(sNomTable est une chaîne,sColonneBinaire est une chaîne,sColonneHash est une chaine = sColonneBinaire+"Hash",sCondition est une chaine = "") : booleen
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS
+      	bRes est un booleen = m_pclBaseDeDonnées.HashHorsBinaire(sNomTable,sColonneBinaire,sColonneHash,sCondition)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER faux
+     type : 458752
+   -
+     name : SQLLimiteRequêteA
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2198009768175595137
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui génère les parties préliminaire et postliminaire d'une requête SQL destinés à limiter le nombre de résultats renvoyés.
+      // Syntaxe : [ <Résultat> = ] SQLLimiteRequêteA (<nNombre> est entier [, <bAvecWhere> est booléen])
+      // Paramètres :
+      //	nNombre (entier) : Le nombre maximum de résultats à renvoyer dans la requête.
+      // 	bAvecWhere (booléen optionnel) : Spécifie si la clause WHERE doit être incluse dans la requête générée. Par défaut, cette clause est absente.
+      // Valeur de retour : multi-valeur : Renvoie le code SQL des parties à intégrer dans une requête SQL pour limiter le nombre de résultats.
+      // Exemple :
+      //
+      PROCEDURE SQLLimiteRequêteA(nNombre est un entier,bAvecWhere est un booleen = faux) : (chaine,chaine)
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS
+      	sPréLimite,sPostLimite sont des chaines
+      	(sPréLimite,sPostLimite)=m_pclBaseDeDonnées.SQLLimiteRequêteA(nNombre,bAvecWhere)
+      	RENVOYER (sPréLimite,sPostLimite)
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ("","")
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ("","")
+     type : 458752
+   -
+     name : SQLColonneMémoVide
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2198010476845232299
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui renvoie du code SQL d'une colonne binaire vide. Permet de récupérer un binaire vide dans le résultat plutôt que de charger le binaire dès le départ.
+      // Syntaxe : [ <Résultat> = ] SQLColonneMémoVide (<sNomColonne> est chaîne)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Le nom de la colonne mémo pour laquelle la vérification sera faite.
+      // Valeur de retour : chaîne UNICODE : Code SQL d'une colonne binaire vide
+      // Exemple :
+      //
+      PROCEDURE SQLColonneMémoVide(sNomColonne est une chaine) : chaine
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS
+      	sRes est une chaine = m_pclBaseDeDonnées.SQLColonneMémoVide(sNomColonne)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) sinon renvoyer sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : SQLAvantTable
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2200231761124133266
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui renvoi du SQL à mettre devant le nom d'une table (ex [ pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAvantTable ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre devant toute référence à une table lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAvantTable() : chaine
+      m_pclErreur.Raz()
+      //SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(MesParamètres)	//sinon trop de log pour rien
+      RENVOYER m_pclBaseDeDonnées.SQLAvantTable()
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : SQLAprèsTable
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2200232297995169895
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui renvoi du SQL à mettre devant le nom d'une table (ex ] pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAprèsTable ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre après toute référence à une table lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAprèsTable() : chaîne
+      m_pclErreur.Raz()
+      //SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(MesParamètres)	//sinon trop de log pour rien
+      RENVOYER m_pclBaseDeDonnées.SQLAprèsTable()
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : SQLAvantColonne
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2200232461203964864
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui renvoi du SQL à mettre devant le nom d'une colonne (ex [ pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAvantColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre devant toute référence à une colonne lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAvantColonne() : chaîne
+      m_pclErreur.Raz()
+      //SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(MesParamètres)	//sinon trop de log pour rien
+      RENVOYER m_pclBaseDeDonnées.SQLAvantColonne()
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : SQLAprèsColonne
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2200232796211492139
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, sur la classe de la BD dont l'indice est passé au constructeur, qui renvoi du SQL à mettre devant le nom d'une colonne (ex ] pour SQLServer).
+      // Syntaxe : [ <Résultat> = ] SQLAprèsColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Représente l'expression/les caractères à mettre après toute référence à une colonne lors d'une requête SQL.
+      // Exemple :
+      //
+      PROCEDURE SQLAprèsColonne() : chaîne
+      m_pclErreur.Raz()
+      //SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(MesParamètres)	//sinon trop de log pour rien
+      RENVOYER m_pclBaseDeDonnées.SQLAprèsColonne()
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : Restauration
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2200238590128442117
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de classe de la BD dont l'indice est passé au constructeur, qui restaure la BD ou certaines tables depuis un fichier local.
+      // Syntaxe : [ <Résultat> = ] Restauration ( <sFichierSQL> est chaîne)
+      // Paramètres :
+      // 	sFichierSQL (chaîne UNICODE): Chemin du fichier contenant le code SQL permettant de restaurer les données
+      // Valeur de retour : booléen : Retourne Vrai si la restauration s'effectue avec succès, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE Restauration(sFichierSQL est une chaine) : booleen
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booleen = m_pclBaseDeDonnées.Restauration(sFichierSQL)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON 
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER Faux
+     type : 458752
+   -
+     name : TableLignesEtTaille
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2202408699227055837
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de classe de la BD dont l'indice est passé au constructeur, qui renvoie les informations d'une table passée en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableLignesEtTaille (<sNomTable> est chaîne)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE optionnel) : Le nom de la table pour laquelle les informations doivent être récupérées. Si vide, renvoie les informations de toutes les tables.
+      // Valeur de retour : chaîne UNICODE : Liste séparée par RC : Nom de la table + TAB + Nombre de lignes dans la table (-1 si erreur) + TAB + Taille estimée de la table en octets (-1 si erreur) + TAB + Taille de l'index en octets (-1 si erreur) + TAB + Taille totale réelle en octets (0 si erreur) + TAB + Taille totale occupée en octets (0 si erreur)
+      // Exemple :
+      //
+      PROCEDURE TableLignesEtTaille(sNomTable est une chaîne = "") : chaine
+      m_pclErreur.Raz()
+      sLigneEtTables est une chaine
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sLigneEtTables=m_pclBaseDeDonnées.TableLignesEtTaille(sNomTable)
+      	si sLigneEtTables="" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) sinon RENVOYER sLigneEtTables
+      SINON 
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      sLigneEtTables=""
+      POUR TOUTE CHAÎNE sTable de sNomTable separee par rc
+      	sLigneEtTables+=[RC]+sNomTable+TAB+"-1"+tab+"-1"+tab+"-1"+tab+"0"+tab+"0"
+      fin
+      RENVOYER sLigneEtTables
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>)
+      sLigneEtTables=""
+      POUR TOUTE CHAÎNE sTable de sNomTable separee par rc
+      	sLigneEtTables+=[RC]+sNomTable+TAB+"-1"+TAB+"-1"+TAB+"-1"+TAB+"0"+TAB+"0"
+      FIN
+      RENVOYER sLigneEtTables
+     type : 458752
+   -
+     name : TableVersion
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2202424461862610701
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de classe de la BD dont l'indice est passé au constructeur, qui renvoie la version d'une table passée en paramètre (voir HVersion).
+      // Syntaxe : [ <Résultat> = ] TableVersion (<sNomTable> est chaîne)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Le nom de la table pour laquelle l'on souhaite la version.
+      // Valeur de retour : entier : Numéro de version de la table
+      // Exemple :
+      //
+      PROCEDURE TableVersion(sNomTable est une chaîne) : entier
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	nVersion est un entier = m_pclBaseDeDonnées.TableTaille(sNomTable)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER nVersion
+      SINON 
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER 0
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER 0
+     type : 458752
+   -
+     name : TableDateHeure
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2202473368753366180
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de classe de la BD dont l'indice est passé au constructeur, qui renvoie la date et heure de modification ou de création d'une table passée en paramètre (voir HInfoPropriétéFichier) .
+      // Syntaxe : [ <Résultat> = ] TableDateHeure (<sNomTable> est chaîne [, <bCréation> est chaîne ])
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE optionnel) : Le nom de la table pour laquelle les informations doivent être récupérées. Si vide, renvoie les informations de toutes les tables.
+      //	bCréation (booléen optionnel) : Le nom de la table pour laquelle l'on souhaite la dateheure.
+      // Valeur de retour : chaîne UNICODE : Liste séparée par RC : Nom de la table + TAB + DateHeure de la table
+      // Exemple :
+      //
+      PROCEDURE TableDateHeure(sNomTable est une chaîne,bCréation est un booleen = faux) : chaine
+      m_pclErreur.Raz()
+      sDateHeure est une chaine
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sDateHeure = m_pclBaseDeDonnées.TableDateHeure(sNomTable,bCréation)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sDateHeure
+      SINON 
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      sDateHeure=""
+      pour toute chaine sTable de sNomTable separee par rc
+      	sDateHeure+=[rc]+sTable+tab+"00000000000000000"
+      FIN
+      RENVOYER sDateHeure
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);
+      sDateHeure=""
+      POUR TOUTE CHAÎNE sTable de sNomTable separee par rc
+      	sDateHeure+=[RC]+sTable+TAB+"00000000000000000"
+      FIN
+      RENVOYER sDateHeure
+     type : 458752
+   -
+     name : TableIndexes
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2203593315694584790
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de classe de la BD dont l'indice est passé au constructeur, qui charge les index d'une table passée en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableIndexes (<sNomTableUnique> est chaîne)
+      // Paramètres :
+      //	sNomTableUnique (chaîne UNICODE) : Le nom unique de la table pour laquelle les informations sur les index doivent être récupérées.
+      // Valeur de retour : booleen : Vrai si les informations de la table ont été mémorisées dans cApplication.mg_taInfo[sNomTableUnique].p_tabIndexes, Faux en cas d'erreur.
+      // Exemple :
+      //
+      PROCEDURE TableIndexes(sNomTableUnique est une chaine) : booleen
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booleen = m_pclBaseDeDonnées.TableIndexes(sNomTableUnique) 
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) sinon renvoyer bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER faux
+     type : 458752
+   -
+     name : TableColonnes
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2203859298935412697
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de classe de la BD dont l'indice est passé au constructeur, qui charge les colonnes d'une table passée en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableColonnes (<sNomTableUnique> est chaîne [, <bDescriptionComplète> est booléen [, <bForceRechargement> est booléen]])
+      // Paramètres :
+      //	sNomTableUnique (chaîne UNICODE) : Le nom unique de la table pour laquelle les informations sur les colonnes doivent être récupérées.
+      // 	bDescriptionComplète (booléen optionnel) : Indique s'il faut récupérer la description complète de chaque colonne ou pas. Si Faux, récupère le nom de la table, le nom de la colonne, sa position, si elle est nullable, le type de date, si elle est automatique, si elle est une clé, si elle est calculée
+      //		Si vrai, ajoute les informations suivantes : Le type de numérique, le nombre de caractères max et la valeur par défaut
+      // 	bForceRechargement (booléen optionnel) : Force le rechargement de la description même si celle-ci est déjà en mémoire
+      // Valeur de retour : booléen : Vrai si les informations de la table ont été mémorisées dans cApplication.mg_taInfo[sNomTableUnique].p_tabColonnes, Faux en cas d'erreur.
+      // Exemple :
+      //
+      PROCEDURE TableColonnes(sNomTableUnique est une chaine,bDescriptionComplète est un booleen = faux,bForceRechargement est un booleen = faux) : booleen
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booleen = m_pclBaseDeDonnées.TableColonnes(sNomTableUnique,bDescriptionComplète,bForceRechargement) 
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER faux
+     type : 458752
+   -
+     name : SQLRetourIDAuto
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2204219457824892133
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, de classe de la BD dont l'indice est passé au constructeur, qui retourne le code SQL pour permettre la récupération de l'identifiant auto-incrémental en cas d'ajout d'enregistrement.
+      // Syntaxe : [ <Résultat> = ] SQLRetourIDAuto (<sNomColonneIDAuto> est chaîne)
+      // Paramètres :
+      //	sNomColonneIDAuto (chaîne UNICODE) : Nom de la colonne ou code SQL permettant de récupérer l'ID automatique
+      // Valeur de retour : chaîne UNICODE : Code SQL pour permettre la récupération de l'identifiant auto-incrémental.
+      // Exemple :
+      //
+      PROCEDURE SQLRetourIDAuto(sNomColonneIDAuto est une chaine) : chaine
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS
+      	sRes est une chaine = m_pclBaseDeDonnées.SQLRetourIDAuto(sNomColonneIDAuto)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) sinon renvoyer sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : SQLTableForceIDauto
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2204221785697249729
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, de classe de la BD dont l'indice est passé au constructeur, qui retourne le code SQL permettant d'activer ou de désactive la gestion de l'identifiant auto-incrémental sur une table passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] SQLTableForceIDauto (<sNomTable> est chaîne, <bForce> est booléen)
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Le nom de la table pour laquelle la contrainte doit être définie ou désactivée.
+      //	bForce (booléen) : Si vrai, la contrainte d'auto-incrémentation sera activée. Si faux, la contrainte sera désactivée.
+      // Valeur de retour : chaîne UNICODE : Contient le code SQL à utiliser pour activer ou désactiver la gestion de l'identifiant auto-incrémental. Chaine vide si en erreur ou si la fonction n'est pas supportée par la base de données cible.
+      // Exemple :
+      //
+      PROCEDURE SQLTableForceIDauto(sNomTable est une chaine,bForce est un booleen) : chaine
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS
+      	sRes est une chaine = m_pclBaseDeDonnées.SQLTableForceIDauto(sNomTable,bForce)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : AliasUnique
+     procedure_id : 2219814429266056794
+     type_code : 12
+     code : |1-
+      // Résumé : Génère un alias unique pour une utilisation dans une base de données.
+      // Syntaxe : [ <Résultat> = ] AliasUnique ( [<sPréfixe> est chaîne [, <bLimite30> est booléen]])
+      // Paramètres :
+      //	sPréfixe (chaîne UNICODE) : Un préfixe optionnel ajouté à l'alias généré.
+      // 	bLimite30 (booléen optionnel) : Si vrai, l'alias généré est limité à 30 caractères.
+      // Valeur de retour : chaîne UNICODE : Alias généré sous forme de chaîne.
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE AliasUnique(sPréfixe est une chaine = "",bLimite30 est un booleen = faux)	//surtout pour HF5.5 car 1) on ne peut pas réutiliser un alias sur une structure de table différente, 2) les alias 5.5 sont limité à 30 caractères (non documenté !)
+      sAlias est une chaine = sPréfixe+"$"+DonneGUID(guidBrut)
+      si bLimite30 alors sAlias=gauche(sAlias,30)
+      SI cApplication._Application<>Null _ET_ cApplication._Application.m_pclTrace<>Null ALORS cApplication._Application.m_pclTrace.AjouteMéthode(sAlias)
+      renvoyer sAlias
+     type : 458752
+   -
+     name : TransactionAnnuleTout
+     procedure_id : 2268786482709799488
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour annuler toutes les transactions en cours sur toutes les connexions de base de données.
+      // Syntaxe : [ <Résultat> = ] TransactionAnnuleTout ()
+      // Paramètres : Aucun
+      // Valeur de retour : Aucun
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE TransactionAnnuleTout()	//annulation des transactions en cours
+      POUR TOUT stConnexion,nIndiceDeConnexion de cBaseDeDonnées.mg_tabConnexion
+      	SI stConnexion.bTransactionEnCours ALORS 
+      		clBaseDeDonnée est un cBaseDeDonnées(nIndiceDeConnexion)
+      		clBaseDeDonnée.TransactionAnnule()
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : BooléenVersSQL
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2301526167676078646
+     type_code : 12
+     group : 2
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui transforme un booléen dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] BooléenVersSQL (<xDateHeure>)
+      // Paramètres : 
+      // 	nValeur : Valeur booléenne à transformer en SQL.
+      // Valeur de retour : chaîne UNICODE : Renvoie une chaîne un booléen au format SQL. En cas d'erreur, elle renvoie une chaîne vide.
+      // Exemple :
+      //
+      PROCEDURE BooléenVersSQL(nValeur) : chaine
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS
+      	sRes est une chaine = m_pclBaseDeDonnées.BooléenVersSQL(nValeur)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);renvoyer ""
+     type : 458752
+   -
+     name : SQLBinaireÉcrit
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2301561833188622398
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui transforme une valeur hexadécimale en binaire dans le format SQL.
+      // Syntaxe : [ <Résultat> = ] SQLBinaireÉcrit (<xValeur>)
+      // Paramètres :
+      // 	xValeur : Valeur à transformer en notation binaire
+      // Valeur de retour : chaîne UNICODE : Renvoie la valeur transformée en notation binaire.
+      // Exemple :
+      //
+      PROCEDURE SQLBinaireÉcrit(xValeur) : chaine
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS
+      	sRes est une chaine = m_pclBaseDeDonnées.SQLBinaireÉcrit(xValeur)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);renvoyer ""
+     type : 458752
+   -
+     name : SQLBinaireLit32
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2301584970190041702
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui renvoie le code SQL pour récupérer les 32 premiers bits d'un binaire (son hash)
+      // Syntaxe : [ <Résultat> = ] SQLBinaireLit32 (<sNomColonne> est chaîne [, <bEstBinaireImage> est booléen])
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Nom de la colonne depuis laquelle les 32 premiers bits seront récupérés.
+      // 	bEstBinaireImage (booléen optionnel) : Indique que le binaire est une imageChaine contenant les 32 premiers bits d'une colonne binaire>
+      // Exemple :
+      //
+      PROCEDURE SQLBinaireLit32(sNomColonne est une chaine,bEstBinaireImage est un booleen = faux) : chaine	//traitement spécifique des colonnes de type Image en SQLServer
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS
+      	sRes est une chaine = m_pclBaseDeDonnées.SQLBinaireLit32(sNomColonne,bEstBinaireImage)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);renvoyer ""
+     type : 458752
+   -
+     name : SQLImageVersBinaire
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 2301590463453444028
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui renvoie le code SQL pour convertir une image en chaine hexa (utilisant les caractères de 0 à F).
+      // Syntaxe : [ <Résultat> = ] SQLImageVersBinaire (<sNomColonne> est chaîne)
+      // Paramètres :
+      //	sNomColonne (chaîne UNICODE) : Nom de la colonne dont on souhaite appliquer la conversion en binaire.
+      // Valeur de retour : chaîne UNICODE : Résultat de la conversion en binaire de l'image.
+      // Exemple :
+      //
+      PROCEDURE SQLImageVersBinaire(sNomColonne est une chaine) : chaine	//traitement spécifique des colonnes de type Image en SQLServer
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS
+      	sRes est une chaine = m_pclBaseDeDonnées.SQLImageVersBinaire(sNomColonne)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);renvoyer ""
+     type : 458752
+   -
+     name : SQLTableAvantColonne
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1156783280570596481
+     type_code : 12
+     group : 3
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui indique si il faut ajouter le nom de la table devant le nom de la colonne lors d'une requête SQL.
+      // Syntaxe : [ <Résultat> = ] SQLTableAvantColonne ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Vrai s'il faut ajouter le nom de la table devant le nom de la colonne, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE SQLTableAvantColonne() : booleen
+      m_pclErreur.Raz()
+      bRes est un booleen = m_pclBaseDeDonnées.SQLTableAvantColonne()
+      SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);renvoyer faux
+     type : 458752
+   -
+     name : ConnexionSupprimeTout
+     procedure_id : 1159718166037619595
+     type_code : 12
+     code : |1-
+      // Résumé : Utilisée pour supprimer toutes les occurrences associées à une clé donnée dans le tableau mg_taUtilisationServeur.
+      // Syntaxe : ConnexionSupprimeTout (<sCléUnique> est chaîne)
+      // Paramètres :
+      //	sCléUnique (chaîne UNICODE) : La clé pour laquelle toutes les occurrences doivent être supprimées.
+      // Valeur de retour : Aucune
+      // Exemple :
+      //
+      PROCEDURE PUBLIQUE GLOBALE ConnexionSupprimeTout(sCléUnique est une chaine)
+      mg_taUtilisationServeur[sCléUnique]=0
+     type : 458752
+   -
+     name : Vues
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1199488098577623628
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui récupère l'ensemble des vues.
+      // Syntaxe : [ <Résultat> = ] Vues ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Retourne la liste des vues sous forme de chaine séparée par des RC.
+      // Exemple :
+      //
+      PROCEDURE Vues() : chaîne
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sRes est une chaine = m_pclBaseDeDonnées.Vues() 
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : VueExiste
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1199488790067454178
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui vérifie l'existence d'une vue dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] VueExiste (<sNomVue> est chaîne)
+      // Paramètres :
+      //	sNomVue (chaîne UNICODE) : Nom de la vue dont on souhaite vérifier l'existence.
+      // Valeur de retour : booléen : Retourne Vrai si la vue existe dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE VueExiste(sNomVue est une chaine) : booleen
+      m_pclErreur.Raz()
+      SI cApplication.mg_taInfo[cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sNomVue)]<>Null ALORS RENVOYER Vrai
+      
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booleen = m_pclBaseDeDonnées.VueExiste(sNomVue)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER Faux
+     type : 458752
+   -
+     name : Procédures
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1201638468334711228
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui récupère l'ensemble des procédures.
+      // Syntaxe : [ <Résultat> = ] Procédures ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Retourne la liste des procédures sous forme de chaine séparée par des RC.
+      // Exemple :
+      //
+      PROCEDURE Procédures() : chaîne
+      m_pclErreur.Raz()
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sRes est une chaîne = m_pclBaseDeDonnées.Procédures() 
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : ProcédureExiste
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1201638829111983327
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui vérifie l'existence d'une procédure dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] ProcédureExiste (<sNomProcédure> est chaîne)
+      // Paramètres :
+      //	sNomProcédure (chaîne UNICODE) : Nom de la procédure dont on souhaite vérifier l'existence.
+      // Valeur de retour : booléen : Retourne Vrai si la procédure existe dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE ProcédureExiste(sNomProcédure est une chaîne) : booléen
+      m_pclErreur.Raz()
+      SI cApplication.mg_taInfo[cBaseDeDonnées.mg_tabConnexion[m_nIndiceDeConnexion].sNomUnique+cGénérique._Sep+Minuscule(sNomProcédure)]<>Null ALORS RENVOYER Vrai
+      
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booléen = m_pclBaseDeDonnées.ProcédureExiste(sNomProcédure)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER Faux
+     type : 458752
+   -
+     name : TableColonneExiste
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1558614961604734151
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui vérifie l'existence d'une colonne de table dont le nom est passé en paramètre.
+      // Syntaxe : [ <Résultat> = ] TableColonneExiste (<sNomTable> est chaîne)                              
+      // Paramètres :
+      //	sNomTable (chaîne UNICODE) : Nom de la colonne (table+"."+colonne) dont on souhaite vérifier l'existence.
+      // Valeur de retour : booléen : Retourne Vrai si la colonne de table existe dans la base de données, sinon elle renvoie Faux.
+      // Exemple :
+      //
+      PROCEDURE TableColonneExiste(sNomTableEtColonne est une chaîne) : booléen
+      m_pclErreur.Raz()
+      
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booléen = m_pclBaseDeDonnées.TableColonneExiste(sNomTableEtColonne)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER Faux
+     type : 458752
+   -
+     name : Liste
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1558669934125677674
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui renvoie la liste des bases de données présentes sur le serveur.
+      // Syntaxe : [ <Résultat> = ] Liste ()
+      // Paramètres : Aucun
+      // Valeur de retour : chaîne UNICODE : Liste des bases de données présentes sur le serveur séparés par RC
+      // Exemple :
+      //
+      PROCEDURE Liste() : chaine
+      m_pclErreur.Raz()
+      
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	sRes est une chaine = m_pclBaseDeDonnées.Liste()
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER sRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER ""
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER ""
+     type : 458752
+   -
+     name : TransactionAnnuleSiInterrompue
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1558671171076350204
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui annule une transaction en cours si elle a été interrompue.
+      // Syntaxe : [ <Résultat> = ] TransactionAnnuleSiInterrompue ()
+      // Paramètres : Aucun
+      // Valeur de retour : booléen : Renvoie Vrai si l'annulation de la transaction a été effectuée avec succès, Faux sinon.
+      // Exemple :
+      //
+      PROCEDURE TransactionAnnuleSiInterrompue() : booléen
+      m_pclErreur.Raz()
+      
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booléen = m_pclBaseDeDonnées.TransactionAnnuleSiInterrompue()
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER faux
+     type : 458752
+   -
+     name : ODBCInstalle
+     internal_properties : CQAAAAkAAADdLBx68A89npZ/gK7kD4g+zTsgNcm4lw1iuheO7JWDM+l7IU5kfvZgpOsXBiWWV9iZ3RzG/8E4RB3A+uhf4+r6a7N34QH4BjfoXCgluYe5f7lhAQa2VpG5vncx1HiAHQS7i51DQSfQ5c/ywwIZ/QNr+I7A8enWZzNSd33haa9S0Q==
+     procedure_id : 1559112556507889097
+     type_code : 12
+     code : |1-
+      // Résumé : Exécute la méthode, de la classe de la BD dont l'indice est passé au constructeur, qui installe une connexion ODBC dans Windows pour une base de données Oracle. Elle prend en charge différents types de drivers, notamment les drivers Microsoft et Oracle.
+      // Syntaxe :
+      //[ <Résultat> = ] ODBCInstalle (<sServeurPort> est chaîne, <sBaseDeDonnées> est chaîne, <vParamètres> est variant)
+      // Paramètres :
+      //	sServeurPort (chaîne UNICODE) : Le nom du serveur et le port à utiliser pour la connexion ODBC.
+      //	sBaseDeDonnées (chaîne UNICODE) : Le nom de la base de données Oracle.
+      //	vParamètres (variant) : Les paramètres de connexion, notamment le driver, le nom d'utilisateur, le mot de passe, etc.
+      // Valeur de retour : booléen : Indiquant si l'installation de la connexion ODBC a réussi (Vrai) ou échoué (Faux).
+      // Exemple :
+      //
+      PROCEDURE ODBCInstalle(sServeurPort est une chaîne,sBaseDeDonnées est une chaîne,vParamètres est un variant) : booleen
+      m_pclErreur.Raz()
+      
+      SI m_pclBaseDeDonnées<>Null ALORS 
+      	bRes est un booléen = m_pclBaseDeDonnées.ODBCInstalle(sServeurPort,sBaseDeDonnées,vParamètres)
+      	SI m_pclBaseDeDonnées.p_sErreur<>"" ALORS m_pclErreur.AjouteErreur(m_pclBaseDeDonnées.p_sErreur) SINON RENVOYER bRes
+      SINON
+      	m_pclErreur.AjouteErreur(<§$0009§>)
+      FIN
+      RENVOYER Faux
+      
+      CAS EXCEPTION:
+      m_pclErreur.AjouteErreur(<§$0026§>);RENVOYER faux
+     type : 458752
+  properties :
+   -
+     name : p_bConnexionODBC
+     identifier : 0x1c40d59d207a3aa6
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indication si la connexion est via ODBC
+         PROCEDURE PUBLIQUE global p_bConnexionODBC() : booleen
+         renvoyer mg_bConnexionODBC
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Affecte l'indicateur qui précise que la connexion est via ODBC
+         PROCEDURE PUBLIQUE GLOBAL p_bConnexionODBC(Valeur)
+         mg_bConnexionODBC=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_bEstConnecté
+     identifier : 0x1c5d982f098353bc
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le statut de la connexion
+         PROCEDURE PUBLIQUE p_bEstConnecté() : booleen
+         renvoyer m_pclBaseDeDonnées.p_bEstConnecté
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sEnvironnement
+     identifier : 0x1c7957ac037f4f34
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoi le nom de l'environnement en clair
+         PROCEDURE PUBLIQUE global p_sEnvironnement() : chaine
+         selon Environnement()
+         	CAS cApplication.Inconnu 		: renvoyer <§$0027§>
+         	CAS cApplication.Développement	: renvoyer "DEV"
+         	CAS cApplication.Test			: renvoyer "TEST"
+         	CAS cApplication.Production		: renvoyer ""
+         FIN
+        type : 1966080
+     template_refs : []
+   -
+     name : p_sNomUnique
+     identifier : 0x1e9ef0e3866ce480
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie le nom unique de la connexion
+         PROCEDURE PUBLIQUE p_sNomUnique() : chaine
+         renvoyer m_stConnexion.sNomUnique	//minuscule((m_stConnexion.cnxDonnées..Serveur="" ? "localhost" SINON m_stConnexion.cnxDonnées..Serveur)+cGénérique._Sep+m_stConnexion.cnxDonnées..BaseDeDonnées)
+        type : 1966080
+     template_refs : []
+   -
+     name : p_bTraceColonnesModifiées
+     identifier : 0x14adb58ad3a46b45
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         // Résumé : Renvoie l'indicateur permettant de tracer les colonnes modifiées
+         PROCEDURE PUBLIQUE p_bTraceColonnesModifiées() : booleen
+         renvoyer m_pclBaseDeDonnées.m_bTraceColonnesModifiées
+        type : 1966080
+      -
+        code : |1-
+         // Résumé : Permet d'activer ou désactiver la trace des colonnes modifiées
+         PROCEDURE PUBLIQUE p_bTraceColonnesModifiées(Valeur)
+         m_pclBaseDeDonnées.m_bTraceColonnesModifiées = Valeur
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x1aa972f3014a2b1a
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : HyperFile Client/Serveur
+      en-GB : HyperFile Client/Server
+      fr-CA : HyperFile Client/Serveur
+      en-US : HyperFile Client/Server
+     index : 0
+   -
+     text :
+      fr-FR : HyperFile Client/Serveur
+      en-GB : HyperFile Client/Server
+      fr-CA : HyperFile Client/Serveur
+      en-US : HyperFile Client/Server
+     index : 1
+   -
+     text :
+      fr-FR : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to open data connection (%1 - %2) : "
+      fr-CA : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-US : "Unable to open data connection (%1 - %2) : "
+     index : 2
+   -
+     text :
+      fr-FR : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to close data connection (%1 - %2) : "
+      fr-CA : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-US : "Unable to close data connection (%1 - %2) : "
+     index : 3
+   -
+     text :
+      fr-FR : HyperFile Client/Serveur
+      en-GB : Hyperfile Client/Server
+      fr-CA : HyperFile Client/Serveur
+      en-US : Hyperfile Client/Server
+     index : 4
+   -
+     text :
+      fr-FR : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to close data connection (%1 - %2) : "
+      fr-CA : "Impossible de fermer la connexion aux données (%1 - %2) : "
+      en-US : "Unable to close data connection (%1 - %2) : "
+     index : 5
+   -
+     text :
+      fr-FR : Fonction interdite dans cet environnement
+      en-GB : Function prohibited in this environment
+      fr-CA : Fonction interdite dans cet environnement
+      en-US : Function prohibited in this environment
+     index : 6
+   -
+     text :
+      fr-FR : Pas de transaction permise sur cette base de données
+      en-GB : No transaction allowed on this database
+      fr-CA : Pas de transaction permise sur cette base de données
+      en-US : No transaction allowed on this database
+     index : 7
+   -
+     text :
+      fr-FR : "L'indice de connexion doit être compris entre 1 et "
+      en-GB : "The connection index must be between 1 and "
+      fr-CA : "L'indice de connexion doit être compris entre 1 et "
+      en-US : "The connection index must be between 1 and "
+     index : 8
+   -
+     text :
+      fr-FR : Aucune connexion
+      en-GB : No connection
+      fr-CA : Aucune connexion
+      en-US : No connection
+     index : 9
+   -
+     text :
+      fr-FR : inconnu
+      en-GB : unknown
+      fr-CA : inconnu
+      en-US : unknown
+     index : 10
+   -
+     text :
+      fr-FR : Version de SQL Server non prise en charge
+      en-GB : SQL Server version not supported
+      fr-CA : Version de SQL Server non prise en charge
+      en-US : SQL Server version not supported
+     index : 11
+   -
+     text :
+      fr-FR : Aucune table dans LDAP
+      en-GB : No table in LDAP
+      fr-CA : Aucune table dans LDAP
+      en-US : No table in LDAP
+     index : 12
+   -
+     text :
+      fr-FR : Cette base de données n'est pas encore prise en charge
+      en-GB : This database is not yet supported
+      fr-CA : Cette base de données n'est pas encore prise en charge
+      en-US : This database is not yet supported
+     index : 13
+   -
+     text :
+      fr-FR : Aucune sauvegarde possible du LDAP
+      en-GB : No possible backup of LDAP
+      fr-CA : Aucune sauvegarde possible du LDAP
+      en-US : No possible backup of LDAP
+     index : 14
+   -
+     text :
+      fr-FR : Le répertoire local est obligatoire
+      en-GB : The local directory is required
+      fr-CA : Le répertoire local est obligatoire
+      en-US : The local directory is required
+     index : 15
+   -
+     text :
+      fr-FR : Le répertoire de sauvegarde ne peut pas être le répertoire des données
+      en-GB : The backup directory can not be the data directory
+      fr-CA : Le répertoire de sauvegarde ne peut pas être le répertoire des donnée
+      en-US : The backup directory can not be the data directory
+     index : 16
+   -
+     text :
+      fr-FR : Le fichier %1 existe déjà dans la sauvegarde
+      en-GB : The file% 1 already exists in the backup
+      fr-CA : Le fichier %1 existe déjà dans la sauvegarde
+      en-US : The file% 1 already exists in the backup
+     index : 17
+   -
+     text :
+      fr-FR : Type de données inconnu
+      en-GB : Unknown data type
+      fr-CA : Type de données inconnu
+      en-US : Unknown data type
+     index : 18
+   -
+     text :
+      fr-FR : Le nom du fichier est obligatoire
+      en-GB : The file name is required
+      fr-CA : Le nom du fichier est obligatoire
+      en-US : The file name is required
+     index : 19
+   -
+     text :
+      fr-FR : L'extension du fichier est obligatoire
+      en-GB : The file extension is required
+      fr-CA : L'extension du fichier est obligatoire
+      en-US : The file extension is required
+     index : 20
+   -
+     text :
+      fr-FR : Le nom du serveur (et éventuellement son port) est obligatoire
+      en-GB : The name of the server (and possibly its port) is required
+      fr-CA : Le nom du serveur (et éventuellement son port) est obligatoire
+      en-US : The name of the server (and possibly its port) is required
+     index : 21
+   -
+     text :
+      fr-FR : Le nom d'utilisateur est obligatoire
+      en-GB : Username is required
+      fr-CA : Le nom d'utilisateur est obligatoire
+      en-US : Username is required
+     index : 22
+   -
+     text :
+      fr-FR : Le nom de la base de données est obligatoire
+      en-GB : The name of the database is required
+      fr-CA : Le nom de la base de données est obligatoire
+      en-US : The name of the database is required
+     index : 23
+   -
+     text :
+      fr-FR : La couche cliente de SQLServer n'est pas installée
+      en-GB : The client layer of SQLServer is not installed
+      fr-CA : La couche cliente de SQLServer n'est pas installée
+      en-US : The client layer of SQLServer is not installed
+     index : 24
+   -
+     text :
+      fr-FR : Le nom serveur est obligatoire
+      en-GB : The name of the server is required
+      fr-CA : Le nom serveur est obligatoire
+      en-US : The name of the server is required
+     index : 25
+   -
+     text :
+      fr-FR : La connexion à la source ODBC %1 a échoué
+      en-GB : The connection to ODBC source %1 failed
+      fr-CA : La connexion à la source ODBC %1 a échoué
+      en-US : The connection to ODBC source %1 failed
+     index : 26
+   -
+     text :
+      fr-FR : L'ODBC n'est pas disponible sur cette plateforme
+      en-GB : ODBC is not available on this platform
+      fr-CA : L'ODBC n'est pas disponible sur cette plateforme
+      en-US : ODBC is not available on this platform
+     index : 27
+   -
+     text :
+      fr-FR : "Votre mot de passe a expiré, veuillez en saisir un nouveau"
+      en-GB : "Your password has expired, please enter a new one"
+      fr-CA : "Votre mot de passe a expiré, veuillez en saisir un nouveau"
+      en-US : "Your password has expired, please enter a new one"
+     index : 28
+   -
+     text :
+      fr-FR : Ce serveur n'accepte pas l'exécution d'une commande
+      en-GB : This server does not accept the execution of a command
+      fr-CA : Ce serveur n'accepte pas l'exécution d'une commande
+      en-US : This server does not accept the execution of a command
+     index : 29
+   -
+     text :
+      fr-FR : Aucune connexion en cours
+      en-GB : No connection in progress
+      fr-CA : Aucune connexion en cours
+      en-US : No connection in progress
+     index : 30
+   -
+     text :
+      fr-FR : Le nom serveur est obligatoire
+      en-GB : The name of the server is required
+      fr-CA : Le nom serveur est obligatoire
+      en-US : The name of the server is required
+     index : 31
+   -
+     text :
+      fr-FR : Le nom d'utilisateur est obligatoire
+      en-GB : Username is required
+      fr-CA : Le nom d'utilisateur est obligatoire
+      en-US : Username is required
+     index : 32
+   -
+     text :
+      fr-FR : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-GB : "Unable to open data connection (%1 - %2) : "
+      fr-CA : "Impossible d'ouvrir la connexion aux données (%1 - %2) : "
+      en-US : "Unable to open data connection (%1 - %2) : "
+     index : 33
+   -
+     text :
+      fr-FR : "Votre mot de passe a expiré, veuillez en saisir un nouveau"
+      en-GB : "Your password has expired, please enter a new one"
+      fr-CA : "Votre mot de passe a expiré, veuillez en saisir un nouveau"
+      en-US : "Your password has expired, please enter a new one"
+     index : 34
+   -
+     text :
+      fr-FR : Pas de date pour cette base de données
+      en-GB : No date for this database
+      fr-CA : Pas de date pour cette base de données
+      en-US : No date for this database
+     index : 35
+   -
+     text :
+      fr-FR : DateHeure invalide
+      en-GB : Invalid dateTime
+      fr-CA : DateHeure invalide
+      en-US : Invalid dateTime
+     index : 36
+   -
+     text :
+      fr-FR : La version de SQL Server est inconnue
+      en-GB : The version of SQL Server is unknown
+      fr-CA : La version de SQL Server est inconnue
+      en-US : The version of SQL Server is unknown
+     index : 37
+   -
+     text :
+      fr-FR : La méthode n'est pas disponible
+      en-GB : The method is not available
+      fr-CA : La méthode n'est pas disponible
+      en-US : The method is not available
+     index : 38
+   -
+     text :
+      fr-FR : Inconnu
+      en-GB : Unknown
+      fr-CA : Inconnu
+      en-US : Unknown
+     index : 39
+   -
+     text :
+      fr-FR : La connexion %1 n'existe pas
+      en-GB : The connection %1 does not exist
+      fr-CA : La connexion %1 n'existe pas
+      en-US : The connection %1 does not exist
+     index : 40
+   -
+     text :
+      fr-FR : La base de données %1 n'est pas supportée
+      en-GB : Database %1 is not supported
+      fr-CA : La base de données %1 n'est pas supportée
+      en-US : Database %1 is not supported
+     index : 41
+   -
+     text :
+      fr-FR : Aucun environnement en mémoire
+      en-GB : No environment in memory
+      fr-CA : Aucun environnement en mémoire
+      en-US : No environment in memory
+     index : 42
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,1411 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : COL_Impression
+ major_version : 29
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1bfea8af3da876e5
+ internal_properties : CQAAAAkAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  internal_properties : CQAAAAkAAAAcrfSlpZzbtyDoPZpNLutZOJ6sjcGMNnmaJJeCl6SUo39+6UhwFmjE+yF5z37D5G1f5SQEa8mVqti+J8bMjICT9i9cWE2PyZoPq+o0lQlj
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      //*************************************************************************************************************************************************************************
+      //Ce fichier fait partie de Betula.
+      //Betula est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes de la GNU Lesser General Public License telle que publiée par la Free Software Foundation ; soit la version 3 de la licence, soit (à votre gré) toute version ultérieure.
+      //Betula est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie tacite de QUALITÉ MARCHANDE ou d'ADÉQUATION à UN BUT PARTICULIER. Consultez la GNU Lesser General Public License pour plus de détails.
+      //Vous devez avoir reçu une copie de la GNU Lesser General Public License en même temps que Betula ; si ce n'est pas le cas, consultez <http://www.gnu.org/licenses>.
+      //
+      //This file is part of Betula.
+      //Betula is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+      //Betula is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+      //You should have received a copy of the GNU Lesser General Public License along with Betula. If not, see <https://www.gnu.org/licenses/>
+      //*************************************************************************************************************************************************************************
+      
+      COImpressionTableOption est une combinaison
+      	OptionMultiligneContenu				
+      	OptionAvecCadre						
+      	OptionAvecDate						
+      	OptionAvecHeure						
+      	OptionAvecNumPage						
+      	OptionAvecTitreColonne				
+      	OptionForcePortrait					
+      	OptionAvecSéparateurVertical 			
+      	OptionAvecSéparateurHorizontal		
+      	OptionAfficherMotDePasse				
+      	OptionInterrupteurCoche				
+      	OptionNonAssemblée					
+      	OptionEnTonDeGris						
+      	OptionRépèteTitreChaquePage			
+      	OptionRépèteTitreColonneChaquePage	
+      	OptionForceÉcritureDroiteAGauche		
+      	OptionRepèteCalculChaquePage			
+      	OptionAvecImage						
+      	OptionOrientationPortrait				
+      	OptionMagentaTransparent				
+      	OptionColonneCalculée					
+      	OptionMultiligneTitreColonne			
+      	OptionLigneSélectionnée				
+      	OptionCouleurTable					
+      	OptionPasFinImprime					
+      	OptionRepetePiedChaquePage			
+      	OptionRTFenTexte						
+      	OptionTailleSupérieure				
+      	OptionAlignementDuContenu				
+      fin
+      EImpressionTableTrait est une énumération
+      	TypeAucun		= 0
+      	TypeContinu		= iContinu
+      	TypePointillé	= iPointillé
+      	TypeMixte		= iMixte
+      	TypeTiret		= iTiret
+      fin
+      COImpressionTableCouleur est une combinaison
+      	CouleurLignePaire		
+      	CouleurLigneImpaire				
+      	CouleurTexteDonnéePaire			
+      	CouleurTexteDonnéeImpaire			
+      	CouleurPageFond					
+      	CouleurSéparateurVertical			
+      	CouleurSéparateurHorizontal		
+      	CouleurTitreTexte					
+      	CouleurTitreFond					
+      	CouleurTitreColonneTexte			
+      	CouleurTitreColonneFond		
+      	CouleurTitreColonneSéparateur		
+      	CouleurCadre						
+      	CouleurPiedTexte					
+      	CouleurPiedFond					
+      FIN
+      stImpressionTableColonne est une structure
+      	nOrdre				est un entier
+      	bCompteur			est un booléen
+      	bMoyenne			est un booléen
+      	bTotal				est un booléen
+      	bComboValeur		est un booléen
+      	taComboImages		est un tableau associatif (SansDoublon,"",wlChaîne) de chaînes
+      FIN
+      stImpressionTableOption est une structure
+      	sTitrePage 			est une chaîne
+      	xLogo				est une chaîne
+      	polTexte 			est une Police
+      	rHauteurMaxLigne 	est un réel
+      	sFormatDate 		est une chaîne
+      	sFormatHeure 		est une chaîne
+      	sFormatMonétaire 	est une chaîne
+      	rMargeHaut 			est un réel
+      	rMargeBas 			est un réel
+      	rMargeGauche 		est un réel
+      	rMargeDroite 		est un réel
+      	nNbExemplaire 		est un entier
+      	nNbPagesMax 		est un entier
+      	nNbLignesMax 		est un entier
+      	sColonneAncrée 		est une chaîne
+      	sColonneSélection	est une chaîne
+      	sPiedDePageCentre	est une chaîne
+      	sPiedDePageGauche	est une chaîne
+      	sPiedDePageDroite	est une chaîne
+      	nNumPageDépart 		est un entier
+      	eTraitH				est un EImpressionTableTrait
+      	eTraitV				est un EImpressionTableTrait
+      	taColonnes			est un tableau associatif (SansDoublon,"",wlChaîne) de stImpressionTableColonne
+      	taCouleurs			est un tableau associatif (SansDoublon,"",wlChaîne) d'entiers
+      	coAutresOptions		est un COImpressionTableOption
+      FIN
+      PRIVÉ
+      	CONSTANTE
+      		ErreurDImpression	= 140
+      	FIN
+     type : 720896
+   -
+     code : |1+
+      //
+     type : 720898
+  procedures :
+   -
+     name : ImprimeTable
+     procedure_id : 2017235231025249810
+     type_code : 15
+     code : |1-
+      // Résumé : Imprime une table telle qu'à l'écran. Une 50aine d'options permettent de personnalisé l'impression.
+      // Syntaxe : [ <Résultat> = ] ImprimeTable (<xNomTable>, <stOptions> est stImpressionTableOption)
+      // Paramètres :
+      // 	xNomTable (champ ou chaîne) : Nom de la table à imprimer
+      //	stOptions (stImpressionTableOption) : ensemble des options sous forme de structure stImpressionTableOption
+      // Valeur de retour : entier : nombre de pages imprimées
+      // Exemple :
+      //	voir https://wlplus.org/imprimetable/
+      //
+      
+      PROCEDURE ImprimeTable(xNomTable,stOptions est un stImpressionTableOption)
+      //https://blogs.pcsoft.fr/fr/conduite-tenir-lorsqu-apercu-impression-donne-resultat-attendu-configuration-particuliere/316/read.awp
+      
+      //a faire : choisir la hauteur de la zone titre (pour papier préimprimé) > sinon mettre une image blanche !
+      //a faire : mettre des lettre à côté des # de page (pour les multi page : 1a+1b+1c, 2a+2b+2c, ...) > prévoir qu'on dépasse l'alphabet + pré-calculer le nombre de pages pour connaître le nombre de caractères
+      //a faire : pouvoir paramétrer les polices utilisées
+      //a faire : mettre les images sur ton gris (voir dModifieSaturation) mais il faut un champ image > le faire depuis la fenêtre d'impression
+      //a faire : pré-calculer le nombre de pages
+      //a faire : taille caractère RTF identique aux autres
+      //a faire : centrer verticalement les images et les coches
+      //a faire : mettre un paramètre pour l'impression à chaque page
+      //a faire : mettre un paramètre pour calculer les largeurs optimales de chaque colonne (selon tout le contenu) et adapter les colonnes en conséquence.
+      //a faire : pouvoir mettre une couleur de fond sur une colonne
+      //a faire : pouvoir mettre une image de fond
+      //a faire : pouvoir mettre des cases en couleur (selon paramétrage ou couleurs du tableau)
+      
+      sNomTable est une chaîne = NomComplet(xNomTable)
+      
+      sNomColonne,sChamps,sImage,sImgInfo,sErr,sNomColonnes,sOpérations,sTitre,sChamp,sChampsTemp,sImageTemp,sColonnesOrdre,sNomUneColonne,sPied,sFichierImage,sColonnesSélectionnées,sLigne sont des chaînes
+      i,j,nTableLargeur,nPagesLargeur,nTailleSépar,nNumPage,nCouleur,nNumLigne,nOrientationH,nOrientationHInverse,nOrientationV sont des entiers
+      nLigneDébut,nLigneFin,nLigne,nPageHauteur,nImgHauteur,nImgLargeur,nPageLargeur,nNum,nTitre,nNbColonnes,nExemplaires sont des entiers
+      nLigneCalcul,nNumOpération,nNumPolice,nDécalX,nDécalY sont des entiers
+      y,rFacteurZoom,rTableLargeur,x,rFacteurImage,rImgLargeur,rPageLargeur,rPageHauteur sont des réels
+      rHauteurCaract,rHauteurMax,rHauteurTitre,rHauteurTitreMax,rHauteur,rImgHauteur,rMargeGauche,rMargeDroite,rMargeHaut,rMargeBas,rLargeurColonne sont des réels
+      bRepeteCalcul,bImprimeColonneCalculée,bMultiligneTitreColonne,bColonneSélection,bLigneSélectionnée,bAvecPied sont des booleens
+      bContenu,bRépètePiedChaquePage,bTailleSupérieure,bSensGaucheADroite,bBoucleOpération,bEnRTF,bRTF,bMDP sont des booléens
+      taCouleurs,taCompteur,taLigneCalcul,taPolice est un tableau associatif d'entiers
+      taTotal 			est un tableau associatif de réels
+      tabChamps 			est un tableau dynamique de 0 chaînes		//permet de diviser les colonnes sur plusieurs pages
+      hHeureCourante 		est une Heure 	= HeureSys()
+      dDateCourante 		est une Date 	= DateSys()
+      polTitre,polTexte 	sont des Polices
+      stUneColonne 		est un stImpressionTableColonne
+      rDimDot 			est un réel 	= 0.3759	//valeur empirique
+      sFichierTemp 		est une chaîne 	= fFichierTemp("CPR")
+      bRiched20			est un booleen 	= ffichierexiste(SysRep(srSystème)+["\"]+"RICHED20.DLL")
+      
+      nPagesLargeur=1;nExemplaires=1
+      SI stOptions.sTitrePage=Null ALORS 
+      	SI {sNomTable,indChamp}..Libellé="" ALORS stOptions.sTitrePage="" SINON stOptions.sTitrePage={sNomTable,indChamp}..Libellé	//sTitre=MaFenêtre..Titre ne fonctionne pas car pas de fenêtre en cours!
+      FIN
+      
+      //valeurs par défaut si valeurs vide ou incorrectes
+      SI stOptions.nNbExemplaire<1 		ALORS stOptions.nNbExemplaire=1
+      SI stOptions.nNumPageDépart<1 		ALORS stOptions.nNumPageDépart=1
+      SI stOptions.sFormatDate="" 		ALORS stOptions.sFormatDate="JJ/MM/AAAA"
+      SI stOptions.sFormatHeure="" 		ALORS stOptions.sFormatHeure="HH:MM:SS"
+      SI stOptions.sFormatMonétaire=""	ALORS stOptions.sFormatMonétaire="10.2f"
+      SI stOptions.rMargeHaut<0 			ALORS stOptions.rMargeHaut=0
+      SI stOptions.rMargeBas<0 			ALORS stOptions.rMargeBas=0
+      SI stOptions.rMargeGauche<0 		ALORS stOptions.rMargeGauche=0
+      SI stOptions.rMargeDroite<0 		ALORS stOptions.rMargeDroite=0
+      SI stOptions.nNbPagesMax<0 			ALORS stOptions.nNbPagesMax=0
+      SI stOptions.nNbLignesMax<0 		ALORS stOptions.nNbLignesMax=0
+      SI stOptions.polTexte..Nom="" 		ALORS stOptions.polTexte={xNomTable,indChamp}..Police
+      SI stOptions.eTraitH..Valeur=""		ALORS stOptions.eTraitH=COL_Impression.EImpressionTableTrait.TypeContinu
+      SI stOptions.eTraitV..Valeur=""		ALORS stOptions.eTraitV=COL_Impression.EImpressionTableTrait.TypeContinu
+      
+      
+      <si CibleExécution=SiteLinux ou CibleExécution=SitePHP ou CibleExécution=WebserviceLinux ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=AppleWatch ou CibleExécution=UniversalWindowsApp ou CibleExécution=WindowsMobile>
+      	stOptions.coAutresOptions[OptionRTFenTexte]=faux	//RTF pas géré en-dehors de Windows
+      	
+      <fin>
+      
+      
+      //rHauteurMaxLigne testé par la suite
+      SI stOptions.sColonneSélection>"" ALORS stOptions.sColonneSélection={stOptions.sColonneSélection,indChamp}..NomComplet 
+      
+      rMargeHaut=stOptions.rMargeHaut;rMargeBas=stOptions.rMargeBas;rMargeGauche=stOptions.rMargeGauche;rMargeDroite=stOptions.rMargeDroite
+      //gestion des couleurs :
+      //initialisation des couleurs par défaut
+      POUR TOUT element coUneCouleur de COImpressionTableCouleur 
+      	SELON coUneCouleur
+      		CAS CouleurLignePaire,CouleurLigneImpaire,CouleurTitreFond,CouleurTitreColonneFond,CouleurPiedFond 								: taCouleurs[coUneCouleur..Nom]=Transparent
+      		CAS CouleurTexteDonnéePaire,CouleurTexteDonnéeImpaire,CouleurSéparateurVertical,CouleurSéparateurHorizontal,CouleurTitreTexte 	: taCouleurs[coUneCouleur..Nom]=Noir
+      		CAS CouleurTitreColonneTexte,CouleurCadre,CouleurPiedTexte,CouleurTitreColonneSéparateur 										: taCouleurs[coUneCouleur..Nom]=Noir
+      		CAS	CouleurPageFond 																											: taCouleurs[coUneCouleur..Nom]=Blanc
+      	FIN
+      FIN
+      
+      //couleurs personnalisées par les paramètres
+      POUR TOUT element coUneCouleur de COImpressionTableCouleur 
+      	SI stOptions.taCouleurs[coUneCouleur]..Existe ALORS
+      		nCouleur=stOptions.taCouleurs[coUneCouleur]
+      		SI stOptions.coAutresOptions[OptionEnTonDeGris] ALORS taCouleurs[coUneCouleur..Nom]=TSL(CouleurTeinte(nCouleur),0,CouleurLuminosité(nCouleur)) SINON taCouleurs[coUneCouleur..Nom]=nCouleur
+      	FIN
+      FIN
+      
+      SI stOptions.coAutresOptions[OptionForceÉcritureDroiteAGauche] ALORS
+      	bSensGaucheADroite=Faux
+      SINON
+      	bSensGaucheADroite=PAS ({sNomTable,indChamp}..SensEcriture=seDroiteAGauche)
+      FIN
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	iMagentaTransparent(stOptions.coAutresOptions[OptionMagentaTransparent])
+      	
+      <fin>
+      
+      
+      	
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows ou CibleExécution=Android>
+      	iParamètre(iImprimanteDéfaut, Faux)
+      	SI stOptions.coAutresOptions[OptionEnTonDeGris] ALORS iParamètre(iCouleur,iCouleur_Mono)
+      	iParamètre(iNbCopie,stOptions.nNbExemplaire)
+      	
+      <fin>
+      
+      	
+      iParamètre("JustificationRTF=Oui")
+      
+      //vérifie si la première colonne sert de sélection
+      SI bColonneSélection ALORS
+      	SI {sNomTable,indChamp}..Multisélection ALORS
+      		bLigneSélectionnée=Vrai;bColonneSélection=Faux
+      	SINON SI stOptions.sColonneSélection>"" ALORS
+      		bColonneSélection=({stOptions.sColonneSélection,indChamp}..Type=typInterr)
+      	FIN
+      SINON 
+      	bLigneSélectionnée=Faux
+      FIN
+      
+      //calcule la largeur et vérifie le paramètre de combo
+      //nTailleSépar=1	//la dernière ligne à la fin
+      //si on a le paramètre des colonnes, on prend cet ordre, sinon l'ordre de la table à l'écran
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	nNbColonnes=TableOccurrence(sNomTable,toColonne)
+      	SI stOptions.taColonnes..Occurrence>0 ALORS
+      		//gestion des calculs, des visibilités et de l'ordre
+      		//mise en mémoire des nom de colonne de table dans leur ordre à l'écran
+      		POUR j=1 _À_ nNbColonnes
+      			sChamps+=[TAB]+sNomTable+"."+TableEnumèreColonne(sNomTable,j)
+      		FIN	
+      		//règle l'ordre
+      		sColonnesOrdre="";nNum=999999999
+      		
+      		POUR TOUTE ELEMENT stUneColonne,sNomUneColonne DE stOptions.taColonnes
+      			SI PAS Gauche(sNomUneColonne,Taille(sNomTable))~=sNomTable ALORS ErreurAjouteUnique(<§@1bfea8aa3da663750001§>)
+      			SI stUneColonne.nOrdre>0 ALORS 
+      				SI Position(sColonnesOrdre,stUneColonne.nOrdre,0,DepuisDébut+MotComplet)<1 ALORS 
+      					sColonnesOrdre+=[TAB]+stUneColonne.nOrdre
+      				SINON
+      					sErr+=[RC]+<§@1bfea8aa3da663750002§>
+      				FIN
+      			FIN
+      		FIN
+      		
+      		SI sColonnesOrdre="" ALORS
+      			//on prend l'ordre des colonnes de la table
+      			POUR TOUTE CHAÎNE sChamp DE sChamps
+      				sColonnesOrdre+=[TAB]+sChamp	//pour les colonnes n'ayant pas d'ordre, on prend l'ordre de la table
+      			FIN
+      		SINON SI (ChaîneOccurrence(sColonnesOrdre,TAB)+1)=stOptions.taColonnes..Occurrence ALORS
+      			sColonnesOrdre=""
+      			POUR j=1 _À_ nNbColonnes
+      				POUR TOUTE ELEMENT stUneColonne,sNomUneColonne DE stOptions.taColonnes
+      					POUR TOUTE CHAÎNE sChamp DE sChamps
+      						SI stUneColonne.nOrdre=j _ET_ (sNomUneColonne=sChamp _OU_ sNomUneColonne=ExtraitChaîne(sChamp,1,".",DepuisFin)) ALORS sColonnesOrdre+=[TAB]+sChamp	
+      					FIN
+      				FIN
+      			FIN
+      		SINON
+      			//certaines colonnes ont un ordre, d'autre non ou trop de colonnes
+      			sErr+=[RC]+<§@1bfea8aa3da663750003§>
+      		FIN
+      		
+      		nNum=0
+      		POUR TOUTE ELEMENT stUneColonne,sNomUneColonne DE stOptions.taColonnes
+      			nNum++
+      			SI Position(sChamps,sNomUneColonne,0,MotComplet+SansCasse+DepuisDébut)>0 ALORS	//qu'importe qu'elles soient visibles ou pas (elles seront forcées pour l'impression puisque implicitement choisies)
+      				SI (bColonneSélection ET sNomUneColonne<>stOptions.sColonneSélection) OU PAS bColonneSélection ALORS	//car la colonne de sélection ne sera pas affichée, on ne peut pas faire de calculs dessus
+      					SI stUneColonne.bCompteur+stUneColonne.bTotal+stUneColonne.bMoyenne>0 ALORS
+      						SI PAS {sNomUneColonne,indChamp}..Type DANS (typNum,typMonétaire,typInterr) ET (stUneColonne.bTotal OU stUneColonne.bMoyenne) ALORS
+      							ErreurAjouteUnique(ChaîneConstruit(<§@1bfea8aa3da663750007§>,sNomUneColonne))
+      						SINON
+      							sNomColonnes+=[TAB]+sNomUneColonne;nLigneCalcul=Vrai
+      						FIN
+      					SINON
+      						//la colonne est juste là pour l'ordre
+      						sNomColonnes+=[TAB]+sNomUneColonne
+      					FIN
+      				FIN
+      			SINON
+      				ErreurAjouteUnique(ChaîneConstruit(<§@1bfea8aa3da663750008§>,sNomColonne))
+      			FIN		
+      		FIN
+      	SINON
+      		POUR j=1 _À_ nNbColonnes
+      			sNomColonne=sNomTable+"."+TableEnumèreColonne(sNomTable,j)
+      			SI {sNomColonne,indChamp}..Visible ALORS sNomColonnes+=[TAB]+sNomColonne
+      		FIN
+      	FIN
+      	
+      <fin>
+      
+      
+      //gestion des polices de caractères
+      j=0
+      POUR TOUTE CHAÎNE sNomColonne DE sNomColonnes
+      	j++
+      	SI j=1 ALORS
+      		polTitre={sNomColonne,indChamp}..Police
+      		SI {sNomTable,indChamp}..Occurrence>0 ALORS polTexte={sNomColonne,indChamp}[1]..Police SINON polTexte=polTitre
+      	SINON
+      		nTailleSépar+=3		//en pixel + 1 pour le séparateur de colonne + 2 (1 px devant et 1px derrière le texte)
+      	FIN
+      	nTableLargeur+={sNomColonne,indChamp}..Largeur	
+      FIN
+      polTitre=stOptions.polTexte;polTexte=stOptions.polTexte
+      
+      //gestion des combos
+      nNum=0
+      POUR TOUT ELEMENT stUneColonne,sNomUneColonne DE stOptions.taColonnes
+      	nNum++
+      	POUR TOUT ELEMENT sImage DE stUneColonne.taComboImages
+      		SI PAS fFichierExiste(sImage) ALORS sErr+=[RC]+ChaîneConstruit(<§@1bfea8aa3da663750009§>,sImage,sNomUneColonne)
+      	FIN
+      FIN	
+      
+      SI sErr>"" ALORS ErreurDéclenche(ErreurDImpression,sErr);RENVOYER 0
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=Webservice ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows ou CibleExécution=ServiceLinux64>
+      	
+      	iParamètre(iOrientation, (stOptions.coAutresOptions[OptionOrientationPortrait] ? iOrientation_Portrait SINON iOrientation_Paysage))
+      	(rMargeHaut,rMargeBas,rMargeGauche,rMargeDroite)=MargesImprimante()	//met les marges max dans les variables
+      	rMargeHaut=Max(5,rMargeHaut);rMargeBas=Max(5,rMargeBas);rMargeGauche=Max(5,rMargeGauche);rMargeDroite=Max(5,rMargeDroite)
+      	iMarge(rMargeHaut,rMargeBas,rMargeGauche,rMargeDroite)
+      	Multitâche(-20)	//multitache sinon iLargeurPage=0
+      	rPageLargeur=iLargeurPage();rPageHauteur=iHauteurPage()
+      	SI rPageLargeur=0 ALORS iRAZ();ErreurDéclenche(ErreurDImpression,<§@1bfea8aa3da663750004§>);RENVOYER 0
+      	
+      	//si la largeur est plus grande que la page en portrait, on passe en d'office en paysage
+      	SI stOptions.coAutresOptions[OptionOrientationPortrait] ET PAS stOptions.coAutresOptions[OptionForcePortrait] _ET_ ((nTableLargeur+nTailleSépar)*rDimDot)>rPageLargeur ALORS
+      		iParamètre(iOrientation, iOrientation_Paysage)
+      		(rMargeHaut,rMargeBas,rMargeGauche,rMargeDroite)=MargesImprimante()	//met les marges max dans les variables
+      		rMargeHaut=Max(5,rMargeHaut);rMargeBas=Max(5,rMargeBas);rMargeGauche=Max(5,rMargeGauche);rMargeDroite=Max(5,rMargeDroite)
+      		iMarge(rMargeHaut,rMargeBas,rMargeGauche,rMargeDroite)
+      		Multitâche(-20)	//multitache sinon iLargeurPage=0
+      		rPageLargeur=iLargeurPage();rPageHauteur=iHauteurPage()
+      	FIN
+      	
+      <fin>
+      
+      
+      rPageLargeur-=iPicaVersMM(2)
+      rFacteurZoom=(((nTableLargeur+nTailleSépar)*rDimDot)>rPageLargeur ? ((nTableLargeur+nTailleSépar)*rDimDot)/rPageLargeur SINON 1)
+      //calcul du nombre de page min
+      TANTQUE (12/rFacteurZoom*nPagesLargeur)<3	//la taille min lisible est 3
+      	nPagesLargeur++
+      FIN
+      rFacteurZoom=rFacteurZoom/nPagesLargeur
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=AssemblageDotNet ou CibleExécution=ApplicationLinux64 ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	//réparti les colonnes de la table sur plusieurs pages
+      	sChamps="";x=0;nNum=0
+      	POUR TOUT CHAÎNE sNomColonne DE sNomColonnes
+      		nNum++
+      		SI (bColonneSélection ET nNum>1) OU PAS bColonneSélection ALORS
+      			rLargeurColonne={sNomColonne,indChamp}..Largeur*rDimDot/rFacteurZoom
+      			rTableLargeur+=rLargeurColonne
+      			SI rTableLargeur>rPageLargeur ALORS 
+      				//remplacer la largeur de la dernière colonne par cette nouvelle largeur
+      				i=Position(sChamps,TAB,0,DepuisFin)
+      				SI i>0 ALORS 
+      					sChamps=Gauche(sChamps,i+1)+Val(ExtraitChaîne(sChamps,1,TAB,DepuisFin))+(rPageLargeur-x-stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(2))
+      				FIN
+      				TableauAjoute(tabChamps,sChamps)
+      				SI nNum<>TableOccurrence(sNomTable,toColonne) ALORS	//on reporte la colonne sur la page suivante
+      					rTableLargeur=rLargeurColonne;x=rLargeurColonne
+      					sChamps=sNomColonne+TAB+rTableLargeur+TAB+{sNomColonne,indChamp}..RichEdit+TAB+{sNomColonne,indChamp}..MotDePasse
+      				FIN
+      			SINON
+      				rLargeurColonne=rLargeurColonne;x+=rLargeurColonne
+      				sChamps+=[RC]+sNomColonne+TAB+rLargeurColonne+TAB+{sNomColonne,indChamp}..RichEdit+TAB+{sNomColonne,indChamp}..MotDePasse
+      			FIN
+      		FIN
+      	FIN
+      	SI sChamps>"" ALORS 
+      		//remplacer la largeur de la dernière colonne par cette nouvelle largeur
+      		SI stOptions.sColonneAncrée>"" ALORS
+      			POUR TOUTE CHAÎNE sChamp DE sChamps SEPAREE PAR RC
+      				sChampsTemp+=[RC]+sChamp
+      			FIN
+      		SINON
+      			i=Position(sChamps,TAB,0,DepuisFin)
+      			SI i>0 ALORS 
+      				sChampsTemp=Gauche(sChamps,i)+(Val(ExtraitChaîne(sChamps,1,TAB,DepuisFin))+(rPageLargeur-x-stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(2)))
+      			SINON
+      				sChampsTemp=sChamps
+      			FIN
+      		FIN
+      		TableauAjoute(tabChamps,sChampsTemp)
+      	SINON
+      		ErreurDéclenche(ErreurDImpression,<§@1bfea8aa3da66375000a§>);RENVOYER 0
+      	FIN
+      	
+      <fin>
+      
+      
+      iCréePolice(1,Arrondi(stOptions.polTexte..Taille*1.1*(bTailleSupérieure ? 1.1 SINON 1)/rFacteurZoom,0),iNormal,polTitre..Nom,Noir)		//la taille standard est 12 (pour page, date et heure)
+      SI polTexte..Nom>"" ALORS	//2 = lignes paires, 6 = lignes impaires
+      	iCréePolice(2,Arrondi(stOptions.polTexte..Taille*1.1*(bTailleSupérieure ? 1.1 SINON 1)/rFacteurZoom,0),polTexte..Barré+polTexte..Condensé+polTexte..Etendu+polTexte..Gras+polTexte..Italique+polTexte..Large+polTexte..Souligné,polTexte..Nom,taCouleurs[CouleurTexteDonnéePaire],polTexte..Angle)			//police avec couleur de texte différente
+      	iCréePolice(6,Arrondi(stOptions.polTexte..Taille*1.1*(bTailleSupérieure ? 1.1 SINON 1)/rFacteurZoom,0),polTexte..Barré+polTexte..Condensé+polTexte..Etendu+polTexte..Gras+polTexte..Italique+polTexte..Large+polTexte..Souligné,polTexte..Nom,taCouleurs[CouleurTexteDonnéeImpaire],polTexte..Angle)		//police avec couleur de texte différente
+      SINON
+      	iCréePolice(2,Arrondi(stOptions.polTexte..Taille*1.1*(bTailleSupérieure ? 1.1 SINON 1)/rFacteurZoom,0),iNormal,iDéfaut,Noir)		//la taille standard est 12
+      	iCréePolice(6,Arrondi(stOptions.polTexte..Taille*1.1*(bTailleSupérieure ? 1.1 SINON 1)/rFacteurZoom,0),iNormal,iDéfaut,Noir)		//la taille standard est 12
+      FIN
+      iCréePolice(3,Arrondi(stOptions.polTexte..Taille*1.5*(bTailleSupérieure ? 1.1 SINON 1)/rFacteurZoom,0),polTitre..Barré+polTitre..Condensé+polTitre..Etendu+iGras+polTitre..Italique+polTitre..Large+polTitre..Souligné,polTitre..Nom,taCouleurs[CouleurTitreTexte])			//police avec couleur de titre différente
+      iCréePolice(4,Arrondi(stOptions.polTexte..Taille*1.1*(bTailleSupérieure ? 1.1 SINON 1)/rFacteurZoom,0),polTitre..Barré+polTitre..Condensé+polTitre..Etendu+polTitre..Gras+polTitre..Italique+polTitre..Large+polTitre..Souligné,polTitre..Nom,taCouleurs[CouleurTitreColonneTexte],polTitre..Angle)	//police avec couleur de titre de colonne différente
+      iCréePolice(5,Arrondi(stOptions.polTexte..Taille*1.1*(bTailleSupérieure ? 1.1 SINON 1)/rFacteurZoom,0),polTitre..Barré+polTitre..Condensé+polTitre..Etendu+polTitre..Gras+polTitre..Italique+polTitre..Large+polTitre..Souligné,polTitre..Nom,taCouleurs[CouleurPiedTexte],polTitre..Angle)	//police avec couleur de pied de page différente
+      
+      rHauteurCaract=iHauteurTexte(iPolice(1)+"T")
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=ServiceWindows>
+      	iFenêtreAbandon(Vrai)
+      	
+      <fin>
+      
+      
+      //récupérer le logo une fois pour toute
+      //en premier lieu l'image pour connaître la hauteur et centrer le titre verticalement ensuite
+      nImgLargeur=0;rImgHauteur=0
+      sFichierImage = TrouveImage(stOptions.xLogo,sFichierTemp)
+      SI sFichierImage>"" ALORS
+      	sImgInfo=InfoBitmap(stOptions.xLogo)
+      	SI PAS ExtraitChaîne(sImgInfo,1) DANS ("","BAD") ALORS 
+      		rImgHauteur=iHauteurImage(stOptions.xLogo)+2*iPicaVersMM(3);rImgLargeur=iLargeurImage(stOptions.xLogo)
+      	FIN
+      FIN
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	SI bImprimeColonneCalculée ALORS 
+      		POUR TOUTE LIGNE SELECTIONNEE nLigne DE {sNomTable,indChamp}
+      			sColonnesSélectionnées+=[TAB]+nLigne
+      		FIN
+      		TableSelectMoins(sNomTable)
+      	FIN
+      	
+      <fin>
+      
+      
+      POUR nExemplaire = 1 A nExemplaires
+      	nLigneDébut=1;nPageHauteur=1;nPageLargeur=1;nNumPage=0;nLigneFin={sNomTable,indChamp}..Occurrence
+      	SI stOptions.nNbLignesMax>0 ALORS nLigneFin=Min(nLigneFin,stOptions.nNbLignesMax)
+      	BOUCLE
+      		BOUCLE
+      			bAvecPied=(stOptions.coAutresOptions[OptionAvecDate] _OU_ stOptions.coAutresOptions[OptionAvecHeure] _OU_ stOptions.coAutresOptions[OptionAvecNumPage] _OU_ ((ExtraitChaîne(stOptions.sPiedDePageCentre,1,RC)>"" OU ExtraitChaîne(stOptions.sPiedDePageGauche,1,RC)>"" OU ExtraitChaîne(stOptions.sPiedDePageDroite,1,RC)>"") _ET_ (bRépètePiedChaquePage _OU_ nPageHauteur=1)))	//1 seule ligne dispo en bas
+      			SI taCouleurs[CouleurPageFond]<>Blanc ALORS iCadre(0,0,rPageLargeur,rPageHauteur,0,100,taCouleurs[CouleurPageFond],iContinu,iPleine,iBordTous)
+      			x=0;iPosX(0);y=iPicaVersMM(3);iPosY(y);nNumPage++;rHauteurTitre=0
+      			
+      			SI (stOptions.sTitrePage>"" OU stOptions.xLogo>"") ET (nPageHauteur=1 _OU_ stOptions.coAutresOptions[OptionRépèteTitreChaquePage]) ALORS
+      				//déterminer la hauteur des lignes de titre
+      				nTitre=0
+      				rHauteurTitre=y;rHauteur=0
+      				POUR TOUTE CHAÎNE sTitre DE stOptions.sTitrePage SEPAREE PAR RC
+      					nTitre++
+      					rHauteur+=iHauteurZone((nTitre=1 ? iPolice(3) SINON iPolice(4))+SansEspace(sTitre),rPageLargeur-iPicaVersMM(6))+iPicaVersMM(6)+iPicaVersMM(3)	//premier titre plus gros que les autres		
+      				FIN
+      				rHauteur+=iPicaVersMM(3)
+      				rHauteurTitre=Max(rHauteur,rImgHauteur)
+      				
+      				//impression du cadre du titre
+      				SI taCouleurs[CouleurTitreFond]<>Transparent _ET_ taCouleurs[CouleurTitreFond]<>taCouleurs[CouleurPageFond] ALORS 
+      					iCadre(0,0,rPageLargeur,rHauteurTitre,0,100,taCouleurs[CouleurTitreFond],iContinu,iPleine,iBordTous);bContenu=Vrai
+      				FIN
+      				
+      				//impression de l'image si nécessaire au dessus de la couleur de fond
+      				SI rImgHauteur>0 ALORS
+      					iImprimeImage(stOptions.xLogo,iPicaVersMM(3),stOptions.coAutresOptions[OptionAvecSéparateurHorizontal]*iPicaVersMM(3),rImgLargeur,rImgHauteur+2*iPicaVersMM(1))
+      					SI rHauteur<rImgHauteur ALORS iPosY((rImgHauteur-rHauteur)/2)
+      				FIN
+      				
+      				y=iPosY();nTitre=0
+      				POUR TOUTE CHAÎNE sTitre DE stOptions.sTitrePage SEPAREE PAR RC
+      					nTitre++
+      					rHauteur=iHauteurZone((nTitre=1 ? iPolice(3) SINON iPolice(4))+SansEspace(sTitre),rPageLargeur-iPicaVersMM(6))+iPicaVersMM(6)		
+      					SI nTitre=1 ALORS iPolice(3) SINON iPolice(4)	//premier titre plus gros que les autres
+      					iImprimeZone(sTitre,iPicaVersMM(6),y,rPageLargeur-iPicaVersMM(6),y+rHauteur,iCentreH+iCentreV)
+      					iPosY(y+rHauteur+iPicaVersMM(3));y=iPosY();bContenu=Vrai
+      				FIN
+      				iPosY(rHauteurTitre)
+      			FIN
+      			
+      			//impression des titres de colonnes
+      			SI stOptions.coAutresOptions[OptionAvecTitreColonne] ET (nPageHauteur=1 _OU_ stOptions.coAutresOptions[OptionRépèteTitreColonneChaquePage]) ALORS
+      				//impression des données
+      				rHauteurTitreMax=iHauteurTexte(iPolice(4)+"T")
+      				//on calcule la hauteur de titre de colonne avant
+      				SI bMultiligneTitreColonne ALORS
+      					nNum=0
+      					POUR TOUTE CHAÎNE sNomColonne DE tabChamps[nPageLargeur] SEPAREE PAR RC
+      						nNum++
+      						SI (bColonneSélection ET nNum>1 OU PAS bColonneSélection) ALORS
+      							rLargeurColonne=Val(ExtraitChaîne(sNomColonne,2));sNomColonne=ExtraitChaîne(sNomColonne,1)
+      							rHauteurTitreMax=Max(rHauteurTitreMax,iHauteurZone(iPolice(4)+sSansImage({sNomColonne,indChamp}..Titre),rLargeurColonne-iPicaVersMM(12)))
+      						FIN
+      					FIN				
+      				FIN
+      				
+      				y=iPosY()
+      				SI taCouleurs[CouleurTitreColonneFond]<>Transparent _ET_ taCouleurs[CouleurTitreColonneFond]<>taCouleurs[CouleurPageFond] ALORS 
+      					iCadre(x,y-iPicaVersMM(3),rPageLargeur,y+rHauteurTitreMax+iPicaVersMM(3),0,100,taCouleurs[CouleurTitreColonneFond],iContinu,iPleine,iBordTous)
+      				FIN
+      				iPolice(4)
+      				
+      				nNum=0
+      				POUR TOUTE CHAÎNE sNomColonne DE tabChamps[nPageLargeur] SEPAREE PAR RC
+      					x=iPosX()
+      					rLargeurColonne=Val(ExtraitChaîne(sNomColonne,2));sNomColonne=ExtraitChaîne(sNomColonne,1);bContenu=Vrai
+      					iImprimeZone(sSansImage({sNomColonne,indChamp}..Titre),x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteurTitreMax,iCentreH+iCentreV)
+      					iPosX(x+({sNomColonne,indChamp}..Largeur*rDimDot/rFacteurZoom))
+      				FIN
+      				rHauteurTitreMax+=iPicaVersMM(6) 	//laisser la place pour la ligne horizontale qui sépare le titre des données
+      				iPosY(y+rHauteurTitreMax);y=iPosY()	
+      			FIN
+      			
+      			//impression des données
+      			SI PAS bBoucleOpération ALORS
+      				iPolice(2)
+      				
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	//en premier on calcule la hauteur de ligne
+      	SI stOptions.rHauteurMaxLigne>0 ALORS rHauteurMax=stOptions.rHauteurMaxLigne SINON rHauteurMax={sNomTable,indChamp}..HauteurLigne*rDimDot/rFacteurZoom
+      	
+      <fin>
+      
+      				
+      				POUR nLigne = nLigneDébut À nLigneFin
+      					rHauteur=rHauteurMax
+      					SI stOptions.coAutresOptions[OptionMultiligneContenu] ET stOptions.rHauteurMaxLigne=0 ALORS
+      						nNum=0
+      						POUR TOUTE CHAÎNE sNomColonne DE tabChamps[nPageLargeur] SEPAREE PAR RC
+      							nNum++
+      							SI ((bColonneSélection ET nNum>1) OU PAS bColonneSélection) _ET_ PAS {ExtraitChaîne(sNomColonne,1),indChamp}..Type DANS (typInterr,typImage) ALORS
+      								rLargeurColonne=Val(ExtraitChaîne(sNomColonne,2));bRTF=(ExtraitChaîne(sNomColonne,3)="1");sNomColonne=ExtraitChaîne(sNomColonne,1)
+      								bEnRTF=bRiched20 _ET_ (PAS stOptions.coAutresOptions[OptionRTFenTexte] _ET_ (bRTF _OU_ (Gauche({sNomColonne,indChamp}[nLigne]..Valeur,7)="{\rtf1\")))
+      								rHauteur=Max(rHauteur,iHauteurZone(bEnRTF ? {sNomColonne,indChamp}[nLigne]..ValeurAffichée SINON iPolice(2)+SansEspace(bRTF _OU_ Gauche({sNomColonne,indChamp}[nLigne]..Valeur,7)="{\rtf1\" ? RTFVersTexte({sNomColonne,indChamp}[nLigne]..ValeurAffichée) SINON {sNomColonne,indChamp}[nLigne]..ValeurAffichée),rLargeurColonne-iPicaVersMM(12),(bEnRTF ? iRTF SINON iTexte)))
+      							FIN
+      						FIN				
+      					FIN
+      				
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	SI bImprimeColonneCalculée _ET_ nLigne<=nLigneFin ALORS TableSelectPlus({sNomTable,indChamp},nLigne)	//positionner la table sur la ligne à imprimer (pour que les valeurs calculées le soient)
+      	
+      <fin>
+      
+      				
+      					SI (bColonneSélection _ET_ {ExtraitChaîne(sNomColonnes,1),indChamp}[nLigne]..Valeur) _OU_ (PAS bColonneSélection ET (PAS bLigneSélectionnée OU (bLigneSélectionnée ET {sNomTable,indChamp}[nLigne]..Sélectionnée))) ALORS
+      						iPosX(0);y=iPosY();nNumLigne++;bContenu=Vrai
+      						SI stOptions.coAutresOptions[OptionCouleurTable] ALORS
+      							SI {sNomTable,indChamp}[nLigne]..CouleurFond<>taCouleurs[CouleurPageFond] _ET_ {sNomTable,indChamp}[nLigne]..CouleurFond<>Transparent ALORS iCadre(0+stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(1),y,rPageLargeur,y+rHauteur,1,100,{sNomTable,indChamp}[nLigne]..CouleurFond,iContinu,iPleine,iBordAucun)
+      						SINON
+      							SI EstPair(nNumLigne) _ET_ taCouleurs[CouleurLignePaire]<>Transparent _ET_ taCouleurs[CouleurLignePaire]<>taCouleurs[CouleurPageFond] ALORS 
+      								iCadre(0+stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(1),y+stOptions.coAutresOptions[OptionAvecSéparateurHorizontal]*iPicaVersMM(1),rPageLargeur,y+rHauteur,1,100,taCouleurs[CouleurLignePaire],iContinu,iPleine,iBordAucun) 	//pour mettre un fond de couleur sur les lignes paires
+      							FIN
+      							SI EstImpair(nNumLigne) _ET_ taCouleurs[CouleurLigneImpaire]<>Transparent _ET_ taCouleurs[CouleurLigneImpaire]<>taCouleurs[CouleurPageFond] ALORS 
+      								iCadre(0+stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(1),y+stOptions.coAutresOptions[OptionAvecSéparateurHorizontal]*iPicaVersMM(1),rPageLargeur,y+rHauteur,1,100,taCouleurs[CouleurLigneImpaire],iContinu,iPleine,iBordAucun) 	//pour mettre un fond de couleur sur les lignes impaires
+      							FIN
+      						FIN
+      						
+      						POUR TOUTE CHAÎNE sNomColonne DE tabChamps[nPageLargeur] SEPAREE PAR RC
+      							rLargeurColonne=Val(ExtraitChaîne(sNomColonne,2));bRTF=(ExtraitChaîne(sNomColonne,3)="1");bMDP=(ExtraitChaîne(sNomColonne,4)="1");sNomColonne=ExtraitChaîne(sNomColonne,1)
+      							//							trace(sNomColonne)
+      							SI PAS stOptions.taColonnes[sNomColonne]..Vide ALORS
+      								SI stOptions.taColonnes[sNomColonne].bCompteur OU stOptions.taColonnes[sNomColonne].bMoyenne ALORS taCompteur[sNomColonne]++
+      								SI stOptions.taColonnes[sNomColonne].bTotal OU stOptions.taColonnes[sNomColonne].bMoyenne ALORS taTotal[sNomColonne]+={sNomColonne,indChamp}[nLigne]..Valeur
+      							FIN
+      							x=iPosX()
+      							SI stOptions.coAutresOptions[OptionCouleurTable] ALORS
+      								SI {sNomColonne,indChamp}[nLigne]..CouleurFond<>{sNomTable,indChamp}[nLigne]..CouleurFond ALORS 
+      									iCadre(x+stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(1),y+stOptions.coAutresOptions[OptionAvecSéparateurHorizontal]*iPicaVersMM(1),x+stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(1)+rLargeurColonne,y+rHauteur,1,100,{sNomColonne,indChamp}[nLigne]..CouleurFond,iContinu,iPleine,iBordAucun)
+      								FIN
+      								SI PAS {sNomColonne,indChamp}[nLigne]..Couleur DANS (iNoir,Noir,iCouleurDéfaut,CouleurDéfaut,Transparent,iTransparent) ALORS
+      									SI taPolice[{sNomColonne,indChamp}[nLigne]..Couleur]..Vide ALORS
+      										SI nNumPolice=0 ALORS nNumPolice=9 SINON nNumPolice++
+      										SI polTexte..Nom>"" ALORS
+      											iCréePolice(nNumPolice,Arrondi(stOptions.polTexte..Taille*1.1/rFacteurZoom,0),polTexte..Barré+polTexte..Condensé+polTexte..Etendu+polTexte..Gras+polTexte..Italique+polTexte..Large+polTexte..Souligné,polTexte..Nom,{sNomColonne,indChamp}..Couleur,polTexte..Angle)		//police avec couleur de texte différente
+      										SINON
+      											iCréePolice(nNumPolice,Arrondi(stOptions.polTexte..Taille*1.1/rFacteurZoom,0),iNormal,iDéfaut,{sNomColonne,indChamp}[nLigne]..Couleur)		//la taille standard est 12
+      										FIN
+      										taPolice[{sNomColonne,indChamp}[nLigne]..Couleur]=nNumPolice
+      									SINON
+      										nNumPolice=taPolice[{sNomColonne,indChamp}[nLigne]..Couleur]
+      									FIN
+      									//									Trace({sNomColonne,indChamp}[nLigne]..Couleur,iNoir,Noir,Blanc,nNumPolice,{sNomColonne,indChamp}[nLigne])
+      									iPolice(nNumPolice)
+      								SINON
+      									iPolice(2)
+      								FIN
+      							FIN
+      							SI stOptions.coAutresOptions[OptionAlignementDuContenu] ALORS
+      								nOrientationV=nCadrageVertical({sNomColonne,indChamp}..CadrageVertical)
+      								SI {sNomColonne,indChamp}..Type DANS (typNum,typDurée,typMonétaire) _OU_ ({sNomColonne,indChamp}..Type=typDate _ET_ DateValide({sNomColonne,indChamp}[nLigne])) _OU_ ({sNomColonne,indChamp}..Type=typHeure _ET_ HeureValide({sNomColonne,indChamp}[nLigne])) ALORS
+      									nOrientationH=nCadrageHorizontal({sNomColonne,indChamp}..CadrageHorizontal,(bSensGaucheADroite ? iDroite SINON iGauche))
+      								SINON
+      									nOrientationH=nCadrageHorizontal({sNomColonne,indChamp}..CadrageHorizontal,(bSensGaucheADroite ? iGauche SINON iDroite))
+      								FIN
+      							SINON
+      								nOrientationV=nCadrageVertical(cvHaut)
+      								SI {sNomColonne,indChamp}..Type DANS (typNum,typDurée,typMonétaire) _OU_ ({sNomColonne,indChamp}..Type=typDate _ET_ DateValide({sNomColonne,indChamp}[nLigne])) _OU_ ({sNomColonne,indChamp}..Type=typHeure _ET_ HeureValide({sNomColonne,indChamp}[nLigne])) ALORS
+      									nOrientationH=nCadrageHorizontal((bSensGaucheADroite ? iDroite SINON iGauche))
+      								SINON
+      									nOrientationH=nCadrageHorizontal((bSensGaucheADroite ? iGauche SINON iDroite))
+      								FIN
+      							FIN
+      							nOrientationHInverse=nCadrageHorizontal(nOrientationH=chDroite ? chGauche SINON (nOrientationH=chDroite ? chGauche SINON nOrientationH))	//sinon centré ou justifié pareil dans les 2 sens
+      							sImageTemp=""
+      							SELON {sNomColonne,indChamp}..Type 
+      								CAS typNum,typDurée
+      									iImprimeZone({sNomColonne,indChamp}[nLigne]..ValeurAffichée,x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteur,nOrientationH+nOrientationV)
+      								CAS typMonétaire
+      									iImprimeZone((stOptions.sFormatMonétaire = "" ? {sNomColonne,indChamp}[nLigne]..ValeurAffichée SINON NumériqueVersChaîne({sNomColonne,indChamp}[nLigne],stOptions.sFormatMonétaire)),x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteur,nOrientationH+nOrientationV)
+      								CAS typDate
+      									SI DateValide({sNomColonne,indChamp}[nLigne]) ALORS
+      										//ATTENTION, GÉRER LES DATES/HEURES
+      										iImprimeZone((stOptions.sFormatDate = "" ? {sNomColonne,indChamp}[nLigne]..ValeurAffichée SINON DateVersChaîne({sNomColonne,indChamp}[nLigne],stOptions.sFormatDate)),x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteur,nOrientationH+nOrientationV)
+      									SINON
+      										iImprimeZone(SansEspace({sNomColonne,indChamp}[nLigne]..ValeurAffichée),x+iPicaVersMM(6),y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6),x+rLargeurColonne-iPicaVersMM(6),y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6)+rHauteur,nOrientationH+nOrientationV)
+      									FIN
+      								CAS typHeure
+      									SI HeureValide({sNomColonne,indChamp}[nLigne]) ALORS
+      										iImprimeZone((stOptions.sFormatHeure = "" ? {sNomColonne,indChamp}[nLigne]..ValeurAffichée SINON HeureVersChaîne({sNomColonne,indChamp}[nLigne],stOptions.sFormatHeure)),x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteur,nOrientationH+nOrientationV)
+      									SINON
+      										iImprimeZone(SansEspace({sNomColonne,indChamp}[nLigne]..ValeurAffichée),x+iPicaVersMM(6),y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6),x+rLargeurColonne-iPicaVersMM(6),y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6)+rHauteur,nOrientationH+nOrientationV)
+      									FIN
+      								CAS typInterr
+      									SI stOptions.coAutresOptions[OptionInterrupteurCoche] ALORS
+      										SI {sNomColonne,indChamp}[nLigne]..Valeur ALORS
+      											iTrait(x+iPicaVersMM(10),y+iPicaVersMM(8)+iPicaVersMM(14),x+iPicaVersMM(10)+iPicaVersMM(11),y+iPicaVersMM(8)+iPicaVersMM(27),iPicaVersMM(10),Noir,iContinu)
+      											iTrait(x+iPicaVersMM(10)+iPicaVersMM(11),y+iPicaVersMM(8)+iPicaVersMM(27),x+iPicaVersMM(10)+iPicaVersMM(22),y+iPicaVersMM(8),iPicaVersMM(10),Noir,iContinu)
+      										FIN
+      									SINON
+      										iImprimeZone({sNomColonne,indChamp}[nLigne]..Valeur,x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteur,nOrientationH+nOrientationV)
+      									FIN
+      								CAS typImage
+      									SI stOptions.coAutresOptions[OptionAvecImage] ALORS
+      										sImageTemp=fRépertoireTemp()+["\"]+"img"+sNomColonne+"_"+nLigne+ExtraitChaîne(sImgInfo,1)
+      										SI PAS fFichierExiste(sImageTemp) ALORS fSauveTexte(sImageTemp,{sNomColonne,indChamp}[nLigne]..Valeur)
+      										
+      										sImgInfo=InfoBitmap(sImageTemp)
+      										SI PAS ExtraitChaîne(sImgInfo,1) DANS ("","BAD") ALORS
+      											SI stOptions.coAutresOptions[OptionEnTonDeGris] ALORS 
+      												//dModifieSaturation({sNomColonne,indChamp}[nLigne],-100)	//ne fonctionne pas, une case de colonne image n'est pas considéré comme une image :-(
+      											FIN
+      											nImgLargeur=Val(ExtraitChaîne(sImgInfo,2));nImgHauteur=Val(ExtraitChaîne(sImgInfo,3))
+      											SI nImgHauteur>iMMVersPica(rHauteur) OU nImgLargeur>rLargeurColonne ALORS	//adapter les dimensions à la place disponible dans la case
+      												rFacteurImage=Max(nImgLargeur/iMMVersPica(rHauteur),nImgLargeur/iMMVersPica(rLargeurColonne))
+      											SINON
+      												rFacteurImage=1
+      											FIN
+      											//											nDécalX=max(0,(rLargeurColonne-x-(bAvecSéparateurvertical*iPicaVersMM(1)*2)-(nImgLargeur*iPicaVersMM(rFacteurImage)))/2)
+      											//											nDécalY=max(0,(rHauteurMax-(bAvecSéparateurHorizontal*iPicaVersMM(1)*2)-(nImgHauteur*iPicaVersMM(rFacteurImage)))/2)
+      											//											trace(ndecaly)
+      											SI fFichierExiste(sImageTemp) ALORS iImprimeImage(sImageTemp,x+iPicaVersMM(3)+nDécalX,iPosY()+stOptions.coAutresOptions[OptionAvecSéparateurHorizontal]*iPicaVersMM(1)+nDécalY,x+rLargeurColonne,iPosY()+rHauteur-stOptions.coAutresOptions[OptionAvecSéparateurHorizontal]*iPicaVersMM(1),iAffichageHomothétique)
+      										FIN
+      									FIN
+      								CAS typComboSNS
+      									SI stOptions.taColonnes[sNomColonne]..Vide ALORS
+      										iImprimeZone({sNomColonne,indChamp}[nLigne]..ValeurAffichée,x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteur,nOrientationH+nOrientationV)
+      									SINON
+      										//vérifier si il y a des images
+      										SI stOptions.taColonnes[sNomColonne].taComboImages[{sNomColonne,indChamp}[nLigne]..Valeur]..Vide ALORS
+      											SI stOptions.taColonnes[sNomColonne].bComboValeur ALORS 
+      												iImprimeZone({sNomColonne,indChamp}[nLigne]..Valeur,x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteur,nOrientationH+nOrientationV)
+      											SINON
+      												iImprimeZone({sNomColonne,indChamp}[nLigne]..ValeurAffichée,x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteur,nOrientationH+nOrientationV)
+      											FIN
+      										SINON
+      											sImage=stOptions.taColonnes[sNomColonne].taComboImages[{sNomColonne,indChamp}[nLigne]..Valeur]
+      											SI sImage>"" ALORS
+      												sImgInfo=InfoBitmap(sImage)
+      												SI PAS ExtraitChaîne(sImgInfo,1) DANS ("","BAD") ALORS
+      													nImgLargeur=Val(ExtraitChaîne(sImgInfo,2));nImgHauteur=Val(ExtraitChaîne(sImgInfo,3))
+      													SI nImgHauteur>iMMVersPica(rHauteur) OU nImgLargeur>rLargeurColonne ALORS	//adapter les dimensions à la place disponible dans la case
+      														rFacteurImage=Max(nImgLargeur/iMMVersPica(rHauteur),nImgLargeur/rLargeurColonne)
+      													SINON
+      														rFacteurImage=1
+      													FIN
+      													iImprimeImage(sImage,x+iPicaVersMM(6),iPosY(),x+iPicaVersMM(6)+nImgLargeur*rDimDot/rFacteurZoom/rFacteurImage,iPosY()+nImgHauteur*rDimDot/rFacteurZoom/rFacteurImage,iAffichageNormal)
+      												SINON
+      													iImprimeZone(SansEspace({sNomColonne,indChamp}[nLigne]..ValeurAffichée),x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteur,nOrientationH+nOrientationV)
+      												FIN
+      											SINON
+      												iImprimeZone(SansEspace({sNomColonne,indChamp}[nLigne]..ValeurAffichée),x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteur,nOrientationH+nOrientationV)
+      											FIN
+      										FIN
+      									FIN
+      								CAS typTexte
+      									sValeur est une chaine = {sNomColonne,indChamp}[nLigne]..ValeurAffichée
+      									SI bMDP _ET_ PAS stOptions.coAutresOptions[OptionAfficherMotDePasse] ALORS
+      										iImprimeZone(Répète("*",Taille(sValeur)),x+iPicaVersMM(6)+(stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(6)),...
+      										y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6),x+rLargeurColonne-iPicaVersMM(6)-(stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(6)),...
+      										y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6)+rHauteur,nOrientationH+nOrientationV)
+      									SINON
+      										bRTF = Gauche({sNomColonne,indChamp}[nLigne]..Valeur,7)="{\rtf1\"
+      										SI bRiched20 _ET_ bRTF _ET_ PAS stOptions.coAutresOptions[OptionRTFenTexte] ALORS
+      											
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=SiteWindows ou CibleExécution=WebserviceWindows ou CibleExécution=AssemblageDotNet ou CibleExécution=ServiceWindows>
+      	iImprimeZoneRTF({sNomColonne,indChamp}[nLigne],x+iPicaVersMM(6),y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6),...
+      	x+rLargeurColonne-iPicaVersMM(6),y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6)+rHauteur)
+      	
+      <sinon si CibleExécution=WindowsMobile>
+      	iImprimeZone(bRTF ? RTFVersTexte(sValeur) SINON sValeur,x+iPicaVersMM(6)+(stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(6)),y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6),x+rLargeurColonne-iPicaVersMM(6)-(stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(6)),y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6)+rHauteur,nOrientationH+nOrientationV)
+      	
+      <fin>
+      
+      											
+      										SINON
+      											iImprimeZone(bRTF ? RTFVersTexte(sValeur) SINON sValeur,x+iPicaVersMM(6)+(stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(6)),...
+      											y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6),x+rLargeurColonne-iPicaVersMM(6)-(stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(6)),...
+      											y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6)+rHauteur,nOrientationH+nOrientationV)
+      										FIN
+      									FIN
+      								AUTRES CAS
+      									iImprimeZone({sNomColonne,indChamp}[nLigne]..ValeurAffichée,x+iPicaVersMM(6),y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6),x+rLargeurColonne-iPicaVersMM(6),y+iPicaVersMM(stOptions.coAutresOptions[OptionMultiligneContenu]*6)+rHauteur,nOrientationH+nOrientationV)
+      							FIN
+      							iPosX(x+({sNomColonne,indChamp}..Largeur*rDimDot/rFacteurZoom))
+      							SI sImageTemp>"" _ET_ fFichierExiste(sImageTemp) ALORS fSupprime(sImageTemp)
+      						FIN
+      						
+      						
+      						//déplacement du curseur de la hauteur de la ligne écrite
+      						y+=rHauteur
+      						
+      						//trait séparateur de ligne
+      						SI stOptions.coAutresOptions[OptionAvecSéparateurHorizontal] ALORS
+      							iPosY(y);iTraitH(0+stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(1),rPageLargeur-stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(4),0,taCouleurs[CouleurSéparateurHorizontal],stOptions.eTraitH..Valeur)
+      							y+=iPicaVersMM(1)
+      						FIN
+      					FIN					
+      					
+      					//calcul de la hauteur de la prochaine ligne
+      					rHauteur=rHauteurMax
+      					SI stOptions.coAutresOptions[OptionMultiligneContenu] ET stOptions.rHauteurMaxLigne=0 ALORS
+      						TANTQUE nLigne<nLigneFin
+      							SI (bColonneSélection ET PAS {ExtraitChaîne(sNomColonnes,1),indChamp}[nLigne]..Valeur) OU (bLigneSélectionnée ET PAS {sNomTable,indChamp}[nLigne]..Sélectionnée) ALORS
+      								nLigne++;CONTINUE
+      							SINON
+      								POUR TOUTE CHAÎNE sNomColonne DE tabChamps[nPageLargeur] SEPAREE PAR RC
+      									nNum++
+      									SI ((bColonneSélection ET nNum>1) OU PAS bColonneSélection) _ET_ PAS {ExtraitChaîne(sNomColonne,1),indChamp}..Type DANS (typInterr,typImage) ALORS
+      										rLargeurColonne=Val(ExtraitChaîne(sNomColonne,2));bRTF=(ExtraitChaîne(sNomColonne,3)="1");sNomColonne=ExtraitChaîne(sNomColonne,1)
+      										rHauteur=Max(rHauteur,(nLigneCalcul>0 ET bRepeteCalcul ? (iHauteurTexte(iPolice(2)+"T")+(1)*2*iPicaVersMM(1))*nLigneCalcul SINON 0)+iHauteurZone(bRTF _OU_ (Gauche({sNomColonne,indChamp}[nLigne+1]..Valeur,7)="{\rtf1\") ? {sNomColonne,indChamp}[nLigne+1]..Valeur SINON iPolice(2)+SansEspace({sNomColonne,indChamp}[nLigne+1]..ValeurAffichée),rLargeurColonne-iPicaVersMM(12),(Gauche({sNomColonne,indChamp}[nLigne+1]..Valeur,7)="{\rtf1\") ? iRTF SINON iTexte))
+      									FIN
+      								FIN			
+      								SORTIR	
+      							FIN
+      						FIN
+      					FIN
+      					
+      					//vérifie qu'on est en fin de page pour sortir de la boucle
+      					SI y+rHauteur+(bAvecPied ? rHauteurCaract+iPicaVersMM(15) SINON 0)+stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(2)+(nLigneCalcul>0 ET bRepeteCalcul ? (iHauteurTexte(iPolice(2)+"T")+(1)*2*iPicaVersMM(1))*nLigneCalcul SINON 0)>rPageHauteur ALORS 
+      						SORTIR
+      					SINON SI nLigne=nLigneFin ALORS
+      						SORTIR
+      					SINON
+      						iPosY(y)
+      					FIN
+      				FIN
+      			SINON
+      				//imprimer le reste des totaux pas la procédure ci-dessous
+      			FIN
+      			
+      			SI nLigneCalcul>0 _ET_ ((PAS bRepeteCalcul ET nLigne=nLigneFin) OU (bRepeteCalcul)) ALORS	//le mettre aussi en début de page
+      				iPosY(y)
+      				SI stOptions.coAutresOptions[OptionAvecCadre] OU stOptions.coAutresOptions[OptionAvecSéparateurHorizontal] ALORS
+      					iTraitH(0,rPageLargeur,0,(stOptions.coAutresOptions[OptionAvecCadre] ET PAS taCouleurs[CouleurCadre]=Transparent ? taCouleurs[CouleurCadre] SINON taCouleurs[CouleurSéparateurVertical]),(stOptions.coAutresOptions[OptionAvecCadre] ET PAS taCouleurs[CouleurCadre]=Transparent ? iContinu SINON stOptions.eTraitV..valeur));y+=iPicaVersMM(2);iPosY(y);bContenu=Vrai	//ligne en haut
+      				FIN
+      				SI stOptions.coAutresOptions[OptionNonAssemblée] ALORS 
+      					SI PAS bBoucleOpération ALORS nNumOpération=0 
+      				SINON 
+      					nNumOpération=taLigneCalcul[nPageLargeur]
+      				FIN
+      				TANTQUE y+iHauteurTexte(iPolice(2)+"T")+(bAvecPied ? rHauteurCaract+iPicaVersMM(15) SINON 0)+stOptions.coAutresOptions[OptionAvecCadre]*iPicaVersMM(2)<rPageHauteur ET nNumOpération<(ChaîneOccurrence(sOpérations,TAB)+1)
+      					iPosY(y);nNumOpération++;iPosX(0)
+      					POUR TOUTE CHAINE sNomColonne DE tabChamps[nPageLargeur] SEPAREE PAR RC
+      						rLargeurColonne=Val(ExtraitChaîne(sNomColonne,2));sNomColonne=ExtraitChaîne(sNomColonne,1)
+      						x=iPosX()
+      						SI PAS stOptions.taColonnes[sNomColonne]..Vide ALORS
+      							SI stOptions.taColonnes[sNomColonne].bCompteur ALORS
+      								iImprimeZone(taCompteur[sNomColonne],x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteurCaract,(bSensGaucheADroite ? iDroite SINON iGauche)+iCentreV)
+      							FIN
+      							SI stOptions.taColonnes[sNomColonne].bMoyenne ALORS
+      								iImprimeZone(({sNomColonne,indChamp}..Type=typMonétaire ? NumériqueVersChaîne((taTotal[sNomColonne]/taCompteur[sNomColonne]),stOptions.sFormatMonétaire) SINON taTotal[sNomColonne]/taCompteur[sNomColonne]),x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteurCaract,(bSensGaucheADroite ? iDroite SINON iGauche)+iCentreV)
+      							FIN
+      							SI stOptions.taColonnes[sNomColonne].bTotal ALORS
+      								iImprimeZone(({sNomColonne,indChamp}..Type=typMonétaire ? NumériqueVersChaîne(taTotal[sNomColonne],stOptions.sFormatMonétaire) SINON taTotal[sNomColonne]),x+iPicaVersMM(6),y,x+rLargeurColonne-iPicaVersMM(6),y+rHauteurCaract,(bSensGaucheADroite ? iDroite SINON iGauche)+iCentreV)
+      							FIN
+      						FIN
+      						iPosX(x+({sNomColonne,indChamp}..Largeur*rDimDot/rFacteurZoom))
+      					FIN
+      					taLigneCalcul[nPageLargeur]=nNumOpération
+      					iPosY(y+rHauteurCaract);iTraitH(0,rPageLargeur,0,taCouleurs[CouleurCadre],iContinu)	//ligne en bas
+      					y+=iHauteurTexte(iPolice(2)+"T")+(1)*2*iPicaVersMM(1)
+      				FIN
+      				SI stOptions.coAutresOptions[OptionNonAssemblée] ALORS 
+      					bBoucleOpération=(nNumOpération<(ChaîneOccurrence(sOpérations,TAB)+1)) 
+      				SINON 
+      					taLigneCalcul[nPageLargeur]=nNumOpération;bBoucleOpération=Faux
+      				FIN
+      			SINON
+      				bBoucleOpération=Faux
+      			FIN
+      			
+      			//lignes du tableau
+      			iPosY(0);y=0
+      			SI stOptions.sTitrePage>"" ET (nPageHauteur=1 _OU_ stOptions.coAutresOptions[OptionRépèteTitreChaquePage]) ALORS
+      				SI stOptions.coAutresOptions[OptionAvecCadre] ALORS 
+      					iTraitH(0,rPageLargeur,0,taCouleurs[CouleurCadre],iContinu);bContenu=Vrai			//ligne en haut
+      				FIN
+      				SI stOptions.coAutresOptions[OptionAvecCadre] OU stOptions.coAutresOptions[OptionAvecSéparateurHorizontal] ALORS
+      					iPosY(rHauteurTitre);iTraitH(0,rPageLargeur,0,(stOptions.coAutresOptions[OptionAvecCadre] ET PAS taCouleurs[CouleurCadre]=Transparent ? taCouleurs[CouleurCadre] SINON taCouleurs[CouleurSéparateurHorizontal]),(stOptions.coAutresOptions[OptionAvecCadre] ET PAS taCouleurs[CouleurCadre]=Transparent ? iContinu SINON stOptions.eTraitH..valeur)) 	//ligne après le titre
+      				FIN
+      				y=rHauteurTitre
+      			SINON
+      				SI stOptions.coAutresOptions[OptionAvecCadre] OU stOptions.coAutresOptions[OptionAvecSéparateurHorizontal] ALORS 
+      					iTraitH(0,rPageLargeur,0,(stOptions.coAutresOptions[OptionAvecCadre] ET PAS taCouleurs[CouleurCadre]=Transparent ? taCouleurs[CouleurCadre] SINON taCouleurs[CouleurSéparateurHorizontal]),(stOptions.coAutresOptions[OptionAvecCadre] ET PAS taCouleurs[CouleurCadre]=Transparent ? iContinu SINON stOptions.eTraitH..valeur));bContenu=Vrai	//ligne en haut
+      				FIN
+      			FIN
+      			SI stOptions.coAutresOptions[OptionAvecTitreColonne] ET stOptions.coAutresOptions[OptionAvecSéparateurHorizontal] ET (nPageHauteur=1 _OU_ stOptions.coAutresOptions[OptionRépèteTitreColonneChaquePage]) ALORS 
+      				iPosY(y+rHauteurTitreMax);iTraitH(0,rPageLargeur,0,(taCouleurs[CouleurTitreColonneSéparateur]=Transparent ? (stOptions.coAutresOptions[OptionAvecCadre] ET PAS taCouleurs[CouleurCadre]=Transparent ? taCouleurs[CouleurCadre] SINON taCouleurs[CouleurSéparateurHorizontal]) SINON taCouleurs[CouleurTitreColonneSéparateur]),(stOptions.coAutresOptions[OptionAvecCadre] ET PAS taCouleurs[CouleurCadre]=Transparent ? iContinu SINON stOptions.eTraitH..valeur));bContenu=Vrai	//ligne après le titre des colonnes
+      			FIN
+      			SI stOptions.coAutresOptions[OptionAvecSéparateurVertical] ALORS
+      				iPosX(0);bContenu=Vrai	//faire les lignes verticales de séparation de colonne
+      				POUR TOUTE CHAINE sNomColonne DE tabChamps[nPageLargeur] SEPAREE PAR RC
+      					sNomColonne=ExtraitChaîne(sNomColonne,1);x=iPosX()
+      					SI (x=0 ET PAS stOptions.coAutresOptions[OptionAvecCadre]) OU x<>0 ALORS
+      						iTraitV(rHauteurTitre+iPicaVersMM(2),(rPageHauteur-(bAvecPied ? rHauteurCaract+iPicaVersMM(15) SINON 0)),0,taCouleurs[CouleurSéparateurVertical],stOptions.eTraitV..valeur)
+      					FIN
+      					iPosX(x+({sNomColonne,indChamp}..Largeur*rDimDot/rFacteurZoom))
+      				FIN
+      				SI PAS stOptions.coAutresOptions[OptionAvecCadre] ALORS
+      					iPosX(rPageLargeur);iTraitV(rHauteurTitre+iPicaVersMM(2),rPageHauteur-(bAvecPied ? rHauteurCaract+iPicaVersMM(15) SINON 0),0,taCouleurs[CouleurSéparateurVertical],stOptions.eTraitV..valeur)	//dernier trait vertical à droite de la page
+      				FIN
+      			FIN
+      			SI stOptions.coAutresOptions[OptionAvecSéparateurHorizontal] _ET_ bAvecPied ALORS 
+      				iPosY(rPageHauteur-rHauteurCaract-iPicaVersMM(15));iTraitH(0,rPageLargeur,0,(stOptions.coAutresOptions[OptionAvecCadre] ET PAS taCouleurs[CouleurCadre]=Transparent ? taCouleurs[CouleurCadre] SINON taCouleurs[CouleurSéparateurHorizontal]),(stOptions.coAutresOptions[OptionAvecCadre] ET PAS taCouleurs[CouleurCadre]=Transparent ? iContinu SINON stOptions.eTraitH..valeur));bContenu=Vrai
+      			FIN
+      			
+      			SI bAvecPied ALORS
+      				iPolice(5);y=rPageHauteur-rHauteurCaract-iPicaVersMM(13);iPosY(y)
+      				SI taCouleurs[CouleurPiedFond]<>Transparent _ET_ taCouleurs[CouleurPiedFond]<>taCouleurs[CouleurPageFond] ALORS 
+      					iCadre((stOptions.coAutresOptions[OptionAvecCadre] ? iPicaVersMM(1) SINON 0),y,rPageLargeur-(stOptions.coAutresOptions[OptionAvecCadre] ? iPicaVersMM(1) SINON 0),y+rHauteurCaract+iPicaVersMM(13),0,100,taCouleurs[CouleurPiedFond],iContinu,iPleine,iBordTous);bContenu=Vrai
+      				FIN
+      				SI stOptions.coAutresOptions[OptionAvecDate] OU stOptions.coAutresOptions[OptionAvecHeure] OU stOptions.sPiedDePageGauche>"" ALORS
+      					sPied=""
+      					SI stOptions.sPiedDePageGauche>"" ET (bRépètePiedChaquePage _OU_ nPageHauteur=1) ALORS
+      						sPied=Remplace(Remplace(Remplace(ExtraitChaîne(stOptions.sPiedDePageGauche,1,RC),"<TIME>",HeureVersChaîne(hHeureCourante,stOptions.sFormatHeure),SansCasse),"<DATE>",DateVersChaîne(dDateCourante,stOptions.sFormatDate)),"<PAGE>",(Max(stOptions.nNumPageDépart,1)-1+nNumPage))
+      					SINON
+      						sPied=(stOptions.coAutresOptions[OptionAvecDate] ? "Le "+DateVersChaîne(dDateCourante,stOptions.sFormatDate) SINON "")+[" à "]+(stOptions.coAutresOptions[OptionAvecHeure] ? HeureVersChaîne(hHeureCourante,stOptions.sFormatHeure) SINON "")
+      					FIN
+      					SI sPied>"" ALORS
+      						bContenu=Vrai;iImprimeZone(sPied,iPicaVersMM(6),rPageHauteur-rHauteurCaract-iPicaVersMM(6),rPageLargeur-iPicaVersMM(6),rPageHauteur-iPicaVersMM(6))
+      					FIN
+      				FIN
+      				SI (bRépètePiedChaquePage _OU_ nPageHauteur=1) _ET_ ExtraitChaîne(stOptions.sPiedDePageCentre,1,RC)>"" ALORS
+      					sPied=Remplace(Remplace(Remplace(ExtraitChaîne(stOptions.sPiedDePageCentre,1,RC),"<TIME>",HeureVersChaîne(hHeureCourante,stOptions.sFormatHeure),SansCasse),"<DATE>",DateVersChaîne(dDateCourante,stOptions.sFormatDate)),"<PAGE>",(Max(stOptions.nNumPageDépart,1)-1+nNumPage))
+      					bContenu=Vrai;iImprimeZone(sPied,iPicaVersMM(6),rPageHauteur-rHauteurCaract-iPicaVersMM(6),rPageLargeur-iPicaVersMM(6),rPageHauteur-iPicaVersMM(6),iCentreH)
+      				FIN
+      				SI stOptions.coAutresOptions[OptionAvecNumPage] OU stOptions.sPiedDePageDroite>"" ALORS
+      					sPied=""
+      					SI stOptions.sPiedDePageDroite>"" ET (bRépètePiedChaquePage _OU_ nPageHauteur=1) ALORS
+      						sPied=Remplace(Remplace(Remplace(ExtraitChaîne(stOptions.sPiedDePageDroite,1,RC),"<TIME>",HeureVersChaîne(hHeureCourante,stOptions.sFormatHeure),SansCasse),"<DATE>",DateVersChaîne(dDateCourante,stOptions.sFormatDate)),"<PAGE>",(Max(stOptions.nNumPageDépart,1)-1+nNumPage))
+      					SINON
+      						sPied="Page : "+(Max(stOptions.nNumPageDépart,1)-1+nNumPage)
+      					FIN
+      					SI sPied>"" ALORS
+      						bContenu=Vrai;iImprimeZone(sPied,iPicaVersMM(6),rPageHauteur-rHauteurCaract-iPicaVersMM(6),rPageLargeur-iPicaVersMM(6),rPageHauteur-iPicaVersMM(6),iDroite)
+      					FIN
+      				FIN
+      			FIN
+      			
+      			SI stOptions.coAutresOptions[OptionAvecCadre] OU (stOptions.coAutresOptions[OptionAvecSéparateurHorizontal] ET PAS bAvecPied) ALORS
+      				iPosY(rPageHauteur);bContenu=Vrai;iTraitH(0,rPageLargeur,0,(stOptions.coAutresOptions[OptionAvecCadre] ? taCouleurs[CouleurCadre] SINON taCouleurs[CouleurSéparateurHorizontal]),(stOptions.coAutresOptions[OptionAvecCadre] ? iContinu SINON stOptions.eTraitH..valeur));bContenu=Vrai	//dernier trait horizontal en bas de page
+      			FIN
+      			SI stOptions.coAutresOptions[OptionAvecCadre] ALORS
+      				bContenu=Vrai
+      				iPosX(0);iTraitV(0,rPageHauteur,0,taCouleurs[CouleurCadre],iContinu)				//premier trait vertical à gauche
+      				iPosX(rPageLargeur);iTraitV(0,rPageHauteur,0,taCouleurs[CouleurCadre],iContinu)	//dernier trait vertical à droite de la page
+      			FIN
+      			
+      			SI PAS bBoucleOpération ALORS SORTIR
+      		FIN
+      		
+      		//saut de page selon qu'il est assemblé ou pas
+      		SI stOptions.coAutresOptions[OptionNonAssemblée] ALORS	//1+1+1, 2+2+2, 3+3+3
+      			SI nPageLargeur<nPagesLargeur ALORS
+      				nPageLargeur++
+      			SINON SI nPageLargeur=nPagesLargeur ET nLigne>=nLigneFin ALORS
+      				SI nLigneCalcul>0 ALORS
+      					SI taLigneCalcul[nPageLargeur]>=(ChaîneOccurrence(sOpérations,TAB)+1) ALORS SORTIR SINON bBoucleOpération=Vrai
+      				SINON
+      					SORTIR
+      				FIN
+      			SINON
+      				nPageLargeur=1;nLigneDébut=nLigne+1;nPageHauteur++
+      			FIN
+      		SINON	//1+2+3, 1+2+3, 1+2+3
+      			SI nLigne<nLigneFin ALORS 
+      				nPageHauteur++;nLigneDébut=nLigne+1
+      			SINON SI nPageLargeur<nPagesLargeur ALORS
+      				nPageLargeur++;nLigneDébut=1;nPageHauteur=1
+      			SINON
+      				SORTIR
+      			FIN
+      		FIN
+      		SI stOptions.nNbPagesMax>0 _ET_ nNumPage>=stOptions.nNbPagesMax ALORS SORTIR SINON iSautePage()
+      	FIN
+      	
+      	SI PAS stOptions.coAutresOptions[OptionPasFinImprime] ALORS iFinImprime() 
+      FIN
+      
+      
+      <si CibleExécution=ApplicationWindows ou CibleExécution=Site ou CibleExécution=SitePHP ou CibleExécution=AssemblageDotNet ou CibleExécution=Java ou CibleExécution=ApplicationLinux64 ou CibleExécution=Android ou CibleExécution=iOS ou CibleExécution=WindowsMobile>
+      	
+      	SI bImprimeColonneCalculée ALORS 
+      		TableSelectMoins(sNomTable)
+      		POUR TOUTE CHAÎNE sLigne DE sColonnesSélectionnées
+      			TableSelectPlus(sNomTable,Val(sLigne))
+      		FIN
+      		TableSelectMoins(sNomTable)
+      	FIN
+      	
+      <fin>
+      
+      
+      si sErr>"" alors ErreurDéclenche(ErreurDImpression,sErr)
+      renvoyer nNumPage
+      
+      	procédure interne nCadrageHorizontal(nCadrage,nCadrageDéfaut=iDroite)
+      	SELON nCadrage
+      		CAS chGauche 	: RENVOYER iGauche
+      		CAS chCentre	: RENVOYER iCentreH
+      		CAS chDroite	: RENVOYER iDroite
+      		AUTRE CAS : RENVOYER nCadrageDéfaut		//cas chJustifié
+      	FIN
+      	fin
+      
+      	procédure interne nCadrageVertical(nCadrage,nCadrageDéfaut=iCentreV)
+      	SELON nCadrage
+      		CAS cvBas		: RENVOYER iBas
+      		CAS cvMilieu	: RENVOYER iCentreV
+      		CAS cvHaut		: RENVOYER iHaut
+      		AUTRE CAS 		: RENVOYER nCadrageDéfaut
+      	FIN		
+      	FIN
+      	
+      	procédure interne sSansImage(sTitreAvecImage est une chaîne)
+      	SI Position(sTitreAvecImage,ESC)>0 ALORS RENVOYER SansEspace(Milieu(sTitreAvecImage,Position(sTitreAvecImage,"[]")+2)) SINON RENVOYER SansEspace(sTitreAvecImage)
+      	FIN
+      
+      	Procédure interne ErreurAjouteUnique(sMessageErreur est une chaine)
+      		SI Position(sErr,sMessageErreur)<1 ALORS sErr+=[RC]+sMessageErreur
+      	fin	
+      	
+     type : 458752
+   -
+     name : MargesImprimante
+     procedure_id : 2017238022754052162
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction calcule et renvoie les marges maximales de l'imprimante. Les marges sont exprimées en millimètres et correspondent à la distance entre le bord du papier et la zone imprimable.
+      // Syntaxe : [ <Résultat> = ] MargesImprimante ()
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour : (réel, réel, réel, réel) : La fonction renvoie les marges maximales dans l'ordre suivant : (Haut, Bas, Gauche, Droite).
+      // Exemple :
+      //	rMargeHaut, rMargeBas, rMargeGauche, rMargeDroite sont des réels
+      //	(rMargeHaut, rMargeBas, rMargeGauche, rMargeDroite) = MargesImprimante()
+      //
+      PROCEDURE MargesImprimante() : (réel,réel,réel,réel)
+      rMargeHaut,rMargeBas,rMargeGauche,rMargeDroite sont des réels
+      rMargeG,rMargeD,rMargeH,rMargeB sont des réels
+      rIHP1,rIHP2,rILP1,rILP2 		sont réels
+      
+      iMarge(0,0,0,0) //Mise à zéro de la marge : haut, bas, gauche, droite
+      
+      // calcul de la MARGE DU HAUT
+      // principe général: avec iMarge(0,0,0,0), on peut calculer largeur et hauteur de page maximale, soit taille du papier diminuée des marges physiques
+      rIHP1 = iHauteurPage()
+      rILP1 = iLargeurPage()
+      
+      // on impose une marge du haut exagérée 50 mm car il faut être sûr d'être plus grand que la marge physique!
+      // la nouvelle Hauteur_de_page tient compte des 50 mm en y incluant la marge réelle 
+      // la différence entre les DEUX hauteurs de page n'est donc pas 50 mm, elle est plus petite de exactement la marge réelle
+      iMarge(50,0,0,0);rIHP2 = iHauteurPage();rMargeH = 50 - (rIHP1-rIHP2)
+      iMarge(0,50,0,0);rIHP2 = iHauteurPage();rMargeB = 50 - (rIHP1-rIHP2) + 0.0		// calcul de la MARGE DU BAS
+      iMarge(0,0,50,0);rILP2 = iLargeurPage();rMargeG = 50 - (rILP1-rILP2)			// calcul de la MARGE DE GAUCHE
+      iMarge(0,0,0,50);rILP2 = iLargeurPage();rMargeD = 50 - (rILP1-rILP2) + 1.0		// calcul de la MARGE DE DROITE
+      
+      // les paramètres reçoivent les marges maximum
+      rMargeHaut = Max(rMargeHaut,rMargeH);rMargeBas = Max(rMargeBas,rMargeB)
+      rMargeGauche = Max(rMargeGauche,rMargeG);rMargeDroite = Max(rMargeDroite,rMargeD)
+      
+      renvoyer (rMargeHaut,rMargeBas,rMargeGauche,rMargeDroite)
+     type : 458752
+   -
+     name : ImprimeImageAuCentre
+     procedure_id : 2017784669066179458
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction imprime une image au centre de la page en utilisant les marges spécifiées. L'image peut être au format spécifié par le paramètre xImage.
+      // Syntaxe : [ <Résultat> = ] ImprimeImageAuCentre (<xImage> [, <rMargeHaut> est réel [, <rMargeBas> est réel [, <rMargeGauche> est réel [, <rMargeDroite> est réel [, <bPasFinImprime> est booléen]]]]])
+      // Paramètres :
+      // 	xImage : L'image à imprimer. Cela peut être un chemin d'accès au fichier image, un champ image ou une constante image.
+      // 	rMargeHaut (réel optionnel) : La marge supérieure en millimètres, par défaut 10.
+      // 	rMargeBas (réel optionnel) : La marge inférieure en millimètres, par défaut 10.
+      // 	rMargeGauche (réel optionnel) : La marge gauche en millimètres, par défaut 10.
+      // 	rMargeDroite (réel optionnel) : La marge droite en millimètres, par défaut 10.
+      // 	bPasFinImprime (booléen optionnel) : Un indicateur pour spécifier si la fonction doit terminer l'impression. Si vrai, l'impression sera continuée, par défaut Faux.
+      // Valeur de retour : booléen : La fonction renvoie Vrai si l'impression s'est déroulée avec succès, Faux sinon. En cas d'échec, une erreur est déclenchée.
+      // Exemple :
+      //	ImprimeImageAuCentre("C:\Chemin\Vers\Image.jpg", 5, 5, 5, 5) ALORS
+      //
+      //
+      Procédure ImprimeImageAuCentre(local xImage, rMargeHaut est un réel = 10, rMargeBas est un réel = 10, rMargeGauche est un réel = 10, rMargeDroite est un réel = 10, bPasFinImprime est un booleen = faux)
+      sErreur est une chaine
+      sFichierTemp est une chaine 	= fFichierTemp("CPR")
+      sFichierImage est une chaine 	= TrouveImage(xImage,sFichierTemp)
+      
+      //On initialise l'impression
+      si sFichierImage>"" alors
+      	iImprimeImage(sFichierImage,rMargeHaut,rMargeGauche,iLargeurPage()-rMargeDroite,ihauteurpage()-rMargeBas,iAffichageHomoCentré)
+      	//On imprime l'image
+      	SI PAS bPasFinImprime ALORS iFinImprime()
+      	SI fFichierExiste(sFichierTemp) ALORS fSupprime(sFichierTemp)
+      	RENVOYER Vrai
+      sinon
+      	SI fFichierExiste(sFichierTemp) ALORS fSupprime(sFichierTemp)
+      	ErreurDéclenche(ErreurDImpression,sErreur)
+      	RENVOYER faux
+      FIN
+     type : 458752
+   -
+     name : TrouveImage
+     procedure_id : 2017989423223906484
+     type_code : 15
+     code : |1-
+      // Résumé : Cette fonction privée est utilisée pour cherche l'image utilisée dans ImprimeImageAuCentre() 
+      // Syntaxe : TrouveImage(<image>, <sFichierTemp> est chaîne)
+      // Paramètres :
+      //	xImage :
+      //	sFichierTemp :
+      // Valeur de retour : aucune
+      // Exemple :
+      PROCEDURE privé TrouveImage(xImage,sFichierTemp est une chaîne)
+      SI xImage="" ALORS RENVOYER ""
+      sInfoImage est une chaîne
+      
+      QUAND EXCEPTION DANS
+      	SI xImage..Type DANS (typImage,typClicage) ALORS
+      		SI ChampExiste(xImage..Nom) ALORS
+      			SI fFichierExiste(xImage..Valeur) ALORS 
+      				xImage=xImage..Valeur
+      			SINON
+      				//c'est une rubrique de fichier et c'est pas géré
+      			FIN
+      		SINON
+      			ErreurDéclenche(ErreurDImpression,<§@1bfea8aa3da663750000§>);RENVOYER ""
+      		FIN
+      	FIN
+      FAIRE
+      	//rien, on teste les autres possibilités
+      	ExceptionActive()
+      FIN
+      
+      QUAND EXCEPTION DANS
+      	SI TypeVar(xImage) DANS (wlChaîne,wlMémoBinaire) ALORS
+      		//fichier ou nom de champ ?
+      		SI fFichierExiste(xImage) ALORS 
+      			SI estImageReconnue(fExtraitChemin(xImage,fExtension)) ALORS
+      				sInfoImage=InfoBitmap(xImage);SI PAS ExtraitChaîne(sInfoImage,1) DANS ("BAD","",EOT) ALORS RENVOYER xImage
+      			FIN
+      			ErreurDéclenche(ErreurDImpression,<§@1bfea8aa3da66375000b§>);RENVOYER ""
+      		SINON SI ChampExiste(xImage) ALORS
+      			SI {xImage,indChamp}..LiaisonFichier>"" ALORS
+      				SI dSauveImageJPEG(xImage,sFichierTemp) ALORS	//dSauveImageJPEG reconnue par toutes les plateformes
+      					sInfoImage=InfoBitmap(sFichierTemp)
+      					SI PAS ExtraitChaîne(sInfoImage,1) DANS ("BAD","",EOT) ALORS RENVOYER sFichierTemp
+      					ErreurDéclenche(ErreurDImpression,<§@1bfea8aa3da66375000b§>)
+      				FIN
+      			SINON
+      				ErreurDéclenche(ErreurDImpression,<§@1bfea8aa3da66375000c§>)
+      			FIN
+      			RENVOYER ""
+      		SINON SI {xImage,indRubrique}..Type DANS (hRubImage,hRubMémoBinaire,hRubMémoBinaire4) _ET_ Position(xImage,".")>0 ALORS
+      			sInfoImage=HInfoMémo(ExtraitChaîne(xImage,1,"."),ExtraitChaîne(xImage,2,"."))
+      			SI sInfoImage>"" _ET_ ExtraitChaîne(sInfoImage,1)="IMG" _ET_ estImageReconnue(fExtraitChemin(ExtraitChaîne(sInfoImage,2),fExtension))  ALORS
+      				SI HExtraitMémo(ExtraitChaîne(xImage,1,"."),ExtraitChaîne(xImage,2,"."),sFichierTemp) ALORS
+      					xImage=sFichierTemp;sInfoImage=InfoBitmap(xImage)
+      					SI PAS ExtraitChaîne(sInfoImage,1) DANS ("BAD","",EOT) ALORS RENVOYER xImage
+      					ErreurDéclenche(ErreurDImpression,<§@1bfea8aa3da66375000b§>)
+      				SINON
+      					ErreurDéclenche(ErreurDImpression,HErreurInfo(hErrMessage))
+      				FIN
+      			SINON
+      				ErreurDéclenche(ErreurDImpression,<§@1bfea8aa3da66375000b§>)
+      			FIN
+      			RENVOYER ""
+      		SINON
+      			//rien, on teste les autres possibilités
+      		FIN
+      	FIN
+      FAIRE
+      	//rien, on teste les autres possibilités
+      FIN
+      
+      QUAND EXCEPTION DANS
+      	SI fSauveTexte(sFichierTemp,xImage) _ET_ fTaille(sFichierTemp) ALORS RENVOYER sFichierTemp
+      FAIRE
+      FIN
+      ErreurDéclenche(ErreurDImpression,<§@1bfea8aa3da66375000d§>)
+      RENVOYER ""
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CQAAAAkAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x1bfea8aa3da66375
+  internal_properties : CQAAAAkAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+  strings :
+   -
+     text :
+      fr-FR : L'image n'est pas un objet reconnu
+      en-GB : The image is not a recognized object
+      fr-CA : L'image n'est pas un objet reconnu
+      en-US : The image is not a recognized object
+     index : 0
+   -
+     text :
+      fr-FR : Une colonne n'a pas le nom complet
+      en-GB : A column does not have the full name
+      fr-CA : Une colonne n'a pas le nom complet
+      en-US : A column does not have the full name
+     index : 1
+   -
+     text :
+      fr-FR : Deux colonnes ont la même place dans l'ordre d'impression
+      en-GB : Two columns have the same place in the print order
+      fr-CA : Deux colonnes ont la même place dans l'ordre d'impression
+      en-US : Two columns have the same place in the print order
+     index : 2
+   -
+     text :
+      fr-FR : Certaines colonnes ont un ordre d'impression et d'autres non
+      en-GB : Some columns have a print order and others do not
+      fr-CA : Certaines colonnes ont un ordre d'impression et d'autres non
+      en-US : Some columns have a print order and others do not
+     index : 3
+   -
+     text :
+      fr-FR : Erreur du pilote d'impression (largeur). Faire iRaz() avant ImprimeTable()
+      en-GB : Printer driver error (width). Do iRaz () before ImprimeTable()
+      fr-CA : Erreur du pilote d'impression (largeur). Faire iRaz() avant ImprimeTable()
+      en-US : Printer driver error (width). Do iRaz () before ImprimeTable()
+     index : 4
+   -
+     text :
+      fr-FR : "L'élément de couleur [%1] n'est pas reconnu"
+      en-GB : "Color element [%1] is not recognized"
+      fr-CA : "L'élément de couleur [%1] n'est pas reconnu"
+      en-US : "Color element [%1] is not recognized"
+     index : 5
+   -
+     text :
+      fr-FR : "Le type [%1] n'est pas un type de trait horizontal"
+      en-GB : "Type [%1] is not a horizontal type of line"
+      fr-CA : "Le type [%1] n'est pas un type de trait horizontal"
+      en-US : "Type [%1] is not a horizontal type of line"
+     index : 6
+   -
+     text :
+      fr-FR : "La colonne [%1] n'est pas compatible avec son type de calcul"
+      en-GB : "The column [%1] is not compatible with its calculation type"
+      fr-CA : "La colonne [%1] n'est pas compatible avec son type de calcul"
+      en-US : "The column [%1] is not compatible with its calculation type"
+     index : 7
+   -
+     text :
+      fr-FR : "La colonne [%1] n'existe pas"
+      en-GB : "Column [%1] does not exist"
+      fr-CA : "La colonne [%1] n'existe pas"
+      en-US : "Column [%1] does not exist"
+     index : 8
+   -
+     text :
+      fr-FR : "L'image [%1] pour la combo [%2] est manquante"
+      en-GB : "The image [%1] for combo [%2] is missing"
+      fr-CA : "L'image [%1] pour la combo [%2] est manquante"
+      en-US : "The image [%1] for combo [%2] is missing"
+     index : 9
+   -
+     text :
+      fr-FR : Aucune colonne n'est visible
+      en-GB : No column is visible
+      fr-CA : Aucune colonne n'est visible
+      en-US : No column is visible
+     index : 10
+   -
+     text :
+      fr-FR : Le fichier à imprimer n'est pas dans un format reconnu
+      en-GB : The file to print is not in a recognized format
+      fr-CA : Le fichier à imprimer n'est pas dans un format reconnu
+      en-US : The file to print is not in a recognized format
+     index : 11
+   -
+     text :
+      fr-FR : La colonne n'est pas liée à un fichier
+      en-GB : The column is not linked to a file
+      fr-CA : La colonne n'est pas liée à un fichier
+      en-US : The column is not linked to a file
+     index : 12
+   -
+     text :
+      fr-FR : L'image n'est pas dans un format reconnu
+      en-GB : The image is not in a recognized format
+      fr-CA : L'image n'est pas dans un format reconnu
+      en-US : The image is not in a recognized format
+     index : 13
+   -
+     text :
+      fr-FR : Col1
+      en-GB : Col1
+      fr-CA : Col1
+      en-US : Col1
+     index : 14
+   -
+     text :
+      fr-FR : Col2
+      en-GB : Col2
+      fr-CA : Col2
+      en-US : Col2
+     index : 15
+   -
+     text :
+      fr-FR : Col3
+      en-GB : Col3
+      fr-CA : Col3
+      en-US : Col3
+     index : 16
+   -
+     text :
+      fr-FR : Col4
+      en-GB : Col4
+      fr-CA : Col4
+      en-US : Col4
+     index : 17
+   -
+     text :
+      fr-FR : " à "
+      en-GB : " at "
+      fr-CA : " à "
+      en-US : " at "
+     index : 18
+   -
+     text :
+      fr-FR : "L'élément ["
+      en-GB : "The item ["
+      fr-CA : "L'élément ["
+      en-US : "The item ["
+     index : 19
+   -
+     text :
+      fr-FR : "] n'est pas reconnu"
+      en-GB : "] is not recognized"
+      fr-CA : "] n'est pas reconnu"
+      en-US : "] is not recognized"
+     index : 20
+   -
+     text :
+      fr-FR : "La couleur ["
+      en-GB : "The color ["
+      fr-CA : "La couleur ["
+      en-US : "The color ["
+     index : 21
+   -
+     text :
+      fr-FR : "] n'est pas dans les limites de -1 (transparent) à 16777216 (blanc)"
+      en-GB : "] is not within -1 (transparent) to 16777216 (white)"
+      fr-CA : "] n'est pas dans les limites de -1 (transparent) à 16777216 (blanc)"
+      en-US : "] is not within -1 (transparent) to 16777216 (white)"
+     index : 22
+   -
+     text :
+      fr-FR : "Le type de trait ["
+      en-GB : "The line type ["
+      fr-CA : "Le type de trait ["
+      en-US : "The line type ["
+     index : 23
+   -
+     text :
+      fr-FR : La hauteur de la ligne doit être positive
+      en-GB : The height of the line must be positive
+      fr-CA : La hauteur de la ligne doit être positive
+      en-US : The height of the line must be positive
+     index : 24
+   -
+     text :
+      fr-FR : La marge du bas doit être positive
+      en-GB : The bottom margin must be positive
+      fr-CA : La marge du bas doit être positive
+      en-US : The bottom margin must be positive
+     index : 25
+   -
+     text :
+      fr-FR : La marge de droite doit être positive
+      en-GB : The right margin must be positive
+      fr-CA : La marge de droite doit être positive
+      en-US : The right margin must be positive
+     index : 26
+   -
+     text :
+      fr-FR : La marge de gauche doit être positive
+      en-GB : The left margin must be positive
+      fr-CA : La marge de gauche doit être positive
+      en-US : The left margin must be positive
+     index : 27
+   -
+     text :
+      fr-FR : La marge du haut doit être positive
+      en-GB : The top margin must be positive
+      fr-CA : La marge du haut doit être positive
+      en-US : The top margin must be positive
+     index : 28
+   -
+     text :
+      fr-FR : L'image n'est pas un objet reconnu
+      en-GB : The image is not a recognized object
+      fr-CA : L'image n'est pas un objet reconnu
+      en-US : The image is not a recognized object
+     index : 29
+   -
+     text :
+      fr-FR : Le fichier à imprimer n'est pas dans un format reconnu
+      en-GB : The print file is not in a recognized format
+      fr-CA : Le fichier à imprimer n'est pas dans un format reconnu
+      en-US : The print file is not in a recognized format
+     index : 30
+   -
+     text :
+      fr-FR : "Impossible d'extraire l'image du mémo : "
+      en-GB : "Unable to extract image from memo : "
+      fr-CA : "Impossible d'extraire l'image du mémo : "
+      en-US : "Unable to extract image from memo : "
+     index : 31
+custom_note :
+ internal_properties : CQAAAAkAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ
